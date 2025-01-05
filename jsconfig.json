@@ -8,6 +8,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@api": ["./src/app/api"],
       "@api/*": ["./src/app/api/*"],
@@ -19,6 +20,5 @@
       "@hooks/*": ["./src/hooks/*"]
     }
   },
-  "include": ["**/*.js", "**/*.jsx"],
   "exclude": ["node_modules", "venv"]
 }
