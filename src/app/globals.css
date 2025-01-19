@@ -26,4 +26,23 @@ body {
   width: 100%;
   height: 100%;
   font-size: 12px;
+  background-color: #ffffff;
+}
+
+body {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #EBECEF;
+}
+
+@media (max-width: 400px) {
+  body {
+    width: 100%;
+  }
+}
+
+@media (min-width: 401px) {
+  body {
+    width: 400px;
+  }
 }
