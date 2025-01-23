@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Header from '@components/common/Header';
-import Banner from '@components/common/Banner';
+import AfterLoginBanner from '@components/common/AfterLoginBanner';
 import SecondBanner from '@components/common/SecondBanner';
 import ReservationSection from '@components/common/ReservationSection';
 import FooterNav from '@components/common/FooterNav';
@@ -14,7 +14,7 @@ export default function Home() {
         <Header />
       </div>
       <div className="flex justify-center w-full">
-        <Banner className="w-full" />
+        <AfterLoginBanner className="w-full" />
       </div>
       <div className="flex justify-center w-full">
         <SecondBanner className="w-full" />
