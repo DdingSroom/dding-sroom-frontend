@@ -33,16 +33,19 @@ body {
   margin-left: auto;
   margin-right: auto;
   background-color: #EBECEF;
+  max-width: 100%; /* 최대 너비를 100%로 설정 */
+  overflow-x: hidden; /* 수평 스크롤 방지 */
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) { /* 모바일 디바이스에 대한 스타일 */
   body {
-    width: 100%;
+    width: 100%; /* 모바일에서는 100% 너비 */
+    padding: 0; /* 패딩을 없애서 꽉 차게 보이도록 */
   }
 }
 
-@media (min-width: 401px) {
+@media (min-width: 601px) { /* 데스크탑 디바이스에 대한 스타일 */
   body {
-    width: 400px;
+    width: 600px; /* 데스크탑에서는 고정 너비 */
   }
 }
