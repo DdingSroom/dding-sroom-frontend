@@ -22,7 +22,7 @@ export default function Home() {
       <div className="flex justify-center w-full flex-grow">
         <ReservationSection className="w-full" />
       </div>
-      <div className="mt-[1px] w-full sticky bottom-0 bg-white fixed bottom-0 left-0 right-0 ">
+      <div className="mt-[1px] w-full sticky fixed bg-white bottom-0 left-0 right-0 ">
         <FooterNav />
       </div>
     </>
