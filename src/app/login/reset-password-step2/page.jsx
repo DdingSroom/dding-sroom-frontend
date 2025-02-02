@@ -43,7 +43,7 @@ export default function ResetPassword2() {
         <div className="flex flex-col gap-4 flex-grow">
           <div className="flex flex-col gap-2">
             <label>새 비밀번호</label>
-            <StyledPasswordInput
+            <NewPasswordField
               className="h-10 text-sm"
               type="password"
               id="newPassword"
@@ -59,7 +59,7 @@ export default function ResetPassword2() {
 
           <div className="flex flex-col gap-2">
             <label>새 비밀번호 확인</label>
-            <StyledPasswordInput
+            <ConfirmPasswordField
               className="h-10 text-sm"
               type="password"
               id="newPassword_2"
@@ -99,7 +99,37 @@ const StyledInput = ({ value, ...props }) => {
   );
 };
 
-const StyledPasswordInput = ({
+const NewPasswordField = ({
+  value,
+  isVisible = false,
+  handlePasswordVisible,
+  ...props
+}) => {
+  return (
+    <div className="flex w-full relative">
+      <StyledInput
+        {...props}
+        style={{ width: '100%' }}
+        value={value}
+        type={isVisible ? 'text' : 'password'}
+      />
+      <img
+        className="absolute top-[50%] right-[5px]"
+        style={{ transform: 'translate(-50%, -50%)' }}
+        src={
+          isVisible
+            ? '/static/icons/eye_off_icon.svg'
+            : '/static/icons/eye_on_icon.svg'
+        }
+        alt="X"
+        width={18}
+        onClick={handlePasswordVisible}
+      />
+    </div>
+  );
+};
+
+const ConfirmPasswordField = ({
   value,
   isVisible = false,
   handlePasswordVisible,
