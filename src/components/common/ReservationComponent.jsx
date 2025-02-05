@@ -18,7 +18,7 @@ const ReservationComponent = ({ index }) => {
         >
           예약
         </button>
-        <Modal isOpen={open} onClose={() => setOpen(false)}>
+        <Modal isOpen={open} onClose={() => setOpen(false)} text="예약하기">
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 1</div>
             <div className="flex justify-center items-center">8월 1일</div>
