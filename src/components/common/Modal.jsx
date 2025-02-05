@@ -1,5 +1,7 @@
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, text, color }) => {
   if (!isOpen) return null;
+
+  const colorClass = color === 'red' ? 'text-red-500' : 'text-gray-500';
 
   return (
     <div
@@ -15,7 +17,9 @@ const Modal = ({ isOpen, onClose, children }) => {
           <button className="text-gray-500 w-[50%]" onClick={onClose}>
             취소
           </button>
-          <button className="text-gray-500 w-[50%]">예약하기</button>
+          <button className={`text-gray-500 w-[50%] ${colorClass}`}>
+            {text}
+          </button>
         </div>
       </div>
     </div>
