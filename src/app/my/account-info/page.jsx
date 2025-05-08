@@ -46,8 +46,11 @@ export default function AccountInfo() {
         <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-8 mb-1">
           <p className="text-2xl">개인 정보 보호</p>
         </div>
-        <MyPageBlock name="비밀 번호 재설정" />
-        <MyPageBlock name="회원 탈퇴" />
+        <MyPageBlock
+          name="비밀 번호 재설정"
+          linkPath="/login/reset-password-step1"
+        />
+        <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
       </div>
     </>
   );

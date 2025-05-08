@@ -1,9 +1,9 @@
 import Link from 'next/link';
-const MyPageBlock = ({ name }) => {
+const MyPageBlock = ({ name, linkPath }) => {
   return (
     <header className="flex items-center justify-between p-6 bg-[#FFFF]">
       <div className="">{name}</div>
-      <Link href="/my/account-info">
+      <Link href={linkPath}>
         <img
           src="/static/icons/arrow_right_icon.svg"
           alt="arrow"
