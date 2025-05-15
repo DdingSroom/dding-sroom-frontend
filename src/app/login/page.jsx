@@ -2,12 +2,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
+import { isValidPassword, strictEmailRegex } from '../../constants/regex';
 
 export default function Login() {
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoginSave, setIsLoginSave] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmError, setConfirmError] = useState('');
+  const [newPassword_2, setnewPassword_2] = useState('');
 
   const handlePasswordVisible = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -18,7 +23,8 @@ export default function Login() {
   };
 
   const isLoginAvailable = () => {
-    return email && password;
+    return ( strictEmailRegex.test(email) && 
+    isValidPassword(password));
   };
 
   const handleLogin = () => {
@@ -30,7 +36,7 @@ export default function Login() {
     <div className="flex flex-col items-center h-full pt-12 px-4">
       <div className="flex flex-col w-full mb-8 gap-1 mt-20">
         <h2 className="text-center text-[#788cff] text-[25px] font-bold">
-          띵터디룸
+          띵스룸
         </h2>
         <div className="text-[#333333] text-center text-[13px] font-normal">
           <p>명지대학교 이메일로 가입하여</p>
@@ -39,70 +45,105 @@ export default function Login() {
       </div>
 
       <div className="w-full">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label>이메일</label>
-            <StyledEmailInput
-              className="h-10 text-sm"
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              placeholder="학교 이메일을 입력해주세요."
-              setEmail={setEmail}
-            />
-          </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          className="w-full"
+        >
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <label>이메일</label>
+              <StyledEmailInput
+                className="h-10 text-sm"
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => {
+                  const inputEmail = e.target.value;
+                  setEmail(inputEmail);
+                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                    setEmailError('');
+                  } else {
+                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                  }
+                }}
+                placeholder="학교 이메일을 입력해주세요."
+                setEmail={setEmail}
+              />
+              {emailError && (
+                <p className="text-red-500 text-sm mt-1">{emailError}</p>
+              )}
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <label>비밀번호</label>
-            <StyledPasswordInput
-              className="h-10 text-sm"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              placeholder="비밀번호를 입력해주세요."
-              isVisible={isPasswordVisible}
-              handlePasswordVisible={handlePasswordVisible}
-            />
-          </div>
+            <div className="flex flex-col gap-2">
+              <label>비밀번호</label>
+              <StyledPasswordInput
+                className="h-10 text-sm"
+                id="password"
+                value={password}
+                onChange={(e) => {
+                  const pw = e.target.value;
+                  setPassword(pw); // ✔️ 수정: password state에 반영
+                  if (!isValidPassword(pw)) {
+                    setPasswordError(
+                      '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                    );
+                  } else {
+                    setPasswordError('');
+                  }
+                  if (newPassword_2 && pw !== newPassword_2) {
+                    setConfirmError('비밀번호가 일치하지 않습니다.');
+                  } else {
+                    setConfirmError('');
+                  }
+                }}
+                placeholder="비밀번호를 입력해주세요."
+                isVisible={isPasswordVisible}
+                handlePasswordVisible={handlePasswordVisible}
+              />
+              {passwordError && (
+                <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+              )}
+              {confirmError && (
+                <p className="text-red-500 text-sm mt-1">{confirmError}</p>
+              )}
+            </div>
 
-          <div className="w-full mt-4">
-            <Link href="/">
+            <div className="w-full mt-4">
               <Button
                 style={{ width: '100%' }}
-                onClick={handleLogin}
                 disabled={!isLoginAvailable()}
                 text="로그인"
+                type="submit"
               />
+            </div>
+          </div>
+        </form>
+
+        <div className="flex items-center justify-between w-full mt-4">
+          <div className="check_wrap">
+            <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
+              로그인 유지
+            </StyledCheckbox>
+          </div>
+
+          <div className="button_wrap inline-flex gap-2 text-[#333333] text-sm font-normal">
+            <Link href="/login/sign-up-step1">
+              <button>회원가입</button>
+            </Link>
+            <Link href="/login/reset-password-step1">
+              <button>비밀번호 재설정</button>
             </Link>
           </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between w-full mt-4">
-        <div className="check_wrap">
-          <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
-            로그인 유지
-          </StyledCheckbox>
-        </div>
-
-        <div className="button_wrap inline-flex gap-2 text-[#333333] text-sm font-normal">
-          <Link href="/login/sign-up-step1">
-            <button>회원가입</button>
-          </Link>
-          <Link href="/login/reset-password-step1">
-            <button>비밀번호 재설정</button>
-          </Link>
         </div>
       </div>
     </div>
   );
 }
+
+// ------------------------- Styled Components -------------------------
 
 const StyledInput = ({ value, ...props }) => {
   return (
@@ -156,7 +197,7 @@ const StyledPasswordInput = ({
             ? '/static/icons/eye_off_icon.svg'
             : '/static/icons/eye_on_icon.svg'
         }
-        alt="X"
+        alt="Toggle Password Visibility"
         width={18}
         onClick={handlePasswordVisible}
       />
