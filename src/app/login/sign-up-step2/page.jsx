@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
+import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
 
 export default function Login() {
   const [newPassword, setnewPassword] = useState('');
@@ -10,6 +11,8 @@ export default function Login() {
   const [isnewPasswordVisible, setIsnewPasswordVisible] = useState(false);
   const [isnewPassword_2Visible, setIsnewPassword_2Visible] = useState(false);
   const [isLoginSave, setIsLoginSave] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmError, setConfirmError] = useState('');
 
   const handlenewPasswordVisible = () => {
     setIsnewPasswordVisible(!isnewPasswordVisible);
@@ -24,7 +27,7 @@ export default function Login() {
   };
 
   const isLoginAvailable = () => {
-    return newPassword && newPassword_2;
+    return isValidPassword(newPassword) && newPassword === newPassword_2;
   };
 
   const handleLogin = () => {
@@ -39,7 +42,6 @@ export default function Login() {
           <p>비밀번호 입력</p>
         </div>
       </div>
-
       <CustomizedStepper />
 
       <div className="flex-grow w-full mt-20 flex flex-col gap-4">
@@ -51,12 +53,29 @@ export default function Login() {
             id="newPassword"
             value={newPassword}
             onChange={(e) => {
-              setnewPassword(e.target.value);
+              const pw = e.target.value;
+              setnewPassword(pw);
+              if (!isValidPassword(pw)) {
+                setPasswordError(
+                  '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                );
+              } else {
+                setPasswordError('');
+              }
+              // 비밀번호 확인과 다르면 오류도 같이 갱신
+              if (newPassword_2 && pw !== newPassword_2) {
+                setConfirmError('비밀번호가 일치하지 않습니다.');
+              } else {
+                setConfirmError('');
+              }
             }}
             placeholder="비밀번호를 입력해주세요."
             isVisible={isnewPasswordVisible}
             handlePasswordVisible={handlenewPasswordVisible}
           />
+          {passwordError && (
+            <p className="text-red-500 text-sm">{passwordError}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -68,13 +87,25 @@ export default function Login() {
               id="newPassword_2"
               value={newPassword_2}
               onChange={(e) => {
-                setnewPassword_2(e.target.value);
+                const confirm = e.target.value;
+                setnewPassword_2(confirm);
+                if (confirm !== newPassword) {
+                  setConfirmError('비밀번호가 일치하지 않습니다.');
+                } else {
+                  setConfirmError('');
+                }
               }}
               placeholder="비밀번호를 입력해주세요."
               isVisible={isnewPassword_2Visible}
               handlePasswordVisible={handlenewPassword_2Visible}
+              isMatch={
+                newPassword && newPassword_2 && newPassword === newPassword_2
+              }
             />
           </div>
+          {confirmError && (
+            <p className="text-red-500 text-sm">{confirmError}</p>
+          )}
         </div>
       </div>
 
@@ -135,6 +166,7 @@ const NewPasswordField = ({
 const ConfirmPasswordField = ({
   value,
   isVisible = false,
+  isMatch = false,
   handlePasswordVisible,
   ...props
 }) => {
@@ -150,11 +182,11 @@ const ConfirmPasswordField = ({
         className="absolute top-[50%] right-[5px]"
         style={{ transform: 'translate(-50%, -50%)' }}
         src={
-          isVisible
+          isMatch
             ? '/static/icons/check_off_icon.svg'
             : '/static/icons/check_on_icon.svg'
         }
-        alt="X"
+        alt="Check"
         width={18}
         onClick={handlePasswordVisible}
       />

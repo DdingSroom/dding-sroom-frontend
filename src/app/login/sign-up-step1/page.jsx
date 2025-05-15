@@ -3,19 +3,21 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
+import { strictEmailRegex } from '../../../constants/regex';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [isLoginSave, setIsLoginSave] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [numberError, setNumberError] = useState('');
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
   };
 
-  const isLoginAvailable = () => {
-    return email && number;
-  };
+  const isLoginAvailable = () =>
+    strictEmailRegex.test(email) && /^\d{6}$/.test(number);
 
   const handleLogin = () => {
     console.log('다음 버튼 클릭:', email, number);
@@ -24,9 +26,9 @@ export default function Login() {
   return (
     <div className="flex flex-col h-full pt-12 px-4">
       <div className="flex flex-col w-full mb-8 gap-1">
-        <h2 className="text-center text-[20px]">비밀번호 재설정</h2>
+        <h2 className="text-center text-[20px]">회원가입</h2>
         <div className="text-[#333333] text-center text-[14px] font-normal">
-          <p>등록한 이메일로 찾기</p>
+          <p>학교 이메일 인증하기</p>
         </div>
       </div>
 
@@ -42,7 +44,13 @@ export default function Login() {
               id="email"
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                const inputEmail = e.target.value;
+                setEmail(inputEmail);
+                if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                  setEmailError('');
+                } else {
+                  setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                }
               }}
               placeholder="학교 이메일을 입력해주세요."
               setEmail={setEmail}
@@ -54,6 +62,9 @@ export default function Login() {
               인증번호전송
             </button>
           </div>
+          {emailError && (
+            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -65,7 +76,15 @@ export default function Login() {
               id="number"
               value={number}
               onChange={(e) => {
-                setNumber(e.target.value);
+                const value = e.target.value;
+                setNumber(value);
+                if (value.trim() === '') {
+                  setNumberError('인증번호를 입력해주세요.');
+                } else if (!/^\d{6}$/.test(value)) {
+                  setNumberError('6자리 숫자 인증번호를 입력해주세요.');
+                } else {
+                  setNumberError('');
+                }
               }}
               placeholder="이메일로 전송된 인증번호를 입력해주세요."
               inputMode="numeric"
@@ -79,6 +98,7 @@ export default function Login() {
               </div>
             )}
           </div>
+          {numberError && <p className="text-red-500 text-sm">{numberError}</p>}
         </div>
       </div>
 

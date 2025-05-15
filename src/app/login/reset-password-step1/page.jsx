@@ -2,19 +2,21 @@
 import React, { useState } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
+import { strictEmailRegex } from '../../../constants/regex';
 
 export default function ResetPassWord1() {
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [isLoginSave, setIsLoginSave] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [numberError, setNumberError] = useState('');
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
   };
 
-  const isLoginAvailable = () => {
-    return email && number;
-  };
+  const isLoginAvailable = () =>
+    strictEmailRegex.test(email) && /^\d{6}$/.test(number);
 
   const handleLogin = () => {
     console.log('다음 버튼 클릭:', email, number);
@@ -40,7 +42,13 @@ export default function ResetPassWord1() {
                 id="email"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  const inputEmail = e.target.value;
+                  setEmail(inputEmail);
+                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                    setEmailError('');
+                  } else {
+                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                  }
                 }}
                 placeholder="학교 이메일을 입력해주세요."
                 setEmail={setEmail}
@@ -52,6 +60,9 @@ export default function ResetPassWord1() {
                 인증번호전송
               </button>
             </div>
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -62,11 +73,22 @@ export default function ResetPassWord1() {
               id="number"
               value={number}
               onChange={(e) => {
-                setNumber(e.target.value);
+                const value = e.target.value;
+                setNumber(value);
+                if (value.trim() === '') {
+                  setNumberError('인증번호를 입력해주세요.');
+                } else if (!/^\d{6}$/.test(value)) {
+                  setNumberError('6자리 숫자 인증번호를 입력해주세요.');
+                } else {
+                  setNumberError('');
+                }
               }}
               placeholder="이메일로 전송된 인증번호를 입력해주세요."
               inputMode="numeric"
             />
+            {numberError && (
+              <p className="text-red-500 text-sm mt-1">{numberError}</p>
+            )}
           </div>
         </div>
       </div>
