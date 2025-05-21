@@ -4,8 +4,11 @@ import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
 import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
+import useSignupStore from '../../../stores/useSignupStore';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
   const [newPassword, setnewPassword] = useState('');
   const [newPassword_2, setnewPassword_2] = useState('');
   const [isnewPasswordVisible, setIsnewPasswordVisible] = useState(false);
@@ -30,8 +33,15 @@ export default function Login() {
     return isValidPassword(newPassword) && newPassword === newPassword_2;
   };
 
-  const handleLogin = () => {
-    console.log('비밀번호 재설정:', newPassword, newPassword_2);
+  // const handleLogin = () => {
+  //   console.log('비밀번호 재설정:', newPassword, newPassword_2);
+  // };
+
+  const { setSignupField } = useSignupStore();
+
+  const handleNextStep = () => {
+    setSignupField('password', newPassword);
+    router.push('/login/sign-up-step3');
   };
 
   return (
@@ -110,14 +120,12 @@ export default function Login() {
       </div>
 
       <div className="w-full mb-10">
-        <Link href="/login/sign-up-step3">
-          <Button
-            style={{ width: '100%' }}
-            onClick={handleLogin}
-            disabled={!isLoginAvailable()}
-            text="확인"
-          />
-        </Link>
+        <Button
+          style={{ width: '100%' }}
+          onClick={handleNextStep}
+          disabled={!isLoginAvailable()}
+          text="확인"
+        />
       </div>
     </div>
   );

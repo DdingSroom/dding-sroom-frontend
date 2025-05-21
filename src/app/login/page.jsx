@@ -23,8 +23,7 @@ export default function Login() {
   };
 
   const isLoginAvailable = () => {
-    return ( strictEmailRegex.test(email) && 
-    isValidPassword(password));
+    return strictEmailRegex.test(email) && isValidPassword(password);
   };
 
   const handleLogin = () => {

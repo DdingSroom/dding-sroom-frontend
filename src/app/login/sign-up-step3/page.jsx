@@ -1,24 +1,45 @@
 'use client';
+import axios from 'axios';
 import CustomizedStepper from './customizedStepper';
 import React, { useState } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
+import useSignupStore from '../../../stores/useSignupStore';
+import { useRouter } from 'next/navigation';
+import axiosInstance from '../../libs/api/instance.js';
 
 export default function Login() {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [isSignupSave, setIsSignupSave] = useState(false);
 
-  const handleSignupSave = () => {
-    setIsSignupSave(!isSignupSave);
+  const { signupData, setSignupField, resetSignupData } = useSignupStore();
+
+  const handleSignup = async () => {
+    try {
+      setSignupField('username', name); // 사용자 이름
+
+      const res = await axiosInstance.post('/user/sign-up', signupData);
+      console.log('회원가입 성공:', res.data);
+
+      resetSignupData();
+      router.push('/login/sign-up-step4');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+    }
   };
+
+  // const handleSignupSave = () => {
+  //   setIsSignupSave(!isSignupSave);
+  // };
 
   const isSignupAvailable = () => {
     return name;
   };
 
-  const handleSignup = () => {
-    console.log('회원가입 버튼 클릭:', name);
-  };
+  // const handleSignup = () => {
+  //   console.log('회원가입 버튼 클릭:', name);
+  // };
 
   return (
     <div className="flex flex-col h-full pt-12 px-4">
