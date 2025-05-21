@@ -4,13 +4,19 @@ import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
 import { strictEmailRegex } from '../../../constants/regex';
+import useSignupStore from '../../../stores/useSignupStore';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
   const [isLoginSave, setIsLoginSave] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [numberError, setNumberError] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
@@ -19,8 +25,45 @@ export default function Login() {
   const isLoginAvailable = () =>
     strictEmailRegex.test(email) && /^\d{6}$/.test(number);
 
-  const handleLogin = () => {
-    console.log('다음 버튼 클릭:', email, number);
+  // const handleLogin = () => {
+  //   console.log('다음 버튼 클릭:', email, number);
+  // };
+
+  const { setSignupField } = useSignupStore();
+
+  const handleNextStep = () => {
+    setSignupField('email', email);
+    router.push('/login/sign-up-step2');
+  };
+
+  const handleSendVerificationCode = async () => {
+    // if (!strictEmailRegex.test(email)) {
+    //   setEmailError('학교 이메일 형식을 확인해주세요. (@mju.ac.kr)');
+    //   return;
+    // }
+    try {
+      setIsSending(true);
+      const response = await axios.post('/user/code-send', { email });
+      if (response.status === 200 && response.data.success) {
+        setSendSuccess(true);
+        alert(response.data.message || '인증번호가 이메일로 전송되었습니다.');
+      } else {
+        alert(response.data.message || '인증번호 전송 실패');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('에러 응답:', error.response?.data);
+        alert(
+          error.response?.data?.message ||
+            '서버 오류로 인해 인증번호 전송에 실패했습니다.',
+        );
+      } else {
+        console.error('예상치 못한 에러:', error);
+        alert('예상치 못한 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -56,10 +99,11 @@ export default function Login() {
               setEmail={setEmail}
             />
             <button
-              className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10"
-              onClick={() => console.log('인증번호 전송 버튼 클릭됨')}
+              className={`border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10 ${isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={handleSendVerificationCode}
+              disabled={isSending}
             >
-              인증번호전송
+              {isSending ? '전송 중...' : '인증번호전송'}
             </button>
           </div>
           {emailError && (
@@ -103,14 +147,12 @@ export default function Login() {
       </div>
 
       <div className="w-full mb-10">
-        <Link href="/login/sign-up-step2">
-          <Button
-            style={{ width: '100%' }}
-            onClick={handleLogin}
-            disabled={!isLoginAvailable()}
-            text="다음으로"
-          />
-        </Link>
+        <Button
+          style={{ width: '100%' }}
+          onClick={handleNextStep}
+          disabled={!isLoginAvailable()}
+          text="다음으로"
+        />
       </div>
     </div>
   );
