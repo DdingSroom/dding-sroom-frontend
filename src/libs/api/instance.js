@@ -1,8 +1,16 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 10000,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  // 로그인/회원가입 요청에는 Authorization 제거
+  if (config.url?.includes('/login') || config.url?.includes('/user/sign-up')) {
+    delete config.headers.Authorization;
+  }
+  return config;
 });
 
 // 요청 인터셉터
@@ -31,7 +39,7 @@ axiosInstance.interceptors.response.use(
     if (response && (response.status === 401 || response.status === 403)) {
       if (typeof window !== 'undefined') {
         alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
-        window.location.href = '/login/step1';
+        // window.location.href = '/login';
       }
     }
     return Promise.reject(error);
