@@ -6,7 +6,7 @@ import Button from '../../../components/common/Button';
 import Link from 'next/link';
 import useSignupStore from '../../../stores/useSignupStore';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '../../libs/api/instance.js';
+import axiosInstance from '../../../libs/api/instance.js';
 
 export default function Login() {
   const router = useRouter();
@@ -15,20 +15,47 @@ export default function Login() {
 
   const { signupData, setSignupField, resetSignupData } = useSignupStore();
 
+  // const handleSignup = async () => {
+  //   try {
+  //     setSignupField('username', name); // 사용자 이름
+
+  //     const res = await axiosInstance.post('/user/sign-up', signupData);
+  //     console.log('회원가입 성공:', res.data);
+
+  //     resetSignupData();
+  //     router.push('/login/sign-up-step4');
+  //   } catch (error) {
+  //     console.error('회원가입 실패:', error);
+  //   }
+  // };
+
   const handleSignup = async () => {
     try {
-      setSignupField('username', name); // 사용자 이름
+      const dataToSend = {
+        ...signupData,
+        username: name,
+      };
 
-      const res = await axiosInstance.post('/user/sign-up', signupData);
+      const res = await axios.post(
+        'https://ddingsroomserver.click:8443/user/sign-up',
+        dataToSend,
+        {
+          headers: {
+            Authorization: undefined,
+          },
+        },
+      );
+
       console.log('회원가입 성공:', res.data);
-
       resetSignupData();
       router.push('/login/sign-up-step4');
     } catch (error) {
       console.error('회원가입 실패:', error);
+      alert(
+        error?.response?.data?.message || '회원가입 중 오류가 발생했습니다.',
+      );
     }
   };
-
   // const handleSignupSave = () => {
   //   setIsSignupSave(!isSignupSave);
   // };

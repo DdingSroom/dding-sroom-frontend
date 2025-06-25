@@ -1,12 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MyPageHeader from '@components/common/MyPageHeader';
 import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
+import { jwtDecode } from 'jwt-decode';
+import useTokenStore from '../../../stores/useTokenStore'; // 토큰 상태 저장소
 
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: '', email: '' });
+
+  const { accessToken } = useTokenStore(); // Zustand에서 accessToken 가져오기
+
+  useEffect(() => {
+    if (!accessToken) {
+      alert('로그인이 필요한 기능입니다.');
+      window.location.href = '/';
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(accessToken);
+      const { name, email } = decoded;
+      setUserInfo({ name, email });
+    } catch (error) {
+      console.error('토큰 디코딩 실패:', error);
+      alert('유효하지 않은 토큰입니다.');
+      window.location.href = '/';
+    }
+  }, [accessToken]);
 
   return (
     <>
@@ -17,7 +40,7 @@ export default function AccountInfo() {
         </div>
         <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-1">
           <p className="text-xl">이메일</p>
-          <p className="text-[#6E6E6E]">MJUstudy@mju.ac.kr</p>
+          <p className="text-[#6E6E6E]">{userInfo.email || '불러오는 중...'}</p>
         </div>
         <div className="flex-col items-center justify-center p-6 bg-[#FFFF]">
           <button className="text-xl" onClick={() => setOpen(true)}>
@@ -25,7 +48,7 @@ export default function AccountInfo() {
           </button>
           <br />
           <button className="text-[#6E6E6E]" onClick={() => setOpen(true)}>
-            USER 01
+            {userInfo.name || '불러오는 중...'}
           </button>
           <Modal isOpen={open} onClose={() => setOpen(false)} text="수정">
             <div className="p-4 flex flex-col h-full">
@@ -37,7 +60,7 @@ export default function AccountInfo() {
                 <input
                   type="text"
                   className="border rounded-md p-2 w-full"
-                  placeholder="USER 01"
+                  placeholder={userInfo.name || 'USER NAME'}
                 />
               </div>
             </div>
