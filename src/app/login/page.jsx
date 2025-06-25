@@ -1,8 +1,13 @@
 'use client';
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
 import { isValidPassword, strictEmailRegex } from '../../constants/regex';
+import useTokenStore from '../../stores/useTokenStore';
+import axiosInstance, { setAccessToken } from '../../libs/api/instance';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -14,21 +19,62 @@ export default function Login() {
   const [confirmError, setConfirmError] = useState('');
   const [newPassword_2, setnewPassword_2] = useState('');
 
-  const handlePasswordVisible = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
+  const router = useRouter();
+
+  const { setAccessToken: setGlobalAccessToken, setRefreshToken } =
+    useTokenStore();
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
   };
 
-  const isLoginAvailable = () => {
-    return strictEmailRegex.test(email) && isValidPassword(password);
+  const handlePasswordVisible = () => {
+    setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleLogin = () => {
-    console.log('로그인 시도:', email, password);
-    window.location.href = '/';
+  const isLoginAvailable = () =>
+    strictEmailRegex.test(email) && isValidPassword(password);
+
+  const handleLogin = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+
+      // axiosInstance가 자동으로 Content-Type을 설정하도록 headers는 생략
+      const response = await axiosInstance.post('/login', formData);
+
+      // ✅ 헤더에서 access 토큰 추출
+      const accessToken =
+        response.headers['access'] ||
+        response.headers['Access'] ||
+        response.headers['authorization'] ||
+        response.headers['Authorization'];
+
+      const refreshToken =
+        response.headers['refresh'] || response.headers['Refresh'];
+
+      if (accessToken) {
+        setAccessToken(accessToken);
+        setGlobalAccessToken(accessToken);
+        setRefreshToken(refreshToken || '');
+        const decoded = jwtDecode(accessToken);
+        console.log('토큰 디코드 결과:', decoded);
+        router.push('/');
+      } else {
+        // 디버깅용 로그
+        console.warn(
+          '응답 헤더에서 access 토큰을 찾지 못했습니다:',
+          response.headers,
+        );
+        setConfirmError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+      }
+    } catch (e) {
+      console.error('로그인 실패:', e);
+      setConfirmError(
+        e?.response?.data?.message || '서버와 통신 중 오류가 발생했습니다.',
+      );
+    }
   };
 
   return (
@@ -84,7 +130,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => {
                   const pw = e.target.value;
-                  setPassword(pw); // ✔️ 수정: password state에 반영
+                  setPassword(pw);
                   if (!isValidPassword(pw)) {
                     setPasswordError(
                       '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
@@ -141,8 +187,6 @@ export default function Login() {
     </div>
   );
 }
-
-// ------------------------- Styled Components -------------------------
 
 const StyledInput = ({ value, ...props }) => {
   return (
