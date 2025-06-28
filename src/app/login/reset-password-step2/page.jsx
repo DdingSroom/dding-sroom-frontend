@@ -1,17 +1,31 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
-import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
+import { isValidPassword } from '../../../constants/regex';
+import { useSearchParams, useRouter } from 'next/navigation';
+import axiosInstance from '../../../libs/api/instance';
 
 export default function ResetPassword2() {
+  const [email, setEmail] = useState('');
   const [newPassword, setnewPassword] = useState('');
   const [newPassword_2, setnewPassword_2] = useState('');
   const [isnewPasswordVisible, setIsnewPasswordVisible] = useState(false);
   const [isnewPassword_2Visible, setIsnewPassword_2Visible] = useState(false);
-  const [isLoginSave, setIsLoginSave] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem('resetEmail');
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
+      router.push('/login/reset-password-step1');
+    }
+  }, []);
 
   const handlenewPasswordVisible = () => {
     setIsnewPasswordVisible(!isnewPasswordVisible);
@@ -21,16 +35,28 @@ export default function ResetPassword2() {
     setIsnewPassword_2Visible(!isnewPassword_2Visible);
   };
 
-  const handleLoginSave = () => {
-    setIsLoginSave(!isLoginSave);
-  };
-
   const isLoginAvailable = () => {
     return isValidPassword(newPassword) && newPassword === newPassword_2;
   };
 
-  const handleLogin = () => {
-    console.log('비밀번호 재설정:', newPassword, newPassword_2);
+  const handlePasswordReset = async () => {
+    try {
+      console.log('요청 전 email:', email);
+      console.log('요청 전 password:', newPassword);
+
+      const response = await axiosInstance.post('/user/modify-password', {
+        email,
+        password: newPassword,
+      });
+
+      console.log('비밀번호 재설정 성공:', response.data);
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+      router.push('/login');
+    } catch (error) {
+      console.error('비밀번호 재설정 실패:', error);
+      console.log('에러 응답:', error?.response?.data);
+      alert('비밀번호 재설정에 실패했습니다.');
+    }
   };
 
   return (
@@ -48,7 +74,6 @@ export default function ResetPassword2() {
             <label>새 비밀번호</label>
             <NewPasswordField
               className="h-10 text-sm"
-              type="password"
               id="newPassword"
               value={newPassword}
               onChange={(e) => {
@@ -78,29 +103,26 @@ export default function ResetPassword2() {
 
           <div className="flex flex-col gap-2">
             <label>새 비밀번호 확인</label>
-            <div className="flex items-center">
-              <ConfirmPasswordField
-                className="h-10 text-sm flex-grow"
-                type="password"
-                id="newPassword_2"
-                value={newPassword_2}
-                onChange={(e) => {
-                  const confirm = e.target.value;
-                  setnewPassword_2(confirm);
-                  if (confirm !== newPassword) {
-                    setConfirmError('비밀번호가 일치하지 않습니다.');
-                  } else {
-                    setConfirmError('');
-                  }
-                }}
-                placeholder="비밀번호를 입력해주세요."
-                isVisible={isnewPassword_2Visible}
-                handlePasswordVisible={handlenewPassword_2Visible}
-                isMatch={
-                  newPassword && newPassword_2 && newPassword === newPassword_2
+            <ConfirmPasswordField
+              className="h-10 text-sm flex-grow"
+              id="newPassword_2"
+              value={newPassword_2}
+              onChange={(e) => {
+                const confirm = e.target.value;
+                setnewPassword_2(confirm);
+                if (confirm !== newPassword) {
+                  setConfirmError('비밀번호가 일치하지 않습니다.');
+                } else {
+                  setConfirmError('');
                 }
-              />
-            </div>
+              }}
+              placeholder="비밀번호를 입력해주세요."
+              isVisible={isnewPassword_2Visible}
+              handlePasswordVisible={handlenewPassword_2Visible}
+              isMatch={
+                newPassword && newPassword_2 && newPassword === newPassword_2
+              }
+            />
             {confirmError && (
               <p className="text-red-500 text-sm">{confirmError}</p>
             )}
@@ -108,14 +130,12 @@ export default function ResetPassword2() {
         </div>
 
         <div className="w-full mb-10">
-          <Link href="/login">
-            <Button
-              style={{ width: '100%' }}
-              onClick={handleLogin}
-              disabled={!isLoginAvailable()}
-              text="확인"
-            />
-          </Link>
+          <Button
+            style={{ width: '100%' }}
+            onClick={handlePasswordReset}
+            disabled={!isLoginAvailable()}
+            text="확인"
+          />
         </div>
       </div>
     </div>
@@ -154,7 +174,7 @@ const NewPasswordField = ({
             ? '/static/icons/eye_off_icon.svg'
             : '/static/icons/eye_on_icon.svg'
         }
-        alt="X"
+        alt="비밀번호 표시 토글"
         width={18}
         onClick={handlePasswordVisible}
       />
