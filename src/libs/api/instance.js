@@ -5,22 +5,21 @@ const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-axiosInstance.interceptors.request.use((config) => {
-  // 로그인/회원가입 요청에는 Authorization 제거
-  if (config.url?.includes('/login') || config.url?.includes('/user/sign-up')) {
-    delete config.headers.Authorization;
-  }
-  return config;
-});
-
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 브라우저 환경에서만 sessionStorage 접근
     if (typeof window !== 'undefined') {
-      const accessToken = sessionStorage.getItem('accessToken');
-      if (accessToken) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      const nonAuthUrls = ['/login', '/user/sign-up', '/user/code-send', '/user/code-verify'];
+
+      // 인증이 필요 없는 요청이면 Authorization 제거
+      const isPublic = nonAuthUrls.some((url) => config.url?.includes(url));
+      if (isPublic) {
+        delete config.headers.Authorization;
+      } else {
+        const accessToken = sessionStorage.getItem('accessToken');
+        if (accessToken) {
+          config.headers['Authorization'] = `Bearer ${accessToken}`;
+        }
       }
     }
     return config;
@@ -46,14 +45,12 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-// accessToken을 sessionStorage에 저장하는 함수
 export const setAccessToken = (token) => {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('accessToken', token);
   }
 };
 
-// accessToken을 sessionStorage에서 제거하는 함수
 export const clearAccessToken = () => {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem('accessToken');

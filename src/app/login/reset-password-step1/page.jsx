@@ -1,25 +1,71 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
 import { strictEmailRegex } from '../../../constants/regex';
+import axiosInstance from '../../../libs/api/instance';
 
 export default function ResetPassWord1() {
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
-  const [isLoginSave, setIsLoginSave] = useState(false);
+  const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [numberError, setNumberError] = useState('');
+  const [codeVerificationMessage, setCodeVerificationMessage] = useState('');
 
-  const handleLoginSave = () => {
-    setIsLoginSave(!isLoginSave);
+  const verificationToken = useRef(0);
+
+  const handleSendCode = async () => {
+    try {
+      if (!strictEmailRegex.test(email)) {
+        setEmailError('유효한 학교 이메일을 입력해주세요. (@mju.ac.kr)');
+        return;
+      }
+
+      await axiosInstance.post('/user/code-send', { email });
+      alert('인증번호가 이메일로 전송되었습니다.');
+    } catch (error) {
+      console.error('인증번호 전송 실패:', error);
+      alert(
+        error?.response?.data?.message ||
+          '인증번호 전송에 실패했습니다. 다시 시도해주세요.',
+      );
+    }
   };
 
-  const isLoginAvailable = () =>
-    strictEmailRegex.test(email) && /^\d{6}$/.test(number);
+  const handleCodeInput = async (value) => {
+    setNumber(value);
+    setIsCodeVerified(false);
+    setNumberError('');
+    setCodeVerificationMessage('');
+
+    if (!/^[0-9]{6}$/.test(value)) {
+      setNumberError('6자리 숫자 인증번호를 입력해주세요.');
+      return;
+    }
+
+    const currentToken = ++verificationToken.current;
+
+    try {
+      const res = await axiosInstance.post('/user/code-verify', {
+        email,
+        code: value,
+      });
+
+      if (verificationToken.current === currentToken) {
+        setIsCodeVerified(true);
+        setCodeVerificationMessage('인증 성공');
+      }
+    } catch (err) {
+      if (verificationToken.current === currentToken) {
+        setIsCodeVerified(false);
+        setCodeVerificationMessage('인증번호가 올바르지 않습니다.');
+      }
+    }
+  };
 
   const handleLogin = () => {
-    console.log('다음 버튼 클릭:', email, number);
+    sessionStorage.setItem('resetEmail', email);
   };
 
   return (
@@ -55,7 +101,7 @@ export default function ResetPassWord1() {
               />
               <button
                 className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10"
-                onClick={() => console.log('인증번호 전송 버튼 클릭됨')}
+                onClick={handleSendCode}
               >
                 인증번호전송
               </button>
@@ -72,33 +118,32 @@ export default function ResetPassWord1() {
               type="text"
               id="number"
               value={number}
-              onChange={(e) => {
-                const value = e.target.value;
-                setNumber(value);
-                if (value.trim() === '') {
-                  setNumberError('인증번호를 입력해주세요.');
-                } else if (!/^\d{6}$/.test(value)) {
-                  setNumberError('6자리 숫자 인증번호를 입력해주세요.');
-                } else {
-                  setNumberError('');
-                }
-              }}
+              onChange={(e) => handleCodeInput(e.target.value)}
               placeholder="이메일로 전송된 인증번호를 입력해주세요."
               inputMode="numeric"
             />
             {numberError && (
               <p className="text-red-500 text-sm mt-1">{numberError}</p>
             )}
+            {codeVerificationMessage && (
+              <p
+                className={`text-sm mt-1 ${
+                  isCodeVerified ? 'text-green-600' : 'text-red-500'
+                }`}
+              >
+                {codeVerificationMessage}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="w-full mt-auto mb-10 ">
-        <Link href="/login/reset-password-step2">
+      <div className="w-full mt-auto mb-10">
+        <Link href={isCodeVerified ? '/login/reset-password-step2' : '#'}>
           <Button
             style={{ width: '100%' }}
             onClick={handleLogin}
-            disabled={!isLoginAvailable()}
+            disabled={!isCodeVerified}
             text="다음으로"
           />
         </Link>
