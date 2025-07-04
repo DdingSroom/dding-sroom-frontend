@@ -9,7 +9,12 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const nonAuthUrls = ['/login', '/user/sign-up', '/user/code-send', '/user/code-verify'];
+      const nonAuthUrls = [
+        '/login',
+        '/user/sign-up',
+        '/user/code-send',
+        '/user/code-verify',
+      ];
 
       // 인증이 필요 없는 요청이면 Authorization 제거
       const isPublic = nonAuthUrls.some((url) => config.url?.includes(url));
