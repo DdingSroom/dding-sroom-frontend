@@ -1,69 +1,78 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
 import { strictEmailRegex } from '../../../constants/regex';
 import useSignupStore from '../../../stores/useSignupStore';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axiosInstance from '../../../libs/api/instance';
 
-export default function Login() {
+export default function SignUpStep1() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
-  const [isLoginSave, setIsLoginSave] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [numberError, setNumberError] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [sendSuccess, setSendSuccess] = useState(false);
+  const [isCodeVerified, setIsCodeVerified] = useState(false);
+  const [codeVerificationMessage, setCodeVerificationMessage] = useState('');
 
-  const handleLoginSave = () => {
-    setIsLoginSave(!isLoginSave);
-  };
-
-  const isLoginAvailable = () =>
-    strictEmailRegex.test(email) && /^\d{6}$/.test(number);
-
-  // const handleLogin = () => {
-  //   console.log('다음 버튼 클릭:', email, number);
-  // };
+  const verificationToken = useRef(0);
 
   const { setSignupField } = useSignupStore();
 
-  const handleNextStep = () => {
-    setSignupField('email', email);
-    router.push('/login/sign-up-step2');
+  const handleSendCode = async () => {
+    try {
+      if (!strictEmailRegex.test(email)) {
+        setEmailError('유효한 학교 이메일을 입력해주세요. (@mju.ac.kr)');
+        return;
+      }
+
+      await axiosInstance.post('/user/code-send', { email });
+      alert('인증번호가 이메일로 전송되었습니다.');
+    } catch (error) {
+      console.error('인증번호 전송 실패:', error);
+      alert(
+        error?.response?.data?.message ||
+          '인증번호 전송에 실패했습니다. 다시 시도해주세요.',
+      );
+    }
   };
 
-  const handleSendVerificationCode = async () => {
-    // if (!strictEmailRegex.test(email)) {
-    //   setEmailError('학교 이메일 형식을 확인해주세요. (@mju.ac.kr)');
-    //   return;
-    // }
-    try {
-      setIsSending(true);
-      const response = await axios.post('/user/code-send', { email });
-      if (response.status === 200 && response.data.success) {
-        setSendSuccess(true);
-        alert(response.data.message || '인증번호가 이메일로 전송되었습니다.');
-      } else {
-        alert(response.data.message || '인증번호 전송 실패');
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('에러 응답:', error.response?.data);
-        alert(
-          error.response?.data?.message ||
-            '서버 오류로 인해 인증번호 전송에 실패했습니다.',
-        );
-      } else {
-        console.error('예상치 못한 에러:', error);
-        alert('예상치 못한 오류가 발생했습니다.');
-      }
-    } finally {
-      setIsSending(false);
+  const handleCodeInput = async (value) => {
+    setNumber(value);
+    setIsCodeVerified(false);
+    setNumberError('');
+    setCodeVerificationMessage('');
+
+    if (!/^[0-9]{6}$/.test(value)) {
+      setNumberError('6자리 숫자 인증번호를 입력해주세요.');
+      return;
     }
+
+    const currentToken = ++verificationToken.current;
+
+    try {
+      const res = await axiosInstance.post('/user/code-verify', {
+        email,
+        code: value,
+      });
+
+      if (verificationToken.current === currentToken) {
+        setIsCodeVerified(true);
+        setCodeVerificationMessage('인증 성공');
+      }
+    } catch (err) {
+      if (verificationToken.current === currentToken) {
+        setIsCodeVerified(false);
+        setCodeVerificationMessage('인증번호가 올바르지 않습니다.');
+      }
+    }
+  };
+
+  const handleNext = () => {
+    setSignupField('email', email);
+    router.push('/login/sign-up-step2');
   };
 
   return (
@@ -80,9 +89,9 @@ export default function Login() {
       <div className="flex-grow w-full mt-20 flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label>이메일</label>
-          <div className="flex justify-between items-center relative">
+          <div className="flex justify-between items-center">
             <StyledEmailInput
-              className="mr-4 h-10 text-sm pr-10"
+              className="mr-4 h-10 text-sm"
               type="email"
               id="email"
               value={email}
@@ -99,11 +108,10 @@ export default function Login() {
               setEmail={setEmail}
             />
             <button
-              className={`border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10 ${isSending ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={handleSendVerificationCode}
-              disabled={isSending}
+              className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10"
+              onClick={handleSendCode}
             >
-              {isSending ? '전송 중...' : '인증번호전송'}
+              인증번호전송
             </button>
           </div>
           {emailError && (
@@ -113,44 +121,35 @@ export default function Login() {
 
         <div className="flex flex-col gap-2">
           <label>인증번호</label>
-          <div className="flex justify-between items-center relative">
-            <StyledNumberInput
-              className="h-10 text-sm pr-10"
-              type="text"
-              id="number"
-              value={number}
-              onChange={(e) => {
-                const value = e.target.value;
-                setNumber(value);
-                if (value.trim() === '') {
-                  setNumberError('인증번호를 입력해주세요.');
-                } else if (!/^\d{6}$/.test(value)) {
-                  setNumberError('6자리 숫자 인증번호를 입력해주세요.');
-                } else {
-                  setNumberError('');
-                }
-              }}
-              placeholder="이메일로 전송된 인증번호를 입력해주세요."
-              inputMode="numeric"
-            />
-            {number && (
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                <StyledCheckbox
-                  checked={isLoginSave}
-                  onChange={handleLoginSave}
-                ></StyledCheckbox>
-              </div>
-            )}
-          </div>
-          {numberError && <p className="text-red-500 text-sm">{numberError}</p>}
+          <StyledNumberInput
+            className="h-10 text-sm"
+            type="text"
+            id="number"
+            value={number}
+            onChange={(e) => handleCodeInput(e.target.value)}
+            placeholder="이메일로 전송된 인증번호를 입력해주세요."
+            inputMode="numeric"
+          />
+          {numberError && (
+            <p className="text-red-500 text-sm mt-1">{numberError}</p>
+          )}
+          {codeVerificationMessage && (
+            <p
+              className={`text-sm mt-1 ${
+                isCodeVerified ? 'text-green-600' : 'text-red-500'
+              }`}
+            >
+              {codeVerificationMessage}
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="w-full mb-10">
+      <div className="w-full mt-auto mb-10">
         <Button
           style={{ width: '100%' }}
-          onClick={handleNextStep}
-          disabled={!isLoginAvailable()}
+          onClick={handleNext}
+          disabled={!isCodeVerified}
           text="다음으로"
         />
       </div>
@@ -193,30 +192,5 @@ const StyledNumberInput = ({ value, ...props }) => {
     <div className="flex w-full relative">
       <StyledInput {...props} style={{ width: '100%' }} value={value} />
     </div>
-  );
-};
-
-const StyledCheckbox = ({ onChange, children, ...props }) => {
-  console.log(props.checked);
-  return (
-    <label className="inline-flex items-center cursor-pointer">
-      <div className="relative inline-flex items-center">
-        <input
-          type="checkbox"
-          checked={props.checked}
-          onChange={onChange}
-          className="appearance-none w-6 h-6 focus:outline-none"
-        />
-        <div className="absolute left-0 top-0 flex items-center justify-center w-6 h-6">
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Checkbox Icon"
-            width={24}
-            height={24}
-          />
-        </div>
-      </div>
-      <span className="inline-flex items-center ml-2">{children}</span>
-    </label>
   );
 };
