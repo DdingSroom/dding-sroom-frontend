@@ -11,6 +11,15 @@ const ReservationComponent = ({ index }) => {
   const router = useRouter();
   const { accessToken } = useTokenStore();
 
+  const currentHour = new Date().getHours();
+  const reservedHours = [13, 14, 15]; // 예: 이미 예약된 시간대 (13시~15시)
+
+  const getStatus = (hour) => {
+    if (reservedHours.includes(hour)) return 'reserved';
+    if (hour < currentHour) return 'past';
+    return 'available';
+  };
+
   const handleOpenModal = () => {
     if (!accessToken) {
       alert('로그인이 필요합니다.');
@@ -37,9 +46,9 @@ const ReservationComponent = ({ index }) => {
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
             <div className="flex justify-center items-center">8월 1일</div>
-            <div className="flex flex-nowrap justify-between mt-4 mb-4 ">
-              {Array.from({ length: 24 }, (_, index) => (
-                <TimeComponent key={index} />
+            <div className="flex flex-nowrap justify-between mt-4 mb-4">
+              {Array.from({ length: 24 }, (_, i) => (
+                <TimeComponent key={i} status={getStatus(i)} />
               ))}
             </div>
             <div className="flex-grow">
@@ -61,11 +70,14 @@ const ReservationComponent = ({ index }) => {
           </div>
         </Modal>
       </div>
-      <div className="flex flex-nowrap justify-between ">
-        {Array.from({ length: 24 }, (_, index) => (
-          <TimeComponent key={index} />
+
+      {/* 하단의 타임라인 */}
+      <div className="flex flex-nowrap justify-between">
+        {Array.from({ length: 24 }, (_, i) => (
+          <TimeComponent key={i} status={getStatus(i)} />
         ))}
       </div>
+
       <div className="bg-black h-0.5 w-full bg-[#9999A3]"></div>
     </div>
   );
