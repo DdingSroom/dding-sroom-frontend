@@ -6,7 +6,7 @@ const TimeComponent = ({ status }) => {
 
   return (
     <div
-      className="w-[18px] h-[20px] rounded-sm"
+      className="w-[13px] h-[20px] rounded-sm"
       style={{ backgroundColor: bgColor }}
     ></div>
   );
