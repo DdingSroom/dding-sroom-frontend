@@ -41,10 +41,8 @@ export default function Login() {
       formData.append('email', email);
       formData.append('password', password);
 
-      // axiosInstance가 자동으로 Content-Type을 설정하도록 headers는 생략
       const response = await axiosInstance.post('/login', formData);
 
-      // ✅ 헤더에서 access 토큰 추출
       const accessToken =
         response.headers['access'] ||
         response.headers['Access'] ||
