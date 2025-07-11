@@ -1,4 +1,4 @@
-const Modal = ({ isOpen, onClose, children, text, color }) => {
+const Modal = ({ isOpen, onClose, onSubmit, children, text, color }) => {
   if (!isOpen) return null;
 
   const colorClass = color === 'red' ? 'text-red-500' : 'text-gray-500';
@@ -17,7 +17,13 @@ const Modal = ({ isOpen, onClose, children, text, color }) => {
           <button className="text-gray-500 w-[50%]" onClick={onClose}>
             취소
           </button>
-          <button className={`text-gray-500 w-[50%] ${colorClass}`}>
+          <button
+            className={`text-gray-500 w-[50%] ${colorClass}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onSubmit) onSubmit();
+            }}
+          >
             {text}
           </button>
         </div>
