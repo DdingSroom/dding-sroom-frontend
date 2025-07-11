@@ -8,11 +8,12 @@ import useTokenStore from '../../stores/useTokenStore';
 
 const ReservationComponent = ({ index }) => {
   const [open, setOpen] = useState(false);
+  const [startTime, setStartTime] = useState(null);
   const router = useRouter();
   const { accessToken } = useTokenStore();
 
   const currentHour = new Date().getHours();
-  const reservedHours = [13, 14, 15]; // 예: 이미 예약된 시간대 (13시~15시)
+  const reservedHours = [13, 14, 15];
 
   const getStatus = (hour) => {
     if (reservedHours.includes(hour)) return 'reserved';
@@ -27,6 +28,24 @@ const ReservationComponent = ({ index }) => {
       return;
     }
     setOpen(true);
+  };
+
+  const getStartTimeOptions = () => {
+    const options = [];
+    for (let i = currentHour; i < 24; i++) {
+      options.push(i);
+    }
+    return options;
+  };
+
+  const getEndTimeOptions = () => {
+    if (startTime === null) return [];
+    const options = [];
+    for (let i = 1; i <= 2; i++) {
+      const endHour = startTime + i;
+      options.push(endHour);
+    }
+    return options;
   };
 
   return (
@@ -46,32 +65,51 @@ const ReservationComponent = ({ index }) => {
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
             <div className="flex justify-center items-center">8월 1일</div>
+
             <div className="flex flex-nowrap justify-between mt-4 mb-4">
               {Array.from({ length: 24 }, (_, i) => (
                 <TimeComponent key={i} status={getStatus(i)} />
               ))}
             </div>
-            <div className="flex-grow">
+
+            <div className="flex-grow mb-3">
               <div>예약 시간</div>
-              <select className="border rounded-md p-2 focus:outline-none w-full">
-                <option value="">10:00</option>
-                <option value="">11:00</option>
-                <option value="">12:00</option>
+              <select
+                className="border rounded-md p-2 focus:outline-none w-full"
+                value={startTime ?? ''}
+                onChange={(e) => setStartTime(Number(e.target.value))}
+              >
+                <option value="" disabled>
+                  시간 선택
+                </option>
+                {getStartTimeOptions().map((hour) => (
+                  <option key={hour} value={hour}>
+                    {hour}:00
+                  </option>
+                ))}
               </select>
             </div>
+
             <div className="flex-grow">
               <div>퇴실 시간</div>
-              <select className="border rounded-md p-2 focus:outline-none w-full">
-                <option value="">16:00</option>
-                <option value="">17:00</option>
-                <option value="">18:00</option>
+              <select
+                className="border rounded-md p-2 focus:outline-none w-full"
+                disabled={startTime === null}
+              >
+                <option value="" disabled selected>
+                  {startTime === null ? '예약 시간 선택 먼저' : '시간 선택'}
+                </option>
+                {getEndTimeOptions().map((hour) => (
+                  <option key={hour} value={hour}>
+                    {hour % 24}:00
+                  </option>
+                ))}
               </select>
             </div>
           </div>
         </Modal>
       </div>
 
-      {/* 하단의 타임라인 */}
       <div className="flex flex-nowrap justify-between">
         {Array.from({ length: 24 }, (_, i) => (
           <TimeComponent key={i} status={getStatus(i)} />
