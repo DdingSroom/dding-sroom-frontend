@@ -2,8 +2,8 @@
 import React, { useRef, useState } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
-import { strimport axiosInstance from '../../../libs/api/instance';ictEmailRegex } from '../../../constants/regex';
-
+import axiosInstance from '../../../libs/api/instance';
+import { strictEmailRegex } from '../../../constants/regex';
 
 export default function ResetPassWord1() {
   const [email, setEmail] = useState('');
