@@ -5,18 +5,21 @@ import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
 import useTokenStore from '../../stores/useTokenStore';
+import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
 const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+
   const router = useRouter();
-  const { accessToken } = useTokenStore();
+  const { userId, accessToken } = useTokenStore();
+  const { setLatestReservation } = useReservationStore();
 
   const now = new Date();
   const currentHour = now.getHours();
-  const reservedHours = [13, 14, 15];
+  const reservedHours = [13, 14, 15]; // 임의로 설정해놓은 예약 시간
 
   const getStatus = (hour) => {
     if (reservedHours.includes(hour)) return 'reserved';
@@ -54,47 +57,57 @@ const ReservationComponent = ({ index, roomId }) => {
 
     const now = new Date();
 
-    // 시작 시간이 현재 시각보다 이전이면 날짜를 내일로 보정
     const reservationStart = new Date(now);
     if (startTime <= now.getHours()) {
       reservationStart.setDate(reservationStart.getDate() + 1);
     }
     reservationStart.setHours(startTime, 0, 0, 0);
 
-    // 퇴실 시간 설정 (자정 넘어가는 경우 보정)
     const reservationEnd = new Date(reservationStart);
     if (endTime <= startTime) {
       reservationEnd.setDate(reservationEnd.getDate() + 1);
     }
     reservationEnd.setHours(endTime, 0, 0, 0);
 
-    // 유효성 검사
     const duration = (reservationEnd - reservationStart) / (1000 * 60 * 60);
     if (duration !== 1 && duration !== 2) {
       alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
       return;
     }
 
+    console.log('예약 전송 데이터 확인');
+    console.log('userId:', userId);
+    console.log('roomId:', roomId);
+    console.log(
+      '예약 시작/종료:',
+      reservationStart.toISOString(),
+      reservationEnd.toISOString(),
+    );
+
     try {
       const res = await axiosInstance.post('/api/reservations', {
-        userId: 1,
-        roomId: roomId,
+        userId,
+        roomId,
         reservationStartTime: reservationStart.toISOString(),
         reservationEndTime: reservationEnd.toISOString(),
       });
 
-      console.log('예약 응답 데이터:', res.data);
       alert(res.data.message);
 
+      // 예약 정보 전역 상태로 업데이트
+      setLatestReservation({
+        roomName: `스터디룸 ${index}`,
+        startTime: reservationStart.toISOString(),
+        endTime: reservationEnd.toISOString(),
+      });
+
+      // 상태 초기화
       setOpen(false);
       setStartTime(null);
       setEndTime(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
-      alert(
-        err.response?.data?.message ||
-          '예약에 실패했습니다. 다시 시도해주세요.',
-      );
+      alert(err.response?.data?.message || '예약에 실패했습니다.');
     }
   };
 
