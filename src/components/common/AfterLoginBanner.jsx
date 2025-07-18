@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import CancellationModal from '@components/common/CancellationModal';
 import useTokenStore from '../../stores/useTokenStore';
+import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
 const AfterLoginBanner = () => {
   const [open, setOpen] = useState(false);
-  const [latestReservation, setLatestReservation] = useState(null);
   const { userId, accessToken } = useTokenStore();
+  const { latestReservation, setLatestReservation } = useReservationStore();
 
   const formatTime = (dateStr) => {
     const date = new Date(dateStr);
@@ -39,7 +40,7 @@ const AfterLoginBanner = () => {
 
   const handleModalClose = async () => {
     setOpen(false);
-    await fetchLatestReservation();
+    await fetchLatestReservation(); // 취소 후 정보 갱신
   };
 
   return (
@@ -87,6 +88,7 @@ const AfterLoginBanner = () => {
           </CancellationModal>
         </div>
       </div>
+
       <div className="flex bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-10 flex-col justify-between">
         <div className="flex flex-col gap-2.5">
           <div className="text-xl">오늘의 혼잡도</div>
