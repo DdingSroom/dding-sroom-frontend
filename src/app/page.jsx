@@ -7,11 +7,12 @@ import AfterLoginBanner from '@components/common/AfterLoginBanner';
 import SecondBanner from '@components/common/SecondBanner';
 import ReservationSection from '@components/common/ReservationSection';
 import FooterNav from '@components/common/FooterNav';
+
 import useTokenStore from '../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
 
 export default function Home() {
-  const { accessToken } = useTokenStore();
+  const { accessToken, setUserId } = useTokenStore();
   const [userInfo, setUserInfo] = useState({ id: '', email: '' });
 
   useEffect(() => {
@@ -19,7 +20,11 @@ export default function Home() {
       try {
         const decoded = jwtDecode(accessToken);
         const { id, email } = decoded;
+
+        // 디코드된 userId 바로 저장
+        setUserId(id);
         setUserInfo({ id, email });
+
         console.log('디코드된 사용자 정보:', decoded);
       } catch (e) {
         console.error('토큰 디코딩 실패:', e);
@@ -28,7 +33,7 @@ export default function Home() {
     } else {
       console.warn('로그인하지 않은 상태입니다.');
     }
-  }, [accessToken]);
+  }, [accessToken, setUserId]);
 
   return (
     <>
