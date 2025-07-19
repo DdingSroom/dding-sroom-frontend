@@ -1,4 +1,4 @@
-const CancellationModal = ({ isOpen, onClose, children }) => {
+const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
   if (!isOpen) return null;
 
   return (
@@ -15,7 +15,9 @@ const CancellationModal = ({ isOpen, onClose, children }) => {
           <button className="text-gray-500 w-[50%]" onClick={onClose}>
             돌아가기
           </button>
-          <button className="text-[#C20000] w-[50%]">예약 취소</button>
+          <button className="text-[#C20000] w-[50%]" onClick={onConfirm}>
+            예약 취소
+          </button>
         </div>
       </div>
     </div>

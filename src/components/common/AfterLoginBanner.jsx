@@ -38,13 +38,38 @@ const AfterLoginBanner = () => {
     fetchLatestReservation();
   }, [userId, accessToken]);
 
+  const cancelReservation = async () => {
+    if (!latestReservation || !userId) return;
+
+    console.log('취소 요청 데이터', {
+      userId,
+      reservationId: latestReservation?.id,
+    });
+    console.log('예약 전체 객체', latestReservation);
+
+    try {
+      const res = await axiosInstance.post('/api/reservations/cancel', {
+        userId,
+        reservationId: latestReservation.id,
+      });
+
+      alert(res.data.message || '예약이 취소되었습니다.');
+      await fetchLatestReservation();
+      setOpen(false);
+    } catch (err) {
+      console.error('예약 취소 실패:', err);
+      alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
+    }
+  };
+
   const handleModalClose = async () => {
     setOpen(false);
-    await fetchLatestReservation(); // 취소 후 정보 갱신
+    await fetchLatestReservation();
   };
 
   return (
     <div className="flex gap-[5px] w-full max-w-[95%]">
+      {/* 내 예약 정보 카드 */}
       <div className="flex flex-col bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-10 gap-2.5">
         <div className="font-bold text-3xl">내가 예약한 방</div>
         <div className="text-2xl text-[#9999A2]">
@@ -64,7 +89,11 @@ const AfterLoginBanner = () => {
             취소
           </button>
 
-          <CancellationModal isOpen={open} onClose={handleModalClose}>
+          <CancellationModal
+            isOpen={open}
+            onClose={handleModalClose}
+            onConfirm={cancelReservation}
+          >
             <div className="p-4 flex flex-col h-full justify-center">
               <div className="font-semibold text-2xl">예약을 취소할까요?</div>
               {latestReservation && (
