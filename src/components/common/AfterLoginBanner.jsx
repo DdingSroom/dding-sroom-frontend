@@ -11,13 +11,29 @@ const AfterLoginBanner = () => {
   const { userId, accessToken } = useTokenStore();
   const { latestReservation, setLatestReservation } = useReservationStore();
 
-  const formatTime = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const parseToDate = (input) => {
+    if (!input) return null;
+
+    if (Array.isArray(input)) {
+      const [year, month, day, hour = 0, minute = 0] = input;
+      return new Date(Date.UTC(year, month - 1, day, hour, minute));
+    }
+
+    return new Date(input);
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
+  const formatTime = (input) => {
+    const date = parseToDate(input);
+    if (!date || isNaN(date.getTime())) return '--:--';
+    return date.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDate = (input) => {
+    const date = parseToDate(input);
+    if (!date || isNaN(date.getTime())) return '날짜 없음';
     return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
   };
 
@@ -39,13 +55,10 @@ const AfterLoginBanner = () => {
   }, [userId, accessToken]);
 
   const cancelReservation = async () => {
-    if (!latestReservation || !userId) return;
-
-    console.log('취소 요청 데이터', {
-      userId,
-      reservationId: latestReservation?.id,
-    });
-    console.log('예약 전체 객체', latestReservation);
+    if (!latestReservation?.id || !userId) {
+      alert('취소할 예약 정보가 없습니다.');
+      return;
+    }
 
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
@@ -54,7 +67,7 @@ const AfterLoginBanner = () => {
       });
 
       alert(res.data.message || '예약이 취소되었습니다.');
-      await fetchLatestReservation();
+      setLatestReservation(null);
       setOpen(false);
     } catch (err) {
       console.error('예약 취소 실패:', err);
@@ -62,14 +75,12 @@ const AfterLoginBanner = () => {
     }
   };
 
-  const handleModalClose = async () => {
+  const handleModalClose = () => {
     setOpen(false);
-    await fetchLatestReservation();
   };
 
   return (
     <div className="flex gap-[5px] w-full max-w-[95%]">
-      {/* 내 예약 정보 카드 */}
       <div className="flex flex-col bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-10 gap-2.5">
         <div className="font-bold text-3xl">내가 예약한 방</div>
         <div className="text-2xl text-[#9999A2]">
@@ -78,13 +89,15 @@ const AfterLoginBanner = () => {
         <div className="flex justify-between">
           <div className="text-xl">
             {latestReservation
-              ? formatTime(latestReservation.startTime)
+              ? formatTime(
+                  latestReservation.startTime ||
+                    latestReservation.reservationStartTime,
+                )
               : '--:--'}
           </div>
           <button
             className="text-xl text-[#788DFF]"
             onClick={() => setOpen(true)}
-            disabled={!latestReservation}
           >
             취소
           </button>
@@ -105,10 +118,22 @@ const AfterLoginBanner = () => {
                   />
                   <div className="flex flex-col justify-center">
                     <div>{latestReservation.roomName}</div>
-                    <div>{formatDate(latestReservation.startTime)}</div>
                     <div>
-                      {formatTime(latestReservation.startTime)} ~{' '}
-                      {formatTime(latestReservation.endTime)}
+                      {formatDate(
+                        latestReservation.startTime ||
+                          latestReservation.reservationStartTime,
+                      )}
+                    </div>
+                    <div>
+                      {formatTime(
+                        latestReservation.startTime ||
+                          latestReservation.reservationStartTime,
+                      )}
+                      {' ~ '}
+                      {formatTime(
+                        latestReservation.endTime ||
+                          latestReservation.reservationEndTime,
+                      )}
                     </div>
                   </div>
                 </div>

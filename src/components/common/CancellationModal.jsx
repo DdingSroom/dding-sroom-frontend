@@ -1,3 +1,5 @@
+'use client';
+
 const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
   if (!isOpen) return null;
 
