@@ -15,11 +15,11 @@ const ReservationComponent = ({ index, roomId }) => {
 
   const router = useRouter();
   const { userId, accessToken } = useTokenStore();
-  const { setLatestReservation } = useReservationStore();
+  const { fetchLatestReservation } = useReservationStore();
 
   const now = new Date();
   const currentHour = now.getHours();
-  const reservedHours = [13, 14, 15]; // 임의로 설정해놓은 예약 시간
+  const reservedHours = [13, 14, 15]; // 테스트용 예약 시간
 
   const getStatus = (hour) => {
     if (reservedHours.includes(hour)) return 'reserved';
@@ -92,16 +92,12 @@ const ReservationComponent = ({ index, roomId }) => {
         reservationEndTime: reservationEnd.toISOString(),
       });
 
-      alert(res.data.message);
+      console.log('예약 응답 전체:', res.data);
+      alert(res.data.message || '예약이 완료되었습니다.');
 
-      // 예약 정보 전역 상태로 업데이트
-      setLatestReservation({
-        roomName: `스터디룸 ${index}`,
-        startTime: reservationStart.toISOString(),
-        endTime: reservationEnd.toISOString(),
-      });
+      // 상태 직접 설정하지 않고 서버에서 다시 받아옴
+      await fetchLatestReservation();
 
-      // 상태 초기화
       setOpen(false);
       setStartTime(null);
       setEndTime(null);
