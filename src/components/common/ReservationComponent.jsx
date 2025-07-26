@@ -75,15 +75,6 @@ const ReservationComponent = ({ index, roomId }) => {
       return;
     }
 
-    console.log('예약 전송 데이터 확인');
-    console.log('userId:', userId);
-    console.log('roomId:', roomId);
-    console.log(
-      '예약 시작/종료:',
-      reservationStart.toISOString(),
-      reservationEnd.toISOString(),
-    );
-
     try {
       const res = await axiosInstance.post('/api/reservations', {
         userId,
@@ -92,19 +83,42 @@ const ReservationComponent = ({ index, roomId }) => {
         reservationEndTime: reservationEnd.toISOString(),
       });
 
-      console.log('예약 응답 전체:', res.data);
       alert(res.data.message || '예약이 완료되었습니다.');
 
-      // 상태 직접 설정하지 않고 서버에서 다시 받아옴
       await fetchLatestReservation();
 
       setOpen(false);
       setStartTime(null);
       setEndTime(null);
     } catch (err) {
-      console.error('예약 실패:', err.response?.data || err.message);
       alert(err.response?.data?.message || '예약에 실패했습니다.');
     }
+  };
+
+  const renderTimeBlocks = () => {
+    const hours = Array.from(
+      { length: 24 - currentHour },
+      (_, i) => currentHour + i,
+    );
+    return (
+      <div className="flex flex-col items-start gap-1 mt-2">
+        <div className="flex gap-[4px]">
+          {hours.map((hour) => (
+            <span
+              key={`label-${hour}`}
+              className="text-[10px] w-[20px] text-center text-[#333]"
+            >
+              {hour}
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-[4px]">
+          {hours.map((hour) => (
+            <TimeComponent key={hour} status={getStatus(hour)} />
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -129,17 +143,13 @@ const ReservationComponent = ({ index, roomId }) => {
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center mb-4">
               예약 날짜 자동 설정
             </div>
 
-            <div className="flex flex-nowrap justify-between mt-4 mb-4">
-              {Array.from({ length: 24 }, (_, i) => (
-                <TimeComponent key={i} status={getStatus(i)} />
-              ))}
-            </div>
+            {renderTimeBlocks()}
 
-            <div className="flex-grow mb-3">
+            <div className="flex-grow mt-4 mb-3">
               <div>예약 시간</div>
               <select
                 className="border rounded-md p-2 focus:outline-none w-full"
@@ -179,13 +189,9 @@ const ReservationComponent = ({ index, roomId }) => {
         </Modal>
       </div>
 
-      <div className="flex flex-nowrap justify-between">
-        {Array.from({ length: 24 }, (_, i) => (
-          <TimeComponent key={i} status={getStatus(i)} />
-        ))}
-      </div>
+      {renderTimeBlocks()}
 
-      <div className="bg-black h-0.5 w-full bg-[#9999A3]"></div>
+      <div className="bg-black h-0.5 w-full bg-[#9999A3] mt-2"></div>
     </div>
   );
 };
