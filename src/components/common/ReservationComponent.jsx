@@ -75,15 +75,6 @@ const ReservationComponent = ({ index, roomId }) => {
       return;
     }
 
-    console.log('예약 전송 데이터 확인');
-    console.log('userId:', userId);
-    console.log('roomId:', roomId);
-    console.log(
-      '예약 시작/종료:',
-      reservationStart.toISOString(),
-      reservationEnd.toISOString(),
-    );
-
     try {
       const res = await axiosInstance.post('/api/reservations', {
         userId,
@@ -92,10 +83,7 @@ const ReservationComponent = ({ index, roomId }) => {
         reservationEndTime: reservationEnd.toISOString(),
       });
 
-      console.log('예약 응답 전체:', res.data);
       alert(res.data.message || '예약이 완료되었습니다.');
-
-      // 상태 직접 설정하지 않고 서버에서 다시 받아옴
       await fetchLatestReservation();
 
       setOpen(false);
@@ -105,6 +93,19 @@ const ReservationComponent = ({ index, roomId }) => {
       console.error('예약 실패:', err.response?.data || err.message);
       alert(err.response?.data?.message || '예약에 실패했습니다.');
     }
+  };
+
+  const renderTimeBlocks = () => {
+    const blocks = [];
+    for (let hour = currentHour; hour < 24; hour++) {
+      blocks.push(
+        <div key={hour} className="flex flex-col items-center w-[30px]">
+          <span className="text-xs text-[#4b4b4b]">{hour}</span>
+          <TimeComponent status={getStatus(hour)} />
+        </div>,
+      );
+    }
+    return blocks;
   };
 
   return (
@@ -133,10 +134,8 @@ const ReservationComponent = ({ index, roomId }) => {
               예약 날짜 자동 설정
             </div>
 
-            <div className="flex flex-nowrap justify-between mt-4 mb-4">
-              {Array.from({ length: 24 }, (_, i) => (
-                <TimeComponent key={i} status={getStatus(i)} />
-              ))}
+            <div className="flex overflow-x-auto gap-[2px] mt-4 mb-4">
+              {renderTimeBlocks()}
             </div>
 
             <div className="flex-grow mb-3">
@@ -179,13 +178,11 @@ const ReservationComponent = ({ index, roomId }) => {
         </Modal>
       </div>
 
-      <div className="flex flex-nowrap justify-between">
-        {Array.from({ length: 24 }, (_, i) => (
-          <TimeComponent key={i} status={getStatus(i)} />
-        ))}
+      <div className="flex overflow-x-auto gap-[2px] mt-4">
+        {renderTimeBlocks()}
       </div>
 
-      <div className="bg-black h-0.5 w-full bg-[#9999A3]"></div>
+      <div className="bg-black h-0.5 w-full bg-[#9999A3] mt-3"></div>
     </div>
   );
 };
