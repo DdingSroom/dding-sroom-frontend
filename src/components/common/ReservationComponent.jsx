@@ -84,41 +84,28 @@ const ReservationComponent = ({ index, roomId }) => {
       });
 
       alert(res.data.message || '예약이 완료되었습니다.');
-
       await fetchLatestReservation();
 
       setOpen(false);
       setStartTime(null);
       setEndTime(null);
     } catch (err) {
+      console.error('예약 실패:', err.response?.data || err.message);
       alert(err.response?.data?.message || '예약에 실패했습니다.');
     }
   };
 
   const renderTimeBlocks = () => {
-    const hours = Array.from(
-      { length: 24 - currentHour },
-      (_, i) => currentHour + i,
-    );
-    return (
-      <div className="flex flex-col items-start gap-1 mt-2">
-        <div className="flex gap-[4px]">
-          {hours.map((hour) => (
-            <span
-              key={`label-${hour}`}
-              className="text-[10px] w-[20px] text-center text-[#333]"
-            >
-              {hour}
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-[4px]">
-          {hours.map((hour) => (
-            <TimeComponent key={hour} status={getStatus(hour)} />
-          ))}
-        </div>
-      </div>
-    );
+    const blocks = [];
+    for (let hour = currentHour; hour < 24; hour++) {
+      blocks.push(
+        <div key={hour} className="flex flex-col items-center w-[30px]">
+          <span className="text-xs text-[#4b4b4b]">{hour}</span>
+          <TimeComponent status={getStatus(hour)} />
+        </div>,
+      );
+    }
+    return blocks;
   };
 
   return (
@@ -143,13 +130,15 @@ const ReservationComponent = ({ index, roomId }) => {
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
-            <div className="flex justify-center items-center mb-4">
+            <div className="flex justify-center items-center">
               예약 날짜 자동 설정
             </div>
 
-            {renderTimeBlocks()}
+            <div className="flex overflow-x-auto gap-[2px] mt-4 mb-4">
+              {renderTimeBlocks()}
+            </div>
 
-            <div className="flex-grow mt-4 mb-3">
+            <div className="flex-grow mb-3">
               <div>예약 시간</div>
               <select
                 className="border rounded-md p-2 focus:outline-none w-full"
@@ -189,9 +178,11 @@ const ReservationComponent = ({ index, roomId }) => {
         </Modal>
       </div>
 
-      {renderTimeBlocks()}
+      <div className="flex overflow-x-auto gap-[2px] mt-4">
+        {renderTimeBlocks()}
+      </div>
 
-      <div className="bg-black h-0.5 w-full bg-[#9999A3] mt-2"></div>
+      <div className="bg-black h-0.5 w-full bg-[#9999A3] mt-3"></div>
     </div>
   );
 };
