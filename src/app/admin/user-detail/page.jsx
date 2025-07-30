@@ -20,9 +20,6 @@ export default function UserDetail() {
           </button>
           <h1 className="text-xl font-semibold">USER 01</h1>
         </div>
-        <button className="bg-[#788DFF] text-white text-sm px-4 py-1.5 rounded">
-          개인 메시지 보내기
-        </button>
       </div>
 
       {/* 회원 정보 / 활동 정보 */}
