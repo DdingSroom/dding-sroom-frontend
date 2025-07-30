@@ -9,13 +9,11 @@ export default function UserManagement() {
       id: 1,
       name: 'USER 01',
       email: 'mju1111@mju.ac.kr',
-      studentId: '60241234',
     },
     {
       id: 2,
       name: 'USER 02',
       email: 'mju2222@mju.ac.kr',
-      studentId: '60242345',
     },
   ];
 
@@ -29,12 +27,10 @@ export default function UserManagement() {
         <table className="w-full text-sm text-left">
           <thead className="bg-[#F7F7F7] border-b text-[#333]">
             <tr>
-              <th className="py-3 px-2 w-8"> </th>
+              <th className="py-3 px-2 w-8">ID</th>
               <th className="py-3 px-2">이름</th>
               <th className="py-3 px-2">가입 이메일</th>
-              <th className="py-3 px-2">학번</th>
               <th className="py-3 px-2 text-center">관리</th>
-              <th className="py-3 px-2 text-center w-8"> </th>
             </tr>
           </thead>
           <tbody className="bg-white">
