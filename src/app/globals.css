@@ -49,3 +49,11 @@ body {
     width: 600px; 
   }
 }
+
+body.admin-body {
+  margin: 0;
+  width: 100% !important;
+  max-width: none !important;
+  background-color: #F5F5F5 !important;
+  font-size: 14px;
+}
