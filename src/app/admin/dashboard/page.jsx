@@ -1,9 +1,12 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import ReservationCard from '@components/admin/ReservationCard';
 
 export default function AdminDashboard() {
+  const router = useRouter();
+
   return (
     <div className="w-full min-h-screen bg-[#F5F5F5] px-10 py-8">
       <div className="flex justify-between items-center bg-white border p-4 rounded mb-6">
@@ -33,7 +36,12 @@ export default function AdminDashboard() {
         <div className="col-span-2 bg-white p-4 rounded shadow">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-semibold">예약 현황</h2>
-            <button className="text-sm text-[#788DFF]">더보기</button>
+            <button
+              className="text-sm text-[#788DFF]"
+              onClick={() => router.push('/admin/reservation-detail')}
+            >
+              더보기
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-6">
             <div>
