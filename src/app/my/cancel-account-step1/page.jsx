@@ -1,22 +1,57 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axiosInstance from '../../../libs/api/instance';
 import MyPageHeader from '@components/common/MyPageHeader';
 import Modal from '@components/common/Modal';
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const { accessToken } = useTokenStore();
+  const router = useRouter();
+
+  const handleDeleteAccount = async () => {
+    if (!email || !accessToken) {
+      alert('이메일 또는 토큰 정보가 없습니다.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.delete(`/user/delete/${email}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      console.log('탈퇴 성공:', response.data);
+      alert('회원 탈퇴가 완료되었습니다.');
+      router.push('/login');
+    } catch (error) {
+      console.error('탈퇴 실패:', error);
+      alert('회원 탈퇴 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+      setOpen(false);
+    }
+  };
 
   return (
     <>
       <div className="w-full">
         <MyPageHeader />
         <div className="p-6 bg-[#FFFF] mt-6">
-          <label className="mb-2">계정 비밀번호</label>
+          <label className="mb-2 block">계정 이메일</label>
           <input
-            type="text"
+            type="email"
             className="border rounded-md p-2 w-full"
-            placeholder="비밀번호를 입력해주세요."
+            placeholder="이메일을 입력해주세요."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <div className="mt-6">
             <p className="text-[#6E6E6E] text-sm">
@@ -42,7 +77,8 @@ export default function CancelAccountStep1() {
           <Modal
             isOpen={open}
             onClose={() => setOpen(false)}
-            text="탈퇴하기"
+            onSubmit={handleDeleteAccount}
+            text={'탈퇴하기'}
             color="red"
           >
             <div className="p-4 flex flex-col h-full justify-center ">
