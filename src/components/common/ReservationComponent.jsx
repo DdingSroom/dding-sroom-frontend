@@ -8,6 +8,11 @@ import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
+const toKSTISOString = (date) => {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 19);
+};
+
 const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -56,7 +61,6 @@ const ReservationComponent = ({ index, roomId }) => {
     }
 
     const now = new Date();
-
     const reservationStart = new Date(now);
     if (startTime <= now.getHours()) {
       reservationStart.setDate(reservationStart.getDate() + 1);
@@ -79,8 +83,8 @@ const ReservationComponent = ({ index, roomId }) => {
       const res = await axiosInstance.post('/api/reservations', {
         userId,
         roomId,
-        reservationStartTime: reservationStart.toISOString(),
-        reservationEndTime: reservationEnd.toISOString(),
+        reservationStartTime: toKSTISOString(reservationStart),
+        reservationEndTime: toKSTISOString(reservationEnd),
       });
 
       alert(res.data.message || '예약이 완료되었습니다.');
