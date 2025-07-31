@@ -8,6 +8,7 @@ import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
+// ISO 문자열을 KST 기준으로 변환하는 함수
 const toKSTISOString = (date) => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 19);
@@ -17,6 +18,7 @@ const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [reservedHours, setReservedHours] = useState([]);
 
   const router = useRouter();
   const { userId, accessToken } = useTokenStore();
@@ -24,7 +26,6 @@ const ReservationComponent = ({ index, roomId }) => {
 
   const now = new Date();
   const currentHour = now.getHours();
-  const reservedHours = [13, 14, 15]; // 테스트용 예약 시간
 
   const getStatus = (hour) => {
     if (reservedHours.includes(hour)) return 'reserved';
@@ -89,6 +90,11 @@ const ReservationComponent = ({ index, roomId }) => {
 
       alert(res.data.message || '예약이 완료되었습니다.');
       await fetchLatestReservation();
+
+      // 예약 시간 반영
+      const newReserved = [startTime];
+      if (duration === 2) newReserved.push(startTime + 1);
+      setReservedHours((prev) => [...prev, ...newReserved]);
 
       setOpen(false);
       setStartTime(null);
