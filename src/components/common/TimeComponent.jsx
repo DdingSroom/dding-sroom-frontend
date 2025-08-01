@@ -1,14 +1,25 @@
 const TimeComponent = ({ status }) => {
-  let bgColor = '#788DFF';
-
-  if (status === 'reserved') bgColor = '#9999A3';
-  else if (status === 'past') bgColor = '#000000';
+  const getColor = () => {
+    switch (status) {
+      case 'reserved':
+        return '#9999A3';
+      case 'past':
+        return '#000000';
+      case 'available':
+      default:
+        return '#788DFF';
+    }
+  };
 
   return (
     <div
-      className="w-[13px] h-[20px] rounded-sm"
-      style={{ backgroundColor: bgColor }}
-    ></div>
+      className="
+        w-[4px] h-[10px] mx-[0.5px]
+        sm:w-[6px] sm:h-[14px]
+        transition-colors duration-200
+      "
+      style={{ backgroundColor: getColor() }}
+    />
   );
 };
 
