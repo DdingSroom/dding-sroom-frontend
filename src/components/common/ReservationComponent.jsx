@@ -8,28 +8,46 @@ import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
-// ISO 문자열을 KST 기준으로 변환하는 함수
 const toKSTISOString = (date) => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 19);
 };
 
+const formatTime = (date) =>
+  `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
 const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [reservedHours, setReservedHours] = useState([]);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [reservedTimes, setReservedTimes] = useState([]);
 
   const router = useRouter();
   const { userId, accessToken } = useTokenStore();
   const { fetchLatestReservation } = useReservationStore();
 
   const now = new Date();
-  const currentHour = now.getHours();
 
-  const getStatus = (hour) => {
-    if (reservedHours.includes(hour)) return 'reserved';
-    if (hour < currentHour) return 'past';
+  const getTimeSlots = () => {
+    const slots = [];
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 50, 0, 0);
+    while (base <= end) {
+      slots.push(new Date(base));
+      base.setMinutes(base.getMinutes() + 10);
+    }
+    const lastDisplaySlot = new Date();
+    lastDisplaySlot.setHours(23, 59, 0, 0);
+    slots.push(lastDisplaySlot);
+    return slots;
+  };
+
+  const getStatus = (time) => {
+    if (time.endsWith('23:59:00')) return 'display-only';
+    if (reservedTimes.includes(time)) return 'reserved';
+    if (new Date(time) < now) return 'past';
     return 'available';
   };
 
@@ -42,40 +60,17 @@ const ReservationComponent = ({ index, roomId }) => {
     setOpen(true);
   };
 
-  const getStartTimeOptions = () => {
-    const options = [];
-    for (let i = 0; i < 5; i++) {
-      options.push((currentHour + i) % 24);
-    }
-    return options;
-  };
-
-  const getEndTimeOptions = () => {
-    if (startTime === null) return [];
-    return [1, 2].map((offset) => (startTime + offset) % 24);
-  };
-
   const handleSubmitReservation = async () => {
-    if (startTime === null || endTime === null) {
+    if (!startTime || !endTime) {
       alert('예약 시간과 퇴실 시간을 모두 선택해주세요.');
       return;
     }
 
-    const now = new Date();
-    const reservationStart = new Date(now);
-    if (startTime <= now.getHours()) {
-      reservationStart.setDate(reservationStart.getDate() + 1);
-    }
-    reservationStart.setHours(startTime, 0, 0, 0);
+    const reservationStart = new Date(startTime);
+    const reservationEnd = new Date(endTime);
+    const duration = (reservationEnd - reservationStart) / (1000 * 60);
 
-    const reservationEnd = new Date(reservationStart);
-    if (endTime <= startTime) {
-      reservationEnd.setDate(reservationEnd.getDate() + 1);
-    }
-    reservationEnd.setHours(endTime, 0, 0, 0);
-
-    const duration = (reservationEnd - reservationStart) / (1000 * 60 * 60);
-    if (duration !== 1 && duration !== 2) {
+    if (duration !== 60 && duration !== 120) {
       alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
       return;
     }
@@ -91,14 +86,17 @@ const ReservationComponent = ({ index, roomId }) => {
       alert(res.data.message || '예약이 완료되었습니다.');
       await fetchLatestReservation();
 
-      // 예약 시간 반영
-      const newReserved = [startTime];
-      if (duration === 2) newReserved.push(startTime + 1);
-      setReservedHours((prev) => [...prev, ...newReserved]);
+      const updated = [];
+      const temp = new Date(reservationStart);
+      while (temp < reservationEnd) {
+        updated.push(temp.toISOString());
+        temp.setMinutes(temp.getMinutes() + 10);
+      }
+      setReservedTimes((prev) => [...prev, ...updated]);
 
       setOpen(false);
-      setStartTime(null);
-      setEndTime(null);
+      setStartTime('');
+      setEndTime('');
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
       alert(err.response?.data?.message || '예약에 실패했습니다.');
@@ -106,32 +104,86 @@ const ReservationComponent = ({ index, roomId }) => {
   };
 
   const renderTimeBlocks = () => {
-    const blocks = [];
-    for (let hour = currentHour; hour < 24; hour++) {
-      blocks.push(
-        <div key={hour} className="flex flex-col items-center w-[30px]">
-          <span className="text-xs text-[#4b4b4b]">{hour}</span>
-          <TimeComponent status={getStatus(hour)} />
-        </div>,
+    const timeSlots = getTimeSlots();
+    const morningSlots = timeSlots.filter((time) => time.getHours() < 12);
+    const afternoonSlots = timeSlots.filter((time) => time.getHours() >= 12);
+
+    const renderLine = (slots) => {
+      return (
+        <div className="w-full overflow-x-auto">
+          <div className="flex flex-row min-w-[720px] sm:min-w-0">
+            {slots.map((time) => {
+              const hour = time.getHours();
+              const minute = time.getMinutes();
+              const timeStr = time.toISOString();
+              const isHourStart = minute === 0;
+
+              return (
+                <div
+                  key={timeStr}
+                  className="flex flex-col items-center w-[6px]"
+                >
+                  {isHourStart ? (
+                    <span className="text-[10px] text-[#4b4b4b] mb-[2px]">
+                      {hour}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] mb-[2px]">&nbsp;</span>
+                  )}
+                  <TimeComponent status={getStatus(timeStr)} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       );
-    }
-    return blocks;
+    };
+
+    return (
+      <div className="flex flex-col w-full">
+        {morningSlots.length > 0 && renderLine(morningSlots)}
+        {afternoonSlots.length > 0 && renderLine(afternoonSlots)}
+      </div>
+    );
+  };
+
+  const renderStartTimeOptions = () =>
+    getTimeSlots()
+      .filter((time) => time.getMinutes() < 59)
+      .map((time) => (
+        <option key={time.toISOString()} value={time.toISOString()}>
+          {formatTime(time)}
+        </option>
+      ));
+
+  const renderEndTimeOptions = () => {
+    if (!startTime) return [];
+    const start = new Date(startTime);
+    const oneHourLater = new Date(start);
+    const twoHourLater = new Date(start);
+    oneHourLater.setMinutes(oneHourLater.getMinutes() + 60);
+    twoHourLater.setMinutes(twoHourLater.getMinutes() + 120);
+
+    return [oneHourLater, twoHourLater].map((time) => (
+      <option key={time.toISOString()} value={time.toISOString()}>
+        {formatTime(time)}
+      </option>
+    ));
   };
 
   return (
-    <div className="flex flex-col justify-between p-7 bg-white rounded-2xl w-full max-w-[100%] h-auto min-h-[10rem] mt-[1rem]">
+    <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-[100%] mt-[1rem]">
       <div className="flex justify-between items-center">
-        <div className="flex gap-5">
-          <div className="text-2xl">스터디룸 {index}</div>
-          <div className="text-[#9999A3]">5인실</div>
+        <div className="flex gap-3 sm:gap-5">
+          <div className="text-xl sm:text-2xl">스터디룸 {index}</div>
+          <div className="text-[#9999A3] text-sm">5인실</div>
         </div>
         <button
-          className="bg-[#3250F5] text-lg text-white rounded-3xl p-2 w-[15%]"
+          className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px]"
           onClick={handleOpenModal}
         >
           예약
         </button>
-
         <Modal
           isOpen={open}
           onClose={() => setOpen(false)}
@@ -140,59 +192,46 @@ const ReservationComponent = ({ index, roomId }) => {
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center text-sm text-gray-500">
               예약 날짜 자동 설정
             </div>
 
-            <div className="flex overflow-x-auto gap-[2px] mt-4 mb-4">
-              {renderTimeBlocks()}
-            </div>
+            <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
 
-            <div className="flex-grow mb-3">
+            <div className="mb-3">
               <div>예약 시간</div>
               <select
-                className="border rounded-md p-2 focus:outline-none w-full"
-                value={startTime ?? ''}
-                onChange={(e) => setStartTime(Number(e.target.value))}
+                className="border rounded-md p-2 w-full"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
               >
                 <option value="" disabled>
                   시간 선택
                 </option>
-                {getStartTimeOptions().map((hour) => (
-                  <option key={hour} value={hour}>
-                    {hour}:00
-                  </option>
-                ))}
+                {renderStartTimeOptions()}
               </select>
             </div>
 
-            <div className="flex-grow">
+            <div>
               <div>퇴실 시간</div>
               <select
-                className="border rounded-md p-2 focus:outline-none w-full"
-                value={endTime ?? ''}
-                onChange={(e) => setEndTime(Number(e.target.value))}
-                disabled={startTime === null}
+                className="border rounded-md p-2 w-full"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                disabled={!startTime}
               >
                 <option value="" disabled>
-                  {startTime === null ? '예약 시간 먼저 선택' : '시간 선택'}
+                  {startTime === '' ? '예약 시간 먼저 선택' : '시간 선택'}
                 </option>
-                {getEndTimeOptions().map((hour) => (
-                  <option key={hour} value={hour}>
-                    {hour}:00
-                  </option>
-                ))}
+                {renderEndTimeOptions()}
               </select>
             </div>
           </div>
         </Modal>
       </div>
 
-      <div className="flex overflow-x-auto gap-[2px] mt-4">
-        {renderTimeBlocks()}
-      </div>
-
-      <div className="bg-black h-0.5 w-full bg-[#9999A3] mt-3"></div>
+      <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
+      <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
     </div>
   );
 };
