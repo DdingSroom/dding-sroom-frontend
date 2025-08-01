@@ -103,46 +103,52 @@ const ReservationComponent = ({ index, roomId }) => {
     }
   };
 
+  const renderLine = (slots) => {
+    return (
+      <div className="w-full overflow-x-auto">
+        <div className="flex flex-row min-w-[720px] sm:min-w-0">
+          {slots.map((time, idx) => {
+            const hour = time.getHours();
+            const minute = time.getMinutes();
+            const timeStr = time.toISOString();
+            const isHourStart = minute === 0;
+
+            return (
+              <div
+                key={timeStr}
+                className={`flex flex-col items-center ${isHourStart ? 'mx-[2px]' : 'mx-[0.5px]'}`}
+              >
+                <span className="text-[10px] text-[#4b4b4b] mb-[2px]">
+                  {isHourStart ? hour : '\u00A0'}
+                </span>
+                <TimeComponent status={getStatus(timeStr)} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const renderTimeBlocks = () => {
     const timeSlots = getTimeSlots();
     const morningSlots = timeSlots.filter((time) => time.getHours() < 12);
     const afternoonSlots = timeSlots.filter((time) => time.getHours() >= 12);
 
-    const renderLine = (slots) => {
-      return (
-        <div className="w-full overflow-x-auto">
-          <div className="flex flex-row min-w-[720px] sm:min-w-0">
-            {slots.map((time) => {
-              const hour = time.getHours();
-              const minute = time.getMinutes();
-              const timeStr = time.toISOString();
-              const isHourStart = minute === 0;
-
-              return (
-                <div
-                  key={timeStr}
-                  className="flex flex-col items-center w-[6px]"
-                >
-                  {isHourStart ? (
-                    <span className="text-[10px] text-[#4b4b4b] mb-[2px]">
-                      {hour}
-                    </span>
-                  ) : (
-                    <span className="text-[10px] mb-[2px]">&nbsp;</span>
-                  )}
-                  <TimeComponent status={getStatus(timeStr)} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    };
-
     return (
-      <div className="flex flex-col w-full">
-        {morningSlots.length > 0 && renderLine(morningSlots)}
-        {afternoonSlots.length > 0 && renderLine(afternoonSlots)}
+      <div className="flex flex-col w-full gap-2">
+        {morningSlots.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오전</div>
+            {renderLine(morningSlots)}
+          </div>
+        )}
+        {afternoonSlots.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오후</div>
+            {renderLine(afternoonSlots)}
+          </div>
+        )}
       </div>
     );
   };
