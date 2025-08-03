@@ -67,12 +67,6 @@ const AfterLoginBanner = () => {
     fetchLatestReservation();
   }, [userId, accessToken]);
 
-  useEffect(() => {
-    if (latestReservation) {
-      console.log('📦 예약 데이터 확인:', latestReservation);
-    }
-  }, [latestReservation]);
-
   const cancelReservation = async () => {
     if (!latestReservation?.id || !userId) {
       alert('취소할 예약 정보가 없습니다.');
