@@ -11,20 +11,22 @@ const AfterLoginBanner = () => {
   const { userId, accessToken } = useTokenStore();
   const { latestReservation, setLatestReservation } = useReservationStore();
 
-  const parseToDate = (input) => {
+  const toKSTDate = (input) => {
     if (!input) return null;
 
     if (Array.isArray(input)) {
       const [year, month, day, hour = 0, minute = 0] = input;
-      return new Date(Date.UTC(year, month - 1, day, hour, minute));
+      return new Date(year, month - 1, day, hour, minute);
     }
 
-    return new Date(input);
+    const date = new Date(input);
+    if (isNaN(date.getTime())) return null;
+    return date;
   };
 
   const formatTime = (input) => {
-    const date = parseToDate(input);
-    if (!date || isNaN(date.getTime())) return '--:--';
+    const date = toKSTDate(input);
+    if (!date) return '--:--';
     return date.toLocaleTimeString('ko-KR', {
       hour: '2-digit',
       minute: '2-digit',
@@ -32,10 +34,21 @@ const AfterLoginBanner = () => {
   };
 
   const formatDate = (input) => {
-    const date = parseToDate(input);
-    if (!date || isNaN(date.getTime())) return '날짜 없음';
-    return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+    const date = toKSTDate(input);
+    if (!date) return '날짜 없음';
+    return date.toLocaleDateString('ko-KR', {
+      month: 'long',
+      day: 'numeric',
+    });
   };
+
+  const getStartTime = () =>
+    latestReservation?.startTime ??
+    latestReservation?.reservationStartTime ??
+    null;
+
+  const getEndTime = () =>
+    latestReservation?.endTime ?? latestReservation?.reservationEndTime ?? null;
 
   const fetchLatestReservation = async () => {
     if (!userId || !accessToken) return;
@@ -53,6 +66,12 @@ const AfterLoginBanner = () => {
   useEffect(() => {
     fetchLatestReservation();
   }, [userId, accessToken]);
+
+  useEffect(() => {
+    if (latestReservation) {
+      console.log('📦 예약 데이터 확인:', latestReservation);
+    }
+  }, [latestReservation]);
 
   const cancelReservation = async () => {
     if (!latestReservation?.id || !userId) {
@@ -81,6 +100,7 @@ const AfterLoginBanner = () => {
 
   return (
     <div className="flex gap-[5px] w-full max-w-[95%]">
+      {/* 좌측 박스 */}
       <div className="flex flex-col bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-10 gap-2.5">
         <div className="font-bold text-3xl">내가 예약한 방</div>
         <div className="text-2xl text-[#9999A2]">
@@ -88,11 +108,8 @@ const AfterLoginBanner = () => {
         </div>
         <div className="flex justify-between">
           <div className="text-xl">
-            {latestReservation
-              ? formatTime(
-                  latestReservation.startTime ||
-                    latestReservation.reservationStartTime,
-                )
+            {latestReservation && getStartTime()
+              ? formatTime(getStartTime())
               : '--:--'}
           </div>
           <button
@@ -118,22 +135,9 @@ const AfterLoginBanner = () => {
                   />
                   <div className="flex flex-col justify-center">
                     <div>{latestReservation.roomName}</div>
+                    <div>{formatDate(getStartTime())}</div>
                     <div>
-                      {formatDate(
-                        latestReservation.startTime ||
-                          latestReservation.reservationStartTime,
-                      )}
-                    </div>
-                    <div>
-                      {formatTime(
-                        latestReservation.startTime ||
-                          latestReservation.reservationStartTime,
-                      )}
-                      {' ~ '}
-                      {formatTime(
-                        latestReservation.endTime ||
-                          latestReservation.reservationEndTime,
-                      )}
+                      {formatTime(getStartTime())} ~ {formatTime(getEndTime())}
                     </div>
                   </div>
                 </div>
@@ -143,6 +147,7 @@ const AfterLoginBanner = () => {
         </div>
       </div>
 
+      {/* 우측 박스 */}
       <div className="flex bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-10 flex-col justify-between">
         <div className="flex flex-col gap-2.5">
           <div className="text-xl">오늘의 혼잡도</div>
