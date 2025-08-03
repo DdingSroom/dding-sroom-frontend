@@ -106,20 +106,25 @@ const ReservationComponent = ({ index, roomId }) => {
   const renderLine = (slots) => {
     return (
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-row min-w-[720px] sm:min-w-0">
+        <div className="flex flex-row min-w-[720px] sm:min-w-0 gap-[1px]">
           {slots.map((time, idx) => {
             const hour = time.getHours();
-            const minute = time.getMinutes();
+            const isFirstOfHour = time.getMinutes() === 0;
             const timeStr = time.toISOString();
-            const isHourStart = minute === 0;
 
             return (
               <div
                 key={timeStr}
-                className={`flex flex-col items-center ${isHourStart ? 'mx-[2px]' : 'mx-[0.5px]'}`}
+                className="flex flex-col items-center justify-start"
               >
-                <span className="text-[10px] text-[#4b4b4b] mb-[2px]">
-                  {isHourStart ? hour : '\u00A0'}
+                <span
+                  className="text-[10px] text-[#4b4b4b]"
+                  style={{
+                    visibility: isFirstOfHour ? 'visible' : 'hidden',
+                    height: '16px',
+                  }}
+                >
+                  {hour}
                 </span>
                 <TimeComponent status={getStatus(timeStr)} />
               </div>
