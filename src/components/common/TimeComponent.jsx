@@ -13,7 +13,7 @@ const TimeComponent = ({ status }) => {
 
   return (
     <div
-      className="w-[4px] h-[10px] sm:w-[6px] sm:h-[14px] transition-colors duration-200"
+      className="w-[8px] h-[14px] transition-colors duration-200"
       style={{ backgroundColor: getColor() }}
     />
   );
