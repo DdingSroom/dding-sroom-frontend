@@ -30,6 +30,11 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   baseDate.setDate(baseDate.getDate() + 1);
   baseDate.setHours(0, 0, 0, 0);
 
+  const formattedTomorrow = baseDate.toLocaleDateString('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+  });
+
   const getTimeSlots = () => {
     const slots = [];
     const base = new Date(baseDate);
@@ -215,7 +220,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
             <div className="flex justify-center items-center text-sm text-gray-500">
-              예약 날짜 자동 설정 (내일)
+              {formattedTomorrow}
             </div>
 
             <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
