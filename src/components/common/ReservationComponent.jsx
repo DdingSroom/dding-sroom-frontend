@@ -162,14 +162,33 @@ const ReservationComponent = ({ index, roomId }) => {
     );
   };
 
-  const renderStartTimeOptions = () =>
-    getTimeSlots()
-      .filter((time) => time.getMinutes() < 59)
-      .map((time) => (
-        <option key={time.toISOString()} value={time.toISOString()}>
-          {formatTime(time)}
-        </option>
-      ));
+  const renderStartTimeOptions = () => {
+    const now = new Date();
+    const rounded = new Date(now);
+    const minutes = now.getMinutes();
+    // 10분 단위로 반올림
+    rounded.setMinutes(Math.ceil(minutes / 10) * 10);
+    rounded.setSeconds(0);
+    rounded.setMilliseconds(0);
+
+    const end = new Date();
+    end.setHours(23, 50, 0, 0);
+
+    const slots = [];
+    while (rounded <= end) {
+      const iso = rounded.toISOString();
+      if (!reservedTimes.includes(iso)) {
+        slots.push(new Date(rounded));
+      }
+      rounded.setMinutes(rounded.getMinutes() + 10);
+    }
+
+    return slots.map((time) => (
+      <option key={time.toISOString()} value={time.toISOString()}>
+        {formatTime(time)}
+      </option>
+    ));
+  };
 
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
