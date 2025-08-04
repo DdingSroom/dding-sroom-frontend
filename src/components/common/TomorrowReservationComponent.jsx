@@ -163,14 +163,20 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     );
   };
 
-  const renderStartTimeOptions = () =>
-    getTimeSlots()
-      .filter((time) => time.getMinutes() < 59)
+  const renderStartTimeOptions = () => {
+    const slots = getTimeSlots();
+
+    return slots
+      .filter((time) => {
+        const iso = time.toISOString();
+        return !reservedTimes.includes(iso);
+      })
       .map((time) => (
         <option key={time.toISOString()} value={time.toISOString()}>
           {formatTime(time)}
         </option>
       ));
+  };
 
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
