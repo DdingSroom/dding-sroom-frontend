@@ -45,12 +45,23 @@ const ReservationList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchReservations = async () => {
       try {
         const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
-        const active = res.data.reservations.filter(
-          (r) => r.status === 'RESERVED',
-        );
+
+        const active = res.data.reservations
+          .filter((r) => r.status === 'RESERVED')
+          .sort((a, b) => {
+            const getTime = (raw) =>
+              Array.isArray(raw) ? new Date(...raw) : new Date(raw);
+            return getTime(b.startTime) - getTime(a.startTime);
+          });
+
         const grouped = groupByDate(active);
         setGroupedReservations(grouped);
       } catch (err) {
@@ -60,7 +71,7 @@ const ReservationList = () => {
       }
     };
 
-    if (userId) fetchReservations();
+    fetchReservations();
   }, [userId]);
 
   if (loading) return <div className="p-6">로딩 중...</div>;
