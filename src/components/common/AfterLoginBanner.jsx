@@ -19,7 +19,7 @@ const AfterLoginBanner = () => {
     }
     const date = new Date(input);
     if (isNaN(date.getTime())) return null;
-    return date;
+    return new Date(date.getTime() + 9 * 60 * 60 * 1000);
   };
 
   const formatTime = (input) => {
@@ -49,9 +49,18 @@ const AfterLoginBanner = () => {
     if (!userId || !accessToken) return;
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
-      const sorted = res.data.reservations.sort(
+
+      const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+
+      const activeReservations = res.data.reservations.filter((r) => {
+        const start = new Date(r.startTime || r.reservationStartTime);
+        return r.status === 'RESERVED' && start > nowKST;
+      });
+
+      const sorted = activeReservations.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       );
+
       setLatestReservation(sorted[0] || null);
     } catch (err) {
       console.error('예약 정보 조회 실패:', err);
@@ -77,6 +86,8 @@ const AfterLoginBanner = () => {
       alert(res.data.message || '예약이 취소되었습니다.');
       setLatestReservation(null);
       setOpen(false);
+
+      fetchLatestReservation();
     } catch (err) {
       console.error('예약 취소 실패:', err);
       alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
@@ -102,12 +113,14 @@ const AfterLoginBanner = () => {
               ? `${formatDate(getStartTime())} ${formatTime(getStartTime())}`
               : '--:--'}
           </div>
-          <button
-            className="text-xl text-[#788DFF]"
-            onClick={() => setOpen(true)}
-          >
-            취소
-          </button>
+          {latestReservation && (
+            <button
+              className="text-xl text-[#788DFF]"
+              onClick={() => setOpen(true)}
+            >
+              취소
+            </button>
+          )}
 
           <CancellationModal
             isOpen={open}
