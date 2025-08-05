@@ -45,7 +45,7 @@ export default function AccountInfo() {
       });
 
       if (response.status === 200) {
-        alert('이름이 성공적으로 변경되었습니다.');
+        alert('이름 변경 완료되었습니다.');
         setUserInfo((prev) => ({ ...prev, name: newName }));
         setOpen(false);
         setNewName('');
