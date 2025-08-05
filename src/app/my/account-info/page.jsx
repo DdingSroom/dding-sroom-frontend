@@ -6,10 +6,12 @@ import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
+import axiosInstance from '../../../libs/api/instance';
 
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
-  const { accessToken } = useTokenStore();
+  const [newName, setNewName] = useState('');
+  const { accessToken, userId } = useTokenStore();
 
   const getDecodedUserInfo = () => {
     try {
@@ -29,6 +31,30 @@ export default function AccountInfo() {
       window.location.href = '/login';
     }
   }, [accessToken]);
+
+  const handleUsernameChange = async () => {
+    try {
+      if (!newName.trim()) {
+        alert('이름을 입력해주세요.');
+        return;
+      }
+
+      const response = await axiosInstance.put('/user/change-username', {
+        userId,
+        newUsername: newName,
+      });
+
+      if (response.status === 200) {
+        alert('이름이 성공적으로 변경되었습니다.');
+        setUserInfo((prev) => ({ ...prev, name: newName }));
+        setOpen(false);
+        setNewName('');
+      }
+    } catch (error) {
+      console.error('이름 변경 실패:', error);
+      alert('이름 변경에 실패했습니다.');
+    }
+  };
 
   return (
     <div className="w-full">
@@ -58,13 +84,20 @@ export default function AccountInfo() {
         />
       </div>
 
-      <Modal isOpen={open} onClose={() => setOpen(false)} text="수정">
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onSubmit={handleUsernameChange}
+        text="수정"
+      >
         <div className="p-4 flex flex-col h-full">
           <div className="font-semibold text-2xl text-center">이름 변경</div>
           <div className="mt-20">
             <label className="mb-2">이름</label>
             <input
               type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
               className="border rounded-md p-2 w-full"
               placeholder={userInfo.name || 'USER NAME'}
             />
