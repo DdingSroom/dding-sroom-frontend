@@ -1,18 +1,19 @@
 import { create } from 'zustand';
 
 const useTokenStore = create((set) => ({
-  accessToken:
-    typeof window !== 'undefined'
-      ? sessionStorage.getItem('accessToken') || ''
-      : '',
-  refreshToken:
-    typeof window !== 'undefined'
-      ? sessionStorage.getItem('refreshToken') || ''
-      : '',
-  userId:
-    typeof window !== 'undefined'
-      ? parseInt(sessionStorage.getItem('userId')) || null
-      : null,
+  accessToken: '',
+  refreshToken: '',
+  userId: null,
+
+  initializeFromStorage: () => {
+    if (typeof window !== 'undefined') {
+      const accessToken = sessionStorage.getItem('accessToken') || '';
+      const refreshToken = sessionStorage.getItem('refreshToken') || '';
+      const userId = parseInt(sessionStorage.getItem('userId')) || null;
+
+      set({ accessToken, refreshToken, userId });
+    }
+  },
 
   setAccessToken: (token) => {
     set({ accessToken: token });

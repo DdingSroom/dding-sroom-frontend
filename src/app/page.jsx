@@ -12,8 +12,17 @@ import useTokenStore from '../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
 
 export default function Home() {
-  const { accessToken, setUserId } = useTokenStore();
+  const { accessToken, setUserId, initializeFromStorage } = useTokenStore();
+
   const [userInfo, setUserInfo] = useState({ id: '', email: '' });
+  const [isMounted, setIsMounted] = useState(false); // hydration mismatch 방지
+
+  useEffect(() => {
+    setIsMounted(true); // CSR 이후에만 렌더링하게 함
+
+    // Zustand 상태를 클라이언트에서 초기화
+    initializeFromStorage();
+  }, []);
 
   useEffect(() => {
     if (accessToken) {
@@ -21,7 +30,6 @@ export default function Home() {
         const decoded = jwtDecode(accessToken);
         const { id, email } = decoded;
 
-        // 디코드된 userId 바로 저장
         setUserId(id);
         setUserInfo({ id, email });
 
@@ -35,11 +43,15 @@ export default function Home() {
     }
   }, [accessToken, setUserId]);
 
+  // 서버에서는 아무것도 렌더링하지 않도록 처리
+  if (!isMounted) return null;
+
   return (
     <>
       <div className="w-full">
         <Header />
       </div>
+
       <div className="flex justify-center w-full">
         {accessToken ? (
           <AfterLoginBanner className="w-full" />
@@ -47,12 +59,15 @@ export default function Home() {
           <Banner className="w-full" />
         )}
       </div>
+
       <div className="flex justify-center w-full">
         <SecondBanner className="w-full" />
       </div>
+
       <div className="flex justify-center w-full flex-grow">
         <ReservationSection className="w-full" />
       </div>
+
       <div className="mt-[1px] w-full sticky fixed bg-white bottom-0 left-0 right-0">
         <FooterNav />
       </div>
