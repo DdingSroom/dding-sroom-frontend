@@ -72,6 +72,8 @@ export default function AccountInfo() {
         </div>
       </Modal>
 
+      <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+
       <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-8 mb-1">
         <p className="text-2xl">개인 정보 보호</p>
       </div>

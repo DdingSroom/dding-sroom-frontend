@@ -7,7 +7,7 @@ const MyPageHeader = () => {
 
   return (
     <header className="flex items-center p-4 pt-8 pb-12 bg-[#FFFF] relative">
-      <button onClick={() => router.push('/')}>
+      <button onClick={() => router.back()}>
         <img
           src="/static/icons/arrow_left_icon.svg"
           alt="arrow"
