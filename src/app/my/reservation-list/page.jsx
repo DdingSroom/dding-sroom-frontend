@@ -2,17 +2,13 @@
 
 import React from 'react';
 import MyPageHeader from '@components/common/MyPageHeader';
-import MyPageDate from '@components/common/MyPageDate';
-import ReservationHistory from '@components/common/ReservationHistory';
+import ReservationList from '@components/common/ReservationList';
 
-export default function Mypage() {
+export default function ReservationInfo() {
   return (
-    <>
-      <div className="w-full">
-        <MyPageHeader />
-        <MyPageDate />
-        <ReservationHistory />
-      </div>
-    </>
+    <div className="w-full">
+      <MyPageHeader />
+      <ReservationList />
+    </div>
   );
 }
