@@ -27,9 +27,10 @@ const AfterLoginBanner = () => {
 
   const formatTime = (input) => {
     const d = parseDate(input);
-    return d
-      ? d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
-      : '--:--';
+    if (!d) return '--:--';
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   };
 
   const fetchAllUserReservations = async () => {
@@ -76,6 +77,7 @@ const AfterLoginBanner = () => {
 
   return (
     <div className="flex gap-[5px] w-full max-w-[95%]">
+      {/* 혼잡도 박스 */}
       <div className="flex bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-6 flex-col justify-between">
         <div className="flex flex-col gap-2.5">
           <div className="text-sm md:text-xl">오늘의 혼잡도</div>
@@ -90,59 +92,62 @@ const AfterLoginBanner = () => {
         />
       </div>
 
+      {/* 예약 내역 박스 */}
       <div className="flex flex-col bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-6 gap-4">
         <div className="font-bold text-base md:text-3xl">내가 예약한 방</div>
-        {!Array.isArray(userReservations) || userReservations.length === 0 ? (
-          <div className="text-sm md:text-xl text-[#9999A2]">
-            예약 내역 없음
-          </div>
-        ) : (
-          userReservations.map((r) => (
-            <div
-              key={r.id}
-              className="flex justify-between items-center border-b pb-2"
-            >
-              <div className="flex flex-col">
-                <div className="text-sm md:text-lg text-[#9999A2]">
-                  스터디룸 {r.roomName}
-                </div>
-                <div className="text-sm md:text-xl">
-                  {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
-                  {formatTime(r.endTime)}
-                </div>
-              </div>
-              <button
-                className="text-sm md:text-xl text-[#788DFF]"
-                onClick={() => setOpenReservationId(r.id)}
+        <div className="flex flex-col gap-4 overflow-y-auto max-h-[20rem] pr-2">
+          {!Array.isArray(userReservations) || userReservations.length === 0 ? (
+            <div className="text-sm md:text-xl text-[#9999A2]">
+              예약 내역 없음
+            </div>
+          ) : (
+            userReservations.map((r) => (
+              <div
+                key={r.id}
+                className="flex justify-between items-center border-b pb-2"
               >
-                취소
-              </button>
-              <CancellationModal
-                isOpen={openReservationId === r.id}
-                onClose={() => setOpenReservationId(null)}
-                onConfirm={() => cancelReservation(r.id)}
-              >
-                <div className="text-base md:text-lg font-semibold text-left mb-4">
-                  예약을 취소할까요?
-                </div>
-                <div className="flex items-center gap-4 bg-[#F5F7FF] p-4 rounded-lg">
-                  <img
-                    src="/static/icons/studyroom_image.png"
-                    alt="studyroom"
-                    className="w-[80px] h-[80px] object-cover rounded-md"
-                  />
-                  <div className="flex flex-col text-sm md:text-lg">
-                    <div className="font-medium">{`스터디룸 ${r.roomName}`}</div>
-                    <div>{formatDate(r.startTime)}</div>
-                    <div>
-                      {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
-                    </div>
+                <div className="flex flex-col">
+                  <div className="text-sm md:text-lg text-[#9999A2]">
+                    스터디룸 {r.roomName}
+                  </div>
+                  <div className="text-sm md:text-xl">
+                    {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
+                    {formatTime(r.endTime)}
                   </div>
                 </div>
-              </CancellationModal>
-            </div>
-          ))
-        )}
+                <button
+                  className="text-sm md:text-xl text-[#788DFF]"
+                  onClick={() => setOpenReservationId(r.id)}
+                >
+                  취소
+                </button>
+                <CancellationModal
+                  isOpen={openReservationId === r.id}
+                  onClose={() => setOpenReservationId(null)}
+                  onConfirm={() => cancelReservation(r.id)}
+                >
+                  <div className="text-base md:text-lg font-semibold text-left mb-4">
+                    예약을 취소할까요?
+                  </div>
+                  <div className="flex items-center gap-4 bg-[#F5F7FF] p-4 rounded-lg">
+                    <img
+                      src="/static/icons/studyroom_image.png"
+                      alt="studyroom"
+                      className="w-[80px] h-[80px] object-cover rounded-md"
+                    />
+                    <div className="flex flex-col text-sm md:text-lg">
+                      <div className="font-medium">{`스터디룸 ${r.roomName}`}</div>
+                      <div>{formatDate(r.startTime)}</div>
+                      <div>
+                        {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
+                      </div>
+                    </div>
+                  </div>
+                </CancellationModal>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
