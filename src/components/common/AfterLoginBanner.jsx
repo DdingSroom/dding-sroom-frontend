@@ -78,8 +78,8 @@ const AfterLoginBanner = () => {
   return (
     <div className="flex gap-[5px] w-full max-w-[95%]">
       {/* 혼잡도 박스 */}
-      <div className="flex bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-6 flex-col justify-between">
-        <div className="flex flex-col gap-2.5">
+      <div className="relative flex bg-white rounded-2xl h-[18rem] min-h-[14rem] w-1/2 p-6 flex-col justify-between">
+        <div className="flex flex-col gap-2.5 z-10">
           <div className="text-sm md:text-xl">오늘의 혼잡도</div>
           <div className="text-xl md:text-5xl text-[#788DFF] font-semibold">
             여유로움
@@ -88,16 +88,18 @@ const AfterLoginBanner = () => {
         <img
           src="/static/icons/maru_icon.png"
           alt="maru"
-          className="w-1/2 h-3/4 self-end"
+          className="absolute bottom-4 right-4 w-[90px] h-[90px] object-contain z-0"
         />
       </div>
 
       {/* 예약 내역 박스 */}
-      <div className="flex flex-col bg-white rounded-2xl h-[25rem] w-1/2 p-6 gap-4">
-        <div className="font-bold text-base md:text-3xl">내가 예약한 방</div>
+      <div className="flex flex-col bg-white rounded-2xl h-[18rem] min-h-[14rem] w-1/2 p-6">
+        <div className="font-bold text-base md:text-3xl mb-2">
+          내가 예약한 방
+        </div>
 
-        {/* 예약 리스트: 스크롤 처리 */}
-        <div className="flex flex-col gap-4 overflow-y-auto pr-2 h-full">
+        {/* 예약 리스트 영역 (스크롤) */}
+        <div className="flex flex-col gap-4 overflow-y-auto pr-2 flex-1">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
             <div className="text-sm md:text-xl text-[#9999A2]">
               예약 내역 없음
