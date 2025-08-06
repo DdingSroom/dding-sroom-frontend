@@ -1,6 +1,7 @@
+// TomorrowReservationComponent.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
@@ -24,7 +25,8 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const router = useRouter();
   const { userId, accessToken } = useTokenStore();
-  const { fetchLatestReservation } = useReservationStore();
+  const { fetchLatestReservation, fetchAllUserReservations } =
+    useReservationStore();
 
   const baseDate = new Date();
   baseDate.setDate(baseDate.getDate() + 1);
@@ -34,6 +36,35 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     month: 'long',
     day: 'numeric',
   });
+
+  const fetchAllReservations = async () => {
+    try {
+      const res = await axiosInstance.get('/api/reservations/all-reservation');
+      const all = res.data.reservations;
+      const reserved = [];
+      all.forEach((r) => {
+        const start = new Date(r.startTime || r.reservationStartTime);
+        const end = new Date(r.endTime || r.reservationEndTime);
+        const temp = new Date(start);
+        if (temp.toDateString() !== baseDate.toDateString()) return;
+        while (temp < end) {
+          reserved.push(temp.toISOString());
+          temp.setMinutes(temp.getMinutes() + 10);
+        }
+      });
+      setReservedTimes(reserved);
+    } catch (err) {
+      console.error('전체 예약 불러오기 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllReservations();
+    const interval = setInterval(() => {
+      fetchAllReservations();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const getTimeSlots = () => {
     const slots = [];
@@ -52,7 +83,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const getStatus = (time) => {
     const timeDate = new Date(time);
-    const now = new Date();
     if (time.endsWith('23:59:00')) return 'display-only';
     if (reservedTimes.includes(time)) return 'reserved';
     if (timeDate < baseDate) return 'past';
@@ -93,6 +123,8 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
       alert(res.data.message || '예약이 완료되었습니다.');
       await fetchLatestReservation();
+      await fetchAllUserReservations();
+      await fetchAllReservations();
 
       const updated = [];
       const temp = new Date(reservationStart);
@@ -118,7 +150,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
           const hour = time.getHours();
           const isFirstOfHour = time.getMinutes() === 0;
           const timeStr = time.toISOString();
-
           return (
             <div
               key={timeStr}
@@ -149,7 +180,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     const timeSlots = getTimeSlots();
     const morningSlots = timeSlots.filter((time) => time.getHours() < 12);
     const afternoonSlots = timeSlots.filter((time) => time.getHours() >= 12);
-
     return (
       <div className="flex flex-col w-full gap-2">
         {morningSlots.length > 0 && (
@@ -170,7 +200,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const renderStartTimeOptions = () => {
     const slots = getTimeSlots();
-
     return slots
       .filter((time) => {
         const iso = time.toISOString();
@@ -222,9 +251,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
             <div className="flex justify-center items-center text-sm text-gray-500">
               {formattedTomorrow}
             </div>
-
             <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
-
             <div className="mb-3">
               <div>예약 시간</div>
               <select
@@ -238,7 +265,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
                 {renderStartTimeOptions()}
               </select>
             </div>
-
             <div>
               <div>퇴실 시간</div>
               <select
@@ -256,7 +282,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
           </div>
         </Modal>
       </div>
-
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
     </div>

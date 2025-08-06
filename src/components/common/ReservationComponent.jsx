@@ -1,6 +1,7 @@
+// ReservationComponent.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
@@ -28,6 +29,35 @@ const ReservationComponent = ({ index, roomId }) => {
     useReservationStore();
 
   const now = new Date();
+
+  // 실시간 예약 정보 polling
+  const fetchAllReservations = async () => {
+    try {
+      const res = await axiosInstance.get('/api/reservations/all-reservation');
+      const all = res.data.reservations;
+      const reserved = [];
+      all.forEach((r) => {
+        const start = new Date(r.startTime || r.reservationStartTime);
+        const end = new Date(r.endTime || r.reservationEndTime);
+        const temp = new Date(start);
+        while (temp < end) {
+          reserved.push(temp.toISOString());
+          temp.setMinutes(temp.getMinutes() + 10);
+        }
+      });
+      setReservedTimes(reserved);
+    } catch (err) {
+      console.error('전체 예약 불러오기 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllReservations();
+    const interval = setInterval(() => {
+      fetchAllReservations();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleOpenModal = () => {
     if (!accessToken) {
@@ -65,6 +95,7 @@ const ReservationComponent = ({ index, roomId }) => {
 
       await fetchLatestReservation();
       await fetchAllUserReservations();
+      await fetchAllReservations();
 
       const updated = [];
       const temp = new Date(reservationStart);
@@ -89,12 +120,10 @@ const ReservationComponent = ({ index, roomId }) => {
     base.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(23, 50, 0, 0);
-
     while (base <= end) {
       slots.push(new Date(base));
       base.setMinutes(base.getMinutes() + 10);
     }
-
     slots.push(new Date(2025, 0, 1, 23, 59));
     return slots;
   };
@@ -113,7 +142,6 @@ const ReservationComponent = ({ index, roomId }) => {
           const hour = time.getHours();
           const isFirstOfHour = time.getMinutes() === 0;
           const timeStr = time.toISOString();
-
           return (
             <div
               key={timeStr}
@@ -230,9 +258,7 @@ const ReservationComponent = ({ index, roomId }) => {
                 day: 'numeric',
               })}
             </div>
-
             <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
-
             <div className="mb-3">
               <div>예약 시간</div>
               <select
@@ -246,7 +272,6 @@ const ReservationComponent = ({ index, roomId }) => {
                 {renderStartTimeOptions()}
               </select>
             </div>
-
             <div>
               <div>퇴실 시간</div>
               <select
@@ -264,7 +289,6 @@ const ReservationComponent = ({ index, roomId }) => {
           </div>
         </Modal>
       </div>
-
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
     </div>
