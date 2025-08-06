@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
@@ -28,19 +28,47 @@ const ReservationComponent = ({ index, roomId }) => {
 
   const now = new Date();
 
+  useEffect(() => {
+    const fetchAllReservations = async () => {
+      try {
+        const res = await axiosInstance.get(
+          '/api/reservations/all-reservation',
+        );
+        const all = res.data.reservations;
+
+        const result = [];
+        all.forEach((r) => {
+          const start = new Date(r.startTime);
+          const end = new Date(r.endTime);
+          const temp = new Date(start);
+
+          while (temp < end) {
+            result.push(temp.toISOString());
+            temp.setMinutes(temp.getMinutes() + 10);
+          }
+        });
+
+        setReservedTimes(result);
+      } catch (err) {
+        console.error('전체 예약 불러오기 실패:', err);
+      }
+    };
+
+    fetchAllReservations();
+  }, []);
+
   const getTimeSlots = () => {
     const slots = [];
     const base = new Date();
     base.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(23, 50, 0, 0);
+
     while (base <= end) {
       slots.push(new Date(base));
       base.setMinutes(base.getMinutes() + 10);
     }
-    const lastDisplaySlot = new Date();
-    lastDisplaySlot.setHours(23, 59, 0, 0);
-    slots.push(lastDisplaySlot);
+    slots.push(new Date(2025, 0, 1, 23, 59));
     return slots;
   };
 
@@ -103,59 +131,56 @@ const ReservationComponent = ({ index, roomId }) => {
     }
   };
 
-  const renderLine = (slots) => {
-    return (
-      <div className="w-full overflow-x-auto">
-        <div className="flex flex-row min-w-[720px] sm:min-w-0">
-          {slots.map((time) => {
-            const hour = time.getHours();
-            const isFirstOfHour = time.getMinutes() === 0;
-            const timeStr = time.toISOString();
+  const renderLine = (slots) => (
+    <div className="w-full overflow-x-auto">
+      <div className="flex flex-row min-w-[720px] sm:min-w-0">
+        {slots.map((time) => {
+          const hour = time.getHours();
+          const isFirstOfHour = time.getMinutes() === 0;
+          const timeStr = time.toISOString();
 
-            return (
-              <div
-                key={timeStr}
-                className="flex flex-col items-center justify-start"
-                style={{ width: '10px' }}
+          return (
+            <div
+              key={timeStr}
+              className="flex flex-col items-center"
+              style={{ width: '10px' }}
+            >
+              <span
+                className="text-[10px] text-[#4b4b4b]"
+                style={{
+                  visibility: isFirstOfHour ? 'visible' : 'hidden',
+                  height: '16px',
+                  width: '16px',
+                  display: 'inline-block',
+                  textAlign: 'center',
+                }}
               >
-                <span
-                  className="text-[10px] text-[#4b4b4b] leading-none"
-                  style={{
-                    visibility: isFirstOfHour ? 'visible' : 'hidden',
-                    height: '16px',
-                    width: '16px',
-                    display: 'inline-block',
-                    textAlign: 'center',
-                  }}
-                >
-                  {hour}
-                </span>
-                <TimeComponent status={getStatus(timeStr)} />
-              </div>
-            );
-          })}
-        </div>
+                {hour}
+              </span>
+              <TimeComponent status={getStatus(timeStr)} />
+            </div>
+          );
+        })}
       </div>
-    );
-  };
+    </div>
+  );
 
   const renderTimeBlocks = () => {
-    const timeSlots = getTimeSlots();
-    const morningSlots = timeSlots.filter((time) => time.getHours() < 12);
-    const afternoonSlots = timeSlots.filter((time) => time.getHours() >= 12);
-
+    const slots = getTimeSlots();
+    const morning = slots.filter((t) => t.getHours() < 12);
+    const afternoon = slots.filter((t) => t.getHours() >= 12);
     return (
-      <div className="flex flex-col w-full gap-2">
-        {morningSlots.length > 0 && (
+      <div className="flex flex-col gap-2">
+        {morning.length > 0 && (
           <div>
             <div className="text-xs font-semibold mb-1">오전</div>
-            {renderLine(morningSlots)}
+            {renderLine(morning)}
           </div>
         )}
-        {afternoonSlots.length > 0 && (
+        {afternoon.length > 0 && (
           <div>
             <div className="text-xs font-semibold mb-1">오후</div>
-            {renderLine(afternoonSlots)}
+            {renderLine(afternoon)}
           </div>
         )}
       </div>
@@ -165,25 +190,23 @@ const ReservationComponent = ({ index, roomId }) => {
   const renderStartTimeOptions = () => {
     const now = new Date();
     const rounded = new Date(now);
-    const minutes = now.getMinutes();
-    // 10분 단위로 반올림
-    rounded.setMinutes(Math.ceil(minutes / 10) * 10);
+    rounded.setMinutes(Math.ceil(now.getMinutes() / 10) * 10);
     rounded.setSeconds(0);
     rounded.setMilliseconds(0);
 
     const end = new Date();
     end.setHours(23, 50, 0, 0);
 
-    const slots = [];
+    const options = [];
     while (rounded <= end) {
       const iso = rounded.toISOString();
       if (!reservedTimes.includes(iso)) {
-        slots.push(new Date(rounded));
+        options.push(new Date(rounded));
       }
       rounded.setMinutes(rounded.getMinutes() + 10);
     }
 
-    return slots.map((time) => (
+    return options.map((time) => (
       <option key={time.toISOString()} value={time.toISOString()}>
         {formatTime(time)}
       </option>
@@ -193,12 +216,12 @@ const ReservationComponent = ({ index, roomId }) => {
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
     const start = new Date(startTime);
-    const oneHourLater = new Date(start);
-    const twoHourLater = new Date(start);
-    oneHourLater.setMinutes(oneHourLater.getMinutes() + 60);
-    twoHourLater.setMinutes(twoHourLater.getMinutes() + 120);
+    const end1 = new Date(start);
+    const end2 = new Date(start);
+    end1.setMinutes(end1.getMinutes() + 60);
+    end2.setMinutes(end2.getMinutes() + 120);
 
-    return [oneHourLater, twoHourLater].map((time) => (
+    return [end1, end2].map((time) => (
       <option key={time.toISOString()} value={time.toISOString()}>
         {formatTime(time)}
       </option>
