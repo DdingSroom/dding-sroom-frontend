@@ -93,9 +93,11 @@ const AfterLoginBanner = () => {
       </div>
 
       {/* 예약 내역 박스 */}
-      <div className="flex flex-col bg-white rounded-2xl h-auto min-h-[15rem] w-1/2 p-6 gap-4">
+      <div className="flex flex-col bg-white rounded-2xl h-[25rem] w-1/2 p-6 gap-4">
         <div className="font-bold text-base md:text-3xl">내가 예약한 방</div>
-        <div className="flex flex-col gap-4 overflow-y-auto max-h-[20rem] pr-2">
+
+        {/* 예약 리스트: 스크롤 처리 */}
+        <div className="flex flex-col gap-4 overflow-y-auto pr-2 h-full">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
             <div className="text-sm md:text-xl text-[#9999A2]">
               예약 내역 없음
