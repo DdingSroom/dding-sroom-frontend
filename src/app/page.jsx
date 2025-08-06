@@ -21,7 +21,7 @@ export default function Home() {
     setIsMounted(true); // CSR 이후에만 렌더링하게 함
 
     // Zustand 상태를 클라이언트에서 초기화
-    initializeFromStorage();
+    // initializeFromStorage();
   }, []);
 
   useEffect(() => {
