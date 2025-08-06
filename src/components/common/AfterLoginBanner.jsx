@@ -81,14 +81,14 @@ const AfterLoginBanner = () => {
       <div className="relative flex bg-white rounded-2xl h-[18rem] min-h-[14rem] w-1/2 p-6 flex-col justify-between">
         <div className="flex flex-col gap-2.5 z-10">
           <div className="text-sm md:text-xl">오늘의 혼잡도</div>
-          <div className="text-xl md:text-5xl text-[#788DFF] font-semibold">
+          <div className="text-3xl md:text-5xl text-[#788DFF] font-semibold">
             여유로움
           </div>
         </div>
         <img
           src="/static/icons/maru_icon.png"
           alt="maru"
-          className="absolute bottom-4 right-4 w-[90px] h-[90px] object-contain z-0"
+          className="absolute bottom-4 right-4 w-[120px] h-[120px] object-contain z-0"
         />
       </div>
 
