@@ -1,4 +1,3 @@
-// TomorrowReservationComponent.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,16 +41,19 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       const res = await axiosInstance.get('/api/reservations/all-reservation');
       const all = res.data.reservations;
       const reserved = [];
+
       all.forEach((r) => {
         const start = new Date(r.startTime || r.reservationStartTime);
         const end = new Date(r.endTime || r.reservationEndTime);
         const temp = new Date(start);
         if (temp.toDateString() !== baseDate.toDateString()) return;
+
         while (temp < end) {
           reserved.push(temp.toISOString());
           temp.setMinutes(temp.getMinutes() + 10);
         }
       });
+
       setReservedTimes(reserved);
     } catch (err) {
       console.error('전체 예약 불러오기 실패:', err);
@@ -60,9 +62,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   useEffect(() => {
     fetchAllReservations();
-    const interval = setInterval(() => {
-      fetchAllReservations();
-    }, 10000);
+    const interval = setInterval(fetchAllReservations, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -122,6 +122,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       });
 
       alert(res.data.message || '예약이 완료되었습니다.');
+
       await fetchLatestReservation();
       await fetchAllUserReservations();
       await fetchAllReservations();
