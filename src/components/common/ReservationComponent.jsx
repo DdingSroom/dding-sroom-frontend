@@ -95,9 +95,11 @@ const ReservationComponent = ({ index, roomId }) => {
 
       alert(res.data.message || '예약이 완료되었습니다.');
 
-      await fetchLatestReservation();
-      await fetchAllUserReservations();
-      await fetchAllReservedTimes();
+      await Promise.all([
+        fetchLatestReservation(),
+        fetchAllUserReservations(),
+        fetchAllReservedTimes(),
+      ]);
 
       setOpen(false);
       setStartTime('');
