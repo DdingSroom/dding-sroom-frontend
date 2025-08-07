@@ -2,9 +2,19 @@ import { create } from 'zustand';
 import axiosInstance from '../libs/api/instance';
 import useTokenStore from './useTokenStore';
 
-const useReservationStore = create((set, get) => ({
+const parseToDate = (raw) => {
+  if (!raw) return null;
+  if (Array.isArray(raw)) {
+    const [y, m, d, h = 0, min = 0] = raw;
+    return new Date(y, m - 1, d, h, min);
+  }
+  return new Date(raw);
+};
+
+const useReservationStore = create((set) => ({
   latestReservation: null,
   userReservations: [],
+  reservedTimeSlotsByRoom: {},
 
   setLatestReservation: (reservation) =>
     set({ latestReservation: reservation }),
@@ -36,29 +46,17 @@ const useReservationStore = create((set, get) => ({
 
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
-      const nowKST = new Date(); // 이미 서버에서 KST로 반환 중
+      const nowKST = new Date();
 
       const filtered = res.data.reservations.filter((r) => {
         const raw = r.startTime || r.reservationStartTime;
-        const start = Array.isArray(raw)
-          ? new Date(raw[0], raw[1] - 1, raw[2], raw[3] || 0, raw[4] || 0)
-          : new Date(raw);
-
-        return r.status === 'RESERVED' && start.getTime() > nowKST.getTime();
+        const start = parseToDate(raw);
+        return r.status === 'RESERVED' && start > nowKST;
       });
 
       const sorted = filtered.sort((a, b) => {
-        const aRaw = a.startTime || a.reservationStartTime;
-        const bRaw = b.startTime || b.reservationStartTime;
-
-        const aStart = Array.isArray(aRaw)
-          ? new Date(aRaw[0], aRaw[1] - 1, aRaw[2], aRaw[3] || 0, aRaw[4] || 0)
-          : new Date(aRaw);
-
-        const bStart = Array.isArray(bRaw)
-          ? new Date(bRaw[0], bRaw[1] - 1, bRaw[2], bRaw[3] || 0, bRaw[4] || 0)
-          : new Date(bRaw);
-
+        const aStart = parseToDate(a.startTime || a.reservationStartTime);
+        const bStart = parseToDate(b.startTime || b.reservationStartTime);
         return aStart - bStart;
       });
 
@@ -66,6 +64,41 @@ const useReservationStore = create((set, get) => ({
     } catch (err) {
       console.error('전체 예약 정보 불러오기 실패:', err);
       set({ userReservations: [] });
+    }
+  },
+
+  fetchAllReservedTimes: async () => {
+    console.log('fetchAllReservedTimes() 호출됨');
+
+    try {
+      const res = await axiosInstance.get('/api/reservations/all-reservation');
+      const all = res.data.reservations;
+      const reservedMap = {};
+
+      all.forEach((r, i) => {
+        const roomId = r.roomId;
+        const start = parseToDate(r.startTime || r.reservationStartTime);
+        const end = parseToDate(r.endTime || r.reservationEndTime);
+
+        if (!start || !end || isNaN(start) || isNaN(end)) {
+          console.warn(`${i + 1}번째 예약 항목에서 잘못된 날짜 형식`, r);
+          return;
+        }
+
+        const temp = new Date(start);
+        while (temp < end) {
+          const iso = temp.toISOString();
+          if (!reservedMap[roomId]) reservedMap[roomId] = [];
+          reservedMap[roomId].push(iso);
+          temp.setMinutes(temp.getMinutes() + 10);
+        }
+      });
+
+      console.log('roomId별 예약 상태:', reservedMap);
+      set({ reservedTimeSlotsByRoom: reservedMap });
+    } catch (err) {
+      console.error('전체 예약 시간대 불러오기 실패:', err);
+      set({ reservedTimeSlotsByRoom: {} });
     }
   },
 }));
