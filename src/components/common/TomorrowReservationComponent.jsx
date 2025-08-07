@@ -56,16 +56,13 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       slots.push(new Date(base));
       base.setMinutes(base.getMinutes() + 10);
     }
-    const last = new Date(tomorrow);
-    last.setHours(23, 59, 0, 0);
-    slots.push(last);
+    slots.push(new Date(2025, 0, 2, 23, 59));
     return slots;
   };
 
   const getStatus = (time) => {
-    const timeDate = new Date(time);
     if (time.endsWith('23:59:00')) return 'display-only';
-    if (timeDate < new Date()) return 'past';
+    const date = new Date(time);
     if (reservedTimeSlots.includes(time)) return 'reserved';
     return 'available';
   };
@@ -117,6 +114,28 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     }
   };
 
+  const renderTimeBlocks = () => {
+    const slots = getTimeSlots();
+    const morning = slots.filter((t) => t.getHours() < 12);
+    const afternoon = slots.filter((t) => t.getHours() >= 12);
+    return (
+      <div className="flex flex-col gap-2">
+        {morning.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오전</div>
+            {renderLine(morning)}
+          </div>
+        )}
+        {afternoon.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오후</div>
+            {renderLine(afternoon)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
@@ -151,28 +170,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       </div>
     </div>
   );
-
-  const renderTimeBlocks = () => {
-    const slots = getTimeSlots();
-    const morning = slots.filter((t) => t.getHours() < 12);
-    const afternoon = slots.filter((t) => t.getHours() >= 12);
-    return (
-      <div className="flex flex-col gap-2">
-        {morning.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold mb-1">오전</div>
-            {renderLine(morning)}
-          </div>
-        )}
-        {afternoon.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold mb-1">오후</div>
-            {renderLine(afternoon)}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const renderStartTimeOptions = () => {
     const slots = getTimeSlots();

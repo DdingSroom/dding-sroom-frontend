@@ -18,9 +18,7 @@ const useReservationStore = create((set) => ({
 
   setLatestReservation: (reservation) =>
     set({ latestReservation: reservation }),
-
   clearReservation: () => set({ latestReservation: null }),
-
   setUserReservations: (reservations) =>
     set({ userReservations: reservations }),
 
@@ -54,12 +52,9 @@ const useReservationStore = create((set) => ({
         return r.status === 'RESERVED' && start > nowKST;
       });
 
-      const sorted = filtered.sort((a, b) => {
-        const aStart = parseToDate(a.startTime || a.reservationStartTime);
-        const bStart = parseToDate(b.startTime || b.reservationStartTime);
-        return aStart - bStart;
-      });
-
+      const sorted = filtered.sort(
+        (a, b) => parseToDate(a.startTime) - parseToDate(b.startTime),
+      );
       set({ userReservations: sorted });
     } catch (err) {
       console.error('전체 예약 정보 불러오기 실패:', err);
@@ -68,14 +63,14 @@ const useReservationStore = create((set) => ({
   },
 
   fetchAllReservedTimes: async () => {
-    console.log('fetchAllReservedTimes() 호출됨');
-
     try {
       const res = await axiosInstance.get('/api/reservations/all-reservation');
       const all = res.data.reservations;
       const reservedMap = {};
 
       all.forEach((r, i) => {
+        if (r.status !== 'RESERVED') return;
+
         const roomId = r.roomId;
         const start = parseToDate(r.startTime || r.reservationStartTime);
         const end = parseToDate(r.endTime || r.reservationEndTime);
@@ -94,7 +89,6 @@ const useReservationStore = create((set) => ({
         }
       });
 
-      console.log('roomId별 예약 상태:', reservedMap);
       set({ reservedTimeSlotsByRoom: reservedMap });
     } catch (err) {
       console.error('전체 예약 시간대 불러오기 실패:', err);
