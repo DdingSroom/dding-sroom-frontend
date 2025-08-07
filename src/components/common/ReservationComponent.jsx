@@ -1,4 +1,3 @@
-// ReservationComponent.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,43 +20,46 @@ const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [reservedTimes, setReservedTimes] = useState([]);
 
-  const router = useRouter();
   const { userId, accessToken } = useTokenStore();
-  const { fetchLatestReservation, fetchAllUserReservations } =
-    useReservationStore();
+  const {
+    fetchLatestReservation,
+    fetchAllUserReservations,
+    fetchAllReservedTimes,
+    reservedTimeSlotsByRoom,
+  } = useReservationStore();
 
+  const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
+  const router = useRouter();
   const now = new Date();
 
-  // 실시간 예약 정보 polling
-  const fetchAllReservations = async () => {
-    try {
-      const res = await axiosInstance.get('/api/reservations/all-reservation');
-      const all = res.data.reservations;
-      const reserved = [];
-      all.forEach((r) => {
-        const start = new Date(r.startTime || r.reservationStartTime);
-        const end = new Date(r.endTime || r.reservationEndTime);
-        const temp = new Date(start);
-        while (temp < end) {
-          reserved.push(temp.toISOString());
-          temp.setMinutes(temp.getMinutes() + 10);
-        }
-      });
-      setReservedTimes(reserved);
-    } catch (err) {
-      console.error('전체 예약 불러오기 실패:', err);
-    }
-  };
-
   useEffect(() => {
-    fetchAllReservations();
-    const interval = setInterval(() => {
-      fetchAllReservations();
-    }, 10000);
+    fetchAllReservedTimes();
+    const interval = setInterval(fetchAllReservedTimes, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  const getTimeSlots = () => {
+    const slots = [];
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 50, 0, 0);
+    while (base <= end) {
+      slots.push(new Date(base));
+      base.setMinutes(base.getMinutes() + 10);
+    }
+    slots.push(new Date(2025, 0, 1, 23, 59));
+    return slots;
+  };
+
+  const getStatus = (time) => {
+    const timeDate = new Date(time);
+    if (time.endsWith('23:59:00')) return 'display-only';
+    if (timeDate < now) return 'past';
+    if (reservedTimeSlots.includes(time)) return 'reserved';
+    return 'available';
+  };
 
   const handleOpenModal = () => {
     if (!accessToken) {
@@ -93,17 +95,11 @@ const ReservationComponent = ({ index, roomId }) => {
 
       alert(res.data.message || '예약이 완료되었습니다.');
 
-      await fetchLatestReservation();
-      await fetchAllUserReservations();
-      await fetchAllReservations();
-
-      const updated = [];
-      const temp = new Date(reservationStart);
-      while (temp < reservationEnd) {
-        updated.push(temp.toISOString());
-        temp.setMinutes(temp.getMinutes() + 10);
-      }
-      setReservedTimes((prev) => [...prev, ...updated]);
+      await Promise.all([
+        fetchLatestReservation(),
+        fetchAllUserReservations(),
+        fetchAllReservedTimes(),
+      ]);
 
       setOpen(false);
       setStartTime('');
@@ -114,27 +110,6 @@ const ReservationComponent = ({ index, roomId }) => {
     }
   };
 
-  const getTimeSlots = () => {
-    const slots = [];
-    const base = new Date();
-    base.setHours(0, 0, 0, 0);
-    const end = new Date();
-    end.setHours(23, 50, 0, 0);
-    while (base <= end) {
-      slots.push(new Date(base));
-      base.setMinutes(base.getMinutes() + 10);
-    }
-    slots.push(new Date(2025, 0, 1, 23, 59));
-    return slots;
-  };
-
-  const getStatus = (time) => {
-    if (time.endsWith('23:59:00')) return 'display-only';
-    if (reservedTimes.includes(time)) return 'reserved';
-    if (new Date(time) < now) return 'past';
-    return 'available';
-  };
-
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
@@ -142,6 +117,8 @@ const ReservationComponent = ({ index, roomId }) => {
           const hour = time.getHours();
           const isFirstOfHour = time.getMinutes() === 0;
           const timeStr = time.toISOString();
+          const status = getStatus(timeStr);
+
           return (
             <div
               key={timeStr}
@@ -160,7 +137,7 @@ const ReservationComponent = ({ index, roomId }) => {
               >
                 {hour}
               </span>
-              <TimeComponent status={getStatus(timeStr)} />
+              <TimeComponent status={status} />
             </div>
           );
         })}
@@ -202,8 +179,9 @@ const ReservationComponent = ({ index, roomId }) => {
 
     const options = [];
     while (rounded <= end) {
-      const iso = rounded.toISOString();
-      if (!reservedTimes.includes(iso)) {
+      const iso = rounded.toISOString().slice(0, 19);
+      const isReserved = reservedTimeSlots.some((t) => t.slice(0, 19) === iso);
+      if (!isReserved) {
         options.push(new Date(rounded));
       }
       rounded.setMinutes(rounded.getMinutes() + 10);

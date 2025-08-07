@@ -20,72 +20,50 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [reservedTimes, setReservedTimes] = useState([]);
 
-  const router = useRouter();
   const { userId, accessToken } = useTokenStore();
-  const { fetchLatestReservation, fetchAllUserReservations } =
-    useReservationStore();
+  const {
+    fetchLatestReservation,
+    fetchAllUserReservations,
+    fetchAllReservedTimes,
+    reservedTimeSlotsByRoom,
+  } = useReservationStore();
 
-  const baseDate = new Date();
-  baseDate.setDate(baseDate.getDate() + 1);
-  baseDate.setHours(0, 0, 0, 0);
+  const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
+  const router = useRouter();
 
-  const formattedTomorrow = baseDate.toLocaleDateString('ko-KR', {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const formattedTomorrow = tomorrow.toLocaleDateString('ko-KR', {
     month: 'long',
     day: 'numeric',
   });
 
-  const fetchAllReservations = async () => {
-    try {
-      const res = await axiosInstance.get('/api/reservations/all-reservation');
-      const all = res.data.reservations;
-      const reserved = [];
-
-      all.forEach((r) => {
-        const start = new Date(r.startTime || r.reservationStartTime);
-        const end = new Date(r.endTime || r.reservationEndTime);
-        const temp = new Date(start);
-        if (temp.toDateString() !== baseDate.toDateString()) return;
-
-        while (temp < end) {
-          reserved.push(temp.toISOString());
-          temp.setMinutes(temp.getMinutes() + 10);
-        }
-      });
-
-      setReservedTimes(reserved);
-    } catch (err) {
-      console.error('전체 예약 불러오기 실패:', err);
-    }
-  };
-
   useEffect(() => {
-    fetchAllReservations();
-    const interval = setInterval(fetchAllReservations, 10000);
+    fetchAllReservedTimes();
+    const interval = setInterval(fetchAllReservedTimes, 10000);
     return () => clearInterval(interval);
   }, []);
 
   const getTimeSlots = () => {
     const slots = [];
-    const base = new Date(baseDate);
-    const end = new Date(baseDate);
+    const base = new Date(tomorrow);
+    const end = new Date(tomorrow);
     end.setHours(23, 50, 0, 0);
     while (base <= end) {
       slots.push(new Date(base));
       base.setMinutes(base.getMinutes() + 10);
     }
-    const lastDisplaySlot = new Date(baseDate);
-    lastDisplaySlot.setHours(23, 59, 0, 0);
-    slots.push(lastDisplaySlot);
+    slots.push(new Date(2025, 0, 2, 23, 59));
     return slots;
   };
 
   const getStatus = (time) => {
-    const timeDate = new Date(time);
     if (time.endsWith('23:59:00')) return 'display-only';
-    if (reservedTimes.includes(time)) return 'reserved';
-    if (timeDate < baseDate) return 'past';
+    const date = new Date(time);
+    if (reservedTimeSlots.includes(time)) return 'reserved';
     return 'available';
   };
 
@@ -125,15 +103,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
       await fetchLatestReservation();
       await fetchAllUserReservations();
-      await fetchAllReservations();
-
-      const updated = [];
-      const temp = new Date(reservationStart);
-      while (temp < reservationEnd) {
-        updated.push(temp.toISOString());
-        temp.setMinutes(temp.getMinutes() + 10);
-      }
-      setReservedTimes((prev) => [...prev, ...updated]);
+      await fetchAllReservedTimes();
 
       setOpen(false);
       setStartTime('');
@@ -144,6 +114,28 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     }
   };
 
+  const renderTimeBlocks = () => {
+    const slots = getTimeSlots();
+    const morning = slots.filter((t) => t.getHours() < 12);
+    const afternoon = slots.filter((t) => t.getHours() >= 12);
+    return (
+      <div className="flex flex-col gap-2">
+        {morning.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오전</div>
+            {renderLine(morning)}
+          </div>
+        )}
+        {afternoon.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold mb-1">오후</div>
+            {renderLine(afternoon)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
@@ -151,14 +143,16 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
           const hour = time.getHours();
           const isFirstOfHour = time.getMinutes() === 0;
           const timeStr = time.toISOString();
+          const status = getStatus(timeStr);
+
           return (
             <div
               key={timeStr}
-              className="flex flex-col items-center justify-start"
+              className="flex flex-col items-center"
               style={{ width: '10px' }}
             >
               <span
-                className="text-[10px] text-[#4b4b4b] leading-none"
+                className="text-[10px] text-[#4b4b4b]"
                 style={{
                   visibility: isFirstOfHour ? 'visible' : 'hidden',
                   height: '16px',
@@ -169,7 +163,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
               >
                 {hour}
               </span>
-              <TimeComponent status={getStatus(timeStr)} />
+              <TimeComponent status={status} />
             </div>
           );
         })}
@@ -177,35 +171,10 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     </div>
   );
 
-  const renderTimeBlocks = () => {
-    const timeSlots = getTimeSlots();
-    const morningSlots = timeSlots.filter((time) => time.getHours() < 12);
-    const afternoonSlots = timeSlots.filter((time) => time.getHours() >= 12);
-    return (
-      <div className="flex flex-col w-full gap-2">
-        {morningSlots.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold mb-1">오전</div>
-            {renderLine(morningSlots)}
-          </div>
-        )}
-        {afternoonSlots.length > 0 && (
-          <div>
-            <div className="text-xs font-semibold mb-1">오후</div>
-            {renderLine(afternoonSlots)}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderStartTimeOptions = () => {
     const slots = getTimeSlots();
     return slots
-      .filter((time) => {
-        const iso = time.toISOString();
-        return !reservedTimes.includes(iso);
-      })
+      .filter((time) => !reservedTimeSlots.includes(time.toISOString()))
       .map((time) => (
         <option key={time.toISOString()} value={time.toISOString()}>
           {formatTime(time)}
@@ -216,12 +185,12 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
     const start = new Date(startTime);
-    const oneHourLater = new Date(start);
-    const twoHourLater = new Date(start);
-    oneHourLater.setMinutes(oneHourLater.getMinutes() + 60);
-    twoHourLater.setMinutes(twoHourLater.getMinutes() + 120);
+    const end1 = new Date(start);
+    const end2 = new Date(start);
+    end1.setMinutes(end1.getMinutes() + 60);
+    end2.setMinutes(end2.getMinutes() + 120);
 
-    return [oneHourLater, twoHourLater].map((time) => (
+    return [end1, end2].map((time) => (
       <option key={time.toISOString()} value={time.toISOString()}>
         {formatTime(time)}
       </option>

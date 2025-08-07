@@ -9,7 +9,11 @@ import axiosInstance from '../../libs/api/instance';
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
   const { userId, accessToken } = useTokenStore();
-  const { userReservations, setUserReservations } = useReservationStore();
+  const {
+    userReservations,
+    setUserReservations,
+    fetchAllReservedTimes, // ✅ 추가
+  } = useReservationStore();
 
   const parseDate = (raw) => {
     if (!raw) return null;
@@ -68,7 +72,8 @@ const AfterLoginBanner = () => {
       });
       alert(res.data.message || '예약이 취소되었습니다.');
       setOpenReservationId(null);
-      fetchAllUserReservations();
+      await fetchAllUserReservations(); // ✅ 사용자 예약 상태 갱신
+      await fetchAllReservedTimes(); // ✅ 모든 예약 상태 갱신 (UI 색상 즉시 반영)
     } catch (err) {
       console.error('예약 취소 실패:', err);
       alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
