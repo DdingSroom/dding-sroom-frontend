@@ -76,7 +76,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
           띵스룸

@@ -7,7 +7,7 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-[90%] max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"
+        className="bg-white rounded-2xl w-[90%] max-w-[500px] mx-4 shadow-2xl border border-gray-100 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto max-h-[70vh] p-6">{children}</div>

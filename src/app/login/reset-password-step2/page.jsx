@@ -59,7 +59,7 @@ export default function ResetPassword2() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
         <p className="text-[#73726e] text-sm">비밀번호 입력</p>

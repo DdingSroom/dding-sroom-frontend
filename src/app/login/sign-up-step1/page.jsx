@@ -76,7 +76,7 @@ export default function SignUpStep1() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
         <p className="text-[#73726e] text-sm">학교 이메일 인증하기</p>
