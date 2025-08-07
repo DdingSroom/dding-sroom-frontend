@@ -66,7 +66,13 @@ export default function UserDetailPage() {
             <p>
               역할 <span className="ml-2">{user.role}</span>
             </p>
+            {/* <p>상태 <span className="ml-2">{user.state}</span></p>
+            <p>학번 <span className="ml-2">{user.studentNumber ?? '없음'}</span></p>
+            <p>나이 <span className="ml-2">{user.age ?? '미입력'}</span></p> */}
           </div>
+          {/* <span className="absolute top-4 right-4 text-sm text-red-500">
+            사용자 차단
+          </span> */}
         </div>
 
         {/* 가입 정보 */}
