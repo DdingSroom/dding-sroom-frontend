@@ -5,6 +5,16 @@ import { useParams, useRouter } from 'next/navigation';
 import axiosInstance from '../../../../libs/api/instance';
 import ReservationItem from '@components/admin/ReservationItem';
 
+function formatDateArrayExactly(dateArray) {
+  if (!Array.isArray(dateArray)) return '없음';
+
+  const [y, m, d, h, min, s] = dateArray;
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  return `${y}. ${pad(m)}. ${pad(d)}. ${pad(h)}:${pad(min)}:${pad(s)}`;
+}
+
 export default function UserDetailPage() {
   const { userId } = useParams();
   const router = useRouter();
@@ -13,11 +23,7 @@ export default function UserDetailPage() {
   const fetchUserDetail = async () => {
     try {
       const response = await axiosInstance.get(`/admin/users/${userId}`);
-
-      // 응답 로그 확인
-      console.log('전체 응답:', response);
-      console.log('사용자 데이터:', response.data.data);
-
+      console.log('사용자 응답:', response);
       setUser(response.data.data);
     } catch (error) {
       console.error('사용자 상세 조회 실패:', error);
@@ -47,6 +53,7 @@ export default function UserDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* 회원 정보 */}
         <div className="bg-white p-4 rounded shadow-sm relative">
           <h2 className="font-semibold text-sm mb-2">회원 정보</h2>
           <div className="text-sm space-y-1">
@@ -59,30 +66,17 @@ export default function UserDetailPage() {
             <p>
               역할 <span className="ml-2">{user.role}</span>
             </p>
-            {/* <p>
-              상태 <span className="ml-2">{user.state}</span>
-            </p>
-            <p>
-              학번 <span className="ml-2">{user.studentNumber ?? '없음'}</span>
-            </p>
-            <p>
-              나이 <span className="ml-2">{user.age ?? '미입력'}</span>
-            </p> */}
           </div>
-          {/* <span className="absolute top-4 right-4 text-sm text-red-500">
-            사용자 차단
-          </span> */}
         </div>
 
+        {/* 가입 정보 */}
         <div className="bg-white p-4 rounded shadow-sm">
           <h2 className="font-semibold text-sm mb-2">가입 정보</h2>
           <div className="text-sm space-y-1">
             <p>
               가입일{' '}
               <span className="ml-2">
-                {Array.isArray(user.registrationDate)
-                  ? new Date(...user.registrationDate).toLocaleString('ko-KR')
-                  : '없음'}
+                {formatDateArrayExactly(user.registrationDate)}
               </span>
             </p>
           </div>
