@@ -76,111 +76,115 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full pt-12 px-4">
-      <div className="flex flex-col w-full mb-8 gap-1 mt-20">
-        <h2 className="text-center text-[#788cff] text-[25px] font-bold">
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
+      <div className="text-center space-y-3 mb-8">
+        <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
           띵스룸
-        </h2>
-        <div className="text-[#333333] text-center text-[13px] font-normal">
+        </h1>
+        <div className="text-[#73726e] text-sm leading-relaxed">
           <p>명지대학교 이메일로 가입하여</p>
           <p>스터디룸을 간편히 사용해요!</p>
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="flex-1 max-w-md mx-auto w-full space-y-6">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleLogin();
           }}
-          className="w-full"
+          className="space-y-6"
         >
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label>이메일</label>
-              <StyledEmailInput
-                className="h-10 text-sm"
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
-                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
-                  }
-                }}
-                placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
-              {emailError && (
-                <p className="text-red-500 text-sm mt-1">{emailError}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              이메일
+            </label>
+            <StyledEmailInput
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => {
+                const inputEmail = e.target.value;
+                setEmail(inputEmail);
+                if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                  setEmailError('');
+                } else {
+                  setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                }
+              }}
+              placeholder="학교 이메일을 입력해주세요."
+              setEmail={setEmail}
+            />
+            {emailError && (
+              <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
+            )}
+          </div>
 
-            <div className="flex flex-col gap-2">
-              <label>비밀번호</label>
-              <StyledPasswordInput
-                className="h-10 text-sm"
-                id="password"
-                value={password}
-                onChange={(e) => {
-                  const pw = e.target.value;
-                  setPassword(pw);
-                  if (!isValidPassword(pw)) {
-                    setPasswordError(
-                      '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
-                    );
-                  } else {
-                    setPasswordError('');
-                  }
-                  if (newPassword_2 && pw !== newPassword_2) {
-                    setConfirmError('비밀번호가 일치하지 않습니다.');
-                  } else {
-                    setConfirmError('');
-                  }
-                }}
-                placeholder="비밀번호를 입력해주세요."
-                isVisible={isPasswordVisible}
-                handlePasswordVisible={handlePasswordVisible}
-              />
-              {passwordError && (
-                <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-              )}
-              {confirmError && (
-                <p className="text-red-500 text-sm mt-1">{confirmError}</p>
-              )}
-            </div>
-
-            <div className="w-full mt-4">
-              <Button
-                style={{ width: '100%' }}
-                disabled={!isLoginAvailable()}
-                text="로그인"
-                type="submit"
-              />
-            </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              비밀번호
+            </label>
+            <StyledPasswordInput
+              id="password"
+              value={password}
+              onChange={(e) => {
+                const pw = e.target.value;
+                setPassword(pw);
+                if (!isValidPassword(pw)) {
+                  setPasswordError(
+                    '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                  );
+                } else {
+                  setPasswordError('');
+                }
+                if (newPassword_2 && pw !== newPassword_2) {
+                  setConfirmError('비밀번호가 일치하지 않습니다.');
+                } else {
+                  setConfirmError('');
+                }
+              }}
+              placeholder="비밀번호를 입력해주세요."
+              isVisible={isPasswordVisible}
+              handlePasswordVisible={handlePasswordVisible}
+            />
+            {passwordError && (
+              <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
+            )}
+            {confirmError && (
+              <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
+            )}
           </div>
         </form>
 
-        <div className="flex items-center justify-between w-full mt-4">
-          <div className="check_wrap">
-            <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
-              로그인 유지
-            </StyledCheckbox>
-          </div>
+        <div className="flex items-center justify-between">
+          <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
+            로그인 유지
+          </StyledCheckbox>
 
-          <div className="button_wrap inline-flex gap-2 text-[#333333] text-sm font-normal">
-            <Link href="/login/sign-up-step1">
-              <button>회원가입</button>
+          <div className="flex items-center gap-4 text-xs text-[#73726e]">
+            <Link
+              href="/login/sign-up-step1"
+              className="hover:text-[#37352f] transition-colors"
+            >
+              회원가입
             </Link>
-            <Link href="/login/reset-password-step1">
-              <button>비밀번호 재설정</button>
+            <Link
+              href="/login/reset-password-step1"
+              className="hover:text-[#37352f] transition-colors"
+            >
+              비밀번호 재설정
             </Link>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-md mx-auto w-full mt-8">
+        <Button
+          disabled={!isLoginAvailable()}
+          text="로그인"
+          type="submit"
+          onClick={handleLogin}
+        />
       </div>
     </div>
   );
@@ -189,7 +193,7 @@ export default function Login() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="px-4 py-4 bg-white rounded-md border border-[#9999a2]"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
       value={value}
       {...props}
     />
@@ -202,16 +206,23 @@ const StyledEmailInput = ({ value, setEmail, ...props }) => {
   };
 
   return (
-    <div className="flex w-full relative">
-      <StyledInput {...props} style={{ width: '100%' }} value={value} />
-      <img
-        className="absolute top-[50%] right-[10px]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-        src="/static/icons/x_icon.svg"
-        alt="X"
-        width={12}
-        onClick={handleRemoveEmailValue}
-      />
+    <div className="relative">
+      <StyledInput {...props} value={value} />
+      {value && (
+        <button
+          type="button"
+          onClick={handleRemoveEmailValue}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <img
+            src="/static/icons/x_icon.svg"
+            alt="Clear"
+            width={14}
+            height={14}
+            className="opacity-60 hover:opacity-80"
+          />
+        </button>
+      )}
     </div>
   );
 };
@@ -223,53 +234,60 @@ const StyledPasswordInput = ({
   ...props
 }) => {
   return (
-    <div className="flex w-full relative">
+    <div className="relative">
       <StyledInput
         {...props}
-        style={{ width: '100%' }}
         value={value}
         type={isVisible ? 'text' : 'password'}
       />
-      <img
-        className="absolute top-[50%] right-[5px]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-        src={
-          isVisible
-            ? '/static/icons/eye_off_icon.svg'
-            : '/static/icons/eye_on_icon.svg'
-        }
-        alt="Toggle Password Visibility"
-        width={18}
+      <button
+        type="button"
         onClick={handlePasswordVisible}
-      />
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+      >
+        <img
+          src={
+            isVisible
+              ? '/static/icons/eye_off_icon.svg'
+              : '/static/icons/eye_on_icon.svg'
+          }
+          alt="Toggle Password Visibility"
+          width={18}
+          height={18}
+          className="opacity-60 hover:opacity-80"
+        />
+      </button>
     </div>
   );
 };
 
 const StyledCheckbox = ({ onChange, children, ...props }) => {
   return (
-    <label className="inline-flex items-center cursor-pointer">
-      <div className="relative inline-flex items-center">
+    <label className="inline-flex items-center cursor-pointer group">
+      <div className="relative">
         <input
           type="checkbox"
           checked={props.checked}
           onChange={onChange}
-          className="appearance-none w-6 h-6 focus:outline-none"
+          className="appearance-none w-5 h-5 focus:outline-none"
         />
-        <div className="absolute left-0 top-0 flex items-center justify-center w-6 h-6">
+        <div className="absolute inset-0 flex items-center justify-center">
           <img
             src={
               props.checked
                 ? '/static/icons/check_off_icon.svg'
                 : '/static/icons/check_on_icon.svg'
             }
-            alt="Checkbox Icon"
-            width={24}
-            height={24}
+            alt="Checkbox"
+            width={20}
+            height={20}
+            className="group-hover:opacity-80 transition-opacity"
           />
         </div>
       </div>
-      <span className="inline-flex items-center ml-2">{children}</span>
+      <span className="ml-2 text-xs text-[#73726e] select-none">
+        {children}
+      </span>
     </label>
   );
 };

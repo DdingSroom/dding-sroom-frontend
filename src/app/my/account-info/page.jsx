@@ -57,31 +57,52 @@ export default function AccountInfo() {
   };
 
   return (
-    <div className="w-full">
+    <div className="min-h-screen bg-gray-50">
       <MyPageHeader />
 
-      <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-6">
-        <p className="text-2xl">내 정보</p>
-      </div>
+      <div className="px-6 py-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+          <div className="px-6 py-5 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-[#37352f]">내 정보</h2>
+          </div>
 
-      <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-1">
-        <p className="text-xl">이메일</p>
-        <p className="text-[#6E6E6E]">{userInfo.email || '이메일 없음'}</p>
-      </div>
+          <div className="px-6 py-4 border-b border-gray-100">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-[#37352f]">이메일</label>
+              <p className="text-sm text-[#73726e]">{userInfo.email || '이메일 없음'}</p>
+            </div>
+          </div>
 
-      <div
-        className="flex items-center justify-between p-6 bg-[#FFFF] border-b border-t cursor-pointer"
-        onClick={() => setOpen(true)}
-      >
-        <div className="flex flex-col">
-          <p className="text-xl">이름</p>
-          <p className="text-[#6E6E6E]">{userInfo.name || '이름 없음'}</p>
+          <button
+            className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+            onClick={() => setOpen(true)}
+          >
+            <div className="flex flex-col gap-1 text-left">
+              <label className="text-sm font-medium text-[#37352f]">이름</label>
+              <p className="text-sm text-[#73726e]">{userInfo.name || '이름 없음'}</p>
+            </div>
+            <img
+              src="/static/icons/arrow_right_icon.svg"
+              alt="arrow"
+              className="w-5 h-5 opacity-60"
+            />
+          </button>
         </div>
-        <img
-          src="/static/icons/arrow_right_icon.svg"
-          alt="arrow"
-          className="h-8"
-        />
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+          <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-[#37352f]">개인정보 보호</h2>
+          </div>
+          <MyPageBlock
+            name="비밀번호 재설정"
+            linkPath="/login/reset-password-step1"
+          />
+          <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
+        </div>
       </div>
 
       <Modal
@@ -90,32 +111,22 @@ export default function AccountInfo() {
         onSubmit={handleUsernameChange}
         text="수정"
       >
-        <div className="p-4 flex flex-col h-full">
-          <div className="font-semibold text-2xl text-center">이름 변경</div>
-          <div className="mt-20">
-            <label className="mb-2">이름</label>
+        <div className="p-6 space-y-6">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold text-[#37352f]">이름 변경</h3>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">이름</label>
             <input
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="border rounded-md p-2 w-full"
+              className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
           </div>
         </div>
       </Modal>
-
-      <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
-
-      <div className="flex-col items-center justify-center p-6 bg-[#FFFF] mt-8 mb-1">
-        <p className="text-2xl">개인 정보 보호</p>
-      </div>
-
-      <MyPageBlock
-        name="비밀 번호 재설정"
-        linkPath="/login/reset-password-step1"
-      />
-      <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
     </div>
   );
 }

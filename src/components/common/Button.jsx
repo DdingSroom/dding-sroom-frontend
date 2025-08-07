@@ -4,11 +4,11 @@ const Button = ({ onClick, disabled, text, ...props }) => {
   return (
     <button
       {...props}
-      className={`flex items-center justify-center w-full h-[2.5625rem] rounded-[0.44963rem] text-[0.97419rem] ${
+      className={`flex items-center justify-center w-full h-12 rounded-lg text-sm font-medium transition-all duration-200 ${
         disabled
-          ? 'bg-[#d5d5d5] text-[#9999a2]'
-          : 'bg-[#788cff] text-white cursor-pointer'
-      } `}
+          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          : 'bg-[#788cff] text-white cursor-pointer hover:bg-[#6a7dff] active:bg-[#5d72ff] hover:shadow-md'
+      }`}
       onClick={onClick}
       disabled={disabled}
     >

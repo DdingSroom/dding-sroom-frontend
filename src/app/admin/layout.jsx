@@ -1,9 +1,16 @@
-export const metadata = {
-  title: 'DdingsRoom 관리자',
-  description: '명지대학교 스터디룸 관리자 페이지',
-};
+'use client';
+
+import { useState } from 'react';
+import InfoModal from '../../components/common/InfoModal';
+
+// export const metadata = {
+//   title: 'DdingsRoom 관리자',
+//   description: '명지대학교 스터디룸 관리자 페이지',
+// };
 
 export default function AdminLayout({ children }) {
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
   return (
     <html lang="ko">
       <body className="admin-body bg-[#F5F5F5] min-h-screen overflow-x-hidden">
@@ -13,20 +20,50 @@ export default function AdminLayout({ children }) {
             <nav className="flex flex-col gap-4 text-sm text-gray-700">
               <a
                 href="/admin/dashboard"
-                className="text-[#5B72EE] font-semibold"
+                className="text-gray-700 hover:text-[#5B72EE] font-semibold transition-colors"
               >
                 대시보드
               </a>
-              <a href="/admin/user-management">사용자 관리</a>
-              <a href="/admin/reservations-by-date">날짜별 예약 현황</a>
-              <a href="/admin/reservation-detail">예약 목록</a>
-              <a href="#">커뮤니티 관리</a>
-              <a href="#">건의내역</a>
+              <a
+                href="/admin/user-management"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                사용자 관리
+              </a>
+              <a
+                href="/admin/reservations-by-date"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                날짜별 예약 현황
+              </a>
+              <a
+                href="/admin/reservation-detail"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                예약 목록
+              </a>
+              <button
+                onClick={() => setIsInfoModalOpen(true)}
+                className="text-left hover:text-[#788cff] transition-colors"
+              >
+                커뮤니티 관리
+              </button>
+              <button
+                onClick={() => setIsInfoModalOpen(true)}
+                className="text-left hover:text-[#788cff] transition-colors"
+              >
+                건의내역
+              </button>
             </nav>
           </aside>
 
           <main className="flex-1 p-10 overflow-y-auto">{children}</main>
         </div>
+        {/*  */}
+        <InfoModal
+          isOpen={isInfoModalOpen}
+          onClose={() => setIsInfoModalOpen(false)}
+        />
 
         {/* 모바일 접근 제한 */}
         <script
