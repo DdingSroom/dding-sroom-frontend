@@ -35,7 +35,7 @@ export default function ReservationDetailPage() {
   return (
     <div className="bg-[#F1F2F4] p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
-        <h1 className="text-lg font-semibold mb-4">예약 현황</h1>
+        <h1 className="text-lg font-semibold mb-4">예약 목록</h1>
 
         {loading && <p>로딩 중...</p>}
         {error && <p className="text-red-500">{error}</p>}
