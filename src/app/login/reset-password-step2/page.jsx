@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
 import { isValidPassword } from '../../../constants/regex';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import axiosInstance from '../../../libs/api/instance';
 
 export default function ResetPassword2() {
@@ -15,7 +15,6 @@ export default function ResetPassword2() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('resetEmail');
