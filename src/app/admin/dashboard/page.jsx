@@ -38,10 +38,10 @@ export default function AdminDashboard() {
         {/* 예약 현황 */}
         <div className="col-span-2 bg-white p-4 rounded shadow">
           <div className="flex justify-between items-center mb-3">
-            <h2 className="font-semibold">예약 현황</h2>
+            <h2 className="font-semibold">날짜별 예약 현황</h2>
             <button
               className="text-sm text-[#788DFF]"
-              onClick={() => router.push('/admin/reservation-detail')}
+              onClick={() => router.push('/admin/reservations-by-date')}
             >
               더보기
             </button>
