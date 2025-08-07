@@ -1,0 +1,26 @@
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function UserTableRow({ user }) {
+  const router = useRouter();
+
+  const handleDetailClick = () => {
+    router.push(`/admin/user-detail/${user.id}`); // ✅ userId 포함한 경로로 이동
+  };
+
+  return (
+    <tr className="border-b hover:bg-gray-50 transition">
+      <td className="py-3 px-2 text-[#666]">{user.id}</td>
+      <td className="py-3 px-2">{user.username}</td>
+      <td className="py-3 px-2">{user.email}</td>
+      <td className="py-3 px-2 text-center">
+        <button
+          onClick={handleDetailClick}
+          className="bg-[#788DFF] text-white px-3 py-1 text-xs rounded"
+        >
+          상세 정보 보기
+        </button>
+      </td>
+    </tr>
+  );
+}

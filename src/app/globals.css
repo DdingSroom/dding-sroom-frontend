@@ -33,16 +33,27 @@ body {
   margin-left: auto;
   margin-right: auto;
   background-color: #EBECEF;
+  max-width: 100%; 
+  overflow-x: hidden;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) { 
   body {
-    width: 100%;
+    width: 100%; 
+    padding: 0; 
   }
 }
 
-@media (min-width: 401px) {
+@media (min-width: 601px) { 
   body {
-    width: 400px;
+    width: 600px; 
   }
+}
+
+body.admin-body {
+  margin: 0;
+  width: 100% !important;
+  max-width: none !important;
+  background-color: #F5F5F5 !important;
+  font-size: 14px;
 }
