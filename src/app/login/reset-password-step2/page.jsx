@@ -59,24 +59,19 @@ export default function ResetPassword2() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full pt-12 px-4 bg-gray-50">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8 w-full">
-        <div className="flex flex-col w-full gap-2 text-center">
-          <h2 className="text-2xl font-semibold text-[#37352f]">
-            비밀번호 재설정
-          </h2>
-          <p className="text-[#73726e] text-sm">비밀번호 입력</p>
-        </div>
+    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
+      <div className="text-center space-y-3 mb-8">
+        <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
+        <p className="text-[#73726e] text-sm">비밀번호 입력</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full flex-1 flex flex-col">
-        <div className="flex flex-col gap-6 flex-1">
-          <div className="flex flex-col gap-3">
-            <label className="text-sm font-medium text-[#37352f]">
+      <div className="flex-1 max-w-md mx-auto w-full">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
               새 비밀번호
             </label>
             <NewPasswordField
-              className="h-10 text-sm"
               id="newPassword"
               value={newPassword}
               onChange={(e) => {
@@ -100,16 +95,15 @@ export default function ResetPassword2() {
               handlePasswordVisible={handlenewPasswordVisible}
             />
             {passwordError && (
-              <p className="text-red-500 text-sm">{passwordError}</p>
+              <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-3">
-            <label className="text-sm font-medium text-[#37352f]">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
               새 비밀번호 확인
             </label>
             <ConfirmPasswordField
-              className="h-10 text-sm flex-grow"
               id="newPassword_2"
               value={newPassword_2}
               onChange={(e) => {
@@ -129,19 +123,18 @@ export default function ResetPassword2() {
               }
             />
             {confirmError && (
-              <p className="text-red-500 text-sm">{confirmError}</p>
+              <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
             )}
           </div>
         </div>
+      </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <Button
-            style={{ width: '100%' }}
-            onClick={handlePasswordReset}
-            disabled={!isLoginAvailable()}
-            text="확인"
-          />
-        </div>
+      <div className="max-w-md mx-auto w-full mt-8">
+        <Button
+          onClick={handlePasswordReset}
+          disabled={!isLoginAvailable()}
+          text="확인"
+        />
       </div>
     </div>
   );
@@ -150,7 +143,7 @@ export default function ResetPassword2() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="px-4 py-3 bg-white rounded-lg border border-gray-200 focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/20 outline-none transition-all duration-200 text-sm"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
       value={value}
       {...props}
     />
@@ -164,25 +157,29 @@ const NewPasswordField = ({
   ...props
 }) => {
   return (
-    <div className="flex w-full relative">
+    <div className="relative">
       <StyledInput
         {...props}
-        style={{ width: '100%' }}
         value={value}
         type={isVisible ? 'text' : 'password'}
       />
-      <img
-        className="absolute top-[50%] right-[5px]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-        src={
-          isVisible
-            ? '/static/icons/eye_off_icon.svg'
-            : '/static/icons/eye_on_icon.svg'
-        }
-        alt="비밀번호 표시 토글"
-        width={18}
+      <button
+        type="button"
         onClick={handlePasswordVisible}
-      />
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+      >
+        <img
+          src={
+            isVisible
+              ? '/static/icons/eye_off_icon.svg'
+              : '/static/icons/eye_on_icon.svg'
+          }
+          alt="Toggle Password Visibility"
+          width={18}
+          height={18}
+          className="opacity-60 hover:opacity-80"
+        />
+      </button>
     </div>
   );
 };
@@ -195,25 +192,29 @@ const ConfirmPasswordField = ({
   ...props
 }) => {
   return (
-    <div className="flex w-full relative">
+    <div className="relative">
       <StyledInput
         {...props}
-        style={{ width: '100%' }}
         value={value}
         type={isVisible ? 'text' : 'password'}
       />
-      <img
-        className="absolute top-[50%] right-[5px]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-        src={
-          isMatch
-            ? '/static/icons/check_off_icon.svg'
-            : '/static/icons/check_on_icon.svg'
-        }
-        alt="비밀번호 일치 여부 표시"
-        width={18}
+      <button
+        type="button"
         onClick={handlePasswordVisible}
-      />
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+      >
+        <img
+          src={
+            isMatch
+              ? '/static/icons/check_off_icon.svg'
+              : '/static/icons/check_on_icon.svg'
+          }
+          alt="Password Match Indicator"
+          width={18}
+          height={18}
+          className="opacity-60 hover:opacity-80"
+        />
+      </button>
     </div>
   );
 };

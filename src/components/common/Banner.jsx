@@ -14,7 +14,7 @@ const Banner = () => {
         <div className="space-y-3">
           <div className="text-[#37352f] text-sm leading-relaxed">로그인하여 자리를 예약해보세요!</div>
           <Link href="/login">
-            <button className="flex items-center gap-2 px-4 py-2 bg-[#788cff] text-white text-sm font-medium rounded-lg hover:bg-[#6a7dff] transition-colors shadow-sm">
+            <button className="flex items-center gap-2 px-4 py-2 bg-[#5B72EE] text-white text-sm font-medium rounded-lg hover:bg-[#4f63d1] transition-colors shadow-sm">
               로그인
               <img
                 src="/static/icons/arrow_icon.png"

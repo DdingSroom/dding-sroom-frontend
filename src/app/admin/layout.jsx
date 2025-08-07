@@ -20,7 +20,7 @@ export default function AdminLayout({ children }) {
             <nav className="flex flex-col gap-4 text-sm text-gray-700">
               <a
                 href="/admin/dashboard"
-                className="text-[#5B72EE] font-semibold"
+                className="text-gray-700 hover:text-[#5B72EE] font-semibold transition-colors"
               >
                 대시보드
               </a>

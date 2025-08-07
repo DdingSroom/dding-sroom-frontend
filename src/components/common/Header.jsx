@@ -14,7 +14,7 @@ const Header = () => {
 
   return (
     <header className="flex justify-between items-center px-6 py-4 pt-12 bg-transparent">
-      <img src="/static/icons/logo.svg" alt="logo" className="h-10" />
+      <img src="/static/icons/logo.svg" alt="logo" className="h-12" />
       <div className="flex items-center gap-4">
         <button 
           className="p-2 hover:bg-gray-50 rounded-lg transition-colors"

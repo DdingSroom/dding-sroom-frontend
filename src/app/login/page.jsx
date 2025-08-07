@@ -76,110 +76,115 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl font-bold text-[#788cff] tracking-tight">
-            띵스룸
-          </h1>
-          <div className="text-[#73726e] text-sm leading-relaxed">
-            <p>명지대학교 이메일로 가입하여</p>
-            <p>스터디룸을 간편히 사용해요!</p>
+    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
+      <div className="text-center space-y-3 mb-8">
+        <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
+          띵스룸
+        </h1>
+        <div className="text-[#73726e] text-sm leading-relaxed">
+          <p>명지대학교 이메일로 가입하여</p>
+          <p>스터디룸을 간편히 사용해요!</p>
+        </div>
+      </div>
+
+      <div className="flex-1 max-w-md mx-auto w-full space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          className="space-y-6"
+        >
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              이메일
+            </label>
+            <StyledEmailInput
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => {
+                const inputEmail = e.target.value;
+                setEmail(inputEmail);
+                if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                  setEmailError('');
+                } else {
+                  setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                }
+              }}
+              placeholder="학교 이메일을 입력해주세요."
+              setEmail={setEmail}
+            />
+            {emailError && (
+              <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              비밀번호
+            </label>
+            <StyledPasswordInput
+              id="password"
+              value={password}
+              onChange={(e) => {
+                const pw = e.target.value;
+                setPassword(pw);
+                if (!isValidPassword(pw)) {
+                  setPasswordError(
+                    '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                  );
+                } else {
+                  setPasswordError('');
+                }
+                if (newPassword_2 && pw !== newPassword_2) {
+                  setConfirmError('비밀번호가 일치하지 않습니다.');
+                } else {
+                  setConfirmError('');
+                }
+              }}
+              placeholder="비밀번호를 입력해주세요."
+              isVisible={isPasswordVisible}
+              handlePasswordVisible={handlePasswordVisible}
+            />
+            {passwordError && (
+              <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
+            )}
+            {confirmError && (
+              <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
+            )}
+          </div>
+        </form>
+
+        <div className="flex items-center justify-between">
+          <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
+            로그인 유지
+          </StyledCheckbox>
+
+          <div className="flex items-center gap-4 text-xs text-[#73726e]">
+            <Link
+              href="/login/sign-up-step1"
+              className="hover:text-[#37352f] transition-colors"
+            >
+              회원가입
+            </Link>
+            <Link
+              href="/login/reset-password-step1"
+              className="hover:text-[#37352f] transition-colors"
+            >
+              비밀번호 재설정
+            </Link>
           </div>
         </div>
+      </div>
 
-        <div className="space-y-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}
-            className="space-y-5"
-          >
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
-                이메일
-              </label>
-              <StyledEmailInput
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
-                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
-                  }
-                }}
-                placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
-              {emailError && (
-                <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
-                비밀번호
-              </label>
-              <StyledPasswordInput
-                id="password"
-                value={password}
-                onChange={(e) => {
-                  const pw = e.target.value;
-                  setPassword(pw);
-                  if (!isValidPassword(pw)) {
-                    setPasswordError(
-                      '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
-                    );
-                  } else {
-                    setPasswordError('');
-                  }
-                  if (newPassword_2 && pw !== newPassword_2) {
-                    setConfirmError('비밀번호가 일치하지 않습니다.');
-                  } else {
-                    setConfirmError('');
-                  }
-                }}
-                placeholder="비밀번호를 입력해주세요."
-                isVisible={isPasswordVisible}
-                handlePasswordVisible={handlePasswordVisible}
-              />
-              {passwordError && (
-                <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
-              )}
-              {confirmError && (
-                <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
-              )}
-            </div>
-
-            <div className="pt-2">
-              <Button
-                disabled={!isLoginAvailable()}
-                text="로그인"
-                type="submit"
-              />
-            </div>
-          </form>
-
-          <div className="flex items-center justify-between">
-            <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
-              로그인 유지
-            </StyledCheckbox>
-
-            <div className="flex items-center gap-4 text-xs text-[#73726e]">
-              <Link href="/login/sign-up-step1" className="hover:text-[#37352f] transition-colors">
-                회원가입
-              </Link>
-              <Link href="/login/reset-password-step1" className="hover:text-[#37352f] transition-colors">
-                비밀번호 재설정
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-md mx-auto w-full mt-8">
+        <Button
+          disabled={!isLoginAvailable()}
+          text="로그인"
+          type="submit"
+          onClick={handleLogin}
+        />
       </div>
     </div>
   );
@@ -280,7 +285,9 @@ const StyledCheckbox = ({ onChange, children, ...props }) => {
           />
         </div>
       </div>
-      <span className="ml-2 text-xs text-[#73726e] select-none">{children}</span>
+      <span className="ml-2 text-xs text-[#73726e] select-none">
+        {children}
+      </span>
     </label>
   );
 };

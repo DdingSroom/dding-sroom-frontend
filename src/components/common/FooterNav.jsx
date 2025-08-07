@@ -10,11 +10,18 @@ const FooterNav = () => {
     <>
       <footer className="flex justify-around items-center p-4 bg-white border-t border-gray-100">
         <button className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group">
-          <img
-            src="/static/icons/reservation_icon.png"
-            alt="reservation"
-            className="w-6 h-6 transition-all duration-200 group-hover:brightness-0 group-hover:invert group-hover:sepia group-hover:saturate-[500%] group-hover:hue-rotate-[210deg]"
-          />
+          <div className="relative w-6 h-6">
+            <img
+              src="/static/icons/reservation_icon.svg"
+              alt="reservation"
+              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
+            />
+            <img
+              src="/static/icons/reservation_2_icon.svg"
+              alt="reservation hover"
+              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            />
+          </div>
           <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
             예약하기
           </span>
@@ -24,11 +31,18 @@ const FooterNav = () => {
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
           onClick={() => setIsInfoModalOpen(true)}
         >
-          <img
-            src="/static/icons/community_icon.png"
-            alt="community"
-            className="w-6 h-6 transition-all duration-200 group-hover:brightness-0 group-hover:invert group-hover:sepia group-hover:saturate-[500%] group-hover:hue-rotate-[210deg]"
-          />
+          <div className="relative w-6 h-6">
+            <img
+              src="/static/icons/community_icon.svg"
+              alt="community"
+              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
+            />
+            <img
+              src="/static/icons/community_2_icon.svg"
+              alt="community hover"
+              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            />
+          </div>
           <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
             커뮤니티
           </span>
@@ -38,11 +52,18 @@ const FooterNav = () => {
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
           onClick={() => setIsInfoModalOpen(true)}
         >
-          <img
-            src="/static/icons/proposal_icon.png"
-            alt="proposal"
-            className="w-6 h-6 transition-all duration-200 group-hover:brightness-0 group-hover:invert group-hover:sepia group-hover:saturate-[500%] group-hover:hue-rotate-[210deg]"
-          />
+          <div className="relative w-6 h-6">
+            <img
+              src="/static/icons/proposal_icon.svg"
+              alt="proposal"
+              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
+            />
+            <img
+              src="/static/icons/proposal_2_icon.svg"
+              alt="proposal hover"
+              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            />
+          </div>
           <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
             건의하기
           </span>
