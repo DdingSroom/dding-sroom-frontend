@@ -18,7 +18,8 @@ export default function AdminLayout({ children }) {
                 대시보드
               </a>
               <a href="/admin/user-management">사용자 관리</a>
-              <a href="/admin/reservation-detail">예약</a>
+              <a href="/admin/reservations-by-date">날짜별 예약 현황</a>
+              <a href="/admin/reservation-detail">예약 목록</a>
               <a href="#">커뮤니티 관리</a>
               <a href="#">건의내역</a>
             </nav>

@@ -11,7 +11,7 @@ export default function UserTableRow({ user }) {
   return (
     <tr className="border-b hover:bg-gray-50 transition">
       <td className="py-3 px-2 text-[#666]">{user.id}</td>
-      <td className="py-3 px-2">{user.name}</td>
+      <td className="py-3 px-2">{user.username}</td>
       <td className="py-3 px-2">{user.email}</td>
       <td className="py-3 px-2 text-center">
         <button
