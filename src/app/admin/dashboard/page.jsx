@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../../libs/api/instance';
 import { useRouter } from 'next/navigation';
 import ReservationCard from '@components/admin/ReservationCard';
+import InfoModal from '../../../components/common/InfoModal';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [todayReservations, setTodayReservations] = useState([]);
   const [tomorrowReservations, setTomorrowReservations] = useState([]);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const fetchReservations = async () => {
     try {
@@ -129,7 +131,10 @@ export default function AdminDashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-semibold text-[#37352f]">커뮤니티</h2>
-            <button className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors">
+            <button
+              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              onClick={() => setIsInfoModalOpen(true)}
+            >
               더보기 →
             </button>
           </div>
@@ -175,7 +180,10 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-[#37352f]">
               분실물 신고
             </h2>
-            <button className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors">
+            <button
+              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              onClick={() => setIsInfoModalOpen(true)}
+            >
               더보기 →
             </button>
           </div>
@@ -214,7 +222,10 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-[#37352f]">
               답변대기 건의
             </h2>
-            <button className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors">
+            <button
+              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              onClick={() => setIsInfoModalOpen(true)}
+            >
               더보기 →
             </button>
           </div>
@@ -254,6 +265,11 @@ export default function AdminDashboard() {
           </ul>
         </div>
       </div>
+
+      <InfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+      />
     </div>
   );
 }

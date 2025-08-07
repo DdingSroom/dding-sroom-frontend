@@ -59,18 +59,22 @@ export default function ResetPassword2() {
   };
 
   return (
-    <div className="flex flex-col items-center h-full pt-12 px-4">
-      <div className="flex flex-col w-full mb-8 gap-1">
-        <h2 className="text-center text-[20px]">비밀번호 재설정</h2>
-        <div className="text-[#333333] text-center text-[14px] font-normal">
-          <p>비밀번호 입력</p>
+    <div className="flex flex-col items-center h-full pt-12 px-4 bg-gray-50">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8 w-full">
+        <div className="flex flex-col w-full gap-2 text-center">
+          <h2 className="text-2xl font-semibold text-[#37352f]">
+            비밀번호 재설정
+          </h2>
+          <p className="text-[#73726e] text-sm">비밀번호 입력</p>
         </div>
       </div>
 
-      <div className="flex flex-col justify-between w-full h-full">
-        <div className="flex flex-col gap-4 flex-grow">
-          <div className="flex flex-col gap-2">
-            <label>새 비밀번호</label>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full flex-1 flex flex-col">
+        <div className="flex flex-col gap-6 flex-1">
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-medium text-[#37352f]">
+              새 비밀번호
+            </label>
             <NewPasswordField
               className="h-10 text-sm"
               id="newPassword"
@@ -100,8 +104,10 @@ export default function ResetPassword2() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label>새 비밀번호 확인</label>
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-medium text-[#37352f]">
+              새 비밀번호 확인
+            </label>
             <ConfirmPasswordField
               className="h-10 text-sm flex-grow"
               id="newPassword_2"
@@ -128,7 +134,7 @@ export default function ResetPassword2() {
           </div>
         </div>
 
-        <div className="w-full mb-10">
+        <div className="mt-8 pt-6 border-t border-gray-100">
           <Button
             style={{ width: '100%' }}
             onClick={handlePasswordReset}
@@ -144,7 +150,7 @@ export default function ResetPassword2() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="px-4 py-4 bg-white rounded-md border border-[#9999a2]"
+      className="px-4 py-3 bg-white rounded-lg border border-gray-200 focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/20 outline-none transition-all duration-200 text-sm"
       value={value}
       {...props}
     />

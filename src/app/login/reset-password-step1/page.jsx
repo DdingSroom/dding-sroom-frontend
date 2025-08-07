@@ -69,18 +69,18 @@ export default function ResetPassWord1() {
   };
 
   return (
-    <div className="flex flex-col h-screen pt-12 px-4">
-      <div className="flex flex-col w-full mb-8 gap-1">
-        <h2 className="text-center text-[20px]">비밀번호 재설정</h2>
-        <div className="text-[#333333] text-center text-[14px] font-normal">
-          <p>등록한 이메일로 찾기</p>
+    <div className="flex flex-col h-screen pt-12 px-4 bg-gray-50">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
+        <div className="flex flex-col w-full gap-2 text-center">
+          <h2 className="text-2xl font-semibold text-[#37352f]">비밀번호 재설정</h2>
+          <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
         </div>
       </div>
 
-      <div className="w-full flex flex-col justify-between h-full">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label>이메일</label>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex-1 flex flex-col">
+        <div className="flex flex-col gap-6 flex-1">
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-medium text-[#37352f]">이메일</label>
             <div className="flex justify-between items-center">
               <StyledEmailInput
                 className="mr-4 h-10 text-sm"
@@ -100,7 +100,7 @@ export default function ResetPassWord1() {
                 setEmail={setEmail}
               />
               <button
-                className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10"
+                className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded-lg flex items-center justify-center whitespace-nowrap h-10 transition-all duration-200 font-medium text-sm"
                 onClick={handleSendCode}
               >
                 인증번호전송
@@ -111,8 +111,8 @@ export default function ResetPassWord1() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label>인증번호</label>
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-medium text-[#37352f]">인증번호</label>
             <StyledNumberInput
               className="h-10 text-sm"
               type="text"
@@ -136,17 +136,17 @@ export default function ResetPassWord1() {
             )}
           </div>
         </div>
-      </div>
-
-      <div className="w-full mt-auto mb-10">
-        <Link href={isCodeVerified ? '/login/reset-password-step2' : '#'}>
-          <Button
-            style={{ width: '100%' }}
-            onClick={handleLogin}
-            disabled={!isCodeVerified}
-            text="다음으로"
-          />
-        </Link>
+        
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <Link href={isCodeVerified ? '/login/reset-password-step2' : '#'}>
+            <Button
+              style={{ width: '100%' }}
+              onClick={handleLogin}
+              disabled={!isCodeVerified}
+              text="다음으로"
+            />
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -155,7 +155,7 @@ export default function ResetPassWord1() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="px-4 py-4 bg-white rounded-md border border-[#9999a2]"
+      className="px-4 py-3 bg-white rounded-lg border border-gray-200 focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/20 outline-none transition-all duration-200 text-sm"
       value={value}
       {...props}
     />

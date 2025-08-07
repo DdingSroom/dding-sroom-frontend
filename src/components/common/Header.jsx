@@ -1,19 +1,25 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import InfoModal from './InfoModal';
 
 const Header = () => {
   const router = useRouter();
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const handleClickProfile = () => {
     router.push('/my/account-info');
   };
 
   return (
-    <header className="flex justify-between items-center px-6 py-4 pt-12 bg-white">
+    <header className="flex justify-between items-center px-6 py-4 pt-12 bg-transparent">
       <img src="/static/icons/logo.svg" alt="logo" className="h-10" />
       <div className="flex items-center gap-4">
-        <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
+        <button 
+          className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+          onClick={() => setIsInfoModalOpen(true)}
+        >
           <img src="/static/icons/bell_icon.png" alt="bell" className="h-6 w-6" />
         </button>
         <button
@@ -27,6 +33,11 @@ const Header = () => {
           />
         </button>
       </div>
+      
+      <InfoModal 
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+      />
     </header>
   );
 };
