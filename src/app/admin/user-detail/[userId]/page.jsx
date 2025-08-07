@@ -15,10 +15,28 @@ function formatDateArrayExactly(dateArray) {
   return `${y}. ${pad(m)}. ${pad(d)}. ${pad(h)}:${pad(min)}:${pad(s)}`;
 }
 
+// 날짜 + 시간 형식으로 반환 (ex: 2025.08.07 15:00 ~ 17:00)
+function formatDateTimeRange(startArray, endArray) {
+  if (!Array.isArray(startArray) || !Array.isArray(endArray)) return '';
+
+  const [y, m, d, h, min] = startArray;
+  const [, , , h2, min2] = endArray;
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const dateStr = `${y}.${pad(m)}.${pad(d)}`;
+  const timeStr = `${pad(h)}:${pad(min)} ~ ${pad(h2)}:${pad(min2)}`;
+
+  return `${dateStr} ${timeStr}`;
+}
+
 export default function UserDetailPage() {
   const { userId } = useParams();
   const router = useRouter();
+
   const [user, setUser] = useState(null);
+  const [reservations, setReservations] = useState([]);
+  const [loadingReservations, setLoadingReservations] = useState(true);
 
   const fetchUserDetail = async () => {
     try {
@@ -30,8 +48,23 @@ export default function UserDetailPage() {
     }
   };
 
+  const fetchUserReservations = async () => {
+    try {
+      const res = await axiosInstance.get(`/admin/reservations/user/${userId}`);
+      console.log('사용자 예약 내역:', res.data);
+      setReservations(res.data.reservations || []);
+    } catch (error) {
+      console.error('사용자 예약 조회 실패:', error);
+    } finally {
+      setLoadingReservations(false);
+    }
+  };
+
   useEffect(() => {
-    if (userId) fetchUserDetail();
+    if (userId) {
+      fetchUserDetail();
+      fetchUserReservations();
+    }
   }, [userId]);
 
   if (!user) {
@@ -66,13 +99,7 @@ export default function UserDetailPage() {
             <p>
               역할 <span className="ml-2">{user.role}</span>
             </p>
-            {/* <p>상태 <span className="ml-2">{user.state}</span></p>
-            <p>학번 <span className="ml-2">{user.studentNumber ?? '없음'}</span></p>
-            <p>나이 <span className="ml-2">{user.age ?? '미입력'}</span></p> */}
           </div>
-          {/* <span className="absolute top-4 right-4 text-sm text-red-500">
-            사용자 차단
-          </span> */}
         </div>
 
         {/* 가입 정보 */}
@@ -87,6 +114,30 @@ export default function UserDetailPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* 예약 내역 */}
+      <div className="bg-white p-4 rounded shadow-sm">
+        <h2 className="font-semibold text-sm mb-3">예약 내역</h2>
+        {loadingReservations ? (
+          <p>예약 정보를 불러오는 중...</p>
+        ) : reservations.length === 0 ? (
+          <p className="text-sm text-gray-500">예약 내역이 없습니다.</p>
+        ) : (
+          reservations
+            .sort((a, b) => {
+              const dateA = new Date(...a.createdAt);
+              const dateB = new Date(...b.createdAt);
+              return dateB - dateA;
+            })
+            .map((item) => (
+              <ReservationItem
+                key={item.id}
+                room={`스터디룸 ${item.roomName}`}
+                time={formatDateTimeRange(item.startTime, item.endTime)}
+              />
+            ))
+        )}
       </div>
     </div>
   );
