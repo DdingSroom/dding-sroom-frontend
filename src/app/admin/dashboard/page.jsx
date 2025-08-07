@@ -1,21 +1,73 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axiosInstance from '../../../libs/api/instance';
 import { useRouter } from 'next/navigation';
 import ReservationCard from '@components/admin/ReservationCard';
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const [todayReservations, setTodayReservations] = useState([]);
+  const [tomorrowReservations, setTomorrowReservations] = useState([]);
+
+  const fetchReservations = async () => {
+    try {
+      const response = await axiosInstance.get('/admin/reservations');
+      console.log('전체 예약 응답:', response);
+
+      const reservations = response.data.reservations || [];
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+
+      const isSameDay = (dateArr1, dateObj2) => {
+        return (
+          dateArr1[0] === dateObj2.getFullYear() &&
+          dateArr1[1] === dateObj2.getMonth() + 1 &&
+          dateArr1[2] === dateObj2.getDate()
+        );
+      };
+
+      const todayFiltered = reservations.filter((r) =>
+        isSameDay(r.startTime, today),
+      );
+      const tomorrowFiltered = reservations.filter((r) =>
+        isSameDay(r.startTime, tomorrow),
+      );
+
+      const getRandomThree = (arr) =>
+        arr.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+      setTodayReservations(getRandomThree(todayFiltered));
+      setTomorrowReservations(getRandomThree(tomorrowFiltered));
+    } catch (err) {
+      console.error('예약 목록 불러오기 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations();
+  }, []);
+
+  const formatTimeRange = (start, end) => {
+    const formatHM = (arr) => {
+      if (!Array.isArray(arr)) return '';
+      const [_, __, ___, h = 0, m = 0] = arr;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    };
+    return `${formatHM(start)} ~ ${formatHM(end)}`;
+  };
+
+  const formatTimestamp = (arr) => {
+    if (!Array.isArray(arr)) return '';
+    const [y, mo, d, h = 0, m = 0] = arr;
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
 
   return (
     <div className="w-full min-h-screen bg-[#F5F5F5] px-10 py-8">
       <div className="flex justify-between items-center bg-white border p-4 rounded mb-6">
-        <h1 className="text-lg font-semibold">
-          관리자 페이지 대시보드{' '}
-          {/* <span className="ml-2 text-white text-xs px-2 py-1 rounded bg-[#788DFF]">
-            2
-          </span> */}
-        </h1>
+        <h1 className="text-lg font-semibold">관리자 페이지 대시보드</h1>
         <div className="flex gap-2">
           <button
             className="bg-[#788DFF] text-white text-sm px-4 py-2 rounded"
@@ -23,19 +75,10 @@ export default function AdminDashboard() {
           >
             예약 서비스 화면으로 가기
           </button>
-          {/* <button className="bg-[#888888] text-white text-sm px-4 py-2 rounded">
-            나가기
-          </button> */}
         </div>
       </div>
 
-      {/* <div className="text-sm text-[#333] mb-6">
-        답변대기 건의 <span className="text-[#788DFF]">2</span> / 불쾌사용자
-        신고 <span className="text-[#788DFF]">0</span>
-      </div> */}
-
       <div className="grid grid-cols-3 gap-6">
-        {/* 예약 현황 */}
         <div className="col-span-2 bg-white p-4 rounded shadow">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-semibold">날짜별 예약 현황</h2>
@@ -50,47 +93,29 @@ export default function AdminDashboard() {
             <div>
               <h3 className="text-sm font-medium mb-2">오늘 예약</h3>
               <ul className="space-y-4 text-sm">
-                <ReservationCard
-                  roomName="스터디룸 01"
-                  time="15:00 ~ 17:00"
-                  userName="USER 01"
-                  timestamp="2024-08-31 14:51"
-                />
-                <ReservationCard
-                  roomName="스터디룸 02"
-                  time="15:00 ~ 16:00"
-                  userName="USER 02"
-                  timestamp="2024-08-31 14:30"
-                />
-                <ReservationCard
-                  roomName="스터디룸 04"
-                  time="15:00 ~ 17:00"
-                  userName="USER 03"
-                  timestamp="2024-08-31 14:02"
-                />
+                {todayReservations.map((item) => (
+                  <ReservationCard
+                    key={item.id}
+                    roomName={`스터디룸 ${item.roomName}`}
+                    time={formatTimeRange(item.startTime, item.endTime)}
+                    userName={`사용자 ID: ${item.userId}`}
+                    timestamp={formatTimestamp(item.createdAt)}
+                  />
+                ))}
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-medium mb-2">내일 예약</h3>
               <ul className="space-y-4 text-sm">
-                <ReservationCard
-                  roomName="스터디룸 01"
-                  time="12:00~14:00"
-                  userName="USER 01"
-                  timestamp="2024-08-31 14:51"
-                />
-                <ReservationCard
-                  roomName="스터디룸 02"
-                  time="17:00~19:00"
-                  userName="USER 02"
-                  timestamp="2024-08-31 14:30"
-                />
-                <ReservationCard
-                  roomName="스터디룸 04"
-                  time="01:00~03:00"
-                  userName="USER 03"
-                  timestamp="2024-08-31 14:02"
-                />
+                {tomorrowReservations.map((item) => (
+                  <ReservationCard
+                    key={item.id}
+                    roomName={`스터디룸 ${item.roomName}`}
+                    time={formatTimeRange(item.startTime, item.endTime)}
+                    userName={`사용자 ID: ${item.userId}`}
+                    timestamp={formatTimestamp(item.createdAt)}
+                  />
+                ))}
               </ul>
             </div>
           </div>
