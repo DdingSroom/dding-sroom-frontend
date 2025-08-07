@@ -11,25 +11,28 @@ export default function AdminDashboard() {
     <div className="w-full min-h-screen bg-[#F5F5F5] px-10 py-8">
       <div className="flex justify-between items-center bg-white border p-4 rounded mb-6">
         <h1 className="text-lg font-semibold">
-          오늘의 할 일{' '}
-          <span className="ml-2 text-white text-xs px-2 py-1 rounded bg-[#788DFF]">
+          관리자 페이지 대시보드{' '}
+          {/* <span className="ml-2 text-white text-xs px-2 py-1 rounded bg-[#788DFF]">
             2
-          </span>
+          </span> */}
         </h1>
         <div className="flex gap-2">
-          <button className="bg-[#788DFF] text-white text-sm px-4 py-2 rounded">
-            현황 업데이트
+          <button
+            className="bg-[#788DFF] text-white text-sm px-4 py-2 rounded"
+            onClick={() => router.push('/')}
+          >
+            예약 서비스 화면으로 가기
           </button>
-          <button className="bg-[#888888] text-white text-sm px-4 py-2 rounded">
+          {/* <button className="bg-[#888888] text-white text-sm px-4 py-2 rounded">
             나가기
-          </button>
+          </button> */}
         </div>
       </div>
 
-      <div className="text-sm text-[#333] mb-6">
+      {/* <div className="text-sm text-[#333] mb-6">
         답변대기 건의 <span className="text-[#788DFF]">2</span> / 불쾌사용자
         신고 <span className="text-[#788DFF]">0</span>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-3 gap-6">
         {/* 예약 현황 */}
