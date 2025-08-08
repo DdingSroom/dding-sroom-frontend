@@ -16,11 +16,15 @@ const Header = () => {
     <header className="flex justify-between items-center px-6 py-4 pt-12 bg-transparent">
       <img src="/static/icons/logo.svg" alt="logo" className="h-12" />
       <div className="flex items-center gap-4">
-        <button 
+        <button
           className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
           onClick={() => setIsInfoModalOpen(true)}
         >
-          <img src="/static/icons/bell_icon.png" alt="bell" className="h-6 w-6" />
+          <img
+            src="/static/icons/bell_icon.png"
+            alt="bell"
+            className="h-6 w-6"
+          />
         </button>
         <button
           className="w-9 h-9 bg-[#788DFF] rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-[#6a7dff] transition-colors shadow-sm"
@@ -33,8 +37,8 @@ const Header = () => {
           />
         </button>
       </div>
-      
-      <InfoModal 
+
+      <InfoModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
       />
