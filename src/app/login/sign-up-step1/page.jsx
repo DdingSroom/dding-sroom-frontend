@@ -88,7 +88,9 @@ export default function SignUpStep1() {
 
       <div className="flex-1 max-w-md mx-auto w-full space-y-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-[#37352f]">이메일</label>
+          <label className="block text-sm font-medium text-[#37352f]">
+            이메일
+          </label>
           <div className="flex gap-3">
             <div className="flex-1">
               <StyledEmailInput
@@ -121,7 +123,9 @@ export default function SignUpStep1() {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-[#37352f]">인증번호</label>
+          <label className="block text-sm font-medium text-[#37352f]">
+            인증번호
+          </label>
           <StyledNumberInput
             type="text"
             id="number"
@@ -194,7 +198,5 @@ const StyledEmailInput = ({ value, setEmail, ...props }) => {
 };
 
 const StyledNumberInput = ({ value, ...props }) => {
-  return (
-    <StyledInput {...props} value={value} />
-  );
+  return <StyledInput {...props} value={value} />;
 };

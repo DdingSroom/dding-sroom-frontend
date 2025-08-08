@@ -68,8 +68,12 @@ export default function AccountInfo() {
 
           <div className="px-6 py-4 border-b border-gray-100">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-[#37352f]">이메일</label>
-              <p className="text-sm text-[#73726e]">{userInfo.email || '이메일 없음'}</p>
+              <label className="text-sm font-medium text-[#37352f]">
+                이메일
+              </label>
+              <p className="text-sm text-[#73726e]">
+                {userInfo.email || '이메일 없음'}
+              </p>
             </div>
           </div>
 
@@ -79,7 +83,9 @@ export default function AccountInfo() {
           >
             <div className="flex flex-col gap-1 text-left">
               <label className="text-sm font-medium text-[#37352f]">이름</label>
-              <p className="text-sm text-[#73726e]">{userInfo.name || '이름 없음'}</p>
+              <p className="text-sm text-[#73726e]">
+                {userInfo.name || '이름 없음'}
+              </p>
             </div>
             <img
               src="/static/icons/arrow_right_icon.svg"
@@ -95,7 +101,9 @@ export default function AccountInfo() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-6 py-5 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-[#37352f]">개인정보 보호</h2>
+            <h2 className="text-lg font-semibold text-[#37352f]">
+              개인정보 보호
+            </h2>
           </div>
           <MyPageBlock
             name="비밀번호 재설정"
@@ -116,7 +124,9 @@ export default function AccountInfo() {
             <h3 className="text-xl font-semibold text-[#37352f]">이름 변경</h3>
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">이름</label>
+            <label className="block text-sm font-medium text-[#37352f]">
+              이름
+            </label>
             <input
               type="text"
               value={newName}

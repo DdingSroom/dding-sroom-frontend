@@ -7,7 +7,7 @@ const MyPageHeader = () => {
 
   return (
     <header className="flex items-center px-6 py-4 pt-12 pb-8 bg-white border-b border-gray-100 relative">
-      <button 
+      <button
         onClick={() => router.back()}
         className="p-2 hover:bg-gray-50 rounded-lg transition-colors -ml-2"
       >

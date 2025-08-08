@@ -78,7 +78,9 @@ export default function ResetPassWord1() {
       <div className="flex-1 max-w-md mx-auto w-full">
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">이메일</label>
+            <label className="block text-sm font-medium text-[#37352f]">
+              이메일
+            </label>
             <div className="flex gap-3">
               <div className="flex-1">
                 <StyledEmailInput
@@ -88,7 +90,10 @@ export default function ResetPassWord1() {
                   onChange={(e) => {
                     const inputEmail = e.target.value;
                     setEmail(inputEmail);
-                    if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                    if (
+                      inputEmail === '' ||
+                      strictEmailRegex.test(inputEmail)
+                    ) {
                       setEmailError('');
                     } else {
                       setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
@@ -111,7 +116,9 @@ export default function ResetPassWord1() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">인증번호</label>
+            <label className="block text-sm font-medium text-[#37352f]">
+              인증번호
+            </label>
             <StyledNumberInput
               type="text"
               id="number"
@@ -187,7 +194,5 @@ const StyledEmailInput = ({ value, setEmail, ...props }) => {
 };
 
 const StyledNumberInput = ({ value, ...props }) => {
-  return (
-    <StyledInput {...props} value={value} />
-  );
+  return <StyledInput {...props} value={value} />;
 };
