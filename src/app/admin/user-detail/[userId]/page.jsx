@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axiosInstance from '../../../../libs/api/instance';
 import ReservationItem from '@components/admin/ReservationItem';
+import useTokenStore from '../../../../stores/useTokenStore';
+import { jwtDecode } from 'jwt-decode';
 
 function formatDateArrayExactly(dateArray) {
   if (!Array.isArray(dateArray)) return '없음';
@@ -33,10 +35,30 @@ function formatDateTimeRange(startArray, endArray) {
 export default function UserDetailPage() {
   const { userId } = useParams();
   const router = useRouter();
+  const { accessToken } = useTokenStore();
 
   const [user, setUser] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [loadingReservations, setLoadingReservations] = useState(true);
+
+  useEffect(() => {
+    if (!accessToken) {
+      router.push('/admin/login');
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(accessToken);
+      if (decoded.role !== 'ROLE_ADMIN') {
+        router.push('/admin/login');
+        return;
+      }
+    } catch (error) {
+      console.error('토큰 디코드 오류:', error);
+      router.push('/admin/login');
+      return;
+    }
+  }, [accessToken, router]);
 
   const fetchUserDetail = async () => {
     try {

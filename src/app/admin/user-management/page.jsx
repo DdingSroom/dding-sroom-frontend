@@ -3,11 +3,35 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../../libs/api/instance';
 import UserTableRow from '@components/admin/UserTableRow';
+import { useRouter } from 'next/navigation';
+import useTokenStore from '../../../stores/useTokenStore';
+import { jwtDecode } from 'jwt-decode';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
+  const { accessToken } = useTokenStore();
+
+  useEffect(() => {
+    if (!accessToken) {
+      router.push('/admin/login');
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(accessToken);
+      if (decoded.role !== 'ROLE_ADMIN') {
+        router.push('/admin/login');
+        return;
+      }
+    } catch (error) {
+      console.error('토큰 디코드 오류:', error);
+      router.push('/admin/login');
+      return;
+    }
+  }, [accessToken, router]);
 
   const fetchUsers = async () => {
     try {
