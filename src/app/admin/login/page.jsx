@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Button from '../../components/common/Button';
-import { isValidPassword, strictEmailRegex } from '../../constants/regex';
-import useTokenStore from '../../stores/useTokenStore';
-import axiosInstance, { setAccessToken } from '../../libs/api/instance';
+import Button from '../../../components/common/Button';
+import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
+import useTokenStore from '../../../stores/useTokenStore';
+import axiosInstance, { setAccessToken } from '../../../libs/api/instance';
 import { jwtDecode } from 'jwt-decode';
 
-export default function Login() {
+export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -58,9 +58,14 @@ export default function Login() {
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
         console.log('토큰 디코드 결과:', decoded);
-        router.push('/');
+
+        // 관리자 role 확인 후 적절한 페이지로 리다이렉트
+        if (decoded.role === 'ROLE_ADMIN') {
+          router.push('/admin/dashboard');
+        } else {
+          setConfirmError('관리자 권한이 없습니다.');
+        }
       } else {
-        // 디버깅용 로그
         console.warn(
           '응답 헤더에서 access 토큰을 찾지 못했습니다:',
           response.headers,
@@ -79,7 +84,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
-          띵스룸
+          띵스룸 관리자 로그인
         </h1>
         <div className="text-[#73726e] text-sm leading-relaxed">
           <p>명지대학교 이메일로 가입하여</p>
@@ -181,7 +186,7 @@ export default function Login() {
       <div className="max-w-md mx-auto w-full mt-8">
         <Button
           disabled={!isLoginAvailable()}
-          text="로그인"
+          text="관리자 로그인"
           type="submit"
           onClick={handleLogin}
         />

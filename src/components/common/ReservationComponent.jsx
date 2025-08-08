@@ -217,7 +217,7 @@ const ReservationComponent = ({ index, roomId }) => {
           <div className="text-[#9999A3] text-sm">5인실</div>
         </div>
         <button
-          className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px]"
+          className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-[#2a47e3] transition-colors duration-200 font-medium"
           onClick={handleOpenModal}
         >
           예약

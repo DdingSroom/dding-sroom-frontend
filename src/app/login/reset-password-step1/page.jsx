@@ -69,52 +69,50 @@ export default function ResetPassWord1() {
   };
 
   return (
-    <div className="flex flex-col h-screen pt-12 px-4">
-      <div className="flex flex-col w-full mb-8 gap-1">
-        <h2 className="text-center text-[20px]">비밀번호 재설정</h2>
-        <div className="text-[#333333] text-center text-[14px] font-normal">
-          <p>등록한 이메일로 찾기</p>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
+      <div className="text-center space-y-3 mb-8">
+        <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
+        <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
       </div>
 
-      <div className="w-full flex flex-col justify-between h-full">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label>이메일</label>
-            <div className="flex justify-between items-center">
-              <StyledEmailInput
-                className="mr-4 h-10 text-sm"
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
-                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
-                  }
-                }}
-                placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
+      <div className="flex-1 max-w-md mx-auto w-full">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">이메일</label>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <StyledEmailInput
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => {
+                    const inputEmail = e.target.value;
+                    setEmail(inputEmail);
+                    if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
+                      setEmailError('');
+                    } else {
+                      setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                    }
+                  }}
+                  placeholder="학교 이메일을 입력해주세요."
+                  setEmail={setEmail}
+                />
+              </div>
               <button
-                className="border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white px-4 py-2 rounded flex items-center justify-center whitespace-nowrap h-10"
+                className="px-4 py-3 border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
                 onClick={handleSendCode}
               >
                 인증번호전송
               </button>
             </div>
             {emailError && (
-              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+              <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label>인증번호</label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">인증번호</label>
             <StyledNumberInput
-              className="h-10 text-sm"
               type="text"
               id="number"
               value={number}
@@ -123,11 +121,11 @@ export default function ResetPassWord1() {
               inputMode="numeric"
             />
             {numberError && (
-              <p className="text-red-500 text-sm mt-1">{numberError}</p>
+              <p className="text-red-500 text-xs mt-1.5">{numberError}</p>
             )}
             {codeVerificationMessage && (
               <p
-                className={`text-sm mt-1 ${
+                className={`text-xs mt-1.5 ${
                   isCodeVerified ? 'text-green-600' : 'text-red-500'
                 }`}
               >
@@ -138,10 +136,9 @@ export default function ResetPassWord1() {
         </div>
       </div>
 
-      <div className="w-full mt-auto mb-10">
+      <div className="max-w-md mx-auto w-full mt-8">
         <Link href={isCodeVerified ? '/login/reset-password-step2' : '#'}>
           <Button
-            style={{ width: '100%' }}
             onClick={handleLogin}
             disabled={!isCodeVerified}
             text="다음으로"
@@ -155,7 +152,7 @@ export default function ResetPassWord1() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="px-4 py-4 bg-white rounded-md border border-[#9999a2]"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
       value={value}
       {...props}
     />
@@ -168,24 +165,29 @@ const StyledEmailInput = ({ value, setEmail, ...props }) => {
   };
 
   return (
-    <div className="flex w-full relative">
-      <StyledInput {...props} style={{ width: '100%' }} value={value} />
-      <img
-        className="absolute top-[50%] right-[10px]"
-        style={{ transform: 'translate(-50%, -50%)' }}
-        src="/static/icons/x_icon.svg"
-        alt="X"
-        width={12}
-        onClick={handleRemoveEmailValue}
-      />
+    <div className="relative">
+      <StyledInput {...props} value={value} />
+      {value && (
+        <button
+          type="button"
+          onClick={handleRemoveEmailValue}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <img
+            src="/static/icons/x_icon.svg"
+            alt="Clear"
+            width={14}
+            height={14}
+            className="opacity-60 hover:opacity-80"
+          />
+        </button>
+      )}
     </div>
   );
 };
 
 const StyledNumberInput = ({ value, ...props }) => {
   return (
-    <div className="flex w-full relative">
-      <StyledInput {...props} style={{ width: '100%' }} value={value} />
-    </div>
+    <StyledInput {...props} value={value} />
   );
 };

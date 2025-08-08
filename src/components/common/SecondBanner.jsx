@@ -27,7 +27,7 @@ const SecondBanner = () => {
         </div>
         <button
           onClick={handleReserveClick}
-          className="bg-white text-[#788DFF] rounded px-4 py-2"
+          className="bg-white text-[#788DFF] rounded px-4 py-2 hover:bg-gray-50 hover:text-[#6a7dff] transition-colors duration-200 text-sm font-medium"
         >
           예약하기
         </button>

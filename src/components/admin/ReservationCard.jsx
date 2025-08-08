@@ -9,17 +9,17 @@ export default function ReservationCard({
   timestamp,
 }) {
   return (
-    <div className="flex items-start gap-3 border border-gray-200 rounded p-2">
+    <div className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl hover:border-gray-200 transition-colors bg-white shadow-sm">
       <img
         src="/static/icons/studyroom_image.png"
-        className="w-16 h-16 object-cover rounded"
+        className="w-12 h-12 object-cover rounded-lg"
         alt="스터디룸"
       />
-      <div className="flex flex-col justify-center text-sm">
-        <p className="font-semibold">{roomName}</p>
-        <p className="text-[#788DFF]">{time}</p>
-        <p className="text-gray-600">{userName}</p>
-        <p className="text-xs text-gray-400">{timestamp}</p>
+      <div className="flex flex-col gap-1 text-sm min-w-0">
+        <p className="font-semibold text-[#37352f] truncate">{roomName}</p>
+        <p className="text-[#788DFF] font-medium">{time}</p>
+        <p className="text-[#73726e] text-xs truncate">{userName}</p>
+        <p className="text-[#9b9998] text-xs">{timestamp}</p>
       </div>
     </div>
   );
