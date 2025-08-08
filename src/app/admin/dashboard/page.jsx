@@ -5,12 +5,34 @@ import axiosInstance from '../../../libs/api/instance';
 import { useRouter } from 'next/navigation';
 import ReservationCard from '@components/admin/ReservationCard';
 import InfoModal from '../../../components/common/InfoModal';
+import useTokenStore from '../../../stores/useTokenStore';
+import { jwtDecode } from 'jwt-decode';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [todayReservations, setTodayReservations] = useState([]);
   const [tomorrowReservations, setTomorrowReservations] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const { accessToken } = useTokenStore();
+
+  useEffect(() => {
+    if (!accessToken) {
+      router.push('/admin/login');
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(accessToken);
+      if (decoded.role !== 'ROLE_ADMIN') {
+        router.push('/admin/login');
+        return;
+      }
+    } catch (error) {
+      console.error('토큰 디코드 오류:', error);
+      router.push('/admin/login');
+      return;
+    }
+  }, [accessToken, router]);
 
   const fetchReservations = async () => {
     try {
@@ -188,31 +210,45 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="flex gap-4">
-            {[1, 2, 3].map((item, idx) => (
-              <div
-                key={idx}
-                className="w-36 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100"
-              >
-                {item === 3 ? (
-                  <div className="w-full h-24 bg-gray-200 flex items-center justify-center text-xs text-[#9b9998] rounded-t-xl">
-                    NO IMAGE
+            {[1, 2, 3].map((item, idx) => {
+              const imageSrc = `/lost${item}.jpg`;
+              const isImageAvailable = item !== 3; // 현재 lost3.jpg는 없는 것으로 가정
+
+              return (
+                <div
+                  key={idx}
+                  className="w-36 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100"
+                >
+                  {isImageAvailable ? (
+                    <img
+                      src={imageSrc}
+                      alt={`분실물${item}`}
+                      className="w-full h-24 object-cover rounded-t-xl"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const fallback = document.createElement('div');
+                        fallback.className =
+                          'w-full h-24 bg-gray-200 flex items-center justify-center text-xs text-[#9b9998] rounded-t-xl';
+                        fallback.textContent = 'NO IMAGE';
+                        e.target.parentNode.insertBefore(fallback, e.target);
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-24 bg-gray-200 flex items-center justify-center text-xs text-[#9b9998] rounded-t-xl">
+                      NO IMAGE
+                    </div>
+                  )}
+
+                  <div className="p-3 text-center space-y-1">
+                    <p className="text-sm font-medium text-[#37352f]">
+                      분실물 이름
+                    </p>
+                    <p className="text-xs text-[#73726e]">스터디룸{item}</p>
+                    <p className="text-xs text-[#9b9998]">2024-08-31</p>
                   </div>
-                ) : (
-                  <img
-                    src={`/lost${item}.jpg`}
-                    alt={`분실물${item}`}
-                    className="w-full h-24 object-cover rounded-t-xl"
-                  />
-                )}
-                <div className="p-3 text-center space-y-1">
-                  <p className="text-sm font-medium text-[#37352f]">
-                    분실물 이름
-                  </p>
-                  <p className="text-xs text-[#73726e]">스터디룸{item}</p>
-                  <p className="text-xs text-[#9b9998]">2024-08-31</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
