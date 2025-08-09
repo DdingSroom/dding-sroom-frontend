@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import CustomizedStepper from './customizedStepper';
@@ -17,18 +17,64 @@ export default function SignUpStep1() {
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [codeVerificationMessage, setCodeVerificationMessage] = useState('');
 
-  const verificationToken = useRef(0);
+  const [isSending, setIsSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [codeSent, setCodeSent] = useState(false);
+  const timerRef = useRef(null);
 
   const { setSignupField } = useSignupStore();
 
+  const commonCodeButtonClass =
+    'inline-flex items-center justify-center w-[100px] h-10 ' +
+    'border border-[#788cff] bg-white text-[#788cff] ' +
+    'hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg ' +
+    'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
+
+  const startTimer = () => {
+    setSecondsLeft(300);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const mmss = useMemo(() => {
+    const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+    const s = String(secondsLeft % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  }, [secondsLeft]);
+
   const handleSendCode = async () => {
     try {
+      setCodeVerificationMessage('');
+      setNumberError('');
+      setIsCodeVerified(false);
+
       if (!strictEmailRegex.test(email)) {
         setEmailError('유효한 학교 이메일을 입력해주세요. (@mju.ac.kr)');
         return;
       }
+      setEmailError('');
+      setIsSending(true);
 
       await axiosInstance.post('/user/code-send', { email });
+
+      setCodeSent(true);
+      startTimer();
       alert('인증번호가 이메일로 전송되었습니다.');
     } catch (error) {
       console.error('인증번호 전송 실패:', error);
@@ -36,37 +82,69 @@ export default function SignUpStep1() {
         error?.response?.data?.message ||
           '인증번호 전송에 실패했습니다. 다시 시도해주세요.',
       );
+      setCodeSent(false);
+      setSecondsLeft(0);
+    } finally {
+      setIsSending(false);
     }
   };
 
-  const handleCodeInput = async (value) => {
-    setNumber(value);
+  const handleNumberChange = (value) => {
+    const v = value.replace(/\s/g, '');
+    setNumber(v);
     setIsCodeVerified(false);
-    setNumberError('');
     setCodeVerificationMessage('');
-
-    if (!/^[0-9]{6}$/.test(value)) {
+    if (v && !/^[0-9]{6}$/.test(v)) {
       setNumberError('6자리 숫자 인증번호를 입력해주세요.');
-      return;
+    } else {
+      setNumberError('');
     }
+  };
 
-    const currentToken = ++verificationToken.current;
-
+  const handleVerifyCode = async () => {
     try {
+      setIsVerifying(true);
+      setCodeVerificationMessage('');
+      setIsCodeVerified(false);
+
+      if (!codeSent) {
+        setCodeVerificationMessage('먼저 인증번호를 전송해주세요.');
+        return;
+      }
+      if (secondsLeft <= 0) {
+        setCodeVerificationMessage(
+          '인증번호가 만료되었습니다. 다시 전송해주세요.',
+        );
+        return;
+      }
+      if (!/^[0-9]{6}$/.test(number)) {
+        setNumberError('6자리 숫자 인증번호를 입력해주세요.');
+        return;
+      }
+
       const res = await axiosInstance.post('/user/code-verify', {
         email,
-        code: value,
+        code: number,
       });
+      const ok =
+        (res?.data?.verified ?? res?.data?.success) === true ||
+        res?.status === 200;
 
-      if (verificationToken.current === currentToken) {
+      if (ok) {
         setIsCodeVerified(true);
         setCodeVerificationMessage('인증 성공');
-      }
-    } catch (err) {
-      if (verificationToken.current === currentToken) {
+      } else {
         setIsCodeVerified(false);
         setCodeVerificationMessage('인증번호가 올바르지 않습니다.');
       }
+    } catch (err) {
+      console.error('인증번호 확인 실패:', err);
+      setIsCodeVerified(false);
+      setCodeVerificationMessage(
+        '인증번호 확인에 실패했습니다. 다시 시도해주세요.',
+      );
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -74,6 +152,8 @@ export default function SignUpStep1() {
     setSignupField('email', email);
     router.push('/login/sign-up-step2');
   };
+
+  const canVerify = codeSent && secondsLeft > 0 && /^[0-9]{6}$/.test(number);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
@@ -91,7 +171,7 @@ export default function SignUpStep1() {
           <label className="block text-sm font-medium text-[#37352f]">
             이메일
           </label>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <div className="flex-1">
               <StyledEmailInput
                 type="email"
@@ -111,10 +191,11 @@ export default function SignUpStep1() {
               />
             </div>
             <button
-              className="px-4 py-3 border border-[#788cff] bg-white text-[#788cff] hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap"
+              className={commonCodeButtonClass}
               onClick={handleSendCode}
+              disabled={isSending || !strictEmailRegex.test(email)}
             >
-              인증번호전송
+              {isSending ? '전송중' : '인증번호 전송'}
             </button>
           </div>
           {emailError && (
@@ -126,22 +207,38 @@ export default function SignUpStep1() {
           <label className="block text-sm font-medium text-[#37352f]">
             인증번호
           </label>
-          <StyledNumberInput
-            type="text"
-            id="number"
-            value={number}
-            onChange={(e) => handleCodeInput(e.target.value)}
-            placeholder="이메일로 전송된 인증번호를 입력해주세요."
-            inputMode="numeric"
-          />
+          <div className="flex items-center gap-2 flex-nowrap">
+            <div className="relative flex-1 min-w-0">
+              <StyledNumberInput
+                type="text"
+                id="number"
+                value={number}
+                onChange={(e) => handleNumberChange(e.target.value)}
+                placeholder="이메일로 전송된 인증번호를 입력해주세요."
+                inputMode="numeric"
+                maxLength={6}
+                className="pr-14"
+              />
+              {codeSent && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
+                  {secondsLeft > 0 ? mmss : '만료'}
+                </span>
+              )}
+            </div>
+            <button
+              className={commonCodeButtonClass}
+              onClick={handleVerifyCode}
+              disabled={!canVerify || isVerifying}
+            >
+              {isVerifying ? '확인중' : '인증번호 확인'}
+            </button>
+          </div>
           {numberError && (
             <p className="text-red-500 text-xs mt-1.5">{numberError}</p>
           )}
           {codeVerificationMessage && (
             <p
-              className={`text-xs mt-1.5 ${
-                isCodeVerified ? 'text-green-600' : 'text-red-500'
-              }`}
+              className={`text-xs mt-1.5 ${isCodeVerified ? 'text-green-600' : 'text-red-500'}`}
             >
               {codeVerificationMessage}
             </p>
@@ -160,24 +257,19 @@ export default function SignUpStep1() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
+const StyledInput = ({ value, className = '', ...props }) => {
+  const base =
+    'w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm ' +
+    'placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] ' +
+    'focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200';
+  return <input className={`${base} ${className}`} value={value} {...props} />;
 };
 
-const StyledEmailInput = ({ value, setEmail, ...props }) => {
-  const handleRemoveEmailValue = () => {
-    setEmail('');
-  };
-
+const StyledEmailInput = ({ value, setEmail, className = '', ...props }) => {
+  const handleRemoveEmailValue = () => setEmail('');
   return (
     <div className="relative">
-      <StyledInput {...props} value={value} />
+      <StyledInput {...props} value={value} className={className} />
       {value && (
         <button
           type="button"
@@ -197,6 +289,6 @@ const StyledEmailInput = ({ value, setEmail, ...props }) => {
   );
 };
 
-const StyledNumberInput = ({ value, ...props }) => {
-  return <StyledInput {...props} value={value} />;
+const StyledNumberInput = ({ value, className = '', ...props }) => {
+  return <StyledInput {...props} value={value} className={className} />;
 };
