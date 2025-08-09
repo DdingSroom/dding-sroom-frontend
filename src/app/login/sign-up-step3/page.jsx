@@ -48,7 +48,7 @@ export default function Login() {
 
       console.log('회원가입 성공:', res.data);
       resetSignupData();
-      router.push('/login/sign-up-step4');
+      router.push(`/login/sign-up-step4?username=${encodeURIComponent(name)}`);
     } catch (error) {
       console.error('회원가입 실패:', error);
       alert(
