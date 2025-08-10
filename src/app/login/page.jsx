@@ -1,7 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
 import { isValidPassword, strictEmailRegex } from '../../constants/regex';
@@ -20,9 +20,18 @@ export default function Login() {
   const [newPassword_2, setnewPassword_2] = useState('');
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [redirectUrl, setRedirectUrl] = useState('/');
 
   const { setAccessToken: setGlobalAccessToken, setRefreshToken } =
     useTokenStore();
+
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectUrl(decodeURIComponent(redirect));
+    }
+  }, [searchParams]);
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
@@ -58,7 +67,7 @@ export default function Login() {
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
         console.log('토큰 디코드 결과:', decoded);
-        router.push('/');
+        router.push(redirectUrl);
       } else {
         // 디버깅용 로그
         console.warn(
