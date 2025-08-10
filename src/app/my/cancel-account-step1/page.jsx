@@ -1,18 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '../../../libs/api/instance';
 import MyPageHeader from '@components/common/MyPageHeader';
 import Modal from '@components/common/Modal';
+import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import useTokenStore from '../../../stores/useTokenStore';
 
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { accessToken } = useTokenStore();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!accessToken) {
+      setShowLoginModal(true);
+    }
+  }, [accessToken]);
+
+  const handleLoginConfirm = () => {
+    const currentPath = window.location.pathname;
+    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+  };
 
   const handleDeleteAccount = async () => {
     if (!email || !accessToken) {
@@ -95,6 +108,11 @@ export default function CancelAccountStep1() {
           </Modal>
         </div>
       </div>
+
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onConfirm={handleLoginConfirm}
+      />
     </>
   );
 }
