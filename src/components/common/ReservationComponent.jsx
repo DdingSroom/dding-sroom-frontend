@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
+import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
@@ -20,6 +21,7 @@ const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { userId, accessToken } = useTokenStore();
   const {
@@ -63,11 +65,15 @@ const ReservationComponent = ({ index, roomId }) => {
 
   const handleOpenModal = () => {
     if (!accessToken) {
-      alert('로그인이 필요합니다.');
-      router.push('/login');
+      setShowLoginModal(true);
       return;
     }
     setOpen(true);
+  };
+
+  const handleModalConfirm = () => {
+    setShowLoginModal(false);
+    router.push('/login');
   };
 
   const handleSubmitReservation = async () => {
@@ -269,6 +275,10 @@ const ReservationComponent = ({ index, roomId }) => {
       </div>
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onConfirm={handleModalConfirm}
+      />
     </div>
   );
 };
