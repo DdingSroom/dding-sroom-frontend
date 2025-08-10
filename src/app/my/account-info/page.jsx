@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import MyPageHeader from '@components/common/MyPageHeader';
 import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
+import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -11,6 +12,7 @@ import axiosInstance from '../../../libs/api/instance';
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { accessToken, userId } = useTokenStore();
 
   const getDecodedUserInfo = () => {
@@ -27,10 +29,14 @@ export default function AccountInfo() {
 
   useEffect(() => {
     if (!accessToken) {
-      alert('로그인이 필요한 기능입니다.');
-      window.location.href = '/login';
+      setShowLoginModal(true);
     }
   }, [accessToken]);
+
+  const handleLoginConfirm = () => {
+    const currentPath = window.location.pathname;
+    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+  };
 
   const handleUsernameChange = async () => {
     try {
@@ -137,6 +143,11 @@ export default function AccountInfo() {
           </div>
         </div>
       </Modal>
+      
+      <LoginRequiredModal 
+        isOpen={showLoginModal} 
+        onConfirm={handleLoginConfirm} 
+      />
     </div>
   );
 }
