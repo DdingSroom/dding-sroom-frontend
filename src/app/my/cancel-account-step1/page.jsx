@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
 import MyPageHeader from '@components/common/MyPageHeader';
 import Modal from '@components/common/Modal';
@@ -11,7 +12,10 @@ import useTokenStore from '../../../stores/useTokenStore';
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [isSendingVerify, setIsSendingVerify] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { accessToken } = useTokenStore();
   const router = useRouter();
@@ -27,15 +31,54 @@ export default function CancelAccountStep1() {
     window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
   };
 
-  const handleDeleteAccount = async () => {
-    if (!email || !accessToken) {
-      alert('이메일 또는 토큰 정보가 없습니다.');
+  const handleEmailVerify = async () => {
+    if (!emailInput || !accessToken) {
+      alert('이메일을 입력해주세요.');
       return;
     }
 
     try {
-      setIsLoading(true);
-      const response = await axiosInstance.delete(`/user/delete/${email}`, {
+      const decodedToken = jwtDecode(accessToken);
+      const tokenEmail = decodedToken.email;
+
+      if (emailInput !== tokenEmail) {
+        alert('입력하신 이메일이 계정 이메일과 일치하지 않습니다.');
+        return;
+      }
+
+      setIsSendingVerify(true);
+      const response = await axiosInstance.post(
+        '/user/verify-email',
+        {
+          email: emailInput,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      console.log('이메일 인증 성공:', response.data);
+      setIsVerified(true);
+      alert('이메일 인증이 완료되었습니다.');
+    } catch (error) {
+      console.error('이메일 인증 실패:', error);
+      alert('이메일 인증 중 오류가 발생했습니다.');
+    } finally {
+      setIsSendingVerify(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!isVerified || !accessToken) {
+      alert('이메일 인증을 먼저 완료해주세요.');
+      return;
+    }
+
+    try {
+      setIsWithdrawing(true);
+      const response = await axiosInstance.delete('/user/withdraw', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -48,7 +91,7 @@ export default function CancelAccountStep1() {
       console.error('탈퇴 실패:', error);
       alert('회원 탈퇴 중 오류가 발생했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsWithdrawing(false);
       setOpen(false);
     }
   };
@@ -59,13 +102,26 @@ export default function CancelAccountStep1() {
         <MyPageHeader />
         <div className="p-6 bg-[#FFFF] mt-6">
           <label className="mb-2 block">계정 이메일</label>
-          <input
-            type="email"
-            className="border rounded-md p-2 w-full"
-            placeholder="이메일을 입력해주세요."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div className="flex gap-2">
+            <input
+              type="email"
+              className="border rounded-md p-2 flex-1"
+              placeholder="이메일을 입력해주세요."
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+            />
+            <button
+              className="bg-#788DFF text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              onClick={handleEmailVerify}
+              disabled={isSendingVerify || isVerified || !emailInput}
+            >
+              {isSendingVerify
+                ? '인증 중...'
+                : isVerified
+                  ? '인증 완료'
+                  : '이메일 인증'}
+            </button>
+          </div>
           <div className="mt-6">
             <p className="text-[#6E6E6E] text-sm">
               * 탈퇴 후 개인정보, 예약 등의 데이터가 삭제되며, 복구할 수
@@ -82,8 +138,9 @@ export default function CancelAccountStep1() {
         </div>
         <div className="flex items-center justify-center text-center p-6 bg-[#FFFF]">
           <button
-            className="text-[#C20000] text-xl"
+            className={`text-xl ${isVerified ? 'text-[#C20000]' : 'text-gray-400 cursor-not-allowed'}`}
             onClick={() => setOpen(true)}
+            disabled={!isVerified}
           >
             회원탈퇴
           </button>
@@ -91,8 +148,9 @@ export default function CancelAccountStep1() {
             isOpen={open}
             onClose={() => setOpen(false)}
             onSubmit={handleDeleteAccount}
-            text={'탈퇴하기'}
+            text={isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기'}
             color="red"
+            disabled={isWithdrawing}
           >
             <div className="p-4 flex flex-col h-full justify-center ">
               <p className="font-semibold text-2xl text-left mb-2">
