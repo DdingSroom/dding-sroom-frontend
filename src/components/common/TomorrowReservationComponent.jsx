@@ -75,39 +75,22 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   const getStatus = (time) => {
     if (time.endsWith('23:59:00')) return 'display-only';
 
-    // (수정) 기준 날짜 및 KST 비교 기반 상태 판별
-    const baseDate = new Date();
-    const timeStr = new Date(time).toTimeString().slice(0, 5);
-    const slotStart = buildKSTDate(baseDate, timeStr);
-    const slotEnd =
-      timeStr === '23:59'
-        ? buildKSTDate(baseDate, '23:59')
-        : new Date(slotStart.getTime() + 10 * 60 * 1000);
-
-    const now = nowInKST();
-    const isPast = slotEnd.getTime() < now.getTime();
-
+    // 내일 예약에서는 모든 시간이 미래시간이므로 예약된 시간만 회색으로 표시
     const isReserved = reservedTimeSlots.includes(time);
 
-    // 상태 우선순위: 과거 > 예약됨 > 예약가능 (과거 시간은 예약 여부 무시하고 모두 검은색)
     let status;
-    if (isPast) {
-      status = 'past';
-    } else if (isReserved) {
+    if (isReserved) {
       status = 'reserved';
     } else {
       status = 'available';
     }
 
+    const timeStr = new Date(time).toTimeString().slice(0, 5);
     console.debug(
       '[TomorrowReservationComponent] timeStr:',
       timeStr,
-      'slotEnd(KST)=',
-      slotEnd.toISOString(),
-      'now(KST)=',
-      now.toISOString(),
-      'isPast=',
-      isPast,
+      'isReserved=',
+      isReserved,
       'status=',
       status,
     );
