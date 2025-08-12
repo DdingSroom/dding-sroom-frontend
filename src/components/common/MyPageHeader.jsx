@@ -1,14 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const MyPageHeader = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleBack = () => {
+    if (pathname === '/my/account-info') {
+      router.push('/');
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <header className="flex items-center px-6 py-4 pt-12 pb-8 bg-white border-b border-gray-100 relative">
       <button
-        onClick={() => router.back()}
+        onClick={handleBack}
         className="p-2 hover:bg-gray-50 rounded-lg transition-colors -ml-2"
       >
         <img
