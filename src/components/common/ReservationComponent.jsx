@@ -56,8 +56,8 @@ const ReservationComponent = ({ index, roomId }) => {
   };
 
   const getStatus = (time) => {
-    const timeDate = new Date(time);
     if (time.endsWith('23:59:00')) return 'display-only';
+    const timeDate = new Date(time);
     if (timeDate < now) return 'past';
     if (reservedTimeSlots.includes(time)) return 'reserved';
     return 'available';
@@ -274,6 +274,20 @@ const ReservationComponent = ({ index, roomId }) => {
         </Modal>
       </div>
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
+      <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#788DFF]"></div>
+          <span>예약 가능</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#9999A3]"></div>
+          <span>예약됨</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#000000]"></div>
+          <span>지난 시간</span>
+        </div>
+      </div>
       <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
       <LoginRequiredModal
         isOpen={showLoginModal}
