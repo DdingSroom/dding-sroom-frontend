@@ -16,6 +16,12 @@ export default function CancelAccountStep1() {
   const [isSendingVerify, setIsSendingVerify] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+
+  const commonCodeButtonClass =
+    'inline-flex items-center justify-center w-[100px] h-10 ' +
+    'border border-[#788cff] bg-white text-[#788cff] ' +
+    'hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg ' +
+    'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { accessToken } = useTokenStore();
   const router = useRouter();
@@ -111,7 +117,7 @@ export default function CancelAccountStep1() {
               onChange={(e) => setEmailInput(e.target.value)}
             />
             <button
-              className="bg-#788DFF text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className={commonCodeButtonClass}
               onClick={handleEmailVerify}
               disabled={isSendingVerify || isVerified || !emailInput}
             >
