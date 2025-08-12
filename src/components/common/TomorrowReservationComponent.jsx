@@ -9,6 +9,16 @@ import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
+// KST(Asia/Seoul) 현재시각
+const nowInKST = () =>
+  new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+
+// 기준 날짜(baseDate)와 HH:MM로 KST Date 생성
+const buildKSTDate = (baseDate, hhmm) => {
+  const yyyyMmDd = baseDate.toISOString().slice(0, 10); // YYYY-MM-DD (UTC기준이지만 아래 +09:00로 보정)
+  return new Date(`${yyyyMmDd}T${hhmm}:00+09:00`);
+};
+
 const toKSTISOString = (date) => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 19);
@@ -64,9 +74,47 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const getStatus = (time) => {
     if (time.endsWith('23:59:00')) return 'display-only';
-    const date = new Date(time);
-    if (reservedTimeSlots.includes(time)) return 'reserved';
-    return 'available';
+    
+    // (수정) 기준 날짜 및 KST 비교 기반 상태 판별
+    const baseDate = new Date(); // TomorrowReservationComponent는 '내일' 기준
+    baseDate.setDate(baseDate.getDate() + 1);
+    const timeStr = new Date(time).toTimeString().slice(0, 5); // HH:MM 포맷
+    const slotStart = buildKSTDate(baseDate, timeStr);
+    // 10분 단위 슬롯이라면 종료를 +10분으로, 아니라면 23:59 같은 명시적 종료 사용
+    const slotEnd =
+      timeStr === '23:59'
+        ? buildKSTDate(baseDate, '23:59')
+        : new Date(slotStart.getTime() + 10 * 60 * 1000);
+
+    const now = nowInKST();
+    const isPast = slotEnd.getTime() < now.getTime(); // 엄격 부등호 사용
+
+    const isReserved = reservedTimeSlots.includes(time);
+
+    // 상태 우선순위: 과거 > 예약됨 > 예약가능 (과거 시간은 예약 여부 무시하고 모두 검은색)
+    let status;
+    if (isPast) {
+      status = 'past'; // 검은색
+    } else if (isReserved) {
+      status = 'reserved'; // 회색
+    } else {
+      status = 'available'; // 파란색
+    }
+
+    console.debug(
+      '[TomorrowReservationComponent] timeStr:',
+      timeStr,
+      'slotEnd(KST)=',
+      slotEnd.toISOString(),
+      'now(KST)=',
+      now.toISOString(),
+      'isPast=',
+      isPast,
+      'status=',
+      status,
+    );
+
+    return status;
   };
 
   const handleOpenModal = () => {
