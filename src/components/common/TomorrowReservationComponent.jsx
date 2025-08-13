@@ -172,7 +172,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   };
 
   const renderLine = (slots) => (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto pb-2">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
         {slots.map((time) => {
           const hour = time.getHours();
