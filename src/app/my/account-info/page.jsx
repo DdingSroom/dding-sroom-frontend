@@ -13,7 +13,8 @@ export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const { accessToken, userId } = useTokenStore();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { accessToken, userId, clearTokens } = useTokenStore();
 
   const getDecodedUserInfo = () => {
     try {
@@ -60,6 +61,22 @@ export default function AccountInfo() {
       console.error('이름 변경 실패:', error);
       alert('이름 변경에 실패했습니다.');
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/auth/logout');
+    } catch (error) {
+      console.error('로그아웃 API 호출 실패:', error);
+    } finally {
+      clearTokens();
+      setShowLogoutModal(true);
+    }
+  };
+
+  const handleLogoutConfirm = () => {
+    setShowLogoutModal(false);
+    window.location.href = '/login';
   };
 
   return (
@@ -117,6 +134,17 @@ export default function AccountInfo() {
             linkPath="/login/reset-password-step1"
           />
           <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
+          <button
+            className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
+            onClick={handleLogout}
+          >
+            <span className="text-base font-medium text-[#37352f]">로그아웃</span>
+            <img
+              src="/static/icons/arrow_right_icon.svg"
+              alt="arrow"
+              className="w-5 h-5 opacity-60"
+            />
+          </button>
         </div>
       </div>
       )}
@@ -150,6 +178,34 @@ export default function AccountInfo() {
         isOpen={showLoginModal} 
         onConfirm={handleLoginConfirm} 
       />
+
+      <div
+        className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] ${showLogoutModal ? '' : 'hidden'}`}
+        style={{ backdropFilter: 'blur(4px)' }}
+      >
+        <div
+          className="bg-white rounded-2xl w-[90%] max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="overflow-y-auto max-h-[70vh] p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">알림</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                로그아웃이 완료되었습니다
+              </p>
+            </div>
+          </div>
+
+          <div className="flex border-t border-gray-100">
+            <button
+              onClick={handleLogoutConfirm}
+              className="w-full py-4 bg-[#788cff] text-white text-sm font-medium hover:bg-[#6a7dff] transition-colors"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
