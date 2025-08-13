@@ -103,7 +103,7 @@ const AfterLoginBanner = () => {
         <div className="flex flex-col gap-2 sm:gap-3 overflow-y-auto pr-1 sm:pr-2 flex-1 max-h-48">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
             <div className="flex items-center justify-center h-full text-[#9b9998] text-xs sm:text-sm">
-              예약 내역이 없습니다
+              예약 내역이 없습니다.
             </div>
           ) : (
             userReservations.map((r) => (
