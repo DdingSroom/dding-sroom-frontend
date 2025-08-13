@@ -31,7 +31,7 @@ const ReservationSection = () => {
       </div>
       <div></div>
       <div className="w-full flex justify-center items-center ">
-        <div className="w-full max-w-[95%] h-[400px]">
+        <div className="w-full max-w-[95%]">
           {menuArr[currentTab].content}
         </div>
       </div>
