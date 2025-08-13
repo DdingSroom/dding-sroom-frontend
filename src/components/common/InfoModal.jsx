@@ -5,7 +5,8 @@ const InfoModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] backdrop-blur-sm"
+      className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999]"
+      style={{ backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div

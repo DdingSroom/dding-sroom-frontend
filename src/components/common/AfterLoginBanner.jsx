@@ -78,11 +78,11 @@ const AfterLoginBanner = () => {
     <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-[95%]">
       {/* 혼잡도 박스 */}
       <div className="relative flex bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
-        <div className="flex flex-col gap-2 sm:gap-3 z-10">
-          <div className="text-[#73726e] text-xs sm:text-sm font-medium">
+        <div className="flex flex-col gap-2 sm:gap-3">
+          <div className="text-[#73726e] text-xs sm:text-sm font-bold">
             오늘의 혼잡도
           </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl text-[#788DFF] font-bold whitespace-nowrap overflow-hidden">
+          <div className="text-2xl sm:text-3xl md:text-4xl text-[#788DFF] font-black whitespace-nowrap overflow-hidden">
             여유로움
           </div>
         </div>
@@ -103,7 +103,7 @@ const AfterLoginBanner = () => {
         <div className="flex flex-col gap-2 sm:gap-3 overflow-y-auto pr-1 sm:pr-2 flex-1 max-h-48">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
             <div className="flex items-center justify-center h-full text-[#9b9998] text-xs sm:text-sm">
-              예약 내역이 없습니다
+              예약 내역이 없습니다.
             </div>
           ) : (
             userReservations.map((r) => (

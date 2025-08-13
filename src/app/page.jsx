@@ -68,7 +68,7 @@ export default function Home() {
         <ReservationSection className="w-full" />
       </div>
 
-      <div className="mt-[1px] w-full sticky fixed bg-white bottom-0 left-0 right-0">
+      <div className="pb-20">
         <FooterNav />
       </div>
     </>
