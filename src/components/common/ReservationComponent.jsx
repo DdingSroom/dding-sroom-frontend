@@ -90,19 +90,6 @@ const ReservationComponent = ({ index, roomId }) => {
       status = 'available';
     }
 
-    console.debug(
-      '[ReservationComponent] timeStr:',
-      timeStr,
-      'slotEnd(KST)=',
-      slotEnd.toISOString(),
-      'now(KST)=',
-      now.toISOString(),
-      'isPast=',
-      isPast,
-      'status=',
-      status,
-    );
-
     return status;
   };
 
