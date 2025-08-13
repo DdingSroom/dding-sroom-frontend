@@ -1,15 +1,15 @@
 'use client';
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
 import { isValidPassword, strictEmailRegex } from '../../constants/regex';
 import useTokenStore from '../../stores/useTokenStore';
 import axiosInstance, { setAccessToken } from '../../libs/api/instance';
 import { jwtDecode } from 'jwt-decode';
+import { getLoginErrorMessage } from '../../utils/errorMessages';
 
-export default function Login() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -20,12 +20,46 @@ export default function Login() {
   const [newPassword_2, setnewPassword_2] = useState('');
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [redirectUrl, setRedirectUrl] = useState('/');
 
   const { setAccessToken: setGlobalAccessToken, setRefreshToken } =
     useTokenStore();
 
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectUrl(decodeURIComponent(redirect));
+    }
+
+    // 저장된 로그인 정보 불러오기
+    const savedLoginData = localStorage.getItem('savedLoginData');
+    if (savedLoginData) {
+      try {
+        const {
+          email: savedEmail,
+          password: savedPassword,
+          isLoginSave: savedIsLoginSave,
+        } = JSON.parse(savedLoginData);
+        if (savedIsLoginSave) {
+          setEmail(savedEmail || '');
+          setPassword(savedPassword || '');
+          setIsLoginSave(true);
+        }
+      } catch (error) {
+        console.error('저장된 로그인 정보를 불러오는 중 오류 발생:', error);
+      }
+    }
+  }, [searchParams]);
+
   const handleLoginSave = () => {
-    setIsLoginSave(!isLoginSave);
+    const newIsLoginSave = !isLoginSave;
+    setIsLoginSave(newIsLoginSave);
+
+    // 로그인 유지를 해제하면 저장된 정보 삭제
+    if (!newIsLoginSave) {
+      localStorage.removeItem('savedLoginData');
+    }
   };
 
   const handlePasswordVisible = () => {
@@ -58,7 +92,20 @@ export default function Login() {
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
         console.log('토큰 디코드 결과:', decoded);
-        router.push('/');
+
+        // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
+        if (isLoginSave) {
+          const loginData = {
+            email,
+            password,
+            isLoginSave: true,
+          };
+          localStorage.setItem('savedLoginData', JSON.stringify(loginData));
+        } else {
+          localStorage.removeItem('savedLoginData');
+        }
+
+        router.push(redirectUrl);
       } else {
         // 디버깅용 로그
         console.warn(
@@ -69,9 +116,7 @@ export default function Login() {
       }
     } catch (e) {
       console.error('로그인 실패:', e);
-      setConfirmError(
-        e?.response?.data?.message || '서버와 통신 중 오류가 발생했습니다.',
-      );
+      setConfirmError(getLoginErrorMessage(e));
     }
   };
 
@@ -132,7 +177,7 @@ export default function Login() {
                 setPassword(pw);
                 if (!isValidPassword(pw)) {
                   setPasswordError(
-                    '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                    '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
                   );
                 } else {
                   setPasswordError('');
@@ -291,3 +336,11 @@ const StyledCheckbox = ({ onChange, children, ...props }) => {
     </label>
   );
 };
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}

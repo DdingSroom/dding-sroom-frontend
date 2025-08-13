@@ -67,7 +67,7 @@ export default function Login() {
               setnewPassword(pw);
               if (!isValidPassword(pw)) {
                 setPasswordError(
-                  '비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.',
+                  '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
                 );
               } else {
                 setPasswordError('');

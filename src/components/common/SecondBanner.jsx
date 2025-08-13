@@ -2,19 +2,25 @@
 
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
-import React from 'react';
+import React, { useState } from 'react';
+import LoginRequiredModal from './LoginRequiredModal';
 
 const SecondBanner = () => {
   const router = useRouter();
   const { accessToken } = useTokenStore();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleReserveClick = () => {
     if (!accessToken) {
-      alert('로그인이 필요합니다.');
-      router.push('/login');
+      setShowLoginModal(true);
       return;
     }
     router.push('/');
+  };
+
+  const handleModalConfirm = () => {
+    setShowLoginModal(false);
+    router.push('/login');
   };
 
   return (
@@ -32,6 +38,10 @@ const SecondBanner = () => {
           예약하기
         </button>
       </div>
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onConfirm={handleModalConfirm}
+      />
     </div>
   );
 };
