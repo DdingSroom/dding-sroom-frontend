@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
@@ -9,7 +9,7 @@ import axiosInstance, { setAccessToken } from '../../libs/api/instance';
 import { jwtDecode } from 'jwt-decode';
 import { getLoginErrorMessage } from '../../utils/errorMessages';
 
-export default function Login() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -336,3 +336,11 @@ const StyledCheckbox = ({ onChange, children, ...props }) => {
     </label>
   );
 };
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
