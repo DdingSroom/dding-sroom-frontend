@@ -23,8 +23,15 @@
 
 html,
 body {
-  font-family: 'GmarketSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
-    'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    'GmarketSans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Helvetica,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   width: 100%;
   font-size: 14px;
   background-color: #ffffff;

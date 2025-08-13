@@ -1,14 +1,14 @@
 'use client';
 import CustomizedStepper from './customizedStepper';
-import React from 'react';
+import React, { Suspense } from 'react';
 import Button from '../../../components/common/Button';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function Login() {
+function SignUpStep4() {
   const searchParams = useSearchParams();
   const username = searchParams.get('username') || 'USER 01';
-  
+
   const handleSignup = () => {
     console.log('확인 버튼 클릭:', '회원가입 성공');
   };
@@ -54,5 +54,13 @@ export default function Login() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignUpStep4 />
+    </Suspense>
   );
 }
