@@ -42,8 +42,8 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     if (response && (response.status === 401 || response.status === 403)) {
       if (typeof window !== 'undefined') {
-        alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
-        // window.location.href = '/login';
+        // 로그인이 필요한 경우 토큰 제거
+        sessionStorage.removeItem('accessToken');
       }
     }
     return Promise.reject(error);
