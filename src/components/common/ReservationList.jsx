@@ -42,14 +42,14 @@ const groupByDate = (reservations) => {
 };
 
 const ReservationList = () => {
-  const { userId } = useTokenStore();
+  const { userId, accessToken } = useTokenStore();
   const { fetchAllReservedTimes } = useReservationStore();
   const [groupedReservations, setGroupedReservations] = useState({});
   const [loading, setLoading] = useState(true);
   const [cancelModalData, setCancelModalData] = useState(null);
 
   useEffect(() => {
-    if (!userId) {
+    if (!userId || !accessToken) {
       setLoading(false);
       return;
     }
@@ -76,7 +76,7 @@ const ReservationList = () => {
     };
 
     fetchReservations();
-  }, [userId]);
+  }, [userId, accessToken]);
 
   const handleCancelReservation = (reservation) => {
     setCancelModalData(reservation);
