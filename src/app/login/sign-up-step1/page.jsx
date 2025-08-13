@@ -164,7 +164,7 @@ export default function SignUpStep1() {
           role="status"
           aria-live="polite"
         >
-          <div className="bg-white rounded-lg p-6 flex flex-col items-center space-y-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col items-center space-y-4 max-w-sm mx-4 sm:max-w-none sm:mx-0">
             <div
               className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
               aria-label="로딩 중"
