@@ -79,10 +79,10 @@ const AfterLoginBanner = () => {
       {/* 혼잡도 박스 */}
       <div className="relative flex bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
         <div className="flex flex-col gap-2 sm:gap-3 z-10">
-          <div className="text-[#73726e] text-xs sm:text-sm font-medium">
+          <div className="text-[#73726e] text-xs sm:text-sm font-bold">
             오늘의 혼잡도
           </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl text-[#788DFF] font-bold whitespace-nowrap overflow-hidden">
+          <div className="text-2xl sm:text-3xl md:text-4xl text-[#788DFF] font-black whitespace-nowrap overflow-hidden">
             여유로움
           </div>
         </div>
