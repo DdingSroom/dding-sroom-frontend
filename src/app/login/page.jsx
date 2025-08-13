@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '../../components/common/Button';
@@ -8,6 +7,7 @@ import { isValidPassword, strictEmailRegex } from '../../constants/regex';
 import useTokenStore from '../../stores/useTokenStore';
 import axiosInstance, { setAccessToken } from '../../libs/api/instance';
 import { jwtDecode } from 'jwt-decode';
+import { getLoginErrorMessage } from '../../utils/errorMessages';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -78,9 +78,7 @@ export default function Login() {
       }
     } catch (e) {
       console.error('로그인 실패:', e);
-      setConfirmError(
-        e?.response?.data?.message || '서버와 통신 중 오류가 발생했습니다.',
-      );
+      setConfirmError(getLoginErrorMessage(e));
     }
   };
 
