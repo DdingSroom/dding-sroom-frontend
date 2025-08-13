@@ -31,10 +31,35 @@ export default function Login() {
     if (redirect) {
       setRedirectUrl(decodeURIComponent(redirect));
     }
+
+    // 저장된 로그인 정보 불러오기
+    const savedLoginData = localStorage.getItem('savedLoginData');
+    if (savedLoginData) {
+      try {
+        const {
+          email: savedEmail,
+          password: savedPassword,
+          isLoginSave: savedIsLoginSave,
+        } = JSON.parse(savedLoginData);
+        if (savedIsLoginSave) {
+          setEmail(savedEmail || '');
+          setPassword(savedPassword || '');
+          setIsLoginSave(true);
+        }
+      } catch (error) {
+        console.error('저장된 로그인 정보를 불러오는 중 오류 발생:', error);
+      }
+    }
   }, [searchParams]);
 
   const handleLoginSave = () => {
-    setIsLoginSave(!isLoginSave);
+    const newIsLoginSave = !isLoginSave;
+    setIsLoginSave(newIsLoginSave);
+
+    // 로그인 유지를 해제하면 저장된 정보 삭제
+    if (!newIsLoginSave) {
+      localStorage.removeItem('savedLoginData');
+    }
   };
 
   const handlePasswordVisible = () => {
@@ -67,6 +92,19 @@ export default function Login() {
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
         console.log('토큰 디코드 결과:', decoded);
+
+        // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
+        if (isLoginSave) {
+          const loginData = {
+            email,
+            password,
+            isLoginSave: true,
+          };
+          localStorage.setItem('savedLoginData', JSON.stringify(loginData));
+        } else {
+          localStorage.removeItem('savedLoginData');
+        }
+
         router.push(redirectUrl);
       } else {
         // 디버깅용 로그
