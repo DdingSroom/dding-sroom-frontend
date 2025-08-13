@@ -106,6 +106,7 @@ export default function CancelAccountStep1() {
     <>
       <div className="w-full">
         <MyPageHeader />
+        {!showLoginModal && (
         <div className="p-6 bg-[#FFFF] mt-6">
           <label className="mb-2 block">계정 이메일</label>
           <div className="flex gap-2">
@@ -171,6 +172,7 @@ export default function CancelAccountStep1() {
             </div>
           </Modal>
         </div>
+        )}
       </div>
 
       <LoginRequiredModal
