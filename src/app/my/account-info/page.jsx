@@ -66,7 +66,8 @@ export default function AccountInfo() {
     <div className="min-h-screen bg-gray-50">
       <MyPageHeader />
 
-      <div className="px-6 py-6">
+      {!showLoginModal && (
+        <div className="px-6 py-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           <div className="px-6 py-5 border-b border-gray-100">
             <h2 className="text-lg font-semibold text-[#37352f]">내 정보</h2>
@@ -118,6 +119,7 @@ export default function AccountInfo() {
           <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
         </div>
       </div>
+      )}
 
       <Modal
         isOpen={open}
