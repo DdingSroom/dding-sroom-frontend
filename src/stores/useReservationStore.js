@@ -47,9 +47,8 @@ const useReservationStore = create((set) => ({
       const nowKST = new Date();
 
       const filtered = res.data.reservations.filter((r) => {
-        const raw = r.startTime || r.reservationStartTime;
-        const start = parseToDate(raw);
-        return r.status === 'RESERVED' && start > nowKST;
+        const endTime = parseToDate(r.endTime);
+        return r.status === 'RESERVED' && endTime > nowKST;
       });
 
       const sorted = filtered.sort(

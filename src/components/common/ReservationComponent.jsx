@@ -9,6 +9,16 @@ import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
 
+// KST(Asia/Seoul) 현재시각
+const nowInKST = () =>
+  new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+
+// 기준 날짜(baseDate)와 HH:MM로 KST Date 생성
+const buildKSTDate = (baseDate, hhmm) => {
+  const yyyyMmDd = baseDate.toISOString().slice(0, 10);
+  return new Date(`${yyyyMmDd}T${hhmm}:00+09:00`);
+};
+
 const toKSTISOString = (date) => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 19);
@@ -56,11 +66,44 @@ const ReservationComponent = ({ index, roomId }) => {
   };
 
   const getStatus = (time) => {
-    const timeDate = new Date(time);
-    if (time.endsWith('23:59:00')) return 'display-only';
-    if (timeDate < now) return 'past';
-    if (reservedTimeSlots.includes(time)) return 'reserved';
-    return 'available';
+    // (수정) 기준 날짜 및 KST 비교 기반 상태 판별
+    const baseDate = new Date();
+    const timeStr = new Date(time).toTimeString().slice(0, 5);
+    const slotStart = buildKSTDate(baseDate, timeStr);
+    const slotEnd =
+      timeStr === '23:59'
+        ? buildKSTDate(baseDate, '23:59')
+        : new Date(slotStart.getTime() + 10 * 60 * 1000);
+
+    const now = nowInKST();
+    const isPast = slotEnd.getTime() < now.getTime();
+
+    const isReserved = reservedTimeSlots.includes(time);
+
+    // 상태 우선순위: 과거 > 예약됨 > 예약가능 (과거 시간은 예약 여부 무시하고 모두 검은색)
+    let status;
+    if (isPast) {
+      status = 'past';
+    } else if (isReserved) {
+      status = 'reserved';
+    } else {
+      status = 'available';
+    }
+
+    console.debug(
+      '[ReservationComponent] timeStr:',
+      timeStr,
+      'slotEnd(KST)=',
+      slotEnd.toISOString(),
+      'now(KST)=',
+      now.toISOString(),
+      'isPast=',
+      isPast,
+      'status=',
+      status,
+    );
+
+    return status;
   };
 
   const handleOpenModal = () => {
@@ -274,6 +317,20 @@ const ReservationComponent = ({ index, roomId }) => {
         </Modal>
       </div>
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
+      <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#788DFF]"></div>
+          <span>예약 가능</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#9999A3]"></div>
+          <span>예약됨</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-[#000000]"></div>
+          <span>지난 시간</span>
+        </div>
+      </div>
       <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
       <LoginRequiredModal
         isOpen={showLoginModal}

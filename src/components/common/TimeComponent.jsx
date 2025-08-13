@@ -5,6 +5,8 @@ const TimeComponent = ({ status }) => {
         return '#9999A3';
       case 'past':
         return '#000000';
+      case 'display-only':
+        return '#CCCCCC';
       case 'available':
       default:
         return '#788DFF';
