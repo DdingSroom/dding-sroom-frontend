@@ -24,7 +24,7 @@ export default function ReservationInfo() {
   return (
     <div className="w-full">
       <MyPageHeader />
-      <ReservationList />
+      {!showLoginModal && <ReservationList />}
 
       <LoginRequiredModal
         isOpen={showLoginModal}
