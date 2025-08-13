@@ -78,7 +78,7 @@ const AfterLoginBanner = () => {
     <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-[95%]">
       {/* 혼잡도 박스 */}
       <div className="relative flex bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
-        <div className="flex flex-col gap-2 sm:gap-3 z-10">
+        <div className="flex flex-col gap-2 sm:gap-3">
           <div className="text-[#73726e] text-xs sm:text-sm font-bold">
             오늘의 혼잡도
           </div>
