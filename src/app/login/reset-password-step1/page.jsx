@@ -150,6 +150,26 @@ export default function ResetPassWord1() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
+      {/* 스피너 오버레이 */}
+      {isSending && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="bg-white rounded-lg p-6 flex flex-col items-center space-y-4">
+            <div
+              className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
+              aria-label="로딩 중"
+            ></div>
+            <p className="text-sm text-gray-600 text-center">
+              메일을 전송 중이예요. 시스템 환경에 따라 딜레이가 발생할 수
+              있어요.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
         <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
@@ -181,6 +201,7 @@ export default function ResetPassWord1() {
                   }}
                   placeholder="학교 이메일을 입력해주세요."
                   setEmail={setEmail}
+                  disabled={isSending}
                 />
               </div>
               <button
@@ -212,6 +233,7 @@ export default function ResetPassWord1() {
                   inputMode="numeric"
                   maxLength={6}
                   className="pr-14"
+                  disabled={isSending}
                 />
                 {codeSent && (
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
@@ -228,7 +250,8 @@ export default function ResetPassWord1() {
                   isVerifying ||
                   !codeSent ||
                   secondsLeft <= 0 ||
-                  !/^[0-9]{6}$/.test(number)
+                  !/^[0-9]{6}$/.test(number) ||
+                  isSending
                 }
               >
                 {isVerifying ? '확인중' : '인증번호 확인'}
@@ -277,15 +300,15 @@ const StyledInput = ({ value, className = '', ...props }) => {
   );
 };
 
-const StyledEmailInput = ({ value, setEmail, ...props }) => {
+const StyledEmailInput = ({ value, setEmail, disabled, ...props }) => {
   const handleRemoveEmailValue = () => {
     setEmail('');
   };
 
   return (
     <div className="relative">
-      <StyledInput {...props} value={value} />
-      {value && (
+      <StyledInput {...props} value={value} disabled={disabled} />
+      {value && !disabled && (
         <button
           type="button"
           onClick={handleRemoveEmailValue}
