@@ -21,7 +21,7 @@ const ReservationSection = () => {
           return (
             <div
               key={index}
-              className={`flex-1 text-center p-2 cursor-pointer transition-all duration-200 ${currentTab === index ? 'bg-white text-[#788cff] font-medium' : 'bg-gray-100 text-[#73726e] hover:bg-gray-200'}`}
+              className={`flex-1 text-center p-4 cursor-pointer transition-all duration-300 ${currentTab === index ? 'text-gray-800 font-medium border-b-2 border-[#788cff] bg-transparent' : 'text-gray-500 font-normal border-b-2 border-transparent bg-transparent hover:text-gray-700'}`}
               onClick={() => selectMenuHandler(index)}
             >
               {tap.name}
