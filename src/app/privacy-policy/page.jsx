@@ -41,7 +41,10 @@ export default function PrivacyPolicyPage() {
         className="mb-12 rounded-2xl border border-[#dbe5ff] bg-white/70 p-5"
       >
         <h2 className="text-sm font-semibold text-[#788cff] mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-[15px]" style={{ color: '#788cff' }}>
+        <ol
+          className="list-decimal ml-5 space-y-2 text-[15px]"
+          style={{ color: '#788cff' }}
+        >
           {[
             ['#section-1', '개인정보 수집 항목 및 수집 방법'],
             ['#section-2', '개인정보의 이용 목적'],
