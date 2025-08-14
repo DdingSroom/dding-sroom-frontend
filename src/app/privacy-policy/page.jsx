@@ -19,14 +19,14 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       <header className="mb-10">
-        <h1 className="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-[#0b2b66]">
+        <h1 className="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-[#788cff]">
           개인정보처리방침
         </h1>
-        <p className="mt-2 text-sm text-[#4a5e8a]">
+        <p className="mt-2 text-sm text-[#6a7cb0]">
           마지막 업데이트: <time dateTime="2025-08-14">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-[#dbe5ff] bg-white/70 p-5 leading-[1.9] text-[15px] text-[#1b2f57]">
+        <p className="mt-6 rounded-2xl border border-[#dbe5ff] bg-white/70 p-5 leading-[1.9] text-[15px] text-[#37352f]">
           본 개인정보처리방침은 명지대 띵스룸(ddingsroom) 서비스가 이용자들의
           개인정보를 어떻게 수집·이용·보관·파기하는지, 그리고 이용자의 권리를
           어떻게 보호하는지를 설명합니다. 본 방침은 서비스 이용 시 적용되는
@@ -34,14 +34,14 @@ export default function PrivacyPolicyPage() {
         </p>
       </header>
 
-      <div className="mb-8 h-px w-full bg-[#b9c7ff]" />
+      <div className="mb-8 h-px w-full bg-[#e9e9e7]" />
 
       <nav
         aria-label="문서 목차"
-        className="mb-12 rounded-2xl border border-[#dbe5ff] bg-[#f6f8ff] p-5"
+        className="mb-12 rounded-2xl border border-[#dbe5ff] bg-white/70 p-5"
       >
-        <h2 className="text-sm font-semibold text-[#163a88] mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-[15px]">
+        <h2 className="text-sm font-semibold text-[#788cff] mb-3">목차</h2>
+        <ol className="list-decimal ml-5 space-y-2 text-[15px]" style={{ color: '#788cff' }}>
           {[
             ['#section-1', '개인정보 수집 항목 및 수집 방법'],
             ['#section-2', '개인정보의 이용 목적'],
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
             <li key={href}>
               <a
                 href={href}
-                className="text-[#163a88] hover:underline underline-offset-4"
+                className="text-[#788cff] hover:underline underline-offset-4"
               >
                 {label}
               </a>
@@ -209,7 +209,7 @@ export default function PrivacyPolicyPage() {
               <b>이메일</b>:{' '}
               <a
                 href="mailto:ddingsroom2025@mju.ac.kr"
-                className="text-[#163a88] underline underline-offset-4 hover:opacity-80"
+                className="text-[#788cff] underline underline-offset-4 hover:opacity-80"
               >
                 ddingsroom2025@mju.ac.kr
               </a>
@@ -222,16 +222,19 @@ export default function PrivacyPolicyPage() {
       <div className="mt-14 flex items-center justify-end">
         <a
           href="#"
-          className="inline-flex items-center rounded-xl border border-[#8aa4ff] px-4 py-2 text-sm font-medium text-[#163a88] hover:bg-[#eef3ff] transition"
+          className="inline-flex items-center rounded-xl border border-[#788cff] px-4 py-2 text-sm font-medium text-[#788cff] hover:bg-gray-50 transition"
         >
           ↑ 맨 위로
         </a>
       </div>
 
-      <div className="mt-10 h-px w-full bg-[#b9c7ff]" />
+      <div className="mt-10 h-px w-full bg-[#e9e9e7]" />
 
-      <div className="mt-6 text-right text-xs text-[#6a7cb0]">
-        <Link href="/" className="hover:underline underline-offset-4">
+      <div className="mt-6 text-right text-xs text-[#73726e]">
+        <Link
+          href="/"
+          className="hover:underline underline-offset-4 text-[#788cff]"
+        >
           홈으로
         </Link>
       </div>
@@ -243,9 +246,9 @@ function Section({ id, title, children }) {
   return (
     <section
       id={id}
-      className="scroll-mt-28 rounded-2xl border border-[#e3e9ff] bg-white p-6 sm:p-7 leading-[1.95] text-[#132a57]"
+      className="scroll-mt-28 rounded-2xl border border-[#e9e9e7] bg-white p-6 sm:p-7 leading-[1.95] text-[#37352f]"
     >
-      <h2 className="text-[22px] sm:text-[24px] font-extrabold text-[#0b2b66] mb-5">
+      <h2 className="text-[22px] sm:text-[24px] font-extrabold text-[#788cff] mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -255,13 +258,13 @@ function Section({ id, title, children }) {
 
 function SubTitle({ children }) {
   return (
-    <h3 className="text-[17px] font-bold text-[#173b8a] mt-1">{children}</h3>
+    <h3 className="text-[17px] font-bold text-[#788cff] mt-1">{children}</h3>
   );
 }
 
 function MiniTitle({ children }) {
   return (
-    <h4 className="text-[15px] font-semibold text-[#1b3f92] mt-1">
+    <h4 className="text-[15px] font-semibold text-[#6a7dff] mt-1">
       {children}
     </h4>
   );
@@ -280,5 +283,5 @@ function UL({ children }) {
 }
 
 function LI({ children }) {
-  return <li className="marker:text-[#6a85ff]">{children}</li>;
+  return <li className="marker:text-[#788cff]">{children}</li>;
 }
