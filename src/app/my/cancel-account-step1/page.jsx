@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
-import MyPageHeader from '@components/common/MyPageHeader';
+import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import MyPageHeader from '@components/common/MyPageHeader';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import useTokenStore from '../../../stores/useTokenStore';
-import Button from '../../../components/common/Button';
 
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);

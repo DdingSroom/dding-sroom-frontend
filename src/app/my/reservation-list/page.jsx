@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import useTokenStore from '../../../stores/useTokenStore';
 import MyPageHeader from '@components/common/MyPageHeader';
 import ReservationList from '@components/common/ReservationList';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import useTokenStore from '../../../stores/useTokenStore';
 
 export default function ReservationInfo() {
   const [showLoginModal, setShowLoginModal] = useState(false);

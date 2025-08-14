@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import CancellationModal from '@components/common/CancellationModal';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
+import CancellationModal from '@components/common/CancellationModal';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);

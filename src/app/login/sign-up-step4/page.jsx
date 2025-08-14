@@ -1,10 +1,10 @@
 'use client';
-import CustomizedStepper from './customizedStepper';
 import React, { Suspense } from 'react';
-import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import Button from '../../../components/common/Button';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import CustomizedStepper from './customizedStepper';
 
 function SignUpStep4() {
   const searchParams = useSearchParams();

@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../../libs/api/instance';
-import UserTableRow from '@components/admin/UserTableRow';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
+import axiosInstance from '../../../libs/api/instance';
+import useTokenStore from '../../../stores/useTokenStore';
+import UserTableRow from '@components/admin/UserTableRow';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);

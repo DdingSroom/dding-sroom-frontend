@@ -1,9 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Button from '../../../components/common/Button';
-import { isValidPassword } from '../../../constants/regex';
 import { useRouter } from 'next/navigation';
+import { isValidPassword } from '../../../constants/regex';
 import axiosInstance from '../../../libs/api/instance';
+import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 
 export default function ResetPassword2() {

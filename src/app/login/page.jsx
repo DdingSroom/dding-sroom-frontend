@@ -2,12 +2,12 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { jwtDecode } from 'jwt-decode';
 import Button from '../../components/common/Button';
 import PrivacyPolicyFooter from '../../components/common/PrivacyPolicyFooter';
 import { isValidPassword, strictEmailRegex } from '../../constants/regex';
 import useTokenStore from '../../stores/useTokenStore';
 import axiosInstance, { setAccessToken } from '../../libs/api/instance';
-import { jwtDecode } from 'jwt-decode';
 import { getLoginErrorMessage } from '../../utils/errorMessages';
 
 function LoginForm() {
@@ -18,7 +18,6 @@ function LoginForm() {
   const [isLoginSave, setIsLoginSave] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
-  const [newPassword_2, setnewPassword_2] = useState('');
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -183,11 +182,6 @@ function LoginForm() {
                     );
                   } else {
                     setPasswordError('');
-                  }
-                  if (newPassword_2 && pw !== newPassword_2) {
-                    setConfirmError('비밀번호가 일치하지 않습니다.');
-                  } else {
-                    setConfirmError('');
                   }
                 }}
                 placeholder="비밀번호를 입력해주세요."

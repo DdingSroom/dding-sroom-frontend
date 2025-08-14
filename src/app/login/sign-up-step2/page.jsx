@@ -1,11 +1,11 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { isValidPassword } from '../../../constants/regex';
+import useSignupStore from '../../../stores/useSignupStore';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import CustomizedStepper from './customizedStepper';
-import { isValidPassword } from '../../../constants/regex';
-import useSignupStore from '../../../stores/useSignupStore';
-import { useRouter } from 'next/navigation';
 
 export default function SignUpStep2() {
   const router = useRouter();

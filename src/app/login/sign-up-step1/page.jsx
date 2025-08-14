@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { strictEmailRegex } from '../../../constants/regex';
+import useSignupStore from '../../../stores/useSignupStore';
+import axiosInstance from '../../../libs/api/instance';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import CustomizedStepper from './customizedStepper';
-import { strictEmailRegex } from '../../../constants/regex';
-import useSignupStore from '../../../stores/useSignupStore';
-import { useRouter } from 'next/navigation';
-import axiosInstance from '../../../libs/api/instance';
 
 export default function SignUpStep1() {
   const router = useRouter();
