@@ -1,10 +1,10 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Button from '../../../components/common/Button';
-import Link from 'next/link';
 import { isValidPassword } from '../../../constants/regex';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '../../../libs/api/instance';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 
 export default function ResetPassword2() {
   const [email, setEmail] = useState('');
@@ -24,7 +24,7 @@ export default function ResetPassword2() {
       alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
       router.push('/login/reset-password-step1');
     }
-  }, []);
+  }, [router]);
 
   const handlenewPasswordVisible = () => {
     setIsnewPasswordVisible(!isnewPasswordVisible);
@@ -40,14 +40,10 @@ export default function ResetPassword2() {
 
   const handlePasswordReset = async () => {
     try {
-      console.log('요청 전 email:', email);
-      console.log('요청 전 password:', newPassword);
-
       const response = await axiosInstance.post('/user/modify-password', {
         email,
         password: newPassword,
       });
-
       console.log('비밀번호 재설정 성공:', response.data);
       alert('비밀번호가 성공적으로 변경되었습니다.');
       router.push('/login');
@@ -59,83 +55,90 @@ export default function ResetPassword2() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
-      <div className="text-center space-y-3 mb-8">
-        <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
-        <p className="text-[#73726e] text-sm">비밀번호 입력</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* 본문 */}
+      <main className="flex-1 px-6 py-8">
+        <div className="text-center space-y-3 mb-8">
+          <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
+          <p className="text-[#73726e] text-sm">비밀번호 입력</p>
+        </div>
 
-      <div className="flex-1 max-w-md mx-auto w-full">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
-              새 비밀번호
-            </label>
-            <NewPasswordField
-              id="newPassword"
-              value={newPassword}
-              onChange={(e) => {
-                const pw = e.target.value;
-                setnewPassword(pw);
-                if (!isValidPassword(pw)) {
-                  setPasswordError(
-                    '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
-                  );
-                } else {
-                  setPasswordError('');
-                }
-                if (newPassword_2 && pw !== newPassword_2) {
-                  setConfirmError('비밀번호가 일치하지 않습니다.');
-                } else {
-                  setConfirmError('');
-                }
-              }}
-              placeholder="비밀번호를 입력해주세요."
-              isVisible={isnewPasswordVisible}
-              handlePasswordVisible={handlenewPasswordVisible}
-            />
-            {passwordError && (
-              <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
-            )}
-          </div>
+        <div className="max-w-md mx-auto w-full">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#37352f]">
+                새 비밀번호
+              </label>
+              <NewPasswordField
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => {
+                  const pw = e.target.value;
+                  setnewPassword(pw);
+                  if (!isValidPassword(pw)) {
+                    setPasswordError(
+                      '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
+                    );
+                  } else {
+                    setPasswordError('');
+                  }
+                  if (newPassword_2 && pw !== newPassword_2) {
+                    setConfirmError('비밀번호가 일치하지 않습니다.');
+                  } else {
+                    setConfirmError('');
+                  }
+                }}
+                placeholder="비밀번호를 입력해주세요."
+                isVisible={isnewPasswordVisible}
+                handlePasswordVisible={handlenewPasswordVisible}
+              />
+              {passwordError && (
+                <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
-              새 비밀번호 확인
-            </label>
-            <ConfirmPasswordField
-              id="newPassword_2"
-              value={newPassword_2}
-              onChange={(e) => {
-                const confirm = e.target.value;
-                setnewPassword_2(confirm);
-                if (confirm !== newPassword) {
-                  setConfirmError('비밀번호가 일치하지 않습니다.');
-                } else {
-                  setConfirmError('');
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-[#37352f]">
+                새 비밀번호 확인
+              </label>
+              <ConfirmPasswordField
+                id="newPassword_2"
+                value={newPassword_2}
+                onChange={(e) => {
+                  const confirm = e.target.value;
+                  setnewPassword_2(confirm);
+                  if (confirm !== newPassword) {
+                    setConfirmError('비밀번호가 일치하지 않습니다.');
+                  } else {
+                    setConfirmError('');
+                  }
+                }}
+                placeholder="비밀번호를 입력해주세요."
+                isVisible={isnewPassword_2Visible}
+                handlePasswordVisible={handlenewPassword_2Visible}
+                isMatch={
+                  newPassword && newPassword_2 && newPassword === newPassword_2
                 }
-              }}
-              placeholder="비밀번호를 입력해주세요."
-              isVisible={isnewPassword_2Visible}
-              handlePasswordVisible={handlenewPassword_2Visible}
-              isMatch={
-                newPassword && newPassword_2 && newPassword === newPassword_2
-              }
-            />
-            {confirmError && (
-              <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
-            )}
+              />
+              {confirmError && (
+                <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
+              )}
+            </div>
+
+            {/* 버튼: 입력 블록 바로 아래 */}
+            <div className="w-full pt-2">
+              <Button
+                onClick={handlePasswordReset}
+                disabled={!isLoginAvailable()}
+                text="확인"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      <div className="max-w-md mx-auto w-full mt-8">
-        <Button
-          onClick={handlePasswordReset}
-          disabled={!isLoginAvailable()}
-          text="확인"
-        />
-      </div>
+      {/* 푸터: 여백 없이 하단 고정 */}
+      <PrivacyPolicyFooter />
     </div>
   );
 }
