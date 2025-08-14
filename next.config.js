@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
   pageExtensions: ['js', 'jsx', 'html'],
+
+  // 프로덕션 빌드에서만 console 제거 (error는 유지)
+  compiler: {
+    removeConsole: isProd ? { exclude: ['error'] } : false,
+  },
+
   experimental: {
     turbo: {
       rules: {
@@ -12,6 +20,7 @@ module.exports = {
       },
     },
   },
+
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

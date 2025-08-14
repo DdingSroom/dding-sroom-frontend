@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
@@ -51,7 +51,7 @@ const ReservationComponent = ({ index, roomId }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const getTimeSlots = () => {
+  const timeSlots = useMemo(() => {
     const slots = [];
     const base = new Date();
     base.setHours(0, 0, 0, 0);
@@ -63,7 +63,7 @@ const ReservationComponent = ({ index, roomId }) => {
     }
     slots.push(new Date(2025, 0, 1, 23, 59));
     return slots;
-  };
+  }, []);
 
   const getStatus = (time) => {
     // (수정) 기준 날짜 및 KST 비교 기반 상태 판별
@@ -182,9 +182,8 @@ const ReservationComponent = ({ index, roomId }) => {
   );
 
   const renderTimeBlocks = () => {
-    const slots = getTimeSlots();
-    const morning = slots.filter((t) => t.getHours() < 12);
-    const afternoon = slots.filter((t) => t.getHours() >= 12);
+    const morning = timeSlots.filter((t) => t.getHours() < 12);
+    const afternoon = timeSlots.filter((t) => t.getHours() >= 12);
     return (
       <div className="flex flex-col gap-2">
         {morning.length > 0 && (

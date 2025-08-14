@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeComponent from '@components/common/TimeComponent';
 import Modal from '@components/common/Modal';
@@ -59,7 +59,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const getTimeSlots = () => {
+  const timeSlots = useMemo(() => {
     const slots = [];
     const base = new Date(tomorrow);
     const end = new Date(tomorrow);
@@ -70,7 +70,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     }
     slots.push(new Date(2025, 0, 2, 23, 59));
     return slots;
-  };
+  }, [tomorrow]);
 
   const getStatus = (time) => {
     if (time.endsWith('23:59:00')) return 'display-only';
@@ -84,16 +84,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     } else {
       status = 'available';
     }
-
-    const timeStr = new Date(time).toTimeString().slice(0, 5);
-    console.debug(
-      '[TomorrowReservationComponent] timeStr:',
-      timeStr,
-      'isReserved=',
-      isReserved,
-      'status=',
-      status,
-    );
 
     return status;
   };
@@ -150,9 +140,8 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   };
 
   const renderTimeBlocks = () => {
-    const slots = getTimeSlots();
-    const morning = slots.filter((t) => t.getHours() < 12);
-    const afternoon = slots.filter((t) => t.getHours() >= 12);
+    const morning = timeSlots.filter((t) => t.getHours() < 12);
+    const afternoon = timeSlots.filter((t) => t.getHours() >= 12);
     return (
       <div className="flex flex-col gap-2">
         {morning.length > 0 && (
@@ -207,8 +196,7 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   );
 
   const renderStartTimeOptions = () => {
-    const slots = getTimeSlots();
-    return slots
+    return timeSlots
       .filter((time) => !reservedTimeSlots.includes(time.toISOString()))
       .map((time) => (
         <option key={time.toISOString()} value={time.toISOString()}>
