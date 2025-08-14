@@ -1,27 +1,26 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import useTokenStore from '../stores/useTokenStore';
 import Header from '@components/common/Header';
 import Banner from '@components/common/Banner';
 import AfterLoginBanner from '@components/common/AfterLoginBanner';
 import SecondBanner from '@components/common/SecondBanner';
 import ReservationSection from '@components/common/ReservationSection';
 import FooterNav from '@components/common/FooterNav';
-
-import useTokenStore from '../stores/useTokenStore';
-import { jwtDecode } from 'jwt-decode';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 export default function Home() {
-  const { accessToken, setUserId, initializeFromStorage } = useTokenStore();
+  const { accessToken, setUserId } = useTokenStore();
 
-  const [userInfo, setUserInfo] = useState({ id: '', email: '' });
+  const [, setUserInfo] = useState({ id: '', email: '' });
   const [isMounted, setIsMounted] = useState(false); // hydration mismatch 방지
 
   useEffect(() => {
     setIsMounted(true); // CSR 이후에만 렌더링하게 함
 
     // Zustand 상태를 클라이언트에서 초기화
-    // initializeFromStorage();
   }, []);
 
   useEffect(() => {
@@ -68,8 +67,10 @@ export default function Home() {
         <ReservationSection className="w-full" />
       </div>
 
+      <FooterNav />
+
       <div className="pb-20">
-        <FooterNav />
+        <PrivacyPolicyFooter />
       </div>
     </>
   );

@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
-import Button from '../../../components/common/Button';
-import CustomizedStepper from './customizedStepper';
+import { useRouter } from 'next/navigation';
 import { strictEmailRegex } from '../../../constants/regex';
 import useSignupStore from '../../../stores/useSignupStore';
-import { useRouter } from 'next/navigation';
 import axiosInstance from '../../../libs/api/instance';
+import Button from '../../../components/common/Button';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import CustomizedStepper from './customizedStepper';
 
 export default function SignUpStep1() {
   const router = useRouter();
@@ -156,103 +156,135 @@ export default function SignUpStep1() {
   const canVerify = codeSent && secondsLeft > 0 && /^[0-9]{6}$/.test(number);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
-      <div className="text-center space-y-3 mb-8">
-        <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
-        <p className="text-[#73726e] text-sm">학교 이메일 인증하기</p>
-      </div>
-
-      <div className="mb-8">
-        <CustomizedStepper />
-      </div>
-
-      <div className="flex-1 max-w-md mx-auto w-full space-y-6">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-[#37352f]">
-            이메일
-          </label>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <StyledEmailInput
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
-                    setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
-                  }
-                }}
-                placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
-            </div>
-            <button
-              className={commonCodeButtonClass}
-              onClick={handleSendCode}
-              disabled={isSending || !strictEmailRegex.test(email)}
-            >
-              {isSending ? '전송중' : '인증번호 전송'}
-            </button>
-          </div>
-          {emailError && (
-            <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-[#37352f]">
-            인증번호
-          </label>
-          <div className="flex items-center gap-2 flex-nowrap">
-            <div className="relative flex-1 min-w-0">
-              <StyledNumberInput
-                type="text"
-                id="number"
-                value={number}
-                onChange={(e) => handleNumberChange(e.target.value)}
-                placeholder="이메일로 전송된 인증번호를 입력해주세요."
-                inputMode="numeric"
-                maxLength={6}
-                className="pr-14"
-              />
-              {codeSent && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
-                  {secondsLeft > 0 ? mmss : '만료'}
-                </span>
-              )}
-            </div>
-            <button
-              className={commonCodeButtonClass}
-              onClick={handleVerifyCode}
-              disabled={!canVerify || isVerifying}
-            >
-              {isVerifying ? '확인중' : '인증번호 확인'}
-            </button>
-          </div>
-          {numberError && (
-            <p className="text-red-500 text-xs mt-1.5">{numberError}</p>
-          )}
-          {codeVerificationMessage && (
-            <p
-              className={`text-xs mt-1.5 ${isCodeVerified ? 'text-green-600' : 'text-red-500'}`}
-            >
-              {codeVerificationMessage}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* 스피너 오버레이 */}
+      {isSending && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col items-center space-y-4 max-w-sm mx-4 sm:max-w-none sm:mx-0">
+            <div
+              className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
+              aria-label="로딩 중"
+            />
+            <p className="text-sm text-gray-600 text-center">
+              메일을 전송 중이예요. 시스템 환경에 따라 딜레이가 발생할 수
+              있어요.
             </p>
-          )}
+          </div>
+        </div>
+      )}
+
+      {/* 본문 */}
+      <div className="flex-1 px-6 py-8">
+        <div className="text-center space-y-3 mb-8">
+          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
+          <p className="text-[#73726e] text-sm">학교 이메일 인증하기</p>
+        </div>
+
+        <div className="mb-8">
+          <CustomizedStepper />
+        </div>
+
+        <div className="max-w-md mx-auto w-full space-y-6">
+          {/* 이메일 */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              이메일
+            </label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <StyledEmailInput
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => {
+                    const inputEmail = e.target.value;
+                    setEmail(inputEmail);
+                    if (
+                      inputEmail === '' ||
+                      strictEmailRegex.test(inputEmail)
+                    ) {
+                      setEmailError('');
+                    } else {
+                      setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                    }
+                  }}
+                  placeholder="학교 이메일을 입력해주세요."
+                  setEmail={setEmail}
+                  disabled={isSending}
+                />
+              </div>
+              <button
+                className={commonCodeButtonClass}
+                onClick={handleSendCode}
+                disabled={isSending || !strictEmailRegex.test(email)}
+              >
+                {isSending ? '전송중' : '인증번호 전송'}
+              </button>
+            </div>
+            {emailError && (
+              <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
+            )}
+          </div>
+
+          {/* 인증번호 */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#37352f]">
+              인증번호
+            </label>
+            <div className="flex items-center gap-2 flex-nowrap">
+              <div className="relative flex-1 min-w-0">
+                <StyledNumberInput
+                  type="text"
+                  id="number"
+                  value={number}
+                  onChange={(e) => handleNumberChange(e.target.value)}
+                  placeholder="인증번호를 입력해주세요."
+                  inputMode="numeric"
+                  maxLength={6}
+                  className="pr-14"
+                  disabled={isSending}
+                />
+                {codeSent && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
+                    {secondsLeft > 0 ? mmss : '만료'}
+                  </span>
+                )}
+              </div>
+              <button
+                className={commonCodeButtonClass}
+                onClick={handleVerifyCode}
+                disabled={!canVerify || isVerifying || isSending}
+              >
+                {isVerifying ? '확인중' : '인증번호 확인'}
+              </button>
+            </div>
+            {numberError && (
+              <p className="text-red-500 text-xs mt-1.5">{numberError}</p>
+            )}
+            {codeVerificationMessage && (
+              <p
+                className={`text-xs mt-1.5 ${isCodeVerified ? 'text-green-600' : 'text-red-500'}`}
+              >
+                {codeVerificationMessage}
+              </p>
+            )}
+          </div>
+
+          {/* 다음 버튼 */}
+          <Button
+            onClick={handleNext}
+            disabled={!isCodeVerified}
+            text="다음으로"
+          />
         </div>
       </div>
 
-      <div className="max-w-md mx-auto w-full mt-8">
-        <Button
-          onClick={handleNext}
-          disabled={!isCodeVerified}
-          text="다음으로"
-        />
-      </div>
+      {/* 푸터 */}
+      <PrivacyPolicyFooter />
     </div>
   );
 }
@@ -265,12 +297,23 @@ const StyledInput = ({ value, className = '', ...props }) => {
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };
 
-const StyledEmailInput = ({ value, setEmail, className = '', ...props }) => {
+const StyledEmailInput = ({
+  value,
+  setEmail,
+  className = '',
+  disabled,
+  ...props
+}) => {
   const handleRemoveEmailValue = () => setEmail('');
   return (
     <div className="relative">
-      <StyledInput {...props} value={value} className={className} />
-      {value && (
+      <StyledInput
+        {...props}
+        value={value}
+        className={className}
+        disabled={disabled}
+      />
+      {value && !disabled && (
         <button
           type="button"
           onClick={handleRemoveEmailValue}

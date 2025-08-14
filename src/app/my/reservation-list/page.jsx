@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import useTokenStore from '../../../stores/useTokenStore';
 import MyPageHeader from '@components/common/MyPageHeader';
 import ReservationList from '@components/common/ReservationList';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import useTokenStore from '../../../stores/useTokenStore';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 export default function ReservationInfo() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -22,14 +23,18 @@ export default function ReservationInfo() {
   };
 
   return (
-    <div className="w-full">
-      <MyPageHeader />
-      {!showLoginModal && <ReservationList />}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1">
+        <MyPageHeader />
+        {!showLoginModal && <ReservationList />}
+      </main>
 
       <LoginRequiredModal
         isOpen={showLoginModal}
         onConfirm={handleLoginConfirm}
       />
+
+      <PrivacyPolicyFooter />
     </div>
   );
 }

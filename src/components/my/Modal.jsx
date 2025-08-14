@@ -1,8 +1,6 @@
 const Modal = ({ isOpen, onClose, onSubmit, children, text, color }) => {
   if (!isOpen) return null;
 
-  const colorClass = color === 'red' ? 'text-red-500' : 'text-gray-500';
-
   return (
     <div
       className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center inset-0 z-[9999]"
