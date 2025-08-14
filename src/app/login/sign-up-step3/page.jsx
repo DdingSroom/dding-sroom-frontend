@@ -1,33 +1,17 @@
 'use client';
 import axios from 'axios';
-import CustomizedStepper from './customizedStepper';
 import React, { useState } from 'react';
 import Button from '../../../components/common/Button';
-import Link from 'next/link';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import CustomizedStepper from './customizedStepper';
 import useSignupStore from '../../../stores/useSignupStore';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '../../../libs/api/instance.js';
 
-export default function Login() {
+export default function SignUpStep3() {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [isSignupSave, setIsSignupSave] = useState(false);
 
-  const { signupData, setSignupField, resetSignupData } = useSignupStore();
-
-  // const handleSignup = async () => {
-  //   try {
-  //     setSignupField('username', name); // 사용자 이름
-
-  //     const res = await axiosInstance.post('/user/sign-up', signupData);
-  //     console.log('회원가입 성공:', res.data);
-
-  //     resetSignupData();
-  //     router.push('/login/sign-up-step4');
-  //   } catch (error) {
-  //     console.error('회원가입 실패:', error);
-  //   }
-  // };
+  const { signupData, resetSignupData } = useSignupStore();
 
   const handleSignup = async () => {
     try {
@@ -56,73 +40,59 @@ export default function Login() {
       );
     }
   };
-  // const handleSignupSave = () => {
-  //   setIsSignupSave(!isSignupSave);
-  // };
 
   const isSignupAvailable = () => {
-    return name;
+    return Boolean(name && name.trim().length > 0);
   };
 
-  // const handleSignup = () => {
-  //   console.log('회원가입 버튼 클릭:', name);
-  // };
-
   return (
-    <div className="flex flex-col h-full pt-12 px-4">
-      <div className="flex flex-col w-full mb-8 gap-1">
-        <h2 className="text-center text-[20px]">회원가입</h2>
-        <div className="text-[#333333] text-center text-[14px] font-normal">
-          <p>정보 입력</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1 px-6 py-8">
+        <div className="text-center space-y-3 mb-8">
+          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
+          <p className="text-[#73726e] text-sm">정보 입력</p>
         </div>
-      </div>
 
-      <CustomizedStepper />
-
-      <div className="flex-grow w-full mt-20 flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <label>이름</label>
-          <StyledNumberInput
-            className="h-10 text-sm"
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            placeholder="USER 01"
-          />
+        <div className="mb-8">
+          <CustomizedStepper />
         </div>
-      </div>
 
-      <div className="w-full mb-10">
-        <Link href="/login/sign-up-step4">
-          <Button
-            style={{ width: '100%' }}
-            onClick={handleSignup}
-            disabled={!isSignupAvailable()}
-            text="회원가입"
-          />
-        </Link>
-      </div>
+        <div className="max-w-md mx-auto w-full space-y-6">
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-[#37352f]"
+            >
+              이름
+            </label>
+            <StyledTextInput
+              id="name"
+              type="text"
+              placeholder="USER 01"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div className="w-full pt-2">
+            <Button
+              onClick={handleSignup}
+              disabled={!isSignupAvailable()}
+              text="회원가입"
+            />
+          </div>
+        </div>
+      </main>
+
+      <PrivacyPolicyFooter />
     </div>
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="px-4 py-4 bg-white rounded-md border border-[#9999a2]"
-      value={value}
-      {...props}
-    />
-  );
-};
-
-const StyledNumberInput = ({ value, ...props }) => {
-  return (
-    <div className="flex w-full relative">
-      <StyledInput {...props} style={{ width: '100%' }} value={value} />
-    </div>
-  );
+const StyledTextInput = ({ value, className = '', ...props }) => {
+  const base =
+    'w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm ' +
+    'placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] ' +
+    'focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200';
+  return <input className={`${base} ${className}`} value={value} {...props} />;
 };

@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../components/common/Button';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import Link from 'next/link';
 import axiosInstance from '../../../libs/api/instance';
 import { strictEmailRegex } from '../../../constants/regex';
@@ -149,7 +150,7 @@ export default function ResetPassWord1() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* 스피너 오버레이 */}
       {isSending && (
         <div
@@ -170,18 +171,18 @@ export default function ResetPassWord1() {
         </div>
       )}
 
-      <div className="text-center space-y-3 mb-8">
-        <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
-        <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
-      </div>
+      <main className="flex-1 px-6 py-8">
+        <div className="text-center space-y-3 mb-8">
+          <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
+          <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
+        </div>
 
-      <div className="flex-1 max-w-md mx-auto w-full">
-        <div className="space-y-6">
+        <div className="max-w-md mx-auto w-full space-y-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-[#37352f]">
               이메일
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <div className="flex-1">
                 <StyledEmailInput
                   type="email"
@@ -221,15 +222,14 @@ export default function ResetPassWord1() {
             <label className="block text-sm font-medium text-[#37352f]">
               인증번호
             </label>
-
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="relative flex-1 min-w-0">
                 <StyledNumberInput
                   type="text"
                   id="number"
                   value={number}
                   onChange={(e) => handleCodeInput(e.target.value)}
-                  placeholder="이메일로 전송된 인증번호를 입력해주세요."
+                  placeholder="인증번호를 입력해주세요."
                   inputMode="numeric"
                   maxLength={6}
                   className="pr-14"
@@ -241,8 +241,6 @@ export default function ResetPassWord1() {
                   </span>
                 )}
               </div>
-
-              {/* 새로 추가된 확인 버튼 */}
               <button
                 className={commonCodeButtonClass}
                 onClick={handleVerifyCode}
@@ -257,7 +255,6 @@ export default function ResetPassWord1() {
                 {isVerifying ? '확인중' : '인증번호 확인'}
               </button>
             </div>
-
             {numberError && (
               <p className="text-red-500 text-xs mt-1.5">{numberError}</p>
             )}
@@ -271,21 +268,23 @@ export default function ResetPassWord1() {
               </p>
             )}
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-md mx-auto w-full mt-8">
-        <Link
-          href={isCodeVerified ? '/login/reset-password-step2' : '#'}
-          onClick={(e) => !isCodeVerified && e.preventDefault()}
-        >
-          <Button
-            onClick={handleNext}
-            disabled={!isCodeVerified}
-            text="다음으로"
-          />
-        </Link>
-      </div>
+          <div className="mt-8">
+            <Link
+              href={isCodeVerified ? '/login/reset-password-step2' : '#'}
+              onClick={(e) => !isCodeVerified && e.preventDefault()}
+            >
+              <Button
+                onClick={handleNext}
+                disabled={!isCodeVerified}
+                text="다음으로"
+              />
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <PrivacyPolicyFooter />
     </div>
   );
 }

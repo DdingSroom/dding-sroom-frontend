@@ -5,6 +5,7 @@ import MyPageHeader from '@components/common/MyPageHeader';
 import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -80,78 +81,85 @@ export default function AccountInfo() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <MyPageHeader />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1">
+        <MyPageHeader />
 
-      {!showLoginModal && (
-        <div className="px-6 py-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div className="px-6 py-5 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-[#37352f]">내 정보</h2>
-            </div>
-
-            <div className="px-6 py-4 border-b border-gray-100">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-[#37352f]">
-                  이메일
-                </label>
-                <p className="text-sm text-[#73726e]">
-                  {userInfo.email || '이메일 없음'}
-                </p>
+        {!showLoginModal && (
+          <div className="px-6 py-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+              <div className="px-6 py-5 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-[#37352f]">
+                  내 정보
+                </h2>
               </div>
-            </div>
 
-            <button
-              className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-              onClick={() => setOpen(true)}
-            >
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-sm font-medium text-[#37352f]">
-                  이름
-                </label>
-                <p className="text-sm text-[#73726e]">
-                  {userInfo.name || '이름 없음'}
-                </p>
+              <div className="px-6 py-4 border-b border-gray-100">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-[#37352f]">
+                    이메일
+                  </label>
+                  <p className="text-sm text-[#73726e]">
+                    {userInfo.email || '이메일 없음'}
+                  </p>
+                </div>
               </div>
-              <img
-                src="/static/icons/arrow_right_icon.svg"
-                alt="arrow"
-                className="w-5 h-5 opacity-60"
-              />
-            </button>
-          </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-[#37352f]">
-                개인정보 보호
-              </h2>
+              <button
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+                onClick={() => setOpen(true)}
+              >
+                <div className="flex flex-col gap-1 text-left">
+                  <label className="text-sm font-medium text-[#37352f]">
+                    이름
+                  </label>
+                  <p className="text-sm text-[#73726e]">
+                    {userInfo.name || '이름 없음'}
+                  </p>
+                </div>
+                <img
+                  src="/static/icons/arrow_right_icon.svg"
+                  alt="arrow"
+                  className="w-5 h-5 opacity-60"
+                />
+              </button>
             </div>
-            <MyPageBlock
-              name="비밀번호 재설정"
-              linkPath="/login/reset-password-step1"
-            />
-            <MyPageBlock name="회원 탈퇴" linkPath="/my/cancel-account-step1" />
-            <button
-              className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
-              onClick={handleLogout}
-            >
-              <span className="text-base font-medium text-[#37352f]">
-                로그아웃
-              </span>
-              <img
-                src="/static/icons/arrow_right_icon.svg"
-                alt="arrow"
-                className="w-5 h-5 opacity-60"
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+              <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-5 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-[#37352f]">
+                  개인정보 보호
+                </h2>
+              </div>
+              <MyPageBlock
+                name="비밀번호 재설정"
+                linkPath="/login/reset-password-step1"
               />
-            </button>
+              <MyPageBlock
+                name="회원 탈퇴"
+                linkPath="/my/cancel-account-step1"
+              />
+              <button
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
+                onClick={handleLogout}
+              >
+                <span className="text-base font-medium text-[#37352f]">
+                  로그아웃
+                </span>
+                <img
+                  src="/static/icons/arrow_right_icon.svg"
+                  alt="arrow"
+                  className="w-5 h-5 opacity-60"
+                />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </main>
 
       <Modal
         isOpen={open}
@@ -210,6 +218,8 @@ export default function AccountInfo() {
           </div>
         </div>
       </div>
+
+      <PrivacyPolicyFooter />
     </div>
   );
 }
