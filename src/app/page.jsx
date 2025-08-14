@@ -7,6 +7,7 @@ import AfterLoginBanner from '@components/common/AfterLoginBanner';
 import SecondBanner from '@components/common/SecondBanner';
 import ReservationSection from '@components/common/ReservationSection';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import useTokenStore from '../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
@@ -68,8 +69,10 @@ export default function Home() {
         <ReservationSection className="w-full" />
       </div>
 
+      <FooterNav />
+
       <div className="pb-20">
-        <FooterNav />
+        <PrivacyPolicyFooter />
       </div>
     </>
   );
