@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import Link from 'next/link';
 
 export default function CancelAccountStep2() {
   const handleCancelAccount = () => {

@@ -1,11 +1,11 @@
 'use client';
-import axios from 'axios';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import useSignupStore from '../../../stores/useSignupStore';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import CustomizedStepper from './customizedStepper';
-import useSignupStore from '../../../stores/useSignupStore';
-import { useRouter } from 'next/navigation';
 
 export default function SignUpStep3() {
   const router = useRouter();

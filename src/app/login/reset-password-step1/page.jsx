@@ -1,10 +1,10 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
+import { strictEmailRegex } from '../../../constants/regex';
+import axiosInstance from '../../../libs/api/instance';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import Link from 'next/link';
-import axiosInstance from '../../../libs/api/instance';
-import { strictEmailRegex } from '../../../constants/regex';
 
 export default function ResetPassWord1() {
   const [email, setEmail] = useState('');

@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axiosInstance from '../../../../libs/api/instance';
-import ReservationItem from '@components/admin/ReservationItem';
-import useTokenStore from '../../../../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
+import axiosInstance from '../../../../libs/api/instance';
+import useTokenStore from '../../../../stores/useTokenStore';
+import ReservationItem from '@components/admin/ReservationItem';
 
 function formatDateArrayExactly(dateArray) {
   if (!Array.isArray(dateArray)) return '없음';
@@ -60,7 +60,7 @@ export default function UserDetailPage() {
     }
   }, [accessToken, router]);
 
-  const fetchUserDetail = async () => {
+  const fetchUserDetail = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/admin/users/${userId}`);
       console.log('사용자 응답:', response);
@@ -68,9 +68,9 @@ export default function UserDetailPage() {
     } catch (error) {
       console.error('사용자 상세 조회 실패:', error);
     }
-  };
+  }, [userId]);
 
-  const fetchUserReservations = async () => {
+  const fetchUserReservations = useCallback(async () => {
     try {
       const res = await axiosInstance.get(`/admin/reservations/user/${userId}`);
       console.log('사용자 예약 내역:', res.data);
@@ -80,14 +80,14 @@ export default function UserDetailPage() {
     } finally {
       setLoadingReservations(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
       fetchUserDetail();
       fetchUserReservations();
     }
-  }, [userId]);
+  }, [userId, fetchUserDetail, fetchUserReservations]);
 
   if (!user) {
     return <p className="p-6">로딩 중...</p>;

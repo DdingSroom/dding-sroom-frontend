@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import TimeComponent from '@components/common/TimeComponent';
-import Modal from '@components/common/Modal';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
+import TimeComponent from '@components/common/TimeComponent';
+import Modal from '@components/common/Modal';
+import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
 // KST(Asia/Seoul) 현재시각
 const nowInKST = () =>
@@ -43,13 +43,12 @@ const ReservationComponent = ({ index, roomId }) => {
 
   const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
   const router = useRouter();
-  const now = new Date();
 
   useEffect(() => {
     fetchAllReservedTimes();
     const interval = setInterval(fetchAllReservedTimes, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchAllReservedTimes]);
 
   const timeSlots = useMemo(() => {
     const slots = [];

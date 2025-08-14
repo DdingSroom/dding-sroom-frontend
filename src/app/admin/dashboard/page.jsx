@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../../libs/api/instance';
 import { useRouter } from 'next/navigation';
-import ReservationCard from '@components/admin/ReservationCard';
+import { jwtDecode } from 'jwt-decode';
+import axiosInstance from '../../../libs/api/instance';
 import InfoModal from '../../../components/common/InfoModal';
 import useTokenStore from '../../../stores/useTokenStore';
-import { jwtDecode } from 'jwt-decode';
+import ReservationCard from '@components/admin/ReservationCard';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
   const formatTimeRange = (start, end) => {
     const formatHM = (arr) => {
       if (!Array.isArray(arr)) return '';
-      const [_, __, ___, h = 0, m = 0] = arr;
+      const [, , , h = 0, m = 0] = arr;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     };
     return `${formatHM(start)} ~ ${formatHM(end)}`;

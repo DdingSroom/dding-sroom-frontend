@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../../libs/api/instance';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
+import axiosInstance from '../../../libs/api/instance';
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function ReservationDetailPage() {
   const [reservations, setReservations] = useState([]);
@@ -102,7 +102,7 @@ export default function ReservationDetailPage() {
 
 function formatHM(array) {
   if (!Array.isArray(array)) return '';
-  const [_, __, ___, h = 0, m = 0] = array;
+  const [, , , h = 0, m = 0] = array;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 

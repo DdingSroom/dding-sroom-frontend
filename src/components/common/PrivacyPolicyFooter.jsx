@@ -6,7 +6,10 @@ const PrivacyPolicyFooter = () => {
       <div className="px-6 py-8">
         <div className="text-left space-y-3">
           <p className="text-sm font-semibold text-[#37352f]">
-            <Link href="/privacy-policy" className="hover:text-[#788cff] transition-colors">
+            <Link
+              href="/privacy-policy"
+              className="hover:text-[#788cff] transition-colors"
+            >
               개인정보 처리방침
             </Link>
           </p>
