@@ -1,4 +1,3 @@
-// src/app/service-manual/page.jsx
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -158,17 +157,7 @@ export default function ServiceManualPage() {
             <ImgCard
               src="/manual/reset-step2.png"
               alt="비밀번호 재설정 Step 2"
-              caption="② 받은 인증번호 입력"
-            />
-            <ImgCard
-              src="/manual/reset-step3.png"
-              alt="비밀번호 재설정 Step 3"
-              caption="③ 새 비밀번호 설정"
-            />
-            <ImgCard
-              src="/manual/reset-complete.png"
-              alt="비밀번호 재설정 완료"
-              caption="④ 변경 완료 → 로그인으로 이동"
+              caption="② 새 비밀번호 설정"
             />
           </div>
 
@@ -251,13 +240,13 @@ export default function ServiceManualPage() {
               caption="내일 예약하기"
             />
             <ImgCard
-              src="/manual/home-legend.png"
-              alt="타임 슬롯 안내"
-              caption="색상 안내(예약 가능/예약됨/지난 시간)"
+              src="/manual/home-modal-1.png"
+              alt="예약 생성 모달"
+              caption="예약 시작 시간 및 종료 시간 선택"
             />
             <ImgCard
-              src="/manual/home-modal.png"
-              alt="예약 확인 모달"
+              src="/manual/home-modal-2.png"
+              alt="예약 생성 모달"
               caption="선택한 시간 확인 후 예약 확정"
             />
           </div>
@@ -269,7 +258,7 @@ export default function ServiceManualPage() {
             </Step>
             <Step title="시간대 확인">
               홈 화면의 <b>예약 상태별 색상</b>을 확인하고 원하는 시간대를
-              고릅니다. 시간대 영역은 <b>가로 스크롤</b>이 가능합니다.
+              고릅니다.
             </Step>
             <Step title="예약하기 버튼">
               원하는 방에서 <b>예약</b> 버튼을 눌러 <b>시작 시간</b>과{' '}
@@ -308,12 +297,12 @@ export default function ServiceManualPage() {
             <ImgCard
               src="/manual/mypage-cancel-modal.png"
               alt="예약 취소 모달"
-              caption="예약 취소 확인"
+              caption="예약 취소 모달"
             />
             <ImgCard
-              src="/manual/mypage-privacy.png"
-              alt="정책/문의 링크"
-              caption="개인정보처리방침/문의"
+              src="/manual/mypage-name-change-modal.png"
+              alt="이름 변경 모달"
+              caption="이름 변경 모달"
             />
           </div>
 
@@ -522,13 +511,14 @@ function Step({ title, children }) {
 function ImgCard({ src, alt, caption }) {
   return (
     <figure className="rounded-2xl border border-[#e9e9e7] bg-white overflow-hidden">
-      <div className="relative w-full h-52 sm:h-64">
+      {/* fill 사용 시 부모에 'relative + 고정 높이'가 반드시 필요합니다 */}
+      <div className="relative w-full h-72 sm:h-64">
         <Image
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
+          sizes="(max-width: 640px) 100vw, 50vw"
+          className="object-contain sm:object-cover"
           priority={false}
         />
       </div>
