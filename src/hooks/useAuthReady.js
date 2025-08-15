@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import useTokenStore from '../stores/useTokenStore';
 import { jwtDecode } from 'jwt-decode';
+import useTokenStore from '../stores/useTokenStore';
 
 export default function useAuthReady() {
   const { accessToken, userId, setUserId, rehydrate } = useTokenStore();
