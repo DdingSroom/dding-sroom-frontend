@@ -31,6 +31,7 @@ const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState(null); // 60 또는 120
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { userId, accessToken } = useTokenStore();
@@ -60,9 +61,23 @@ const ReservationComponent = ({ index, roomId }) => {
       slots.push(new Date(base));
       base.setMinutes(base.getMinutes() + 10);
     }
+    // 표시 전용 23:59
     slots.push(new Date(2025, 0, 1, 23, 59));
     return slots;
   }, []);
+
+  // 특정 구간(반개방-종료) 동안 10분 단위 슬롯이 예약과 충돌하는지 검사
+  const isRangeAvailable = (startISO, endISO) => {
+    const start = new Date(startISO);
+    const end = new Date(endISO);
+    for (let t = new Date(start); t < end; t.setMinutes(t.getMinutes() + 10)) {
+      const iso19 = t.toISOString().slice(0, 19);
+      if (reservedTimeSlots.some((s) => s.slice(0, 19) === iso19)) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   const getStatus = (time) => {
     // (수정) 기준 날짜 및 KST 비교 기반 상태 판별
@@ -79,17 +94,10 @@ const ReservationComponent = ({ index, roomId }) => {
 
     const isReserved = reservedTimeSlots.includes(time);
 
-    // 상태 우선순위: 과거 > 예약됨 > 예약가능 (과거 시간은 예약 여부 무시하고 모두 검은색)
-    let status;
-    if (isPast) {
-      status = 'past';
-    } else if (isReserved) {
-      status = 'reserved';
-    } else {
-      status = 'available';
-    }
-
-    return status;
+    // 상태 우선순위: 과거 > 예약됨 > 예약가능
+    if (isPast) return 'past';
+    if (isReserved) return 'reserved';
+    return 'available';
   };
 
   const handleOpenModal = () => {
@@ -113,7 +121,8 @@ const ReservationComponent = ({ index, roomId }) => {
 
     const reservationStart = new Date(startTime);
     const reservationEnd = new Date(endTime);
-    const duration = (reservationEnd - reservationStart) / (1000 * 60);
+    const duration =
+      durationMinutes ?? (reservationEnd - reservationStart) / (1000 * 60);
 
     if (duration !== 60 && duration !== 120) {
       alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
@@ -139,6 +148,7 @@ const ReservationComponent = ({ index, roomId }) => {
       setOpen(false);
       setStartTime('');
       setEndTime('');
+      setDurationMinutes(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
       alert(err.response?.data?.message || '예약에 실패했습니다.');
@@ -236,7 +246,13 @@ const ReservationComponent = ({ index, roomId }) => {
     end1.setMinutes(end1.getMinutes() + 60);
     end2.setMinutes(end2.getMinutes() + 120);
 
-    return [end1, end2].map((time) => (
+    const candidates = [end1, end2].filter((time) => {
+      const sISO = start.toISOString().slice(0, 19);
+      const eISO = time.toISOString().slice(0, 19);
+      return isRangeAvailable(sISO, eISO);
+    });
+
+    return candidates.map((time) => (
       <option key={time.toISOString()} value={time.toISOString()}>
         {formatTime(time)}
       </option>
@@ -276,7 +292,39 @@ const ReservationComponent = ({ index, roomId }) => {
               <select
                 className="border rounded-md p-2 w-full"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => {
+                  const newStart = e.target.value;
+                  setStartTime(newStart);
+
+                  if (durationMinutes) {
+                    const candidateEnd = new Date(
+                      new Date(newStart).getTime() + durationMinutes * 60000,
+                    )
+                      .toISOString()
+                      .slice(0, 19);
+
+                    if (isRangeAvailable(newStart, candidateEnd)) {
+                      setEndTime(candidateEnd);
+                    } else {
+                      setEndTime('');
+                      // 필요시 사용자 안내 토스트/알럿 추가 가능
+                      // alert('선택한 구간에 예약이 있어 자동 조정이 불가합니다. 퇴실 시간을 다시 선택해주세요.');
+                    }
+                  } else {
+                    // 아직 길이 선택 전이면 1시간을 우선 제안
+                    const oneHourEnd = new Date(
+                      new Date(newStart).getTime() + 60 * 60000,
+                    )
+                      .toISOString()
+                      .slice(0, 19);
+                    if (isRangeAvailable(newStart, oneHourEnd)) {
+                      setEndTime(oneHourEnd);
+                      setDurationMinutes(60);
+                    } else {
+                      setEndTime('');
+                    }
+                  }
+                }}
               >
                 <option value="" disabled>
                   시간 선택
@@ -289,7 +337,16 @@ const ReservationComponent = ({ index, roomId }) => {
               <select
                 className="border rounded-md p-2 w-full"
                 value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                onChange={(e) => {
+                  const selectedEnd = e.target.value;
+                  setEndTime(selectedEnd);
+                  if (startTime) {
+                    const dur =
+                      (new Date(selectedEnd) - new Date(startTime)) /
+                      (1000 * 60);
+                    if (dur === 60 || dur === 120) setDurationMinutes(dur);
+                  }
+                }}
                 disabled={!startTime}
               >
                 <option value="" disabled>
