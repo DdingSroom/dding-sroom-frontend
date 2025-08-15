@@ -7,6 +7,8 @@ import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import CustomizedStepper from './customizedStepper';
 
+const NAME_DRAFT_KEY = 'signup_name_draft';
+
 export default function SignUpStep3() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -16,6 +18,7 @@ export default function SignUpStep3() {
 
   const { signupData, resetSignupData } = useSignupStore();
 
+  // 1) 마운트 시: 개인정보 처리방침 확인 여부 + 이름 초깃값 복원
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const reviewed = sessionStorage.getItem('policyReviewed');
@@ -23,11 +26,29 @@ export default function SignUpStep3() {
         setHasOpenedPolicy(true);
         sessionStorage.removeItem('policyReviewed');
       }
+
+      // 이름 초깃값 복원
+      const savedName = sessionStorage.getItem(NAME_DRAFT_KEY);
+      if (savedName && savedName.trim().length > 0) {
+        setName(savedName);
+      }
     }
   }, []);
 
+  // 2) 이름 입력 변화 시: 세션 스토리지에 임시 저장
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // 비어있으면 저장값 제거(선택사항): sessionStorage.removeItem(...)
+      sessionStorage.setItem(NAME_DRAFT_KEY, name ?? '');
+    }
+  }, [name]);
+
   const openPrivacyPolicy = () => {
-    window.open('/privacy-policy-2', '_blank', 'noopener,noreferrer');
+    // 이름 상태를 즉시 저장
+    if (typeof window !== 'undefined' && name) {
+      sessionStorage.setItem(NAME_DRAFT_KEY, name);
+    }
+    router.push('/privacy-policy-2');
     setHasOpenedPolicy(true);
   };
 
@@ -51,7 +72,13 @@ export default function SignUpStep3() {
       );
 
       console.log('회원가입 성공:', res.data);
+
+      // 3) 성공 시 임시 이름 제거 + 스토어 초기화
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(NAME_DRAFT_KEY);
+      }
       resetSignupData();
+
       router.push(`/login/sign-up-step4?username=${encodeURIComponent(name)}`);
     } catch (error) {
       console.error('회원가입 실패:', error);
@@ -92,6 +119,8 @@ export default function SignUpStep3() {
               placeholder="USER 01"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="name" // 브라우저 자동완성 힌트 (선택)
+              inputMode="text"
             />
           </div>
 
