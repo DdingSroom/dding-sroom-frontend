@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -15,25 +15,38 @@ export default function AccountInfo() {
   const [newName, setNewName] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const { accessToken, userId, clearTokens } = useTokenStore();
 
-  const getDecodedUserInfo = () => {
+  const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
+
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    rehydrate();
+    const t = setTimeout(() => setAuthReady(true), 0);
+    return () => clearTimeout(t);
+  }, [rehydrate]);
+
+  useEffect(() => {
+    if (!authReady) return;
+    setShowLoginModal(!accessToken);
+  }, [authReady, accessToken]);
+
+  const getDecodedUserInfo = useCallback(() => {
     try {
       const decoded = jwtDecode(accessToken);
-      const { email, username } = decoded;
-      return { name: username, email };
+      const { email, username } = decoded || {};
+      return { name: username || '', email: email || '' };
     } catch {
       return { name: '', email: '' };
     }
-  };
+  }, [accessToken]);
 
   const [userInfo, setUserInfo] = useState(getDecodedUserInfo);
 
   useEffect(() => {
-    if (!accessToken) {
-      setShowLoginModal(true);
-    }
-  }, [accessToken]);
+    if (!authReady) return;
+    setUserInfo(getDecodedUserInfo());
+  }, [authReady, accessToken, getDecodedUserInfo]);
 
   const handleLoginConfirm = () => {
     const currentPath = window.location.pathname;
@@ -46,12 +59,10 @@ export default function AccountInfo() {
         alert('이름을 입력해주세요.');
         return;
       }
-
       const response = await axiosInstance.put('/user/change-username', {
         userId,
         newUsername: newName,
       });
-
       if (response.status === 200) {
         alert('이름 변경 완료되었습니다.');
         setUserInfo((prev) => ({ ...prev, name: newName }));
@@ -85,82 +96,92 @@ export default function AccountInfo() {
       <main className="flex-1">
         <MyPageHeader />
 
-        {!showLoginModal && (
-          <div className="px-6 py-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-              <div className="px-6 py-5 border-b border-gray-100">
-                <h2 className="text-lg font-semibold text-[#37352f]">
-                  내 정보
-                </h2>
-              </div>
-
-              <div className="px-6 py-4 border-b border-gray-100">
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-[#37352f]">
-                    이메일
-                  </label>
-                  <p className="text-sm text-[#73726e]">
-                    {userInfo.email || '이메일 없음'}
-                  </p>
+        {/* authReady 전에는 '없음' 같은 빈 상태를 렌더하지 않음 */}
+        {!authReady ? (
+          <div className="px-6 py-6">로딩 중...</div>
+        ) : (
+          !showLoginModal && (
+            <div className="px-6 py-6">
+              {/* 내 정보 카드 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div className="px-6 py-5 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-[#37352f]">
+                    내 정보
+                  </h2>
                 </div>
-              </div>
 
-              <button
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-                onClick={() => setOpen(true)}
-              >
-                <div className="flex flex-col gap-1 text-left">
-                  <label className="text-sm font-medium text-[#37352f]">
-                    이름
-                  </label>
-                  <p className="text-sm text-[#73726e]">
-                    {userInfo.name || '이름 없음'}
-                  </p>
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-[#37352f]">
+                      이메일
+                    </label>
+                    <p className="text-sm text-[#73726e]">
+                      {userInfo.email || '이메일 없음'}
+                    </p>
+                  </div>
                 </div>
-                <img
-                  src="/static/icons/arrow_right_icon.svg"
-                  alt="arrow"
-                  className="w-5 h-5 opacity-60"
-                />
-              </button>
-            </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-              <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="px-6 py-5 border-b border-gray-100">
-                <h2 className="text-lg font-semibold text-[#37352f]">
-                  개인정보 보호
-                </h2>
+                <button
+                  className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+                  onClick={() => setOpen(true)}
+                >
+                  <div className="flex flex-col gap-1 text-left">
+                    <label className="text-sm font-medium text-[#37352f]">
+                      이름
+                    </label>
+                    <p className="text-sm text-[#73726e]">
+                      {userInfo.name || '이름 없음'}
+                    </p>
+                  </div>
+                  <img
+                    src="/static/icons/arrow_right_icon.svg"
+                    alt="arrow"
+                    className="w-5 h-5 opacity-60"
+                  />
+                </button>
               </div>
-              <MyPageBlock
-                name="비밀번호 재설정"
-                linkPath="/login/reset-password-step1"
-              />
-              <MyPageBlock
-                name="회원 탈퇴"
-                linkPath="/my/cancel-account-step1"
-              />
-              <button
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
-                onClick={handleLogout}
-              >
-                <span className="text-base font-medium text-[#37352f]">
-                  로그아웃
-                </span>
-                <img
-                  src="/static/icons/arrow_right_icon.svg"
-                  alt="arrow"
-                  className="w-5 h-5 opacity-60"
+
+              {/* 예약 내역 진입 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+              </div>
+
+              {/* 개인정보 보호 섹션 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-[#37352f]">
+                    개인정보 보호
+                  </h2>
+                </div>
+
+                <MyPageBlock
+                  name="비밀번호 재설정"
+                  linkPath="/login/reset-password-step1"
                 />
-              </button>
+                <MyPageBlock
+                  name="회원 탈퇴"
+                  linkPath="/my/cancel-account-step1"
+                />
+                <button
+                  className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
+                  onClick={handleLogout}
+                >
+                  <span className="text-base font-medium text-[#37352f]">
+                    로그아웃
+                  </span>
+                  <img
+                    src="/static/icons/arrow_right_icon.svg"
+                    alt="arrow"
+                    className="w-5 h-5 opacity-60"
+                  />
+                </button>
+              </div>
             </div>
-          </div>
+          )
         )}
       </main>
 
+      {/* 이름 변경 모달 */}
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -186,14 +207,19 @@ export default function AccountInfo() {
         </div>
       </Modal>
 
+      {/* 로그인 요구 모달: authReady 이후에만 표시 */}
       <LoginRequiredModal
-        isOpen={showLoginModal}
+        isOpen={authReady && showLoginModal}
         onConfirm={handleLoginConfirm}
       />
 
+      {/* 로그아웃 완료 모달 */}
       <div
-        className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] ${showLogoutModal ? '' : 'hidden'}`}
+        className={`fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] ${
+          showLogoutModal ? '' : 'hidden'
+        }`}
         style={{ backdropFilter: 'blur(4px)' }}
+        onClick={() => setShowLogoutModal(false)}
       >
         <div
           className="bg-white rounded-2xl w-[90%] max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"

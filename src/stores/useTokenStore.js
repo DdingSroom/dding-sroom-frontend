@@ -19,25 +19,19 @@ const useTokenStore = create((set) => {
 
     setAccessToken: (token) => {
       set({ accessToken: token });
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined')
         sessionStorage.setItem('accessToken', token);
-      }
     },
-
     setRefreshToken: (token) => {
       set({ refreshToken: token });
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined')
         sessionStorage.setItem('refreshToken', token);
-      }
     },
-
     setUserId: (id) => {
       set({ userId: id });
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('userId', id.toString());
-      }
+      if (typeof window !== 'undefined')
+        sessionStorage.setItem('userId', id?.toString() ?? '');
     },
-
     clearTokens: () => {
       set({ accessToken: '', refreshToken: '', userId: null });
       if (typeof window !== 'undefined') {
@@ -45,6 +39,18 @@ const useTokenStore = create((set) => {
         sessionStorage.removeItem('refreshToken');
         sessionStorage.removeItem('userId');
       }
+    },
+
+    rehydrate: () => {
+      if (typeof window === 'undefined') return;
+      const at = sessionStorage.getItem('accessToken') || '';
+      const rt = sessionStorage.getItem('refreshToken') || '';
+      const uid = sessionStorage.getItem('userId');
+      set({
+        accessToken: at,
+        refreshToken: rt,
+        userId: uid !== null ? parseInt(uid) : null,
+      });
     },
   };
 });

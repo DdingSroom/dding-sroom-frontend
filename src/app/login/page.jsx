@@ -23,8 +23,11 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [redirectUrl, setRedirectUrl] = useState('/');
 
-  const { setAccessToken: setGlobalAccessToken, setRefreshToken } =
-    useTokenStore();
+  const {
+    setAccessToken: setGlobalAccessToken,
+    setRefreshToken,
+    setUserId,
+  } = useTokenStore();
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -93,6 +96,17 @@ function LoginForm() {
         const decoded = jwtDecode(accessToken);
         console.log('토큰 디코드 결과:', decoded);
 
+        // userId를 토큰에서 추출하여 설정
+        const extractedUserId =
+          decoded?.userId ??
+          decoded?.id ??
+          decoded?.uid ??
+          decoded?.sub ??
+          null;
+        if (extractedUserId) {
+          setUserId(extractedUserId);
+        }
+
         // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
         if (isLoginSave) {
           const loginData = {
@@ -105,7 +119,10 @@ function LoginForm() {
           localStorage.removeItem('savedLoginData');
         }
 
-        router.push(redirectUrl);
+        // 토큰과 userId 설정이 완료된 후 리다이렉트
+        setTimeout(() => {
+          router.push(redirectUrl);
+        }, 50);
       } else {
         // 디버깅용 로그
         console.warn(
