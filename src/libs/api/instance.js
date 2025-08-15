@@ -5,7 +5,6 @@ const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-// 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
@@ -16,14 +15,19 @@ axiosInstance.interceptors.request.use(
         '/user/code-verify',
       ];
 
-      // 인증이 필요 없는 요청이면 Authorization 제거
-      const isPublic = nonAuthUrls.some((url) => config.url?.includes(url));
+      config.headers = config.headers || {};
+
+      const url = config.url || '';
+      const isPublic = nonAuthUrls.some((u) => url.includes(u));
+
       if (isPublic) {
         delete config.headers.Authorization;
       } else {
         const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
-          config.headers['Authorization'] = `Bearer ${accessToken}`;
+          config.headers.Authorization = `Bearer ${accessToken}`;
+        } else {
+          delete config.headers.Authorization;
         }
       }
     }
@@ -42,7 +46,6 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     if (response && (response.status === 401 || response.status === 403)) {
       if (typeof window !== 'undefined') {
-        // 로그인이 필요한 경우 토큰 제거
         sessionStorage.removeItem('accessToken');
       }
     }
