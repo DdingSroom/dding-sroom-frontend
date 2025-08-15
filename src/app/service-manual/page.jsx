@@ -90,7 +90,7 @@ export default function ServiceManualPage() {
             <ImgCard
               src="/manual/signup-step3.png"
               alt="회원가입 Step 3 - 비밀번호 설정"
-              caption="③ 닉네임/비밀번호 설정"
+              caption="③ 닉네임 설정/개인정보 처리방침 동의"
             />
             <ImgCard
               src="/manual/signup-complete.png"
@@ -101,18 +101,22 @@ export default function ServiceManualPage() {
 
           <SubTitle>2) 따라하기</SubTitle>
           <OL>
-            <Step title="학교 이메일 입력">
-              <b>@mju.ac.kr</b> 주소를 입력하고 <b>인증번호 보내기</b>를
-              누르세요.
+            <Step title="학교 이메일 인증">
+              <b>@mju.ac.kr</b> 주소를 입력한 뒤 <b>인증번호 전송</b> 버튼을
+              눌러 이메일로 6자리 인증번호를 받으세요. 받은 인증번호를 입력하고{' '}
+              <b>인증번호 확인</b> 버튼을 눌러 인증을 완료합니다.
             </Step>
-            <Step title="메일함 확인">
-              받은메일함 또는 <b>스팸함</b>에서 인증번호(6자리)를 확인하세요.
+            <Step title="비밀번호 설정">
+              비밀번호와 비밀번호 확인란에 동일한 값을 입력하세요. 보안을 위해
+              영문, 숫자, 특수문자를 조합한 안전한 비밀번호를 사용하세요.
             </Step>
-            <Step title="인증번호 입력">
-              화면에 인증번호를 입력 후 <b>확인</b>을 누릅니다.
+            <Step title="닉네임 설정 및 개인정보 처리방침 동의">
+              원하는 닉네임을 입력하고, <b>개인정보처리방침</b>을 확인·동의한 뒤{' '}
+              <b>회원가입</b> 버튼을 누릅니다.
             </Step>
-            <Step title="프로필/비밀번호 설정">
-              닉네임과 비밀번호를 규칙에 맞게 설정하면 가입이 완료됩니다.
+            <Step title="가입 완료 확인">
+              ‘회원가입 완료’ 화면이 뜨면 <b>확인</b> 버튼을 눌러 로그인
+              페이지로 이동합니다.
             </Step>
           </OL>
 
@@ -254,7 +258,7 @@ export default function ServiceManualPage() {
           <SubTitle>2) 따라하기</SubTitle>
           <OL>
             <Step title="날짜 선택">
-              상단에서 <b>오늘/내일</b> 중 선택합니다.
+              상단에서 <b>오늘 예약하기/내일 예약하기</b> 중 선택합니다.
             </Step>
             <Step title="시간대 확인">
               홈 화면의 <b>예약 상태별 색상</b>을 확인하고 원하는 시간대를
