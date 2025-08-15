@@ -9,12 +9,15 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 export default function ReservationInfo() {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const { accessToken } = useTokenStore();
+  const { accessToken, rehydrate } = useTokenStore();
 
   useEffect(() => {
-    if (!accessToken) {
-      setShowLoginModal(true);
-    }
+    rehydrate();
+  }, [rehydrate]);
+
+  // 토큰 유무에 따라 모달을 양방향으로 토글
+  useEffect(() => {
+    setShowLoginModal(!accessToken);
   }, [accessToken]);
 
   const handleLoginConfirm = () => {
@@ -26,7 +29,11 @@ export default function ReservationInfo() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1">
         <MyPageHeader />
-        {!showLoginModal && <ReservationList />}
+        {!showLoginModal && (
+          <ReservationList
+            /* key로 리마운트 보조 */ key={accessToken || 'guest'}
+          />
+        )}
       </main>
 
       <LoginRequiredModal
