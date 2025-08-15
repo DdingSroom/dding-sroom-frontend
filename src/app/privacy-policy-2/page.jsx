@@ -236,7 +236,7 @@ export default function PrivacyPolicyStep3ReturnPage() {
       <div className="mt-10 h-px w-full bg-[#e9e9e7]" />
 
       {/* 하단: 회원가입 3단계로 복귀 + 세션 플래그 저장 */}
-      <div className="mt-6 text-right">
+      <div className="mt-8 flex justify-center">
         <ConfirmAndBack />
       </div>
     </main>

@@ -23,7 +23,7 @@ const Banner = () => {
             <button className="flex items-center gap-2 px-4 py-2 bg-[#5B72EE] text-white text-sm font-medium rounded-lg hover:bg-[#4f63d1] transition-colors shadow-sm">
               로그인
               <img
-                src="/static/icons/arrow_icon.png"
+                src="/static/icons/arrow_right_icon.svg"
                 alt="arrow"
                 className="w-4 h-4 filter brightness-0 invert"
               />
