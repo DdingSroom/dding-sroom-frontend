@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "functions": {
     "src/app/api/**/route.{js,ts}": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     }
   }
 }
