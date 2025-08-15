@@ -113,7 +113,6 @@ const ReservationComponent = ({ index, roomId }) => {
     // 23:59(표시 전용)는 end 계산에서 10분 더하지 않음
     const isDisplayLast = t.getHours() === 23 && t.getMinutes() === 59;
 
-    const slotStart = new Date(t);
     const slotEnd = isDisplayLast
       ? new Date(t) // 표시에만 쓰므로 end == start 취급
       : new Date(t.getTime() + 10 * 60 * 1000);
