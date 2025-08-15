@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "functions": {
     "src/app/api/**/*.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs@18.x"
     }
   }
 }
