@@ -307,8 +307,8 @@ const StyledPasswordInput = ({
         <img
           src={
             isVisible
-              ? '/static/icons/eye_off_icon.svg'
-              : '/static/icons/eye_on_icon.svg'
+              ? '/static/icons/eye_on_icon.svg'
+              : '/static/icons/eye_off_icon.svg'
           }
           alt="Toggle Password Visibility"
           width={18}
