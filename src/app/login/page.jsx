@@ -23,8 +23,11 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [redirectUrl, setRedirectUrl] = useState('/');
 
-  const { setAccessToken: setGlobalAccessToken, setRefreshToken, setUserId } =
-    useTokenStore();
+  const {
+    setAccessToken: setGlobalAccessToken,
+    setRefreshToken,
+    setUserId,
+  } = useTokenStore();
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -94,7 +97,12 @@ function LoginForm() {
         console.log('토큰 디코드 결과:', decoded);
 
         // userId를 토큰에서 추출하여 설정
-        const extractedUserId = decoded?.userId ?? decoded?.id ?? decoded?.uid ?? decoded?.sub ?? null;
+        const extractedUserId =
+          decoded?.userId ??
+          decoded?.id ??
+          decoded?.uid ??
+          decoded?.sub ??
+          null;
         if (extractedUserId) {
           setUserId(extractedUserId);
         }

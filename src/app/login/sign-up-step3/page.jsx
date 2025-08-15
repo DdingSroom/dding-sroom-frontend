@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import useSignupStore from '../../../stores/useSignupStore';
@@ -11,23 +11,43 @@ export default function SignUpStep3() {
   const router = useRouter();
   const [name, setName] = useState('');
 
+  const [hasOpenedPolicy, setHasOpenedPolicy] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+
   const { signupData, resetSignupData } = useSignupStore();
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const reviewed = sessionStorage.getItem('policyReviewed');
+      if (reviewed === '1') {
+        setHasOpenedPolicy(true);
+        sessionStorage.removeItem('policyReviewed');
+      }
+    }
+  }, []);
+
+  const openPrivacyPolicy = () => {
+    window.open('/privacy-policy-2', '_blank', 'noopener,noreferrer');
+    setHasOpenedPolicy(true);
+  };
+
   const handleSignup = async () => {
+    if (!consentChecked) {
+      alert('개인정보처리방침에 동의해야 회원가입을 진행할 수 있습니다.');
+      return;
+    }
+
     try {
       const dataToSend = {
         ...signupData,
         username: name,
+        privacyAgreed: true,
       };
 
       const res = await axios.post(
         'https://ddingsroomserver.click:8443/user/sign-up',
         dataToSend,
-        {
-          headers: {
-            Authorization: undefined,
-          },
-        },
+        { headers: { Authorization: undefined } },
       );
 
       console.log('회원가입 성공:', res.data);
@@ -42,7 +62,7 @@ export default function SignUpStep3() {
   };
 
   const isSignupAvailable = () => {
-    return Boolean(name && name.trim().length > 0);
+    return Boolean(name && name.trim().length > 0 && consentChecked);
   };
 
   return (
@@ -58,6 +78,7 @@ export default function SignUpStep3() {
         </div>
 
         <div className="max-w-md mx-auto w-full space-y-6">
+          {/* 이름 입력 */}
           <div className="space-y-2">
             <label
               htmlFor="name"
@@ -74,6 +95,51 @@ export default function SignUpStep3() {
             />
           </div>
 
+          {/* 개인정보처리방침 동의 섹션 */}
+          <div className="rounded-lg border border-[#e9e9e7] bg-white p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-[#37352f]">
+                  개인정보처리방침 동의
+                  <span className="ml-1 text-[#9b9998] text-xs">(필수)</span>
+                </p>
+                <p className="text-xs text-[#73726e] mt-1">
+                  버튼을 눌러 개인정보처리방침을 확인한 뒤, 동의 체크를
+                  해주세요.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={openPrivacyPolicy}
+                className="shrink-0 px-3 py-1.5 rounded-md border border-[#e9e9e7] text-sm text-[#37352f] hover:bg-gray-50 transition"
+              >
+                개인정보처리방침 보기
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="privacy-consent"
+                type="checkbox"
+                className="h-4 w-4 shrink-0 inline-block align-middle rounded border-[#e9e9e7]
+                           bg-white appearance-auto accent-[#788cff]
+                           focus:ring-2 focus:ring-[#788cff]/20
+                           disabled:opacity-60 disabled:cursor-not-allowed"
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                disabled={!hasOpenedPolicy}
+                aria-disabled={!hasOpenedPolicy}
+              />
+              <label
+                htmlFor="privacy-consent"
+                className={`text-sm ${hasOpenedPolicy ? 'text-[#37352f]' : 'text-[#9b9998]'}`}
+              >
+                (필수) 개인정보처리방침에 동의합니다.
+              </label>
+            </div>
+          </div>
+
+          {/* 회원가입 버튼 */}
           <div className="w-full pt-2">
             <Button
               onClick={handleSignup}
