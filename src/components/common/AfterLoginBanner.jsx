@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import axiosInstance from '../../libs/api/instance';
@@ -34,7 +34,7 @@ const AfterLoginBanner = () => {
     return `${hours}:${minutes}`;
   };
 
-  const fetchAllUserReservations = async () => {
+  const fetchAllUserReservations = useCallback(async () => {
     if (!userId || !accessToken) return;
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
@@ -52,11 +52,11 @@ const AfterLoginBanner = () => {
     } catch (err) {
       console.error('예약 정보 조회 실패:', err);
     }
-  };
+  }, [userId, accessToken, setUserReservations]);
 
   useEffect(() => {
     fetchAllUserReservations();
-  }, [userId, accessToken]);
+  }, [userId, accessToken, fetchAllUserReservations]);
 
   const cancelReservation = async (reservationId) => {
     try {

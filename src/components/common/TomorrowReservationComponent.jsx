@@ -45,7 +45,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     reservedTimeSlotsByRoom,
   } = useReservationStore();
 
-  const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
   const router = useRouter();
 
   // 내일 00:00 기준일
@@ -69,12 +68,13 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   // 예약된 10분 슬롯 키 집합 (빠른 충돌 판정을 위해)
   const reserved10mKeys = useMemo(() => {
+    const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
     const set = new Set();
     for (const iso of reservedTimeSlots) {
       set.add(slotKey10m(iso));
     }
     return set;
-  }, [reservedTimeSlots]);
+  }, [reservedTimeSlotsByRoom, roomId]);
 
   // 내일의 10분 단위 타임슬롯 + 표시 전용 23:59
   const timeSlots = useMemo(() => {

@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../libs/api/instance';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
 import MyPageDate from './MyPageDate';
 import ReservationHistory from './ReservationHistory';
 import CancellationModal from './CancellationModal';
-import jwtDecode from 'jwt-decode';
 
 const toDateFromRaw = (raw) => {
   if (!raw) return null;
@@ -89,28 +89,31 @@ export default function ReservationList() {
     return bT - aT;
   };
 
-  const buildGrouped = (reservations) => {
+  const buildGrouped = useCallback((reservations) => {
     const visible = (reservations ?? [])
       .filter((r) => !isCanceled(r))
       .sort(sortByStartDesc);
     return groupByDate(visible);
-  };
+  }, []);
 
-  const fetchReservations = async (uid) => {
-    try {
-      setLoading(true);
-      // 캐시 우회 파라미터로 최초 빈 응답/재사용 방지
-      const res = await axiosInstance.get(
-        `/api/reservations/user/${uid}?t=${Date.now()}`,
-      );
-      setGroupedReservations(buildGrouped(res.data?.reservations));
-    } catch (err) {
-      console.error('예약 내역 불러오기 실패:', err);
-      setGroupedReservations({});
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchReservations = useCallback(
+    async (uid) => {
+      try {
+        setLoading(true);
+        // 캐시 우회 파라미터로 최초 빈 응답/재사용 방지
+        const res = await axiosInstance.get(
+          `/api/reservations/user/${uid}?t=${Date.now()}`,
+        );
+        setGroupedReservations(buildGrouped(res.data?.reservations));
+      } catch (err) {
+        console.error('예약 내역 불러오기 실패:', err);
+        setGroupedReservations({});
+      } finally {
+        setLoading(false);
+      }
+    },
+    [buildGrouped],
+  );
 
   // authReady 이후에만 판단/요청 실행
   useEffect(() => {
@@ -143,7 +146,7 @@ export default function ReservationList() {
     }
 
     fetchReservations(resolvedUserId);
-  }, [authReady, resolvedUserId, accessToken]);
+  }, [authReady, resolvedUserId, accessToken, fetchReservations]);
 
   const handleCancelReservation = (reservation) => {
     setCancelModalData(reservation);

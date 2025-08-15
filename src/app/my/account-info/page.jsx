@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -31,7 +31,7 @@ export default function AccountInfo() {
     setShowLoginModal(!accessToken);
   }, [authReady, accessToken]);
 
-  const getDecodedUserInfo = () => {
+  const getDecodedUserInfo = useCallback(() => {
     try {
       const decoded = jwtDecode(accessToken);
       const { email, username } = decoded || {};
@@ -39,14 +39,14 @@ export default function AccountInfo() {
     } catch {
       return { name: '', email: '' };
     }
-  };
+  }, [accessToken]);
 
   const [userInfo, setUserInfo] = useState(getDecodedUserInfo);
 
   useEffect(() => {
     if (!authReady) return;
     setUserInfo(getDecodedUserInfo());
-  }, [authReady, accessToken]);
+  }, [authReady, accessToken, getDecodedUserInfo]);
 
   const handleLoginConfirm = () => {
     const currentPath = window.location.pathname;
