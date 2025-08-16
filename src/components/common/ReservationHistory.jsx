@@ -31,7 +31,7 @@ const ReservationHistory = ({ reservation, onCancel }) => {
         />
       </div>
       <div className="flex flex-col justify-center flex-1 gap-1.5">
-        <div className="text-base font-medium text-gray-700">{`스터디룸 ${reservation.roomName}`}</div>
+        <div className="text-base font-medium text-gray-700">{`${reservation.roomName}`}</div>
         <div className="text-sm text-gray-500">
           {`${formatTime(start)} ~ ${formatTime(end)}`}
         </div>
