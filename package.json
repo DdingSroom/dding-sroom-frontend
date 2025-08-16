@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "engines": {
-    "node": "20.x"
+    "node": ">=20 <23"
   },
+  "packageManager": "yarn@1.22.21",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
