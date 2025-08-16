@@ -48,7 +48,7 @@ export default function SignUpStep3() {
     if (typeof window !== 'undefined' && name) {
       sessionStorage.setItem(NAME_DRAFT_KEY, name);
     }
-    router.push('/privacy-policy-2');
+    router.push('/privacy-policy-signup');
     setHasOpenedPolicy(true);
   };
 
