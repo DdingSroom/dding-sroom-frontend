@@ -113,7 +113,7 @@ const AfterLoginBanner = () => {
               >
                 <div className="flex flex-col gap-1 flex-1 min-w-0 mr-2 sm:mr-3">
                   <div className="text-xs text-[#73726e] whitespace-nowrap overflow-hidden text-ellipsis">
-                    스터디룸 {r.roomName}
+                    {r.roomName}
                   </div>
                   <div className="text-xs sm:text-sm font-medium text-[#37352f] whitespace-nowrap overflow-hidden text-ellipsis">
                     {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
