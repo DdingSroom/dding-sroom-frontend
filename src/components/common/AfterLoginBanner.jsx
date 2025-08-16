@@ -141,7 +141,7 @@ const AfterLoginBanner = () => {
                       className="w-20 h-20 object-cover rounded-lg"
                     />
                     <div className="flex flex-col gap-1 text-sm">
-                      <div className="font-semibold text-[#37352f]">{`스터디룸 ${r.roomName}`}</div>
+                      <div className="font-semibold text-[#37352f]">{`${r.roomName}`}</div>
                       <div className="text-[#73726e]">
                         {formatDate(r.startTime)}
                       </div>
