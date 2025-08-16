@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: '개인정보처리방침 | 띵스룸(ddingsroom)',
     description: '명지대 띵스룸(ddingsroom) 서비스의 개인정보 처리 안내',
-    url: '/privacy-policy-2',
+    url: '/privacy-policy-signup',
     type: 'article',
   },
 };
