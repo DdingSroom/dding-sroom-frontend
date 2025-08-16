@@ -13,6 +13,7 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -54,24 +55,50 @@ export default function AccountInfo() {
   };
 
   const handleUsernameChange = async () => {
+    const trimmed = newName.trim();
+
+    if (!trimmed) {
+      alert('이름을 입력해주세요.');
+      return;
+    }
+    if (trimmed === (userInfo.name || '')) {
+      alert('기존 이름과 동일합니다.');
+      return;
+    }
+    if (submitting) return;
+
     try {
-      if (!newName.trim()) {
-        alert('이름을 입력해주세요.');
-        return;
-      }
-      const response = await axiosInstance.put('/user/change-username', {
+      setSubmitting(true);
+      const res = await axiosInstance.put('/user/change-username', {
         userId,
-        newUsername: newName,
+        newUsername: trimmed,
       });
-      if (response.status === 200) {
-        alert('이름 변경 완료되었습니다.');
-        setUserInfo((prev) => ({ ...prev, name: newName }));
+
+      if (res.status === 200) {
+        alert('이름 변경이 완료되었습니다.');
+        setUserInfo((prev) => ({ ...prev, name: trimmed }));
         setOpen(false);
         setNewName('');
       }
-    } catch (error) {
-      console.error('이름 변경 실패:', error);
-      alert('이름 변경에 실패했습니다.');
+    } catch (err) {
+      console.error('이름 변경 실패:', err);
+
+      const serverMsg =
+        err?.response?.data?.message ??
+        err?.response?.data?.error ??
+        (typeof err?.response?.data === 'string' ? err.response.data : null);
+
+      if (err?.response?.status === 409) {
+        alert(serverMsg || '중복된 이름입니다.');
+      } else if (err?.response?.status === 400) {
+        alert(serverMsg || '요청이 올바르지 않습니다.');
+      } else {
+        alert(
+          serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        );
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -186,7 +213,9 @@ export default function AccountInfo() {
         isOpen={open}
         onClose={() => setOpen(false)}
         onSubmit={handleUsernameChange}
-        text="수정"
+        text={submitting ? '수정 중…' : '수정'}
+        // Modal 컴포넌트가 지원한다면 disabled 전파 권장:
+        // disabled={submitting || !newName.trim() || newName.trim() === (userInfo.name || '')}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
@@ -200,9 +229,16 @@ export default function AccountInfo() {
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
+              maxLength={20}
               className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
+            <p className="text-xs text-[#9b9998]">
+              기존 이름과 다른 이름으로 변경해주세요.
+            </p>
+            {submitting && (
+              <p className="text-xs text-[#73726e]">이름 변경 중…</p>
+            )}
           </div>
         </div>
       </Modal>
