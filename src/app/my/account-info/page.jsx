@@ -265,7 +265,7 @@ export default function AccountInfo() {
             <div className="text-center">
               <h3 className="text-lg font-medium text-gray-900 mb-4">알림</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                로그아웃이 완료되었습니다
+                로그아웃이 완료되었습니다.
               </p>
             </div>
           </div>
