@@ -214,7 +214,7 @@ export default function PrivacyPolicyPage() {
                 href="mailto:ddingsroom2025@mju.ac.kr"
                 className="text-[#788cff] underline underline-offset-4 hover:opacity-80"
               >
-                ddingsroom2025@mju.ac.kr
+                ddingsroom2025@gmail.com
               </a>
             </LI>
             <LI>서비스 사이트 내 하단 정보 참고</LI>
