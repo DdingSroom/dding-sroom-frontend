@@ -173,6 +173,17 @@ export default function AccountInfo() {
                 <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
               </div>
 
+              {/* 내 커뮤니티 관리 섹션 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div className="px-6 py-5 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-[#37352f]">
+                    내 커뮤니티 관리
+                  </h2>
+                </div>
+                <MyPageBlock name="내가 작성한 글" linkPath="/my/posts" />
+                <MyPageBlock name="내가 작성한 댓글" linkPath="/my/comments" />
+              </div>
+
               {/* 개인정보 보호 섹션 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100">
