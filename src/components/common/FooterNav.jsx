@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import InfoModal from './InfoModal';
 
 const FooterNav = () => {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -29,7 +31,7 @@ const FooterNav = () => {
 
         <button
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => setIsInfoModalOpen(true)}
+          onClick={() => router.push('/community')}
         >
           <div className="relative w-6 h-6">
             <img
