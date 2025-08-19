@@ -26,7 +26,9 @@ axiosInstance.interceptors.request.use(
         const accessToken = sessionStorage.getItem('accessToken');
         if (accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
+          console.log('Request with token:', { url, hasToken: !!accessToken });
         } else {
+          console.warn('No access token found for protected endpoint:', url);
           delete config.headers.Authorization;
         }
       }
