@@ -5,7 +5,7 @@ export default function UserTableRow({ user }) {
   const router = useRouter();
 
   const handleDetailClick = () => {
-    router.push(`/admin/user-detail/${user.id}`); // ✅ userId 포함한 경로로 이동
+    router.push(`/admin/user-detail/${user.id}`);
   };
 
   return (
