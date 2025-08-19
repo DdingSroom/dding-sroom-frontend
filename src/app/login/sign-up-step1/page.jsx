@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { strictEmailRegex } from '../../../constants/regex';
 import useSignupStore from '../../../stores/useSignupStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -25,6 +26,8 @@ export default function SignUpStep1() {
   const timerRef = useRef(null);
 
   const { setSignupField } = useSignupStore();
+
+  const MANUAL_URL = '/email-verification-manual';
 
   const commonCodeButtonClass =
     'inline-flex items-center justify-center w-[100px] h-10 ' +
@@ -157,7 +160,6 @@ export default function SignUpStep1() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* 스피너 오버레이 */}
       {isSending && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
@@ -177,7 +179,6 @@ export default function SignUpStep1() {
         </div>
       )}
 
-      {/* 본문 */}
       <div className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
           <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
@@ -189,7 +190,6 @@ export default function SignUpStep1() {
         </div>
 
         <div className="max-w-md mx-auto w-full space-y-6">
-          {/* 이메일 */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-[#37352f]">
               이메일
@@ -230,7 +230,6 @@ export default function SignUpStep1() {
             )}
           </div>
 
-          {/* 인증번호 */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-[#37352f]">
               인증번호
@@ -274,7 +273,52 @@ export default function SignUpStep1() {
             )}
           </div>
 
-          {/* 다음 버튼 */}
+          <div
+            className="rounded-lg border border-[#e9e9e7] bg-white p-4 sm:p-5 space-y-3"
+            aria-live="polite"
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-[#d9d9d6] text-xs text-[#73726e]"
+                aria-hidden="true"
+              >
+                i
+              </span>
+              <div className="flex-1 space-y-2">
+                <h3 className="text-sm font-semibold text-[#37352f]">
+                  혹시 메일이 도착하지 않는다면?
+                </h3>
+                <p className="text-xs text-[#73726e] leading-relaxed">
+                  학교 계정으로 이메일이 발송되지 않는다면, 해당 계정이{' '}
+                  <b>2023년 11월 이전 발급된 계정</b>으로{' '}
+                  <b>명지대학교 측에서 메일을 이관하여 현재 사용정지된 상태</b>
+                  일 수 있습니다. 아래 <b>해결방법</b> 버튼을 클릭하여{' '}
+                  <b>메일 이관</b> 후 회원가입하시길 바랍니다.
+                </p>
+
+                <div className="pt-1">
+                  <Link
+                    href={MANUAL_URL}
+                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-[#788cff] text-[#788cff] hover:bg-[#788cff] hover:text-white text-sm font-medium transition-all duration-200"
+                    aria-label="이메일 인증 문제 해결 매뉴얼 새 창으로 열기"
+                  >
+                    해결방법
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="ml-1 h-4 w-4"
+                      aria-hidden="true"
+                    >
+                      <path d="M12.293 2.293a1 1 0 011.414 0l4 4A1 1 0 0117 8h-3a1 1 0 110-2h.586L12 3.414V4a1 1 0 11-2 0V3a1 1 0 011-1h1.293z" />
+                      <path d="M3 5a2 2 0 012-2h4a1 1 0 110 2H5v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Button
             onClick={handleNext}
             disabled={!isCodeVerified}
@@ -283,7 +327,6 @@ export default function SignUpStep1() {
         </div>
       </div>
 
-      {/* 푸터 */}
       <PrivacyPolicyFooter />
     </div>
   );
@@ -318,6 +361,7 @@ const StyledEmailInput = ({
           type="button"
           onClick={handleRemoveEmailValue}
           className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+          aria-label="이메일 입력 내용 지우기"
         >
           <img
             src="/static/icons/x_icon.svg"
