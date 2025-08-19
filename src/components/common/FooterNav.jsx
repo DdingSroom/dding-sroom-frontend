@@ -1,12 +1,27 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import InfoModal from './InfoModal';
+import { useState } from 'react';
+import useTokenStore from '../../stores/useTokenStore';
+import LoginRequiredModal from './LoginRequiredModal';
 
 const FooterNav = () => {
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const router = useRouter();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { accessToken } = useTokenStore();
+
+  const handleSuggestClick = () => {
+    if (!accessToken) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    router.push('/suggest');
+  };
+
+  const handleLoginConfirm = () => {
+    setIsLoginModalOpen(false);
+    router.push('/login?redirect=' + encodeURIComponent('/suggest'));
+  };
 
   return (
     <>
@@ -52,7 +67,7 @@ const FooterNav = () => {
 
         <button
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => setIsInfoModalOpen(true)}
+          onClick={handleSuggestClick}
         >
           <div className="relative w-6 h-6">
             <img
@@ -67,14 +82,14 @@ const FooterNav = () => {
             />
           </div>
           <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
-            건의하기
+            건의/신고
           </span>
         </button>
       </footer>
 
-      <InfoModal
-        isOpen={isInfoModalOpen}
-        onClose={() => setIsInfoModalOpen(false)}
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onConfirm={handleLoginConfirm}
       />
     </>
   );
