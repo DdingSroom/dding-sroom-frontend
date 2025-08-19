@@ -42,18 +42,18 @@ export default function AdminLayout({ children }) {
               >
                 예약 목록
               </a>
-              <button
-                onClick={() => setIsInfoModalOpen(true)}
-                className="text-left hover:text-[#788cff] transition-colors"
+              <a
+                href="/admin/suggestions"
+                className="hover:text-[#788cff] transition-colors"
               >
                 커뮤니티 관리
-              </button>
-              <button
-                onClick={() => setIsInfoModalOpen(true)}
-                className="text-left hover:text-[#788cff] transition-colors"
+              </a>
+              <a
+                href="/admin/suggestions"
+                className="hover:text-[#788cff] transition-colors"
               >
-                건의내역
-              </button>
+                건의 내역
+              </a>
             </nav>
           </aside>
 
