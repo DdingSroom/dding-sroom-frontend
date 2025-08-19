@@ -1,23 +1,16 @@
-import Link from 'next/link';
+'use client';
 
-export const metadata = {
-  title: '학교 이메일 인증 매뉴얼 | 띵스룸(ddingsroom)',
-  description:
-    '명지대학교 MS Outlook 서비스 종료로 인한 이메일 인증 문제 해결을 위한 매뉴얼 안내',
-  robots: { index: true, follow: true },
-  openGraph: {
-    title: '학교 이메일 인증 매뉴얼 | 띵스룸(ddingsroom)',
-    description: '학교 이메일 인증 문제 해결 매뉴얼 안내',
-    url: '/email-verification-manual',
-    type: 'article',
-  },
-};
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const updatedAt = '2025-08-19 (KST)';
 
-export default function EmailVerificationManualPage() {
+export default function ManualContent() {
+  const router = useRouter();
+
   return (
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
+      {/* 헤더 */}
       <header className="mb-10">
         <h1 className="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-[#788cff]">
           학교 이메일 인증 매뉴얼
@@ -36,13 +29,13 @@ export default function EmailVerificationManualPage() {
 
       <div className="mb-8 h-px w-full bg-[#e9e9e7]" />
 
+      {/* 본문 */}
       <article className="space-y-10">
         <Section id="section-1" title="1. 문제 원인 안내">
           <P>
             명지대학교 측에서 <b>2023년 11월 자로 MS Outlook 서비스를 해지</b>
-            하였기에,
-            <b> 2023년 11월 이전 생성된 학교 계정</b>은 일괄 사용정지 처리된
-            상태입니다.
+            하였기에,<b> 2023년 11월 이전 생성된 학교 계정</b>은 일괄 사용정지
+            처리된 상태입니다.
           </P>
           <P>
             따라서 현재 해당 계정으로는 메일을 주고받을 수 없는 상태입니다. 인증
@@ -98,12 +91,13 @@ export default function EmailVerificationManualPage() {
       <div className="mt-10 h-px w-full bg-[#e9e9e7]" />
 
       <div className="mt-6 text-right text-xs text-[#73726e]">
-        <Link
-          href="/"
+        <button
+          type="button"
+          onClick={() => router.push('/login/sign-up-step1')}
           className="hover:underline underline-offset-4 text-[#788cff]"
         >
-          홈으로
-        </Link>
+          이전 페이지로 돌아가기
+        </button>
       </div>
     </main>
   );
