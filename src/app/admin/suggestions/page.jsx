@@ -98,6 +98,7 @@ export default function AdminSuggestionsPage() {
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">건의/신고 목록</h1>
 
+        {/* Filters */}
         <Filters
           filters={filters}
           setFilters={setFilters}
@@ -206,7 +207,7 @@ function SuggestionCard({ item, onRefresh }) {
   const [refreshTick, setRefreshTick] = useState(0);
   const toggle = () => setOpen(!open);
 
-  const handleAnswered = () => {
+  const handleChanged = () => {
     if (typeof onRefresh === 'function') onRefresh();
     setRefreshTick((t) => t + 1);
   };
@@ -278,12 +279,14 @@ function SuggestionCard({ item, onRefresh }) {
 
         {open && (
           <div className="space-y-4">
+            {/* 본문 */}
             <section aria-label="본문">
               <p className="text-sm whitespace-pre-wrap break-words">
                 {item.content}
               </p>
             </section>
 
+            {/* 첨부 이미지 */}
             <section aria-label="첨부 이미지">
               <h4 className="text-sm font-semibold mb-2">첨부 이미지</h4>
               <SuggestionImagesByUrl
@@ -298,14 +301,37 @@ function SuggestionCard({ item, onRefresh }) {
               />
             </section>
 
-            <section aria-label="관리자 답변">
-              <h4 className="text-sm font-semibold mb-2">관리자 답변</h4>
+            {/* 답변 등록 */}
+            <section aria-label="관리자 답변 등록">
+              <h4 className="text-sm font-semibold mb-2">관리자 답변 등록</h4>
               <AdminSuggestionReply
                 suggestion={item}
-                onUpdate={handleAnswered}
+                onUpdate={handleChanged}
               />
             </section>
 
+            {/* 답변 관리 (수정/삭제) */}
+            <section aria-label="관리자 답변 관리">
+              <div
+                className="mt-1 border-t border-dashed pt-3"
+                style={{ borderColor: 'var(--primary-color)' }}
+              >
+                <h4
+                  className="text-sm font-semibold mb-2"
+                  style={{ color: 'var(--primary-color)' }}
+                >
+                  관리자 답변 관리
+                </h4>
+
+                <AnswerManager
+                  suggestPostId={item.id}
+                  refreshKey={refreshTick}
+                  onChanged={handleChanged}
+                />
+              </div>
+            </section>
+
+            {/* 댓글/답변(기존 목록 뷰) */}
             <section aria-label="댓글 및 답변">
               <div
                 className="mt-1 border-t border-dashed pt-3"
@@ -327,6 +353,163 @@ function SuggestionCard({ item, onRefresh }) {
         )}
       </div>
     </article>
+  );
+}
+
+function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
+  const [items, setItems] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [draft, setDraft] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const normalizeComment = (c) => ({
+    id: c?.id ?? c?.comment_id ?? c?.commentId,
+    text:
+      c?.answer_content ??
+      c?.answerContent ??
+      c?.admin_answer ??
+      c?.content ??
+      '',
+    at: c?.answered_at || c?.answeredAt || c?.createdAt || c?.created_at || [],
+  });
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      setErr('');
+      const res = await axiosInstance.get('/api/suggestions/comments', {
+        params: { suggest_post_id: suggestPostId },
+      });
+      const arr = Array.isArray(res?.data?.comments)
+        ? res.data.comments
+        : (res?.data ?? []);
+      setItems(arr.map(normalizeComment));
+    } catch (e) {
+      setErr(parseError(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [suggestPostId]);
+
+  useEffect(() => {
+    if (!suggestPostId) return;
+    load();
+  }, [suggestPostId, load, refreshKey]);
+
+  const beginEdit = (row) => {
+    setEditingId(row.id);
+    setDraft(row.text || '');
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
+    setDraft('');
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    if (!String(draft).trim()) return;
+    try {
+      setSaving(true);
+      await axiosInstance.put('/api/suggestions/comments', {
+        comment_id: editingId,
+        answer_content: draft.trim(),
+      });
+      await load();
+      setEditingId(null);
+      setDraft('');
+      if (typeof onChanged === 'function') onChanged();
+    } catch (e) {
+      setErr(parseError(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id) => {
+    if (!confirm('이 답변을 삭제하시겠습니까?')) return;
+    try {
+      setSaving(true);
+      await axiosInstance.delete(`/api/suggestions/comments/${id}`);
+      await load();
+      if (typeof onChanged === 'function') onChanged();
+    } catch (e) {
+      setErr(parseError(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      {loading && <p className="text-sm text-gray-500">불러오는 중…</p>}
+      {err && <p className="text-sm text-red-500">{err}</p>}
+
+      {!loading && items.length === 0 && (
+        <p className="text-sm text-gray-500">등록된 관리자 답변이 없습니다.</p>
+      )}
+
+      {items.map((row) => (
+        <div
+          key={row.id}
+          className="rounded-lg border bg-white p-3 flex flex-col gap-2"
+        >
+          {editingId === row.id ? (
+            <>
+              <textarea
+                rows={4}
+                className="w-full rounded border px-3 py-2 text-sm"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={cancelEdit}
+                  className="px-3 py-1.5 text-sm rounded border bg-white hover:bg-gray-50"
+                  disabled={saving}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={saveEdit}
+                  className="px-3 py-1.5 text-sm rounded text-white"
+                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  disabled={saving}
+                >
+                  {saving ? '저장 중…' : '저장'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="whitespace-pre-wrap text-sm text-gray-800">
+                {row.text || '(내용 없음)'}
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">
+                  {formatFullDate(row.at)}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => beginEdit(row)}
+                    className="px-3 py-1.5 text-sm rounded border bg-gray-50 hover:bg-gray-100"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() => remove(row.id)}
+                    className="px-3 py-1.5 text-sm rounded border bg-[#ffe7e7] text-[#c0392b] hover:bg-[#ffdede]"
+                  >
+                    삭제
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 
