@@ -25,7 +25,7 @@ export default function SuggestHistoryPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [items, setItems] = useState([]); // 평탄화 목록
+  const [items, setItems] = useState([]);
 
   // 로그인 체크
   useEffect(() => {
@@ -36,7 +36,6 @@ export default function SuggestHistoryPage() {
     try {
       if (!accessToken) return '';
       const decoded = jwtDecode(accessToken);
-      // ✅ 프로젝트 실 클레임에 맞게 조정: userId / user_id / id / sub …
       return decoded.userId || decoded.user_id || decoded.id || '';
     } catch {
       return '';
@@ -76,7 +75,7 @@ export default function SuggestHistoryPage() {
   const grouped = useMemo(() => {
     const b = {};
     for (const s of items) {
-      const key = formatDateOnly(s.createdAt); // 'YYYY-MM-DD'
+      const key = formatDateOnly(s.createdAt);
       if (!b[key]) b[key] = [];
       b[key].push(s);
     }
@@ -150,8 +149,6 @@ export default function SuggestHistoryPage() {
   );
 }
 
-/* ---------- Presentational bits (기존 UI 유지) ---------- */
-
 function StatusBadge({ status }) {
   const isDone = !!status;
   return (
@@ -214,8 +211,6 @@ function HistoryCard({ item }) {
   );
 }
 
-/* ---------- Utils ---------- */
-
 function normalizeSuggest(raw) {
   const createdAt =
     raw?.createdAt ||
@@ -235,7 +230,6 @@ function normalizeSuggest(raw) {
 }
 
 function formatKR(yyyyMMDD) {
-  // '2025-08-18' -> '2025. 08. 18.'
   if (!yyyyMMDD) return '';
   const [y, m, d] = yyyyMMDD.split('-');
   return `${y}. ${m}. ${d}.`;
