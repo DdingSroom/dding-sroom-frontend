@@ -54,6 +54,12 @@ export default function AdminLayout({ children }) {
               >
                 건의 내역
               </a>
+              <a
+                href="/admin/notifications"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                공지사항 관리
+              </a>
             </nav>
           </aside>
 
