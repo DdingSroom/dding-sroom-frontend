@@ -60,6 +60,13 @@ export default function AdminLayout({ children }) {
               >
                 스터디룸 관리
               </a>
+              <a
+                href="/admin/notifications"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                공지사항 관리
+
+              </a>
             </nav>
           </aside>
 
