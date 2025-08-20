@@ -37,7 +37,6 @@ export default function UserManagement() {
     try {
       const response = await axiosInstance.get('/admin/users');
 
-      // 응답 구조 확인용 로그
       console.log('전체 응답:', response);
       console.log('response.data:', response.data);
 
@@ -48,6 +47,14 @@ export default function UserManagement() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUserUpdate = (userId, updatedUser) => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === userId ? updatedUser : user
+      )
+    );
   };
 
   useEffect(() => {
@@ -78,12 +85,18 @@ export default function UserManagement() {
                 <th className="py-3 px-2 w-8">ID</th>
                 <th className="py-3 px-2">이름</th>
                 <th className="py-3 px-2">가입 이메일</th>
-                <th className="py-3 px-2 text-center">관리</th>
+                <th className="py-3 px-2 text-center">상태 & 관리</th>
               </tr>
             </thead>
             <tbody className="bg-white">
               {Array.isArray(users) ? (
-                users.map((user) => <UserTableRow key={user.id} user={user} />)
+                users.map((user) => (
+                  <UserTableRow 
+                    key={user.id} 
+                    user={user} 
+                    onUserUpdate={handleUserUpdate}
+                  />
+                ))
               ) : (
                 <tr>
                   <td colSpan="4" className="text-center py-4 text-gray-500">

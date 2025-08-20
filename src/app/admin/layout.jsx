@@ -43,7 +43,7 @@ export default function AdminLayout({ children }) {
                 예약 목록
               </a>
               <a
-                href="/admin/suggestions"
+                href="/admin/community"
                 className="hover:text-[#788cff] transition-colors"
               >
                 커뮤니티 관리
@@ -55,10 +55,17 @@ export default function AdminLayout({ children }) {
                 건의 내역
               </a>
               <a
+                href="/admin/room-management"
+                className="hover:text-[#788cff] transition-colors"
+              >
+                스터디룸 관리
+              </a>
+              <a
                 href="/admin/notifications"
                 className="hover:text-[#788cff] transition-colors"
               >
                 공지사항 관리
+
               </a>
             </nav>
           </aside>
