@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axiosInstance from '../../libs/api/instance';
 import Header from '@components/common/Header';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 export default function NotificationList() {
   const [notifications, setNotifications] = useState([]);
@@ -37,12 +38,12 @@ export default function NotificationList() {
   const handleViewNotification = async (notification) => {
     try {
       await axiosInstance.post('/api/notification/view', {
-        notificationId: notification.id
+        notificationId: notification.id,
       });
-      
+
       setSelectedNotification({
         ...notification,
-        viewCount: notification.viewCount + 1
+        viewCount: notification.viewCount + 1,
       });
       setShowDetailModal(true);
     } catch (error) {
@@ -60,8 +61,21 @@ export default function NotificationList() {
 
   const truncateContent = (content, maxLength = 50) => {
     if (!content) return '';
-    return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+    return content.length > maxLength
+      ? content.substring(0, maxLength) + '...'
+      : content;
   };
+
+  function BottomSafeSpacer({ height = 64 }) {
+    return (
+      <div
+        aria-hidden="true"
+        style={{
+          height: `calc(${height}px + env(safe-area-inset-bottom, 0px))`,
+        }}
+      />
+    );
+  }
 
   return (
     <>
@@ -73,7 +87,7 @@ export default function NotificationList() {
         <div className="max-w-2xl mx-auto w-full">
           <div className="py-6">
             <h1 className="text-xl font-bold text-gray-800 mb-6">공지사항</h1>
-            
+
             <div className="space-y-4">
               {isLoading ? (
                 <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
@@ -99,6 +113,8 @@ export default function NotificationList() {
         </div>
       </div>
 
+      <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
       <FooterNav />
 
       {showDetailModal && selectedNotification && (
@@ -116,13 +132,15 @@ export default function NotificationList() {
                   ✕
                 </button>
               </div>
-              
+
               <div className="mb-4 pb-4 border-b border-gray-200">
                 <div className="flex items-center text-xs text-gray-500 gap-3">
                   <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                     작성자: 관리자
                   </span>
-                  <span>작성일: {formatDate(selectedNotification.createdAt)}</span>
+                  <span>
+                    작성일: {formatDate(selectedNotification.createdAt)}
+                  </span>
                   <span>조회수: {selectedNotification.viewCount}</span>
                 </div>
               </div>
@@ -151,9 +169,14 @@ export default function NotificationList() {
   );
 }
 
-function UserNotificationCard({ notification, onViewClick, formatDate, truncateContent }) {
+function UserNotificationCard({
+  notification,
+  onViewClick,
+  formatDate,
+  truncateContent,
+}) {
   return (
-    <article 
+    <article
       className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md cursor-pointer"
       onClick={() => onViewClick(notification)}
     >
