@@ -2,9 +2,10 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import axiosInstance from '../../libs/api/instance';
+import { useRouter } from 'next/navigation';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import axiosInstance from '../../libs/api/instance';
 
 const MAX_TITLE = 20;
 const MAX_CONTENT = 3000;
@@ -39,7 +40,7 @@ function BottomSafeSpacer({ height = 64 }) {
 const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(1);
 
 export default function SuggestPage() {
-  // const router = useRouter();
+  const router = useRouter();
 
   const [category, setCategory] = useState(categories[0]);
   const [place, setPlace] = useState(places[0]);

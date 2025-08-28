@@ -51,7 +51,7 @@ export default function UserDetailPage() {
   const [user, setUser] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [loadingReservations, setLoadingReservations] = useState(true);
-  // const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   useEffect(() => {
     if (!accessToken) {
@@ -100,7 +100,7 @@ export default function UserDetailPage() {
   }, [userId, fetchUserDetail, fetchUserReservations]);
 
   const userStatus = useMemo(() => deriveStatus(user), [user]);
-  // const isBlocked = userStatus === 'blocked';
+  const isBlocked = userStatus === 'blocked';
 
   const updateUserStatus = useCallback(
     async (nextStatus) => {
@@ -127,14 +127,14 @@ export default function UserDetailPage() {
         console.log(`Updating user ${userId} status to:`, nextStatus);
 
         const response = await axiosInstance.put(
-          `/admin/users/${userId}/status`,
-          null,
+          `/admin/users/${userId}/status`, 
+          null, 
           {
             params: { status: nextStatus },
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
+              'Authorization': `Bearer ${accessToken}`
+            }
+          }
         );
 
         console.log('User status update success:', response.data);
@@ -147,7 +147,7 @@ export default function UserDetailPage() {
         }
       } catch (e) {
         console.error('사용자 상태 변경 실패:', e);
-
+        
         // 실패 시 이전 상태로 롤백
         setUser(prevUser);
         throw e;
@@ -156,32 +156,30 @@ export default function UserDetailPage() {
     [userId, user, fetchUserDetail, accessToken],
   );
 
-  // const handleStatusToggle = useCallback(async () => {
-  if (!user) return;
+  const handleStatusToggle = useCallback(async () => {
+    if (!user) return;
+    
+    const currentStatus = userStatus;
+    const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
+    const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
-  const currentStatus = userStatus;
-  const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
-  const statusText = newStatus === 'blocked' ? '차단' : '정상';
+    if (!confirm(`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`)) {
+      return;
+    }
 
-  // if (
-  //   !confirm(`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`)
-  // ) {
-  //   return;
-  // }
+    setUpdatingStatus(true);
 
-  // setUpdatingStatus(true);
-
-  // try {
-  //   await updateUserStatus(newStatus);
-  //   alert(`${user.username}님이 ${statusText} 상태로 변경되었습니다.`);
-  // } catch (error) {
-  //   console.error('사용자 상태 변경 실패:', error);
-  //   const msg = error?.response?.data?.message || '상태 변경에 실패했습니다.';
-  //   alert(msg);
-  // } finally {
-  //   setUpdatingStatus(false);
-  // }
-  // }, [user, userStatus, updateUserStatus]);
+    try {
+      await updateUserStatus(newStatus);
+      alert(`${user.username}님이 ${statusText} 상태로 변경되었습니다.`);
+    } catch (error) {
+      console.error('사용자 상태 변경 실패:', error);
+      const msg = error?.response?.data?.message || '상태 변경에 실패했습니다.';
+      alert(msg);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  }, [user, userStatus, updateUserStatus]);
 
   /* Loading */
   if (!user) return <p className="p-6">로딩 중...</p>;
@@ -198,6 +196,7 @@ export default function UserDetailPage() {
           </button>
           <h1 className="text-xl font-semibold">{user.username}</h1>
         </div>
+
       </div>
 
       {/* Cards */}

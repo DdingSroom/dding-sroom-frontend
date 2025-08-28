@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
@@ -157,9 +157,7 @@ export default function ReservationListPage() {
                           className={`px-3 py-2 text-sm rounded-md border bg-white text-red-600 border-red-300
                               hover:bg-red-50 hover:border-red-400 transition ${
                                 // eslint-disable-next-line prettier/prettier
-                                isCancelling
-                                  ? 'opacity-60 cursor-not-allowed'
-                                  : ''
+                                isCancelling ? 'opacity-60 cursor-not-allowed' : ''
                               }`}
                           aria-busy={isCancelling ? 'true' : 'false'}
                           title="관리자 권한으로 예약을 강제 취소합니다"
