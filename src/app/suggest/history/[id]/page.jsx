@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import axiosInstance from '../../../../libs/api/instance';
+import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 
 const CATEGORIES = ['분실물', '기물파손', '시설고장', '소음공해', '기타'];
 const PLACES = [

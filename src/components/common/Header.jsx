@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import InfoModal from './InfoModal';
 import axiosInstance from '../../libs/api/instance';
+import InfoModal from './InfoModal';
 
 const Header = () => {
   const router = useRouter();
@@ -16,7 +16,9 @@ const Header = () => {
 
   const fetchRecentNotificationCount = async () => {
     try {
-      const response = await axiosInstance.get('/api/notification/recent-count');
+      const response = await axiosInstance.get(
+        '/api/notification/recent-count',
+      );
       if (response.data.error) {
         console.error('최근 공지사항 개수 조회 실패:', response.data.error);
         return;

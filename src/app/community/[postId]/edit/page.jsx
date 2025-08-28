@@ -8,6 +8,17 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import Button from '@components/common/Button';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '@components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function EditPostPage() {
   const [title, setTitle] = useState('');
@@ -34,7 +45,7 @@ export default function EditPostPage() {
     if (accessToken && postId) {
       fetchPost();
     }
-  }, [accessToken, postId]);
+  }, [accessToken, postId, fetchPost]);
 
   const fetchPost = async () => {
     try {
@@ -152,7 +163,7 @@ export default function EditPostPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <CommunityHeader title="게시글 수정" />
 
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-4 pb-32">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div>
@@ -256,6 +267,10 @@ export default function EditPostPage() {
         content={errorMessage}
         showCancel={false}
       />
+
+      <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }

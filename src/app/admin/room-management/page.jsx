@@ -156,7 +156,7 @@ export default function RoomsManagePage() {
         });
       }
     },
-    [rooms, fetchRoom],
+    [rooms],
   );
 
   if (loading) {
