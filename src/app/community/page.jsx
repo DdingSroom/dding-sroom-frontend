@@ -8,17 +8,6 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import PostCard from '@components/community/PostCard';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
-
-function BottomSafeSpacer({ height = 64 }) {
-  return (
-    <div
-      aria-hidden="true"
-      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
-    />
-  );
-}
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState([]);
@@ -42,7 +31,7 @@ export default function CommunityPage() {
     if (accessToken) {
       fetchPosts();
     }
-  }, [accessToken, activeCategory, fetchPosts]);
+  }, [accessToken, activeCategory]);
 
   const fetchPosts = async () => {
     try {
@@ -133,7 +122,7 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <main className="flex-1 p-4 pb-32">
+      <main className="flex-1 p-4 pb-20">
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="text-[#73726e]">로딩 중...</div>
@@ -184,10 +173,6 @@ export default function CommunityPage() {
         content={errorMessage}
         showCancel={false}
       />
-
-      <PrivacyPolicyFooter />
-      <BottomSafeSpacer height={64} />
-      <FooterNav />
     </div>
   );
 }

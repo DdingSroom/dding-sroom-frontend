@@ -9,17 +9,6 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import CommentItem from '@components/community/CommentItem';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
-
-function BottomSafeSpacer({ height = 64 }) {
-  return (
-    <div
-      aria-hidden="true"
-      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
-    />
-  );
-}
 
 export default function PostDetailPage() {
   const [post, setPost] = useState(null);
@@ -48,7 +37,7 @@ export default function PostDetailPage() {
       fetchPostDetail();
       fetchComments();
     }
-  }, [accessToken, postId, fetchPostDetail, fetchComments]);
+  }, [accessToken, postId]);
 
   const fetchPostDetail = async () => {
     try {
@@ -242,7 +231,7 @@ export default function PostDetailPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <CommunityHeader title="게시글 상세" />
 
-      <main className="flex-1 p-4 pb-32">
+      <main className="flex-1 p-4 pb-20">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-4">
           <div className="p-6">
             <div
@@ -355,10 +344,6 @@ export default function PostDetailPage() {
         content={errorMessage}
         showCancel={false}
       />
-
-      <PrivacyPolicyFooter />
-      <BottomSafeSpacer height={64} />
-      <FooterNav />
     </div>
   );
 }

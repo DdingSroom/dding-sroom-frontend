@@ -65,6 +65,7 @@ export default function AdminLayout({ children }) {
                 className="hover:text-[#788cff] transition-colors"
               >
                 공지사항 관리
+
               </a>
             </nav>
           </aside>
