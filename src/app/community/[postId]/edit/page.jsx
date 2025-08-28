@@ -45,7 +45,7 @@ export default function EditPostPage() {
     if (accessToken && postId) {
       fetchPost();
     }
-  }, [accessToken, postId]);
+  }, [accessToken, postId, fetchPost]);
 
   const fetchPost = async () => {
     try {

@@ -42,7 +42,7 @@ export default function CommunityPage() {
     if (accessToken) {
       fetchPosts();
     }
-  }, [accessToken, activeCategory]);
+  }, [accessToken, activeCategory, fetchPosts]);
 
   const fetchPosts = async () => {
     try {

@@ -48,7 +48,7 @@ export default function PostDetailPage() {
       fetchPostDetail();
       fetchComments();
     }
-  }, [accessToken, postId]);
+  }, [accessToken, postId, fetchPostDetail, fetchComments]);
 
   const fetchPostDetail = async () => {
     try {

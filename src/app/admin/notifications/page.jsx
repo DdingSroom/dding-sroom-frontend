@@ -12,7 +12,7 @@ export default function NotificationManagement() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    content: ''
+    content: '',
   });
 
   useEffect(() => {
@@ -45,9 +45,9 @@ export default function NotificationManagement() {
     try {
       const response = await axiosInstance.post('/api/notification/create', {
         title: formData.title,
-        content: formData.content
+        content: formData.content,
       });
-      
+
       if (response.data.error) {
         alert(response.data.error);
         return;
@@ -73,9 +73,9 @@ export default function NotificationManagement() {
       const response = await axiosInstance.put('/api/notification/update', {
         notificationId: selectedNotification.id,
         title: formData.title,
-        content: formData.content
+        content: formData.content,
       });
-      
+
       if (response.data.error) {
         alert(response.data.error);
         return;
@@ -98,8 +98,10 @@ export default function NotificationManagement() {
     }
 
     try {
-      const response = await axiosInstance.delete(`/api/notification/delete/${notificationId}`);
-      
+      const response = await axiosInstance.delete(
+        `/api/notification/delete/${notificationId}`,
+      );
+
       if (response.data.error) {
         alert(response.data.error);
         return;
@@ -115,7 +117,7 @@ export default function NotificationManagement() {
 
   const formatDate = (dateArray) => {
     if (!Array.isArray(dateArray) || dateArray.length < 6) return '';
-    const [year, month, day, hour, minute, second] = dateArray;
+    const [year, month, day, hour, minute] = dateArray;
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
@@ -127,12 +129,14 @@ export default function NotificationManagement() {
 
   const truncateContent = (content, maxLength = 50) => {
     if (!content) return '';
-    return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+    return content.length > maxLength
+      ? content.substring(0, maxLength) + '...'
+      : content;
   };
 
   const groupNotificationsByDate = (notifications) => {
     const grouped = {};
-    notifications.forEach(notification => {
+    notifications.forEach((notification) => {
       const dateKey = formatDateOnly(notification.createdAt);
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
@@ -155,7 +159,7 @@ export default function NotificationManagement() {
     setSelectedNotification(notification);
     setFormData({
       title: notification.title,
-      content: notification.content
+      content: notification.content,
     });
     setShowDetailModal(false);
     setShowEditForm(true);
@@ -186,7 +190,9 @@ export default function NotificationManagement() {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
                 placeholder="공지사항 제목을 입력하세요"
               />
@@ -198,7 +204,9 @@ export default function NotificationManagement() {
               </label>
               <textarea
                 value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, content: e.target.value }))
+                }
                 rows={15}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] resize-y"
                 placeholder="공지사항 내용을 입력하세요"
@@ -255,7 +263,9 @@ export default function NotificationManagement() {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
                 placeholder="공지사항 제목을 입력하세요"
               />
@@ -267,7 +277,9 @@ export default function NotificationManagement() {
               </label>
               <textarea
                 value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, content: e.target.value }))
+                }
                 rows={15}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] resize-y"
                 placeholder="공지사항 내용을 입력하세요"
@@ -306,12 +318,15 @@ export default function NotificationManagement() {
     <div className="bg-[#F1F2F4] p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">공지사항 관리</h1>
-        
+
         <div className="mb-6">
           <button
             onClick={() => setShowCreateForm(true)}
             className="px-4 py-2 text-white rounded transition-colors"
-            style={{ backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
+            style={{
+              backgroundColor: 'var(--primary-color)',
+              borderColor: 'var(--primary-color)',
+            }}
           >
             공지사항 작성
           </button>
@@ -370,11 +385,15 @@ export default function NotificationManagement() {
                   ✕
                 </button>
               </div>
-              
+
               <div className="mb-4 pb-4 border-b border-gray-200">
                 <div className="flex items-center text-sm text-gray-500 gap-4">
-                  <span>작성일: {formatDate(selectedNotification.createdAt)}</span>
-                  <span>수정일: {formatDate(selectedNotification.updatedAt)}</span>
+                  <span>
+                    작성일: {formatDate(selectedNotification.createdAt)}
+                  </span>
+                  <span>
+                    수정일: {formatDate(selectedNotification.updatedAt)}
+                  </span>
                   <span>조회수: {selectedNotification.viewCount}</span>
                 </div>
               </div>
@@ -418,7 +437,12 @@ export default function NotificationManagement() {
   );
 }
 
-function NotificationCard({ notification, onDetailClick, formatDate, truncateContent }) {
+function NotificationCard({
+  notification,
+  onDetailClick,
+  formatDate,
+  truncateContent,
+}) {
   return (
     <article className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md">
       <div
@@ -446,7 +470,8 @@ function NotificationCard({ notification, onDetailClick, formatDate, truncateCon
             </p>
 
             <p className="mt-2 text-[11px] text-gray-400">
-              작성일: {formatDate(notification.createdAt)} · 조회수: {notification.viewCount}
+              작성일: {formatDate(notification.createdAt)} · 조회수:{' '}
+              {notification.viewCount}
             </p>
           </div>
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import axiosInstance from '../../libs/api/instance';
 import Header from '@components/common/Header';
 import FooterNav from '@components/common/FooterNav';
@@ -12,7 +11,7 @@ export default function NotificationList() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     fetchNotifications();
@@ -55,7 +54,7 @@ export default function NotificationList() {
 
   const formatDate = (dateArray) => {
     if (!Array.isArray(dateArray) || dateArray.length < 6) return '';
-    const [year, month, day, hour, minute, second] = dateArray;
+    const [year, month, day, hour, minute] = dateArray;
     return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
