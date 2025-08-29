@@ -50,10 +50,8 @@ export default function UserManagement() {
   };
 
   const handleUserUpdate = (userId, updatedUser) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? updatedUser : user
-      )
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => (user.id === userId ? updatedUser : user)),
     );
   };
 
@@ -91,9 +89,9 @@ export default function UserManagement() {
             <tbody className="bg-white">
               {Array.isArray(users) ? (
                 users.map((user) => (
-                  <UserTableRow 
-                    key={user.id} 
-                    user={user} 
+                  <UserTableRow
+                    key={user.id}
+                    user={user}
                     onUserUpdate={handleUserUpdate}
                   />
                 ))

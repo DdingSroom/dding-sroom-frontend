@@ -26,7 +26,10 @@ const FooterNav = () => {
   return (
     <>
       <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[600px] flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
-        <button className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+        <button
+          className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
+          onClick={() => router.push('/')}
+        >
           <div className="relative w-6 h-6">
             <img
               src="/static/icons/reservation_icon.svg"

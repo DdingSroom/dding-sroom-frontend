@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
+import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

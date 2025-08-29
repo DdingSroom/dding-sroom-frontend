@@ -98,7 +98,7 @@ export default function AdminDashboard() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', fetchRoomData);
     };
-  }, []);
+  }, [fetchCommunityData, fetchSuggestionsData]);
 
   const formatTimeRange = (start, end) => {
     const formatHM = (arr) => {
@@ -133,9 +133,11 @@ export default function AdminDashboard() {
       const response = await axiosInstance.get('/api/suggestions', {
         params: { is_answered: 'false' },
       });
-      const suggestions = (response?.data?.suggestions ?? response?.data ?? []).map(
-        normalizeSuggestion,
-      );
+      const suggestions = (
+        response?.data?.suggestions ??
+        response?.data ??
+        []
+      ).map(normalizeSuggestion);
       setSuggestionsData(suggestions.slice(0, 3));
     } catch (err) {
       console.error('건의 데이터 불러오기 실패:', err);
@@ -281,7 +283,9 @@ export default function AdminDashboard() {
               ))
             ) : (
               <li className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">커뮤니티 게시글이 없습니다.</p>
+                <p className="text-sm text-gray-500">
+                  커뮤니티 게시글이 없습니다.
+                </p>
               </li>
             )}
           </ul>
@@ -318,9 +322,7 @@ export default function AdminDashboard() {
                     <p className="text-sm font-medium text-[#37352f]">
                       스터디룸 {room.id}
                     </p>
-                    <p className="text-xs text-[#73726e]">
-                      방 번호: {room.id}
-                    </p>
+                    <p className="text-xs text-[#73726e]">방 번호: {room.id}</p>
                   </div>
                 </div>
                 <div>
@@ -329,15 +331,15 @@ export default function AdminDashboard() {
                       room.status === 'IDLE'
                         ? 'bg-green-100 text-green-700'
                         : room.status === 'OCCUPIED'
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-gray-100 text-gray-600'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     {room.status === 'IDLE'
                       ? '예약 가능'
                       : room.status === 'OCCUPIED'
-                      ? '사용 중'
-                      : '예약 불가'}
+                        ? '사용 중'
+                        : '예약 불가'}
                   </span>
                 </div>
               </div>
@@ -369,13 +371,16 @@ export default function AdminDashboard() {
                     [{suggestion.category}] {suggestion.title}
                   </p>
                   <p className="text-xs text-[#73726e]">
-                    USER {suggestion.userId} · {formatTimestamp(suggestion.createdAt)}
+                    USER {suggestion.userId} ·{' '}
+                    {formatTimestamp(suggestion.createdAt)}
                   </p>
                 </li>
               ))
             ) : (
               <li className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">답변대기 건의가 없습니다.</p>
+                <p className="text-sm text-gray-500">
+                  답변대기 건의가 없습니다.
+                </p>
               </li>
             )}
           </ul>
