@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
 import axiosInstance from '../../libs/api/instance';
@@ -30,6 +30,52 @@ export default function CommunityPage() {
   const { accessToken, rehydrate } = useTokenStore();
   const router = useRouter();
 
+  const categories = [
+    { id: 'all', name: '전체글' },
+    { id: 'general', name: '일반게시판' },
+    { id: 'lost', name: '분실물게시판' },
+  ];
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      let response;
+
+      if (activeCategory === 'all') {
+        response = await axiosInstance.get('/api/community-posts');
+      } else {
+        // 일반:1, 분실물:2
+        const categoryNum = activeCategory === 'general' ? 1 : 2;
+        response = await axiosInstance.get(
+          `/api/community-posts/search?category=${categoryNum}`,
+        );
+      }
+
+      if (response?.data?.error) {
+        setErrorMessage(response.data.error);
+        setShowErrorModal(true);
+        return;
+      }
+
+      const postsData =
+        activeCategory === 'all' ? response?.data?.data : response?.data?.posts;
+
+      const sortedPosts = (postsData ?? []).slice().sort((a, b) => {
+        const toDate = (arr) =>
+          new Date(...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)));
+        return toDate(b.created_at) - toDate(a.created_at);
+      });
+
+      setPosts(sortedPosts);
+    } catch (error) {
+      console.error('게시글 목록 불러오기 실패:', error);
+      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeCategory]);
+
   useEffect(() => {
     rehydrate();
   }, [rehydrate]);
@@ -38,51 +84,12 @@ export default function CommunityPage() {
     setShowLoginModal(!accessToken);
   }, [accessToken]);
 
+  // ✅ fetchPosts를 의존성에 넣어도 안전 (useCallback으로 메모이즈됨)
   useEffect(() => {
     if (accessToken) {
       fetchPosts();
     }
-  }, [accessToken, activeCategory, fetchPosts]);
-
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      let response;
-
-      if (activeCategory === 'all') {
-        response = await axiosInstance.get('/api/community-posts');
-      } else {
-        const categoryNum = activeCategory === 'general' ? 1 : 2;
-        response = await axiosInstance.get(
-          `/api/community-posts/search?category=${categoryNum}`,
-        );
-      }
-
-      if (response.data.error) {
-        setErrorMessage(response.data.error);
-        setShowErrorModal(true);
-      } else {
-        const postsData =
-          activeCategory === 'all' ? response.data.data : response.data.posts;
-        const sortedPosts = postsData.sort((a, b) => {
-          const dateA = new Date(
-            ...a.created_at.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-          );
-          const dateB = new Date(
-            ...b.created_at.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-          );
-          return dateB - dateA;
-        });
-        setPosts(sortedPosts);
-      }
-    } catch (error) {
-      console.error('게시글 목록 불러오기 실패:', error);
-      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [accessToken, fetchPosts]);
 
   const handleLoginConfirm = () => {
     const currentPath = window.location.pathname;
@@ -92,12 +99,6 @@ export default function CommunityPage() {
   const handleWritePost = () => {
     router.push('/community/write');
   };
-
-  const categories = [
-    { id: 'all', name: '전체글' },
-    { id: 'general', name: '일반게시판' },
-    { id: 'lost', name: '분실물게시판' },
-  ];
 
   if (showLoginModal) {
     return (

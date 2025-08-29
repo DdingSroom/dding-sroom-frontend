@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '../../../libs/api/instance';
@@ -31,6 +31,7 @@ export default function PostDetailPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+
   const { accessToken, userId, rehydrate } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
@@ -43,30 +44,26 @@ export default function PostDetailPage() {
     setShowLoginModal(!accessToken);
   }, [accessToken]);
 
-  useEffect(() => {
-    if (accessToken && postId) {
-      fetchPostDetail();
-      fetchComments();
-    }
-  }, [accessToken, postId, fetchPostDetail, fetchComments]);
-
-  const fetchPostDetail = async () => {
+  const fetchPostDetail = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await axiosInstance.get('/api/community-posts');
 
-      if (response.data.error) {
+      if (response?.data?.error) {
         setErrorMessage(response.data.error);
         setShowErrorModal(true);
+        return;
+      }
+
+      const foundPost = (response?.data?.data ?? []).find(
+        (p) => p.id === parseInt(postId, 10),
+      );
+
+      if (foundPost) {
+        setPost(foundPost);
       } else {
-        const foundPost = response.data.data.find(
-          (p) => p.id === parseInt(postId),
-        );
-        if (foundPost) {
-          setPost(foundPost);
-        } else {
-          setErrorMessage('존재하지 않는 게시글입니다.');
-          setShowErrorModal(true);
-        }
+        setErrorMessage('존재하지 않는 게시글입니다.');
+        setShowErrorModal(true);
       }
     } catch (error) {
       console.error('게시글 불러오기 실패:', error);
@@ -75,29 +72,39 @@ export default function PostDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [postId]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const response = await axiosInstance.get(
         `/api/community-posts/comments/post/${postId}`,
       );
 
-      if (response.data.error) {
+      if (response?.data?.error) {
         setErrorMessage(response.data.error);
         setShowErrorModal(true);
-      } else {
-        const commentsData = response.data.data || [];
-        setComments(commentsData);
-        if (commentsData.length > 0) {
-          const anonymousMap = anonymizeUsers(commentsData);
-          setUserMap(anonymousMap);
-        }
+        return;
+      }
+
+      const commentsData = response?.data?.data ?? [];
+      setComments(commentsData);
+
+      if (commentsData.length > 0) {
+        const anonymousMap = anonymizeUsers(commentsData);
+        setUserMap(anonymousMap);
       }
     } catch (error) {
       console.error('댓글 불러오기 실패:', error);
     }
-  };
+  }, [postId]);
+
+  // ✅ 선언 후에 호출
+  useEffect(() => {
+    if (accessToken && postId) {
+      fetchPostDetail();
+      fetchComments();
+    }
+  }, [accessToken, postId, fetchPostDetail, fetchComments]);
 
   const handleLoginConfirm = () => {
     const currentPath = window.location.pathname;
@@ -112,13 +119,13 @@ export default function PostDetailPage() {
       const response = await axiosInstance.post(
         '/api/community-posts/comments',
         {
-          post_id: parseInt(postId),
+          post_id: parseInt(postId, 10),
           user_id: userId,
           comment_content: newComment.trim(),
         },
       );
 
-      if (response.data.error) {
+      if (response?.data?.error) {
         setErrorMessage(response.data.error);
         setShowErrorModal(true);
       } else {
@@ -140,12 +147,12 @@ export default function PostDetailPage() {
     try {
       const response = await axiosInstance.delete('/api/community-posts', {
         data: {
-          post_id: parseInt(postId),
+          post_id: parseInt(postId, 10),
           user_id: userId,
         },
       });
 
-      if (response.data.error) {
+      if (response?.data?.error) {
         setErrorMessage(response.data.error);
         setShowErrorModal(true);
       } else {
@@ -181,25 +188,20 @@ export default function PostDetailPage() {
     }
   };
 
-  const getCategoryName = (category) => {
-    return category === 1 ? '일반게시판' : '분실물게시판';
-  };
+  const getCategoryName = (category) =>
+    category === 1 ? '일반게시판' : '분실물게시판';
 
-  const getCategoryColor = () => {
-    return 'text-[#788cff]';
-  };
+  const getCategoryColor = () => 'text-[#788cff]';
 
   const isUpdated = (createdAt, updatedAt) => {
     if (!Array.isArray(createdAt) || !Array.isArray(updatedAt)) return false;
 
-    const createdTime = new Date(
-      ...createdAt.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-    ).getTime();
-    const updatedTime = new Date(
-      ...updatedAt.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-    ).getTime();
+    const ts = (arr) =>
+      new Date(
+        ...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
+      ).getTime();
 
-    return Math.abs(updatedTime - createdTime) > 1000;
+    return Math.abs(ts(updatedAt) - ts(createdAt)) > 1000;
   };
 
   if (showLoginModal) {
@@ -309,7 +311,7 @@ export default function PostDetailPage() {
                 <div key={comment.id} className="px-6">
                   <CommentItem
                     comment={comment}
-                    postId={parseInt(postId)}
+                    postId={parseInt(postId, 10)}
                     postAuthorId={post.user_id}
                     onCommentUpdate={fetchComments}
                     onError={(message) => {
