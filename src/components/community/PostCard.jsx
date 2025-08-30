@@ -5,70 +5,46 @@ import { useRouter } from 'next/navigation';
 const PostCard = ({ post }) => {
   const router = useRouter();
 
-  const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray)) return '';
-    const [year, month, day, hour, minute] = dateArray;
-    const date = new Date(year, month - 1, day, hour || 0, minute || 0);
-
+  const formatDate = (arr) => {
+    if (!Array.isArray(arr)) return '';
+    const [y, m, d, h, min] = arr;
+    const date = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
     const now = new Date();
-    const diffInMs = now - date;
-    const diffInHours = diffInMs / (1000 * 60 * 60);
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-    if (diffInHours < 24) {
-      if (diffInHours < 1) {
-        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-        return `${diffInMinutes}분 전`;
-      }
-      return `${Math.floor(diffInHours)}시간 전`;
-    } else if (diffInDays < 30) {
-      return `${Math.floor(diffInDays)}일 전`;
-    } else {
-      return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}`;
-    }
+    const diff = now - date;
+    const hrs = diff / (1000 * 60 * 60);
+    const days = diff / (1000 * 60 * 60 * 24);
+    if (hrs < 24)
+      return hrs < 1
+        ? `${Math.floor(diff / (1000 * 60))}분 전`
+        : `${Math.floor(hrs)}시간 전`;
+    if (days < 30) return `${Math.floor(days)}일 전`;
+    return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 
-  const getCategoryName = (category) => {
-    return category === 1 ? '일반게시판' : '분실물게시판';
-  };
-
-  const getCategoryColor = () => {
-    return 'text-[#788cff]';
-  };
-
-  const truncateContent = (content, maxLength = 100) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
-  };
-
-  const handleClick = () => {
-    router.push(`/community/${post.id}`);
-  };
+  const getCategoryName = (c) => (c === 1 ? '일반 게시판' : '분실물 게시판');
 
   return (
-    <div
-      onClick={handleClick}
-      className="bg-white border border-gray-200 rounded-xl p-5 mb-4 cursor-pointer hover:shadow-md hover:border-[#788cff]/20 transition-all duration-200 group"
+    <article
+      onClick={() => router.push(`/community/${post.id}`)}
+      className="cursor-pointer select-none bg-white px-4 py-3 border-b border-gray-200 active:bg-gray-50"
     >
-      <div className="flex items-center justify-between mb-3">
-        <div
-          className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getCategoryColor(post.category)} bg-[#788cff]/10 group-hover:bg-[#788cff]/15 transition-colors`}
-        >
-          {getCategoryName(post.category)}
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="text-xs text-[#788DFF] font-medium mb-1">
+            {getCategoryName(post.category)}
+          </div>
+          <h3 className="text-[15px] font-medium text-gray-900 leading-snug line-clamp-1">
+            {post.title}
+          </h3>
+          <p className="text-[13px] text-gray-600 line-clamp-1 mt-0.5">
+            {post.content}
+          </p>
         </div>
-        <div className="text-xs text-[#9b9998]">
+        <time className="ml-3 text-[12px] text-gray-400 whitespace-nowrap">
           {formatDate(post.created_at)}
-        </div>
+        </time>
       </div>
-
-      <h3 className="text-base font-bold text-[#37352f] mb-3 leading-relaxed group-hover:text-[#788cff] transition-colors line-clamp-2">
-        {post.title}
-      </h3>
-
-      <p className="text-sm text-[#73726e] leading-relaxed line-clamp-3">
-        {truncateContent(post.content, 100)}
-      </p>
-    </div>
+    </article>
   );
 };
 

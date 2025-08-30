@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import useTokenStore from '../../../../stores/useTokenStore';
 import axiosInstance from '../../../../libs/api/instance';
 import CommunityHeader from '@components/community/CommunityHeader';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
-import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
 
@@ -29,6 +28,7 @@ export default function EditPostPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+
   const { accessToken, userId, rehydrate } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
@@ -36,50 +36,42 @@ export default function EditPostPage() {
   useEffect(() => {
     rehydrate();
   }, [rehydrate]);
-
   useEffect(() => {
     setShowLoginModal(!accessToken);
   }, [accessToken]);
 
-  useEffect(() => {
-    if (accessToken && postId) {
-      fetchPost();
-    }
-  }, [accessToken, postId, fetchPost]);
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
-      const response = await axiosInstance.get('/api/community-posts');
-
-      if (response.data.error) {
-        setErrorMessage(response.data.error);
+      const res = await axiosInstance.get('/api/community-posts');
+      if (res.data.error) {
+        setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
-        const foundPost = response.data.data.find(
-          (p) => p.id === parseInt(postId),
-        );
-        if (foundPost) {
-          if (foundPost.user_id !== userId) {
-            setErrorMessage('게시글 수정 권한이 없습니다.');
-            setShowErrorModal(true);
-            return;
-          }
-          setTitle(foundPost.title);
-          setContent(foundPost.content);
-          setCategory(foundPost.category);
-        } else {
+        const found = res.data.data.find((p) => p.id === parseInt(postId));
+        if (!found) {
           setErrorMessage('존재하지 않는 게시글입니다.');
           setShowErrorModal(true);
+        } else if (found.user_id !== userId) {
+          setErrorMessage('게시글 수정 권한이 없습니다.');
+          setShowErrorModal(true);
+        } else {
+          setTitle(found.title);
+          setContent(found.content);
+          setCategory(found.category);
         }
       }
-    } catch (error) {
-      console.error('게시글 불러오기 실패:', error);
+    } catch (e) {
+      console.error('게시글 불러오기 실패:', e);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
       setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [postId, userId]);
+
+  useEffect(() => {
+    if (accessToken && postId) fetchPost();
+  }, [accessToken, postId, fetchPost]);
 
   const handleLoginConfirm = () => {
     const currentPath = window.location.pathname;
@@ -88,13 +80,11 @@ export default function EditPostPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
       setShowErrorModal(true);
       return;
     }
-
     if (!content.trim()) {
       setErrorMessage('내용을 입력해주세요.');
       setShowErrorModal(true);
@@ -103,22 +93,19 @@ export default function EditPostPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await axiosInstance.put('/api/community-posts', {
+      const res = await axiosInstance.put('/api/community-posts', {
         post_id: parseInt(postId),
         user_id: userId,
         title: title.trim(),
         content: content.trim(),
-        category: category,
+        category,
       });
-
-      if (response.data.error) {
-        setErrorMessage(response.data.error);
+      if (res.data.error) {
+        setErrorMessage(res.data.error);
         setShowErrorModal(true);
-      } else {
-        router.push(`/community/${postId}`);
-      }
-    } catch (error) {
-      console.error('게시글 수정 실패:', error);
+      } else router.push(`/community/${postId}`);
+    } catch (e) {
+      console.error('게시글 수정 실패:', e);
       setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
       setShowErrorModal(true);
     } finally {
@@ -131,15 +118,14 @@ export default function EditPostPage() {
     if (
       errorMessage.includes('권한이 없습니다') ||
       errorMessage.includes('존재하지 않는')
-    ) {
+    )
       router.push('/community');
-    }
   };
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <CommunityHeader title="게시글 수정" />
+      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+        <CommunityHeader title="커뮤니티" />
         <LoginRequiredModal
           isOpen={showLoginModal}
           onConfirm={handleLoginConfirm}
@@ -150,70 +136,60 @@ export default function EditPostPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <CommunityHeader title="게시글 수정" />
-        <div className="flex-1 flex justify-center items-center">
-          <div className="text-[#73726e]">로딩 중...</div>
+      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+        <CommunityHeader title="커뮤니티" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#788DFF] border-t-transparent" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <CommunityHeader title="게시글 수정" />
+    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <CommunityHeader title="커뮤니티" />
 
-      <main className="flex-1 p-4 pb-32">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <form onSubmit={handleSubmit} className="p-6 space-y-8">
+            {/* 카테고리 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-3">
+              <label className="block text-sm font-semibold text-gray-800 mb-3">
                 카테고리
               </label>
-              <div className="flex gap-4">
-                <label className="flex items-center cursor-pointer">
+              <div className="flex gap-3">
+                <label className="cursor-pointer">
                   <input
                     type="radio"
                     name="category"
                     value={1}
                     checked={category === 1}
                     onChange={(e) => setCategory(parseInt(e.target.value))}
-                    className="sr-only"
+                    className="peer sr-only"
                   />
-                  <div
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      category === 1
-                        ? 'bg-[#788cff] text-white border-[#788cff]'
-                        : 'bg-white text-[#73726e] border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    일반게시판
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                    일반 게시판
                   </div>
                 </label>
-                <label className="flex items-center cursor-pointer">
+                <label className="cursor-pointer">
                   <input
                     type="radio"
                     name="category"
                     value={2}
                     checked={category === 2}
                     onChange={(e) => setCategory(parseInt(e.target.value))}
-                    className="sr-only"
+                    className="peer sr-only"
                   />
-                  <div
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      category === 2
-                        ? 'bg-[#ff8c78] text-white border-[#ff8c78]'
-                        : 'bg-white text-[#73726e] border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    분실물게시판
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                    분실물 게시판
                   </div>
                 </label>
               </div>
             </div>
 
+            {/* 제목 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 제목
               </label>
               <input
@@ -221,40 +197,46 @@ export default function EditPostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px]"
                 disabled={isSubmitting}
                 maxLength={100}
               />
-              <div className="text-xs text-[#9b9998] mt-1 text-right">
+              <div className="mt-1 text-right text-[11px] text-gray-400">
                 {title.length}/100
               </div>
             </div>
 
+            {/* 내용 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="내용을 입력하세요"
-                rows={10}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all resize-none"
+                rows={12}
+                placeholder={`내용을 입력하세요...
+
+참고사항:
+- 서로를 존중하는 언어를 사용해주세요
+- 개인정보나 연락처는 공유하지 마세요`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px] leading-relaxed"
                 disabled={isSubmitting}
                 maxLength={1000}
               />
-              <div className="text-xs text-[#9b9998] mt-1 text-right">
+              <div className="mt-1 text-right text-[11px] text-gray-400">
                 {content.length}/1000
               </div>
             </div>
 
-            <div className="pt-4">
-              <Button
+            <div>
+              <button
                 type="submit"
                 disabled={isSubmitting || !title.trim() || !content.trim()}
-                text={isSubmitting ? '수정 중...' : '게시글 수정'}
-                className="w-full"
-              />
+                className="w-full py-3.5 rounded-lg text-white bg-[#788DFF] hover:bg-[#6177ff] font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? '게시글 수정 중…' : '수정 완료'}
+              </button>
             </div>
           </form>
         </div>
@@ -267,7 +249,6 @@ export default function EditPostPage() {
         content={errorMessage}
         showCancel={false}
       />
-
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />

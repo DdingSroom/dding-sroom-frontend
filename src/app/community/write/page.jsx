@@ -7,7 +7,6 @@ import axiosInstance from '../../../libs/api/instance';
 import CommunityHeader from '@components/community/CommunityHeader';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
-import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
 
@@ -34,7 +33,6 @@ export default function WritePostPage() {
   useEffect(() => {
     rehydrate();
   }, [rehydrate]);
-
   useEffect(() => {
     setShowLoginModal(!accessToken);
   }, [accessToken]);
@@ -46,13 +44,11 @@ export default function WritePostPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
       setShowErrorModal(true);
       return;
     }
-
     if (!content.trim()) {
       setErrorMessage('내용을 입력해주세요.');
       setShowErrorModal(true);
@@ -61,21 +57,18 @@ export default function WritePostPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await axiosInstance.post('/api/community-posts', {
+      const res = await axiosInstance.post('/api/community-posts', {
         user_id: userId,
         title: title.trim(),
         content: content.trim(),
-        category: category,
+        category,
       });
-
-      if (response.data.error) {
-        setErrorMessage(response.data.error);
+      if (res.data.error) {
+        setErrorMessage(res.data.error);
         setShowErrorModal(true);
-      } else {
-        router.push('/community');
-      }
-    } catch (error) {
-      console.error('게시글 작성 실패:', error);
+      } else router.push('/community');
+    } catch (e) {
+      console.error('게시글 작성 실패:', e);
       setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
       setShowErrorModal(true);
     } finally {
@@ -85,8 +78,8 @@ export default function WritePostPage() {
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <CommunityHeader title="게시글 작성" />
+      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+        <CommunityHeader title="커뮤니티" />
         <LoginRequiredModal
           isOpen={showLoginModal}
           onConfirm={handleLoginConfirm}
@@ -96,60 +89,50 @@ export default function WritePostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <CommunityHeader title="게시글 작성" />
+    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <CommunityHeader title="커뮤니티" />
 
-      <main className="flex-1 p-4 pb-32">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <form onSubmit={handleSubmit} className="p-6 space-y-8">
+            {/* 카테고리 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-3">
-                카테고리
+              <label className="block text-sm font-semibold text-gray-800 mb-3">
+                카테고리 선택
               </label>
-              <div className="flex gap-4">
-                <label className="flex items-center cursor-pointer">
+              <div className="flex gap-3">
+                <label className="cursor-pointer">
                   <input
                     type="radio"
                     name="category"
                     value={1}
                     checked={category === 1}
                     onChange={(e) => setCategory(parseInt(e.target.value))}
-                    className="sr-only"
+                    className="peer sr-only"
                   />
-                  <div
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      category === 1
-                        ? 'bg-[#788cff] text-white border-[#788cff]'
-                        : 'bg-white text-[#73726e] border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    일반게시판
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                    일반 게시판
                   </div>
                 </label>
-                <label className="flex items-center cursor-pointer">
+                <label className="cursor-pointer">
                   <input
                     type="radio"
                     name="category"
                     value={2}
                     checked={category === 2}
                     onChange={(e) => setCategory(parseInt(e.target.value))}
-                    className="sr-only"
+                    className="peer sr-only"
                   />
-                  <div
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      category === 2
-                        ? 'bg-[#ff8c78] text-white border-[#ff8c78]'
-                        : 'bg-white text-[#73726e] border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    분실물게시판
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                    분실물 게시판
                   </div>
                 </label>
               </div>
             </div>
 
+            {/* 제목 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 제목
               </label>
               <input
@@ -157,40 +140,46 @@ export default function WritePostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px]"
                 disabled={isSubmitting}
                 maxLength={100}
               />
-              <div className="text-xs text-[#9b9998] mt-1 text-right">
+              <div className="mt-1 text-right text-[11px] text-gray-400">
                 {title.length}/100
               </div>
             </div>
 
+            {/* 내용 */}
             <div>
-              <label className="block text-sm font-medium text-[#37352f] mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="내용을 입력하세요"
-                rows={10}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all resize-none"
+                placeholder={`내용을 입력하세요...
+
+참고사항:
+- 서로를 존중하는 언어를 사용해주세요
+- 개인정보나 연락처는 공유하지 마세요`}
+                rows={12}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px] leading-relaxed"
                 disabled={isSubmitting}
                 maxLength={1000}
               />
-              <div className="text-xs text-[#9b9998] mt-1 text-right">
+              <div className="mt-1 text-right text-[11px] text-gray-400">
                 {content.length}/1000
               </div>
             </div>
 
-            <div className="pt-4">
-              <Button
+            <div>
+              <button
                 type="submit"
                 disabled={isSubmitting || !title.trim() || !content.trim()}
-                text={isSubmitting ? '작성 중...' : '게시글 작성'}
-                className="w-full"
-              />
+                className="w-full py-3.5 rounded-lg text-white bg-[#788DFF] hover:bg-[#6177ff] font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? '게시글 작성 중…' : '게시글 발행하기'}
+              </button>
             </div>
           </form>
         </div>
@@ -203,7 +192,6 @@ export default function WritePostPage() {
         content={errorMessage}
         showCancel={false}
       />
-
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
