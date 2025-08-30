@@ -32,8 +32,8 @@ export default function CommunityPage() {
 
   const categories = [
     { id: 'all', name: '전체글' },
-    { id: 'general', name: '일반게시판' },
-    { id: 'lost', name: '분실물게시판' },
+    { id: 'general', name: '일반 게시판' },
+    { id: 'lost', name: '분실물 게시판' },
   ];
 
   const fetchPosts = useCallback(async () => {
@@ -44,7 +44,6 @@ export default function CommunityPage() {
       if (activeCategory === 'all') {
         response = await axiosInstance.get('/api/community-posts');
       } else {
-        // 일반:1, 분실물:2
         const categoryNum = activeCategory === 'general' ? 1 : 2;
         response = await axiosInstance.get(
           `/api/community-posts/search?category=${categoryNum}`,
@@ -101,8 +100,8 @@ export default function CommunityPage() {
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <CommunityHeader />
+      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+        <CommunityHeader showSearch />
         <LoginRequiredModal
           isOpen={showLoginModal}
           onConfirm={handleLoginConfirm}
@@ -112,82 +111,84 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 flex flex-col">
-      <CommunityHeader />
+    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <CommunityHeader showSearch />
 
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100/50 sticky top-0 z-10 shadow-sm">
+      {/* 상단 카테고리 탭 */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`relative flex-1 py-4 text-sm md:text-base font-semibold transition-all duration-300 border-b-2 group touch-manipulation ${
-                  activeCategory === category.id
-                    ? 'text-[#788cff] border-[#788cff]'
-                    : 'text-[#9b9998] border-transparent hover:text-[#73726e] hover:border-gray-300'
-                }`}
-                aria-pressed={activeCategory === category.id}
-                role="tab"
-              >
-                <span className="relative z-10">{category.name}</span>
-                {activeCategory === category.id && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#788cff]/5 to-transparent rounded-t-lg" />
-                )}
-              </button>
-            ))}
+            {categories.map((category) => {
+              const active = activeCategory === category.id;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`relative flex-1 py-3 text-sm md:text-base font-medium transition-colors
+                    ${active ? 'text-[#4c6fff]' : 'text-gray-500 hover:text-gray-700'}`}
+                  role="tab"
+                  aria-pressed={active}
+                >
+                  {category.name}
+                  <span
+                    className={`absolute left-0 right-0 -bottom-px h-[2px] 
+                    ${active ? 'bg-[#4c6fff]' : 'bg-transparent'}`}
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6 pb-32">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#788cff] border-t-transparent"></div>
-              <div className="text-[#73726e] font-medium">
+          <div className="flex justify-center items-center py-16">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4c6fff] border-t-transparent" />
+              <div className="text-gray-600 text-sm">
                 게시글을 불러오는 중...
               </div>
             </div>
           </div>
         ) : posts.length === 0 ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/20 shadow-sm max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#788cff]/10 to-[#ff8c78]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center bg-white rounded-2xl p-10 border border-gray-200 shadow-sm max-w-md">
+              <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-8 h-8 text-[#788cff]"
+                  className="w-7 h-7 text-[#4c6fff]"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
                   <path
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
               </div>
-              <p className="text-[#37352f] font-semibold mb-2">
+              <p className="text-gray-800 font-semibold mb-1">
                 아직 게시글이 없습니다
               </p>
-              <p className="text-sm text-[#9b9998] mb-6">
+              <p className="text-sm text-gray-500 mb-5">
                 첫 번째 게시글을 작성해보세요!
               </p>
               <button
                 onClick={handleWritePost}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#788cff] text-white text-sm font-semibold rounded-xl hover:bg-[#6a7dff] transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4c6fff] text-white text-sm font-semibold rounded-lg hover:bg-[#3f58e6] transition-shadow shadow-sm"
               >
                 <svg
                   className="w-4 h-4"
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
                   <path
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
@@ -196,14 +197,14 @@ export default function CommunityPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4 md:space-y-6">
-            <div className="mb-6">
-              <h2 className="text-lg font-bold text-[#37352f] mb-2">
-                전체 게시글 {posts.length}개
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-800">
+                전체 게시글{' '}
+                <span className="text-[#4c6fff]">{posts.length}</span>개
               </h2>
-              <div className="w-12 h-1 bg-gradient-to-r from-[#788cff] to-[#6a7dff] rounded-full"></div>
             </div>
-            <div className="grid gap-4 md:gap-6">
+            <div className="divide-y divide-gray-200">
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
@@ -212,25 +213,28 @@ export default function CommunityPage() {
         )}
       </main>
 
-      <div className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50">
-        <button
-          onClick={handleWritePost}
-          className="w-14 h-14 bg-[#788cff] rounded-full flex items-center justify-center shadow-lg hover:bg-[#6a7dff] transition-all duration-200 hover:scale-105"
-        >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="pointer-events-none fixed inset-x-0 bottom-24 md:bottom-8 z-50">
+        <div className="pointer-events-auto max-w-4xl mx-auto px-4 flex justify-end">
+          <button
+            onClick={handleWritePost}
+            aria-label="새 글 작성"
+            className="w-14 h-14 rounded-full bg-[#788DFF] text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </button>
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <Modal
