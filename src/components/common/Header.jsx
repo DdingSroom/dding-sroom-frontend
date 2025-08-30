@@ -41,15 +41,8 @@ const Header = () => {
     <header className="flex justify-between items-center px-6 py-4 pt-12 bg-transparent">
       <img src="/static/icons/logo.svg" alt="logo" className="h-12" />
       <div className="flex items-center gap-4">
-        {recentNotificationCount > 0 && (
-          <div className="relative">
-            <span className="text-xs text-red-500 font-medium mr-1">
-              new {recentNotificationCount}
-            </span>
-          </div>
-        )}
         <button
-          className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+          className="relative p-2 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:scale-105"
           onClick={handleClickNotification}
         >
           <img
@@ -57,6 +50,18 @@ const Header = () => {
             alt="notification"
             className="h-6 w-6"
           />
+          {recentNotificationCount > 0 && (
+            <div className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center">
+              <span className="relative flex items-center justify-center">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-red-400 rounded-full min-w-[18px] h-4 shadow-lg">
+                  {recentNotificationCount > 99
+                    ? '99+'
+                    : recentNotificationCount}
+                </span>
+              </span>
+            </div>
+          )}
         </button>
         <button
           className="w-9 h-9 bg-[#788DFF] rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-[#6a7dff] transition-colors shadow-sm"

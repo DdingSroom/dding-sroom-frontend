@@ -82,28 +82,76 @@ export default function NotificationList() {
         <Header />
       </div>
 
-      <div className="flex flex-col min-h-screen bg-[#f9fafb] px-4 pb-20">
-        <div className="max-w-2xl mx-auto w-full">
-          <div className="py-6">
-            <h1 className="text-xl font-bold text-gray-800 mb-6">공지사항</h1>
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] px-4 pb-20">
+        <div className="max-w-4xl mx-auto w-full">
+          <div className="py-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#788cff] rounded-2xl mb-4 shadow-lg">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 17h5l-5 5v-5zM9 17H4l5 5v-5zM12 3v14"
+                  />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                공지사항
+              </h1>
+              <p className="text-gray-600">
+                중요한 소식과 업데이트를 확인하세요.
+              </p>
+            </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {isLoading ? (
-                <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
-                  로딩 중...
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-4">
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-[#788cff] rounded-full animate-spin"></div>
+                  </div>
+                  <p className="text-gray-500 font-medium">
+                    공지사항을 불러오는 중...
+                  </p>
                 </div>
               ) : notifications.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
-                  작성된 공지사항이 없습니다.
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-50 rounded-full mb-4">
+                    <svg
+                      className="w-8 h-8 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    아직 공지사항이 없습니다
+                  </h3>
+                  <p className="text-gray-500">
+                    새로운 공지사항이 등록되면 이곳에 표시됩니다
+                  </p>
                 </div>
               ) : (
-                notifications.map((notification) => (
+                notifications.map((notification, index) => (
                   <UserNotificationCard
                     key={notification.id}
                     notification={notification}
                     onViewClick={handleViewNotification}
                     formatDate={formatDate}
                     truncateContent={truncateContent}
+                    index={index}
                   />
                 ))
               )}
@@ -117,47 +165,129 @@ export default function NotificationList() {
       <FooterNav />
 
       {showDetailModal && selectedNotification && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-lg font-bold text-gray-900 pr-4">
-                  {selectedNotification.title}
-                </h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full mx-4 max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="sticky top-0 bg-[#788cff] px-6 py-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-white font-semibold">
+                    공지사항 상세
+                  </span>
+                </div>
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-all duration-200"
                 >
-                  ✕
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
+            </div>
 
-              <div className="mb-4 pb-4 border-b border-gray-200">
-                <div className="flex items-center text-xs text-gray-500 gap-3">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                    작성자: 관리자
-                  </span>
-                  <span>
-                    작성일: {formatDate(selectedNotification.createdAt)}
-                  </span>
-                  <span>조회수: {selectedNotification.viewCount}</span>
+            <div className="p-8 overflow-y-auto max-h-[calc(90vh-80px)]">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
+                  {selectedNotification.title}
+                </h2>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-[#788cff]/10 rounded-full">
+                    <svg
+                      className="w-4 h-4 text-[#788cff]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    <span className="text-gray-700 font-medium">관리자</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3a4 4 0 118 0v4m-4 9v2m0-6h.01M12 21a9 9 0 100-18 9 9 0 000 18z"
+                      />
+                    </svg>
+                    <span>{formatDate(selectedNotification.createdAt)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    <span>조회수 {selectedNotification.viewCount}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[300px]">
-                  <p className="text-sm text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl p-6 border border-gray-200">
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-800 whitespace-pre-wrap break-words leading-relaxed text-base">
                     {selectedNotification.content}
                   </p>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-4 border-t border-gray-200">
+              <div className="flex justify-center pt-8">
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-sm"
+                  className="px-8 py-3 bg-[#788cff] text-white rounded-xl hover:bg-[#6a7dff] font-semibold shadow-lg"
                 >
-                  닫기
+                  확인
                 </button>
               </div>
             </div>
@@ -173,34 +303,118 @@ function UserNotificationCard({
   onViewClick,
   formatDate,
   truncateContent,
+  index,
 }) {
+  const isNew = index < 3;
+
   return (
     <article
-      className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md cursor-pointer"
+      className="group relative rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg overflow-hidden cursor-pointer"
       onClick={() => onViewClick(notification)}
     >
-      <div
-        className="h-1"
-        style={{ backgroundColor: 'var(--primary-color)' }}
-      />
+      <div className="absolute inset-0 bg-[#788cff]/5 opacity-0 group-hover:opacity-100" />
 
-      <div className="p-4">
-        <div className="flex items-center gap-2 flex-wrap mb-3">
-          <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-blue-50 text-blue-700 font-medium">
-            공지사항
-          </span>
-        </div>
+      <div className="relative">
+        <div className="h-1 bg-[#788cff]" />
 
-        <h3 className="font-medium text-base text-gray-900 break-all mb-2">
-          {notification.title}
-        </h3>
-        <p className="text-sm text-gray-600 break-words line-clamp-2 mb-3">
-          {truncateContent(notification.content)}
-        </p>
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-[#788cff] text-white shadow-sm">
+                <svg
+                  className="w-3 h-3 mr-1.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                공지사항
+              </span>
+              {isNew && (
+                <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full bg-red-400 text-white">
+                  NEW
+                </span>
+              )}
+            </div>
 
-        <div className="flex items-center text-xs text-gray-400 gap-3">
-          <span>작성일: {formatDate(notification.createdAt)}</span>
-          <span>조회수: {notification.viewCount}</span>
+            <div className="text-right">
+              <div className="text-xs text-gray-500 mb-1">
+                {formatDate(notification.createdAt)}
+              </div>
+              <div className="flex items-center text-xs text-gray-400 gap-2">
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                <span>{notification.viewCount}</span>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="font-bold text-lg text-gray-900 break-all mb-3 group-hover:text-[#788cff]">
+            {notification.title}
+          </h3>
+
+          <p className="text-gray-600 break-words line-clamp-3 leading-relaxed mb-4">
+            {truncateContent(notification.content, 120)}
+          </p>
+
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div className="flex items-center text-xs text-gray-500 gap-4">
+              <span className="inline-flex items-center gap-1">
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                관리자
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-medium text-[#788cff] group-hover:text-[#6a7dff]">
+              자세히 보기
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </article>
