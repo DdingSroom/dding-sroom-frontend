@@ -9,6 +9,16 @@ import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
@@ -104,8 +114,15 @@ export default function AccountInfo() {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/auth/logout');
+      await axiosInstance.post('/logout', null, {
+        withCredentials: true,
+      });
     } catch (error) {
+      if (error?.response?.status === 403) {
+        console.warn(
+          'CSRF 검증 실패로 로그아웃이 거부되었습니다. 쿠키/도메인/HTTPS/CORS 설정을 확인하세요.',
+        );
+      }
       console.error('로그아웃 API 호출 실패:', error);
     } finally {
       clearTokens();
@@ -173,6 +190,17 @@ export default function AccountInfo() {
                 <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
               </div>
 
+              {/* 내 커뮤니티 관리 섹션 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div className="px-6 py-5 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-[#37352f]">
+                    내 커뮤니티 관리
+                  </h2>
+                </div>
+                <MyPageBlock name="내가 작성한 글" linkPath="/my/posts" />
+                <MyPageBlock name="내가 작성한 댓글" linkPath="/my/comments" />
+              </div>
+
               {/* 개인정보 보호 섹션 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100">
@@ -214,8 +242,6 @@ export default function AccountInfo() {
         onClose={() => setOpen(false)}
         onSubmit={handleUsernameChange}
         text={submitting ? '수정 중…' : '수정'}
-        // Modal 컴포넌트가 지원한다면 disabled 전파 권장:
-        // disabled={submitting || !newName.trim() || newName.trim() === (userInfo.name || '')}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
@@ -282,6 +308,8 @@ export default function AccountInfo() {
       </div>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }
