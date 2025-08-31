@@ -11,7 +11,14 @@ const MAX_CONTENT = 3000;
 const MAX_FILES = 5;
 const MAX_TOTAL_SIZE = 30 * 1024 * 1024;
 
-const categories = ['분실물', '기물파손', '시설고장', '소음공해', '기타'];
+const categories = [
+  '분실물',
+  '기물 파손',
+  '시설 고장',
+  '소음 공해',
+  '미예약 사용자 신고',
+  '기타',
+];
 const places = [
   '스터디룸 1',
   '스터디룸 2',
