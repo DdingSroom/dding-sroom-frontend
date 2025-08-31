@@ -37,9 +37,18 @@ const Header = () => {
     router.push('/notifications');
   };
 
+  const handleClickLogo = () => {
+    router.push('/');
+  };
+
   return (
     <header className="flex justify-between items-center px-6 py-4 pt-12 bg-transparent">
-      <img src="/static/icons/logo.svg" alt="logo" className="h-12" />
+      <img
+        src="/static/icons/logo.svg"
+        alt="logo"
+        className="h-12 cursor-pointer"
+        onClick={handleClickLogo}
+      />
       <div className="flex items-center gap-4">
         <button
           className="relative p-2 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:scale-105"
