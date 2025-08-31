@@ -141,7 +141,7 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
+      <main className="relative flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
             <div className="flex flex-col items-center gap-3">
@@ -211,9 +211,37 @@ export default function CommunityPage() {
             </div>
           </div>
         )}
+
+        <div className="hidden md:block">
+          <div className="pointer-events-auto absolute right-4 bottom-1 z-50">
+            <button
+              onClick={handleWritePost}
+              aria-label="새 글 작성"
+              className="w-14 h-14 rounded-full bg-[#788DFF] text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+            >
+              <svg
+                className="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </main>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 md:bottom-8 z-50">
+      {/* Mobile: 뷰포트 기준 fixed (조금 더 위) */}
+      <div
+        className="md:hidden pointer-events-none fixed inset-x-0 z-50"
+        style={{ bottom: 'calc(92px + env(safe-area-inset-bottom, 0px))' }}
+      >
         <div className="pointer-events-auto max-w-4xl mx-auto px-4 flex justify-end">
           <button
             onClick={handleWritePost}
