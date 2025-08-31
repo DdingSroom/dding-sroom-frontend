@@ -141,7 +141,6 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      {/* 데스크톱 FAB의 기준이 되도록 relative 추가 */}
       <main className="relative flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
