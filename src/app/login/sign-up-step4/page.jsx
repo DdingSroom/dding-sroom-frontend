@@ -4,7 +4,17 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
 import CustomizedStepper from './customizedStepper';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 function SignUpStep4() {
   const searchParams = useSearchParams();
@@ -57,6 +67,8 @@ function SignUpStep4() {
       </main>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }

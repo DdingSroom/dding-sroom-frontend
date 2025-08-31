@@ -9,6 +9,16 @@ import MyPageBlock from '@components/common/MyPageBlock';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
@@ -293,6 +303,8 @@ export default function AccountInfo() {
       </div>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }

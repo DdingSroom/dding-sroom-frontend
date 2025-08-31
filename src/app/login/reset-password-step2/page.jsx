@@ -5,6 +5,16 @@ import { isValidPassword } from '../../../constants/regex';
 import axiosInstance from '../../../libs/api/instance';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function ResetPassword2() {
   const [email, setEmail] = useState('');
@@ -139,6 +149,8 @@ export default function ResetPassword2() {
 
       {/* 푸터: 여백 없이 하단 고정 */}
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }

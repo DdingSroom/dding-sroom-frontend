@@ -5,6 +5,16 @@ import { strictEmailRegex } from '../../../constants/regex';
 import axiosInstance from '../../../libs/api/instance';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function ResetPassWord1() {
   const [email, setEmail] = useState('');
@@ -285,6 +295,8 @@ export default function ResetPassWord1() {
       </main>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }
