@@ -5,10 +5,20 @@ import Link from 'next/link';
 import { jwtDecode } from 'jwt-decode';
 import Button from '../../components/common/Button';
 import PrivacyPolicyFooter from '../../components/common/PrivacyPolicyFooter';
+import FooterNav from '../../components/common/FooterNav';
 import { isValidPassword, strictEmailRegex } from '../../constants/regex';
 import useTokenStore from '../../stores/useTokenStore';
 import axiosInstance, { setAccessToken } from '../../libs/api/instance';
 import { getLoginErrorMessage } from '../../utils/errorMessages';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -139,6 +149,7 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* 본문 */}
       <div className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
           <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
@@ -245,6 +256,8 @@ function LoginForm() {
       </div>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }

@@ -3,13 +3,16 @@ const path = require('path');
 
 const isProd = process.env.NODE_ENV === 'production';
 
-module.exports = {
+const nextConfig = {
   pageExtensions: ['js', 'jsx', 'html'],
 
-  // 프로덕션 빌드에서만 console 제거 (error는 유지)
+  // 프로덕션 빌드에서 모든 console.* 제거
   compiler: {
-    removeConsole: isProd ? { exclude: ['error'] } : false,
+    removeConsole: isProd,
   },
+
+  // 프로덕션에서 소스맵 노출 방지
+  productionBrowserSourceMaps: false,
 
   experimental: {
     turbo: {
@@ -40,3 +43,5 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = nextConfig;

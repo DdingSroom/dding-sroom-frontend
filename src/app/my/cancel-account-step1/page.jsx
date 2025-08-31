@@ -10,6 +10,16 @@ import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter'
 import MyPageHeader from '@components/common/MyPageHeader';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);
@@ -186,6 +196,8 @@ export default function CancelAccountStep1() {
         </main>
 
         <PrivacyPolicyFooter />
+        <BottomSafeSpacer height={64} />
+        <FooterNav />
       </div>
 
       <LoginRequiredModal

@@ -1,15 +1,35 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import InfoModal from './InfoModal';
+import useTokenStore from '../../stores/useTokenStore';
+import LoginRequiredModal from './LoginRequiredModal';
 
 const FooterNav = () => {
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const router = useRouter();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { accessToken } = useTokenStore();
+
+  const handleSuggestClick = () => {
+    if (!accessToken) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    router.push('/suggest');
+  };
+
+  const handleLoginConfirm = () => {
+    setIsLoginModalOpen(false);
+    router.push('/login?redirect=' + encodeURIComponent('/suggest'));
+  };
 
   return (
     <>
       <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[600px] flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
-        <button className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group">
+        <button
+          className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
+          onClick={() => router.push('/')}
+        >
           <div className="relative w-6 h-6">
             <img
               src="/static/icons/reservation_icon.svg"
@@ -29,7 +49,7 @@ const FooterNav = () => {
 
         <button
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => setIsInfoModalOpen(true)}
+          onClick={() => router.push('/community')}
         >
           <div className="relative w-6 h-6">
             <img
@@ -50,7 +70,7 @@ const FooterNav = () => {
 
         <button
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => setIsInfoModalOpen(true)}
+          onClick={handleSuggestClick}
         >
           <div className="relative w-6 h-6">
             <img
@@ -65,14 +85,14 @@ const FooterNav = () => {
             />
           </div>
           <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
-            건의하기
+            건의/신고
           </span>
         </button>
       </footer>
 
-      <InfoModal
-        isOpen={isInfoModalOpen}
-        onClose={() => setIsInfoModalOpen(false)}
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onConfirm={handleLoginConfirm}
       />
     </>
   );

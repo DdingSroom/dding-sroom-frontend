@@ -5,7 +5,17 @@ import axios from 'axios';
 import useSignupStore from '../../../stores/useSignupStore';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
 import CustomizedStepper from './customizedStepper';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 const NAME_DRAFT_KEY = 'signup_name_draft';
 
@@ -180,6 +190,8 @@ export default function SignUpStep3() {
       </main>
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }
