@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
@@ -23,37 +23,67 @@ export default function AdminDashboard() {
       router.push('/admin/login');
       return;
     }
-
     try {
       const decoded = jwtDecode(accessToken);
       if (decoded.role !== 'ROLE_ADMIN') {
         router.push('/admin/login');
-        return;
       }
     } catch (error) {
       console.error('토큰 디코드 오류:', error);
       router.push('/admin/login');
-      return;
     }
   }, [accessToken, router]);
 
-  const fetchReservations = async () => {
+  const formatTimeRange = useCallback((start, end) => {
+    const formatHM = (arr) => {
+      if (!Array.isArray(arr)) return '';
+      const [, , , h = 0, m = 0] = arr;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    };
+    return `${formatHM(start)} ~ ${formatHM(end)}`;
+  }, []);
+
+  const formatTimestamp = useCallback((arr) => {
+    if (!Array.isArray(arr)) return '';
+    const [y, mo, d, h = 0, m = 0] = arr;
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }, []);
+
+  const normalizePost = useCallback((raw) => {
+    return {
+      id: raw?.id ?? raw?.post_id ?? raw?.postId,
+      title: raw?.title ?? raw?.post_title ?? '(제목 없음)',
+      author: raw?.author ?? raw?.user_name ?? raw?.userName ?? '익명',
+      content: raw?.content ?? raw?.post_content ?? '',
+      createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
+      commentCount: raw?.comment_count ?? raw?.commentCount ?? 0,
+    };
+  }, []);
+
+  const normalizeSuggestion = useCallback((raw) => {
+    return {
+      id: raw?.id ?? raw?.suggest_id ?? raw?.suggestionId,
+      userId: raw?.userId ?? raw?.user_id ?? raw?.uid,
+      category: raw?.category ?? '',
+      location: raw?.location ?? '',
+      title: raw?.title ?? raw?.suggest_title ?? '',
+      content: raw?.content ?? raw?.suggest_content ?? '',
+      createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
+    };
+  }, []);
+
+  const fetchReservations = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/admin/reservations');
-      console.log('전체 예약 응답:', response);
-
       const reservations = response.data.reservations || [];
       const today = new Date();
       const tomorrow = new Date();
       tomorrow.setDate(today.getDate() + 1);
 
-      const isSameDay = (dateArr1, dateObj2) => {
-        return (
-          dateArr1[0] === dateObj2.getFullYear() &&
-          dateArr1[1] === dateObj2.getMonth() + 1 &&
-          dateArr1[2] === dateObj2.getDate()
-        );
-      };
+      const isSameDay = (dateArr1, dateObj2) =>
+        dateArr1[0] === dateObj2.getFullYear() &&
+        dateArr1[1] === dateObj2.getMonth() + 1 &&
+        dateArr1[2] === dateObj2.getDate();
 
       const todayFiltered = reservations.filter((r) =>
         isSameDay(r.startTime, today),
@@ -61,61 +91,20 @@ export default function AdminDashboard() {
       const tomorrowFiltered = reservations.filter((r) =>
         isSameDay(r.startTime, tomorrow),
       );
-
       const getRandomThree = (arr) =>
-        arr.sort(() => 0.5 - Math.random()).slice(0, 3);
+        arr
+          .slice()
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3);
 
       setTodayReservations(getRandomThree(todayFiltered));
       setTomorrowReservations(getRandomThree(tomorrowFiltered));
     } catch (err) {
       console.error('예약 목록 불러오기 실패:', err);
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    fetchReservations();
-    fetchCommunityData();
-    fetchSuggestionsData();
-    fetchRoomData();
-
-    // 스터디룸 상태 실시간 업데이트를 위한 폴링 (30초마다)
-    const roomStatusInterval = setInterval(() => {
-      fetchRoomData();
-    }, 30000);
-
-    // 페이지가 포커스될 때 스터디룸 상태 새로고침
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchRoomData();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', fetchRoomData);
-
-    return () => {
-      clearInterval(roomStatusInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', fetchRoomData);
-    };
-  }, [fetchCommunityData, fetchSuggestionsData]);
-
-  const formatTimeRange = (start, end) => {
-    const formatHM = (arr) => {
-      if (!Array.isArray(arr)) return '';
-      const [, , , h = 0, m = 0] = arr;
-      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    };
-    return `${formatHM(start)} ~ ${formatHM(end)}`;
-  };
-
-  const formatTimestamp = (arr) => {
-    if (!Array.isArray(arr)) return '';
-    const [y, mo, d, h = 0, m = 0] = arr;
-    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-  };
-
-  const fetchCommunityData = async () => {
+  const fetchCommunityData = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/community-posts', {
         params: { page: 0, size: 3 },
@@ -126,9 +115,9 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('커뮤니티 데이터 불러오기 실패:', err);
     }
-  };
+  }, [normalizePost]);
 
-  const fetchSuggestionsData = async () => {
+  const fetchSuggestionsData = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/suggestions', {
         params: { is_answered: 'false' },
@@ -142,57 +131,60 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('건의 데이터 불러오기 실패:', err);
     }
-  };
+  }, [normalizeSuggestion]);
 
-  const fetchRoomData = async () => {
+  const fetchRoomData = useCallback(async () => {
     try {
       const roomIds = [1, 2, 3, 4, 5];
-      const roomPromises = roomIds.map(async (id) => {
-        try {
-          const response = await axiosInstance.get(`/admin/rooms/${id}`);
-          const data = response?.data?.data || {};
-          return {
-            id,
-            status: data.status || 'IDLE',
-            name: data.name || `스터디룸 ${id}`,
-          };
-        } catch (err) {
-          return {
-            id,
-            status: 'IDLE',
-            name: `스터디룸 ${id}`,
-          };
-        }
-      });
-      const rooms = await Promise.all(roomPromises);
+      const rooms = await Promise.all(
+        roomIds.map(async (id) => {
+          try {
+            const response = await axiosInstance.get(`/admin/rooms/${id}`);
+            const data = response?.data?.data || {};
+            return {
+              id,
+              status: data.status || 'IDLE',
+              name: data.name || `스터디룸 ${id}`,
+            };
+          } catch {
+            return { id, status: 'IDLE', name: `스터디룸 ${id}` };
+          }
+        }),
+      );
       setRoomData(rooms);
     } catch (err) {
       console.error('스터디룸 데이터 불러오기 실패:', err);
     }
-  };
+  }, []);
 
-  const normalizePost = (raw) => {
-    return {
-      id: raw?.id ?? raw?.post_id ?? raw?.postId,
-      title: raw?.title ?? raw?.post_title ?? '(제목 없음)',
-      author: raw?.author ?? raw?.user_name ?? raw?.userName ?? '익명',
-      content: raw?.content ?? raw?.post_content ?? '',
-      createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
-      commentCount: raw?.comment_count ?? raw?.commentCount ?? 0,
-    };
-  };
+  useEffect(() => {
+    // 최초 로드
+    fetchReservations();
+    fetchCommunityData();
+    fetchSuggestionsData();
+    fetchRoomData();
 
-  const normalizeSuggestion = (raw) => {
-    return {
-      id: raw?.id ?? raw?.suggest_id ?? raw?.suggestionId,
-      userId: raw?.userId ?? raw?.user_id ?? raw?.uid,
-      category: raw?.category ?? '',
-      location: raw?.location ?? '',
-      title: raw?.title ?? raw?.suggest_title ?? '',
-      content: raw?.content ?? raw?.suggest_content ?? '',
-      createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
+    // 30초 폴링
+    const roomStatusInterval = setInterval(fetchRoomData, 30000);
+
+    // 탭 활성화 시 갱신
+    const handleVisibilityChange = () => {
+      if (!document.hidden) fetchRoomData();
     };
-  };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', fetchRoomData);
+
+    return () => {
+      clearInterval(roomStatusInterval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', fetchRoomData);
+    };
+  }, [
+    fetchReservations,
+    fetchCommunityData,
+    fetchSuggestionsData,
+    fetchRoomData,
+  ]);
 
   return (
     <div className="w-full min-h-screen bg-gray-50 px-8 py-6">
@@ -207,6 +199,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-3 gap-6">
+        {/* 날짜별 예약 현황 */}
         <div className="col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-semibold text-[#37352f]">
@@ -219,6 +212,7 @@ export default function AdminDashboard() {
               더보기 →
             </button>
           </div>
+
           <div className="grid grid-cols-2 gap-6">
             <div>
               <h3 className="text-sm font-semibold mb-4 text-[#37352f] pb-2 border-b border-gray-100">
