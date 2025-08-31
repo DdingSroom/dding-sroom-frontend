@@ -6,6 +6,16 @@ import MyPageHeader from '@components/common/MyPageHeader';
 import ReservationList from '@components/common/ReservationList';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '../../../components/common/FooterNav';
+
+function BottomSafeSpacer({ height = 64 }) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{ height: `calc(${height}px + env(safe-area-inset-bottom, 0px))` }}
+    />
+  );
+}
 
 export default function ReservationInfo() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -42,6 +52,8 @@ export default function ReservationInfo() {
       />
 
       <PrivacyPolicyFooter />
+      <BottomSafeSpacer height={64} />
+      <FooterNav />
     </div>
   );
 }
