@@ -114,8 +114,15 @@ export default function AccountInfo() {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/auth/logout');
+      await axiosInstance.post('/logout', null, {
+        withCredentials: true,
+      });
     } catch (error) {
+      if (error?.response?.status === 403) {
+        console.warn(
+          'CSRF 검증 실패로 로그아웃이 거부되었습니다. 쿠키/도메인/HTTPS/CORS 설정을 확인하세요.',
+        );
+      }
       console.error('로그아웃 API 호출 실패:', error);
     } finally {
       clearTokens();
@@ -235,8 +242,6 @@ export default function AccountInfo() {
         onClose={() => setOpen(false)}
         onSubmit={handleUsernameChange}
         text={submitting ? '수정 중…' : '수정'}
-        // Modal 컴포넌트가 지원한다면 disabled 전파 권장:
-        // disabled={submitting || !newName.trim() || newName.trim() === (userInfo.name || '')}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
