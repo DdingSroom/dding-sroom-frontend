@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
 import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
@@ -42,6 +42,13 @@ export default function SuggestHistoryPage() {
     }
   }, [accessToken]);
 
+  const toArray = (data) => {
+    if (Array.isArray(data?.suggestions)) return data.suggestions;
+    if (Array.isArray(data?.data)) return data.data;
+    if (Array.isArray(data)) return data;
+    return [];
+  };
+
   const fetchMine = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -50,18 +57,27 @@ export default function SuggestHistoryPage() {
         ? `/api/suggestions?user_id=${encodeURIComponent(userId)}`
         : '/api/suggestions';
       const res = await axiosInstance.get(url);
-      const raw = res?.data?.suggestions ?? res?.data ?? [];
+
+      const raw = toArray(res?.data);
       const list = raw
         .map(normalizeSuggest)
         .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
+
       setItems(list);
     } catch (e) {
-      setError(
-        e?.response?.data?.message ||
-          e?.response?.data?.error ||
-          e?.message ||
-          '내역을 불러오지 못했습니다.',
-      );
+      const status = e?.response?.status;
+
+      if (status === 403 || status === 404) {
+        setItems([]);
+        setError('');
+      } else {
+        setError(
+          e?.response?.data?.message ||
+            e?.response?.data?.error ||
+            e?.message ||
+            '내역을 불러오지 못했습니다.',
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -83,7 +99,10 @@ export default function SuggestHistoryPage() {
   }, [items]);
 
   const dateKeys = useMemo(
-    () => Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a)),
+    () =>
+      Object.keys(grouped)
+        .filter(Boolean)
+        .sort((a, b) => new Date(b) - new Date(a)),
     [grouped],
   );
 
@@ -120,6 +139,8 @@ export default function SuggestHistoryPage() {
         {loading && (
           <div className="px-6 py-8 text-[var(--text-muted)]">로딩중…</div>
         )}
+
+        {/* 에러는 진짜 실패 때만 표시. 403/404는 빈 상태로 처리 */}
         {error && <div className="px-6 py-8 text-red-500">{error}</div>}
 
         {!loading &&
