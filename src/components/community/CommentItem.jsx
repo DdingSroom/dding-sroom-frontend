@@ -125,14 +125,14 @@ const CommentItem = ({
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="대댓글을 입력하세요..."
-              className="flex-1 rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-[#788DFF] focus:ring-[#788DFF]/20"
+              className="flex-1 min-w-0 rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-[#788DFF] focus:ring-[#788DFF]/20"
               disabled={isSubmitting}
               maxLength={300}
             />
             <button
               onClick={handleReplySubmit}
               disabled={!replyContent.trim() || isSubmitting}
-              className="px-3 py-2 rounded-md text-sm text-white bg-[#788DFF] hover:bg-[#6177ff] disabled:bg-gray-300"
+              className="shrink-0 whitespace-nowrap min-w-[56px] px-3 py-2 rounded-md text-sm text-white bg-[#788DFF] hover:bg-[#6177ff] disabled:bg-gray-300"
             >
               등록
             </button>
