@@ -11,6 +11,7 @@
 - 기존 **도서관 스터디룸 예약 앱**과 유사한 UI/UX 및 프로세스를 반영  
 - 학생회관에서도 도서관과 동일한 방식으로 예약 가능  
 - 예약 시스템을 통해 **공정한 사용 환경** 보장  
+- **2025년 8월 17일 ~ 8월 31일 시범 운영**을 거쳐, 명지대학교 **학생지원팀의 승인 하에 9월 1일부터 공식 운영** 시작  
 
 ---
 
@@ -89,7 +90,7 @@
 ## 7. 기술 스택
 
 - **Frontend:** Next.js, React, JavaScript, TailwindCSS, Zustand  
-- **Backend:** Spring Boot
+- **Backend:** Spring Boot  
 - **Database:** MySQL  
 - **Deploy:** Vercel, AWS  
 
@@ -97,6 +98,7 @@
 
 ## 8. 프로젝트 배포 및 링크
 
-- 공식 지원 페이지: [https://www.ddingsroom.com/)  
+- 공식 서비스 페이지: [https://www.ddingsroom.com/](https://www.ddingsroom.com/)  
+- 운영 현황: **2025년 8월 17일 ~ 8월 31일 시범 운영 완료 후, 9월 1일부터 정식 운영 중**
 
-
+---
