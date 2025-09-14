@@ -160,9 +160,9 @@
 
 | 역할 | 이름 | GitHub |
 | --- | --- | --- |
-| ✏️ Product Manager | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
-| ✏️ Product Manager | 최은택 | [GitHub 바로가기](https://github.com/euntaek4187) |
-| 🎨 Frontend | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
+| 📋 Product Manager | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
+| 📋 Product Manager | 최은택 | [GitHub 바로가기](https://github.com/euntaek4187) |
+| 🌐 Frontend | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
 | 🔧 Backend | 최은택 | [GitHub 바로가기](https://github.com/euntaek4187) |
 | 🔧 Backend | 정경훈 | [GitHub 바로가기](https://github.com/agi040922) |
 | 🔧 Backend | 김예본 | [GitHub 바로가기](https://github.com/kyb65) |
