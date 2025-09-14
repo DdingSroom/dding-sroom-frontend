@@ -47,46 +47,65 @@
 
 ### 🔑 회원가입
 학교 이메일(@mju.ac.kr) 인증 → 비밀번호/닉네임 설정 → 개인정보 처리방침 동의 후 완료  
-<img src="./images/signup.png" width="500"/>
+<img width="335" height="718" alt="Image" src="https://github.com/user-attachments/assets/ddb82cd8-4561-4ffa-b150-13dc0d649de7" />
+<img width="336" height="721" alt="Image" src="https://github.com/user-attachments/assets/25d1783e-b0d4-4d2d-83af-d5f35e18d619" />
+<img width="333" height="719" alt="Image" src="https://github.com/user-attachments/assets/3f4296ce-1c61-4647-aa02-130489e5d6c3" />
+<img width="334" height="720" alt="Image" src="https://github.com/user-attachments/assets/250b1ed7-39c5-49ca-a6f8-d42c0e3b07a0" />
 
 ---
 
 ### 🔓 로그인
 가입한 이메일/비밀번호 입력 후 로그인 → 홈으로 이동  
-<img src="./images/login.png" width="500"/>
+<img width="335" height="718" alt="Image" src="https://github.com/user-attachments/assets/ebf659c5-3aa3-4d9d-9b13-289eca7b18ee" />
 
 ---
 
 ### 🗓️ 예약하기
 오늘/내일 탭에서 원하는 방과 시간 선택 → 예약 단위: 1~2시간 → 연속 예약 제한  
-<img src="https://github.com/user-attachments/assets/e56322fb-4d72-401a-bdff-0c9e97d0dfc3" width="500"/>
-<img src="https://github.com/user-attachments/assets/5c23d7e6-8aa8-4954-a2bd-ec07391f88bc" width="500"/>
-<img src="https://github.com/user-attachments/assets/125b6b9f-7b3c-4c5e-954a-2f9c2ed46f98" width="500"/>
-<img src="https://github.com/user-attachments/assets/ca4f5fcf-42f1-4ae5-b108-8d1395d95148" width="500"/>
+<img width="333" height="720" alt="Image" src="https://github.com/user-attachments/assets/f760e7f1-2f1a-4e59-8c4c-d96ea33e254a" />
+<img width="333" height="718" alt="Image" src="https://github.com/user-attachments/assets/16d89973-aaa6-441b-b66a-397b1b689e55" />
+<img width="332" height="722" alt="Image" src="https://github.com/user-attachments/assets/16c5ec69-82e2-4456-b01e-6572c01a0216" />
+<img width="332" height="717" alt="Image" src="https://github.com/user-attachments/assets/0cc34f68-57a9-43da-a917-47abb1363de1" />
 
 ---
 
 ### 👤 마이페이지
 내 예약 내역 확인 및 취소, 닉네임/비밀번호 변경, 로그아웃/회원탈퇴  
-<img src="./images/mypage.png" width="500"/>
+<img width="333" height="718" alt="Image" src="https://github.com/user-attachments/assets/bf173927-d1f6-46ec-bb0d-40e211c7c91c" />
+<img width="334" height="719" alt="Image" src="https://github.com/user-attachments/assets/109e7e39-4bb2-4d83-888d-d0bb8847fb13" />
+<img width="333" height="718" alt="Image" src="https://github.com/user-attachments/assets/60c96de6-5fb1-4bfa-b860-96a3aeb4390e" />
+<img width="333" height="721" alt="Image" src="https://github.com/user-attachments/assets/4f2126b7-4528-4386-88e1-b2e1c47cf4c4" />
+<img width="331" height="716" alt="Image" src="https://github.com/user-attachments/assets/329d94d1-afe4-4a32-9112-afa6faa7f03a" />
+<img width="336" height="720" alt="Image" src="https://github.com/user-attachments/assets/8ee9384a-58b6-4b8a-9371-e1a1d5720ca5" />
+<img width="333" height="721" alt="Image" src="https://github.com/user-attachments/assets/0d696082-e95a-48c2-9a87-ca994ee4a228" />
+
+---
+
+### 🔓 비밀번호 재설정
+학교 이메일(@mju.ac.kr) 인증 → 비밀번호 재설정 → 완료  
+<img width="335" height="719" alt="Image" src="https://github.com/user-attachments/assets/bb61cf46-1bd9-4a96-8bf4-3c59a39b7f71" />
+<img width="333" height="719" alt="Image" src="https://github.com/user-attachments/assets/42424af8-ad48-4b52-b07e-56723da9198b" />
 
 ---
 
 ### 💬 커뮤니티
 자유글, 질문/답변, 공간 후기 공유  
-<img src="./images/community.png" width="500"/>
+<img width="334" height="718" alt="Image" src="https://github.com/user-attachments/assets/49d8b220-6a0a-4439-af5f-9b8c64d3d5da" />
+<img width="334" height="721" alt="Image" src="https://github.com/user-attachments/assets/7ff79cb9-72dd-480f-98a3-4516025f8e87" />
+<img width="332" height="721" alt="Image" src="https://github.com/user-attachments/assets/6bee850f-3f9c-4b57-90ba-62fe5424bcd0" />
 
 ---
 
 ### 📝 건의하기
 스터디룸 내 불편사항(위생, 보드마카 부족 등)을 간편하게 전달  
-<img src="./images/suggestion.png" width="500"/>
+<img width="332" height="720" alt="Image" src="https://github.com/user-attachments/assets/9f0e3127-686a-4a04-82a6-b66293ac8dd1" />
+<img width="333" height="720" alt="Image" src="https://github.com/user-attachments/assets/6e04b7f5-ff86-4d9a-997e-0e8815f45293" />
 
 ---
 
 ### 📢 공지사항
 관리자가 등록한 공지가 실시간으로 사용자 화면에 반영  
-<img src="./images/notice.png" width="500"/>
+<img width="336" height="721" alt="Image" src="https://github.com/user-attachments/assets/1d7e6676-9a63-4b44-b4fd-8b308301ed2d" />
 
 ---
 
