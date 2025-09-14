@@ -59,7 +59,10 @@
 
 ### 🗓️ 예약하기
 오늘/내일 탭에서 원하는 방과 시간 선택 → 예약 단위: 1~2시간 → 연속 예약 제한  
-![예약하기](./images/reservation.png)
+<img width="666" height="1434" alt="Image" src="https://github.com/user-attachments/assets/e56322fb-4d72-401a-bdff-0c9e97d0dfc3" />
+<img width="664" height="1440" alt="Image" src="https://github.com/user-attachments/assets/5c23d7e6-8aa8-4954-a2bd-ec07391f88bc" />
+<img width="662" height="1434" alt="Image" src="https://github.com/user-attachments/assets/125b6b9f-7b3c-4c5e-954a-2f9c2ed46f98" />
+<img width="664" height="1436" alt="Image" src="https://github.com/user-attachments/assets/ca4f5fcf-42f1-4ae5-b108-8d1395d95148" />
 
 ---
 
