@@ -47,52 +47,52 @@
 
 ### 🔑 회원가입
 학교 이메일(@mju.ac.kr) 인증 → 비밀번호/닉네임 설정 → 개인정보 처리방침 동의 후 완료  
-![회원가입](./images/signup.png)
+<img src="./images/signup.png" width="500"/>
 
 ---
 
 ### 🔓 로그인
 가입한 이메일/비밀번호 입력 후 로그인 → 홈으로 이동  
-![로그인](./images/login.png)
+<img src="./images/login.png" width="500"/>
 
 ---
 
 ### 🗓️ 예약하기
 오늘/내일 탭에서 원하는 방과 시간 선택 → 예약 단위: 1~2시간 → 연속 예약 제한  
-<img width="666" height="1434" alt="Image" src="https://github.com/user-attachments/assets/e56322fb-4d72-401a-bdff-0c9e97d0dfc3" />
-<img width="664" height="1440" alt="Image" src="https://github.com/user-attachments/assets/5c23d7e6-8aa8-4954-a2bd-ec07391f88bc" />
-<img width="662" height="1434" alt="Image" src="https://github.com/user-attachments/assets/125b6b9f-7b3c-4c5e-954a-2f9c2ed46f98" />
-<img width="664" height="1436" alt="Image" src="https://github.com/user-attachments/assets/ca4f5fcf-42f1-4ae5-b108-8d1395d95148" />
+<img src="https://github.com/user-attachments/assets/e56322fb-4d72-401a-bdff-0c9e97d0dfc3" width="500"/>
+<img src="https://github.com/user-attachments/assets/5c23d7e6-8aa8-4954-a2bd-ec07391f88bc" width="500"/>
+<img src="https://github.com/user-attachments/assets/125b6b9f-7b3c-4c5e-954a-2f9c2ed46f98" width="500"/>
+<img src="https://github.com/user-attachments/assets/ca4f5fcf-42f1-4ae5-b108-8d1395d95148" width="500"/>
 
 ---
 
 ### 👤 마이페이지
 내 예약 내역 확인 및 취소, 닉네임/비밀번호 변경, 로그아웃/회원탈퇴  
-![마이페이지](./images/mypage.png)
+<img src="./images/mypage.png" width="500"/>
 
 ---
 
 ### 💬 커뮤니티
 자유글, 질문/답변, 공간 후기 공유  
-![커뮤니티](./images/community.png)
+<img src="./images/community.png" width="500"/>
 
 ---
 
 ### 📝 건의하기
 스터디룸 내 불편사항(위생, 보드마카 부족 등)을 간편하게 전달  
-![건의하기](./images/suggestion.png)
+<img src="./images/suggestion.png" width="500"/>
 
 ---
 
 ### 📢 공지사항
 관리자가 등록한 공지가 실시간으로 사용자 화면에 반영  
-![공지사항](./images/notice.png)
+<img src="./images/notice.png" width="500"/>
 
 ---
 
 ### 🛠️ 관리자 페이지
 학사지원팀 전용 페이지 → 예약 현황, 유저 관리, 건의사항 확인, 공지 등록 가능  
-![관리자페이지](./images/admin.png)
+<img src="./images/admin.png" width="500"/>
 
 ---
 
