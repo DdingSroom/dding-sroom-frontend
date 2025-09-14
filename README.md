@@ -123,12 +123,12 @@
 
 | 역할 | 이름 | GitHub |
 | --- | --- | --- |
-| ✏️ Product Manager | 정유진 | [GitHub 바로가기](https://github.com/정유진) |
-| ✏️ Product Manager | 최은택 | [GitHub 바로가기](https://github.com/최은택) |
-| 🎨 Frontend | 정유진 | [GitHub 바로가기](https://github.com/정유진) |
-| 🔧 Backend | 최은택 | [GitHub 바로가기](https://github.com/최은택) |
-| 🔧 Backend | 정경훈 | [GitHub 바로가기](https://github.com/정경훈) |
-| 🔧 Backend | 김예본 | [GitHub 바로가기](https://github.com/김예본) |
-| 🔧 Backend | 최진원 | [GitHub 바로가기](https://github.com/최진원) |
+| ✏️ Product Manager | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
+| ✏️ Product Manager | 최은택 | [GitHub 바로가기](https://github.com/euntaek4187) |
+| 🎨 Frontend | 정유진 | [GitHub 바로가기](https://github.com/hello-yujin) |
+| 🔧 Backend | 최은택 | [GitHub 바로가기](https://github.com/euntaek4187) |
+| 🔧 Backend | 정경훈 | [GitHub 바로가기](https://github.com/agi040922) |
+| 🔧 Backend | 김예본 | [GitHub 바로가기](https://github.com/kyb65) |
+| 🔧 Backend | 최진원 | [GitHub 바로가기](https://github.com/jinwon0107) |
 
 ---
