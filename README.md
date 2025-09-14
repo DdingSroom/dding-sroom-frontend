@@ -111,7 +111,15 @@
 
 ### 🛠️ 관리자 페이지
 학사지원팀 전용 페이지 → 예약 현황, 유저 관리, 건의사항 확인, 공지 등록 가능  
-<img src="./images/admin.png" width="500"/>
+<img width="1440" height="812" alt="image" src="https://github.com/user-attachments/assets/b25b72ad-140e-4e00-bb0b-b89bd96607da" />
+<img width="1440" height="813" alt="image" src="https://github.com/user-attachments/assets/98b59874-7e14-40f6-a08f-a4184905be49" />
+<img width="1440" height="812" alt="image" src="https://github.com/user-attachments/assets/627f7453-a393-4c7b-9733-1103e688406e" />
+<img width="1439" height="811" alt="image" src="https://github.com/user-attachments/assets/614628b2-9b46-4b95-8f72-0371f7b0e55b" />
+<img width="1440" height="813" alt="image" src="https://github.com/user-attachments/assets/8f4123c8-32b9-47a3-a86e-8f43cd2aabaf" />
+<img width="1440" height="812" alt="image" src="https://github.com/user-attachments/assets/d18fc9f8-7d30-4eb4-8287-2470c42220df" />
+<img width="1439" height="812" alt="image" src="https://github.com/user-attachments/assets/8346bcd0-a926-4b81-8150-f4f85032241b" />
+<img width="1440" height="813" alt="image" src="https://github.com/user-attachments/assets/3ed3a791-a1e5-4d8b-9a37-dd0a13682a2e" />
+
 
 ---
 
