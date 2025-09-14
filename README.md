@@ -104,13 +104,13 @@
 ---
 
 ### 📢 공지사항
-관리자가 등록한 공지가 실시간으로 사용자 화면에 반영  
+관리자(학생지원팀)가 등록한 공지가 실시간으로 사용자 화면에 반영  
 <img width="336" height="721" alt="Image" src="https://github.com/user-attachments/assets/1d7e6676-9a63-4b44-b4fd-8b308301ed2d" />
 
 ---
 
 ### 🛠️ 관리자 페이지
-학사지원팀 전용 페이지 → 예약 현황, 유저 관리, 건의사항 확인, 공지 등록 가능  
+학생지원팀 전용 페이지 → 예약 현황, 유저 관리, 건의사항 확인, 공지 등록 가능  
 <img width="1440" height="812" alt="image" src="https://github.com/user-attachments/assets/b25b72ad-140e-4e00-bb0b-b89bd96607da" />
 <img width="1440" height="813" alt="image" src="https://github.com/user-attachments/assets/98b59874-7e14-40f6-a08f-a4184905be49" />
 <img width="1440" height="812" alt="image" src="https://github.com/user-attachments/assets/627f7453-a393-4c7b-9733-1103e688406e" />
