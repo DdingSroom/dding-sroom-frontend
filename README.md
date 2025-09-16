@@ -99,7 +99,7 @@
 ### 📝 건의하기
 스터디룸 내 불편사항(위생, 보드마카 부족 등)을 간편하게 전달  
 <img width="332" height="720" alt="Image" src="https://github.com/user-attachments/assets/9f0e3127-686a-4a04-82a6-b66293ac8dd1" />
-<img width="333" height="720" alt="Image" src="https://github.com/user-attachments/assets/6e04b7f5-ff86-4d9a-997e-0e8815f45293" />
+<img width="333" height="720" alt="image" src="https://github.com/user-attachments/assets/84d30c69-aeb6-43b9-a9af-56cfbc24c4e3" />
 
 ---
 
