@@ -174,7 +174,7 @@ function StatusBadge({ status }) {
   const isDone = !!status;
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs ${
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs flex-shrink-0 whitespace-nowrap ${
         isDone
           ? 'bg-[#eef2ff] text-[var(--primary-color)]'
           : 'bg-[#f4f4f5] text-[var(--text-muted)]'
@@ -215,7 +215,7 @@ function HistoryCard({ item }) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="text-[16px] leading-6 font-medium text-[var(--text-primary)] truncate">
+              <h3 className="flex-1 min-w-0 text-[16px] leading-6 font-medium text-[var(--text-primary)] truncate">
                 {title}
               </h3>
               <StatusBadge status={isAnswered} />
