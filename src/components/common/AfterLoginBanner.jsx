@@ -99,7 +99,7 @@ const AfterLoginBanner = () => {
           내가 예약한 방
         </div>
 
-        {/* 예약 리스트 영역 (스크롤) */}
+        {/* 예약 리스트 영역 */}
         <div className="flex flex-col gap-2 sm:gap-3 overflow-y-auto pr-1 sm:pr-2 flex-1 max-h-48">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
             <div className="flex items-center justify-center h-full text-[#9b9998] text-xs sm:text-sm">
@@ -111,21 +111,23 @@ const AfterLoginBanner = () => {
                 key={r.id}
                 className="flex justify-between items-center p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <div className="flex flex-col gap-1 flex-1 min-w-0 mr-2 sm:mr-3">
-                  <div className="text-xs text-[#73726e] whitespace-nowrap overflow-hidden text-ellipsis">
+                <div className="flex flex-col gap-1 flex-1 min-w-0 mr-2 sm:mr-3 overflow-x-auto sm:overflow-x-visible xScrollHide">
+                  <div className="text-xs text-[#73726e] whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
                     {r.roomName}
                   </div>
-                  <div className="text-xs sm:text-sm font-medium text-[#37352f] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <div className="text-xs sm:text-sm font-medium text-[#37352f] whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
                     {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
                     {formatTime(r.endTime)}
                   </div>
                 </div>
+
                 <button
                   className="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-[#788DFF] hover:bg-[#788DFF] hover:text-white rounded-md transition-colors whitespace-nowrap"
                   onClick={() => setOpenReservationId(r.id)}
                 >
                   취소
                 </button>
+
                 <CancellationModal
                   isOpen={openReservationId === r.id}
                   onClose={() => setOpenReservationId(null)}
@@ -156,6 +158,16 @@ const AfterLoginBanner = () => {
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        .xScrollHide::-webkit-scrollbar {
+          display: none;
+        }
+        .xScrollHide {
+          -ms-overflow-style: none; /* IE/Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+      `}</style>
     </div>
   );
 };
