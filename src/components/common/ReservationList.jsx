@@ -57,14 +57,13 @@ export default function ReservationList() {
   const [groupedReservations, setGroupedReservations] = useState({});
   const [loading, setLoading] = useState(true);
   const [cancelModalData, setCancelModalData] = useState(null);
-  const [authReady, setAuthReady] = useState(false); // ✅ 준비 플래그
+  const [authReady, setAuthReady] = useState(false);
 
   // 첫 마운트 시 세션 값을 스토어로 강제 동기화
   useEffect(() => {
     if (typeof rehydrate === 'function') {
       rehydrate();
     }
-    // 로그인 후 리다이렉트 시 토큰 동기화를 위해 더 긴 지연시간 설정
     const t = setTimeout(() => setAuthReady(true), 100);
     return () => clearTimeout(t);
   }, [rehydrate]);
@@ -75,7 +74,9 @@ export default function ReservationList() {
     if (!accessToken) return null;
     try {
       const d = jwtDecode(accessToken);
-      return d?.userId ?? d?.id ?? d?.uid ?? d?.sub ?? null;
+      const extractedId = d?.userId ?? d?.id ?? d?.uid ?? d?.sub ?? null;
+      // 타입 일관성을 위해 숫자로 변환 (sessionStorage에서 가져온 userId와 동일한 타입으로)
+      return extractedId ? parseInt(extractedId) : null;
     } catch {
       return null;
     }
@@ -100,7 +101,6 @@ export default function ReservationList() {
     async (uid) => {
       try {
         setLoading(true);
-        // 캐시 우회 파라미터로 최초 빈 응답/재사용 방지
         const res = await axiosInstance.get(
           `/api/reservations/user/${uid}?t=${Date.now()}`,
         );
