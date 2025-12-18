@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Banner = () => {
   return (
@@ -15,25 +16,36 @@ const Banner = () => {
             여유로움
           </div>
         </div>
+
         <div className="space-y-3">
           <div className="text-[#37352f] text-sm leading-relaxed">
             로그인하여 자리를 예약해보세요!
           </div>
-          <Link href="/login">
+
+          <Link href="/login" className="inline-block">
             <button className="flex items-center gap-2 px-4 py-2 bg-[#5B72EE] text-white text-sm font-medium rounded-lg hover:bg-[#4f63d1] transition-colors shadow-sm">
               로그인
-              <img
-                src="/static/icons/arrow_right_icon.svg"
-                alt="arrow"
-                className="w-4 h-4 filter brightness-0 invert"
-              />
+              <span aria-hidden="true" className="w-4 h-4">
+                <Image
+                  src="/static/icons/arrow_right_icon.svg"
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="filter brightness-0 invert"
+                />
+              </span>
             </button>
           </Link>
         </div>
       </div>
-      <img
+
+      <Image
         src="/static/icons/maru_icon.png"
         alt="maru"
+        width={128}
+        height={128}
+        priority
+        sizes="128px"
         className="w-32 h-32 object-contain"
       />
     </div>
