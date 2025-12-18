@@ -2,48 +2,58 @@
 
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import dynamic from 'next/dynamic';
 import useTokenStore from '../stores/useTokenStore';
+
 import Header from '@components/common/Header';
 import Banner from '@components/common/Banner';
-import AfterLoginBanner from '@components/common/AfterLoginBanner';
 import SecondBanner from '@components/common/SecondBanner';
-import ReservationSection from '@components/common/ReservationSection';
-import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+const AfterLoginBanner = dynamic(
+  () => import('@components/common/AfterLoginBanner'),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
+
+const ReservationSection = dynamic(
+  () => import('@components/common/ReservationSection'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full max-w-[95%] min-h-[240px] rounded-2xl bg-white shadow-sm border border-gray-50" />
+    ),
+  },
+);
+
+const FooterNav = dynamic(() => import('@components/common/FooterNav'), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function Home() {
   const { accessToken, setUserId } = useTokenStore();
 
-  const [, setUserInfo] = useState({ id: '', email: '' });
-  const [isMounted, setIsMounted] = useState(false); // hydration mismatch 방지
+  const [clientReady, setClientReady] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // CSR 이후에만 렌더링하게 함
-
-    // Zustand 상태를 클라이언트에서 초기화
+    setClientReady(true);
   }, []);
 
   useEffect(() => {
-    if (accessToken) {
-      try {
-        const decoded = jwtDecode(accessToken);
-        const { id, email } = decoded;
+    if (!accessToken) return;
 
-        setUserId(id);
-        setUserInfo({ id, email });
+    try {
+      const decoded = jwtDecode(accessToken);
+      const { id } = decoded;
 
-        console.log('디코드된 사용자 정보:', decoded);
-      } catch (e) {
-        console.error('토큰 디코딩 실패:', e);
-        alert('토큰이 유효하지 않습니다. 다시 로그인해주세요.');
-      }
-    } else {
-      console.warn('로그인하지 않은 상태입니다.');
+      setUserId(id);
+    } catch (e) {
+      console.error('토큰 디코딩 실패:', e);
     }
   }, [accessToken, setUserId]);
-
-  // 서버에서는 아무것도 렌더링하지 않도록 처리
-  if (!isMounted) return null;
 
   return (
     <>
@@ -52,7 +62,9 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center w-full">
-        {accessToken ? (
+        {!clientReady ? (
+          <Banner className="w-full" />
+        ) : accessToken ? (
           <AfterLoginBanner className="w-full" />
         ) : (
           <Banner className="w-full" />
