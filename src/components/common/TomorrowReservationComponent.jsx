@@ -60,12 +60,6 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     day: 'numeric',
   });
 
-  useEffect(() => {
-    fetchAllReservedTimes();
-    const interval = setInterval(fetchAllReservedTimes, 10000);
-    return () => clearInterval(interval);
-  }, [fetchAllReservedTimes]);
-
   // 예약된 10분 슬롯 키 집합 (빠른 충돌 판정을 위해)
   const reserved10mKeys = useMemo(() => {
     const reservedTimeSlots = reservedTimeSlotsByRoom?.[roomId] || [];
