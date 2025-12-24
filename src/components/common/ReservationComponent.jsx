@@ -88,12 +88,6 @@ const ReservationComponent = ({ index, roomId }) => {
     return slots;
   }, []);
 
-  useEffect(() => {
-    fetchAllReservedTimes();
-    const interval = setInterval(fetchAllReservedTimes, 10000);
-    return () => clearInterval(interval);
-  }, [fetchAllReservedTimes]);
-
   // 특정 구간이 예약과 충돌하는지 검사 (start 포함, end 제외)
   const isRangeAvailable = (startISO, endISO) => {
     const start = new Date(startISO);
