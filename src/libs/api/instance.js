@@ -92,6 +92,9 @@ axiosInstance.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {
+          if (!token) {
+            return Promise.reject(error);
+          }
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return axiosInstance(originalRequest);
         });
@@ -117,9 +120,11 @@ axiosInstance.interceptors.response.use(
           response.headers['refresh'] ||
           response.headers['Refresh'];
 
-        if (newAccessToken) {
-          sessionStorage.setItem('accessToken', newAccessToken);
+        if (!newAccessToken) {
+          throw new Error('토큰 재발급 응답에 accessToken이 없습니다.');
         }
+
+        sessionStorage.setItem('accessToken', newAccessToken);
 
         if (newRefreshToken) {
           sessionStorage.setItem('refreshToken', newRefreshToken);
@@ -144,7 +149,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export const setAccessToken = (token) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && token) {
     sessionStorage.setItem('accessToken', token);
   }
 };
