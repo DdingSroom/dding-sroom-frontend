@@ -50,12 +50,15 @@ export default function SuggestHistoryPage() {
   };
 
   const fetchMine = useCallback(async () => {
+    if (!userId) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const url = userId
-        ? `/api/suggestions?user_id=${encodeURIComponent(userId)}`
-        : '/api/suggestions';
+      const url = `/api/suggestions?user_id=${encodeURIComponent(userId)}`;
       const res = await axiosInstance.get(url);
 
       const raw = toArray(res?.data);
