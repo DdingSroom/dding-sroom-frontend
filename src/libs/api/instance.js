@@ -24,6 +24,7 @@ const clearTokens = () => {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('userId');
   }
 };
 
@@ -100,14 +101,29 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/reissue`,
           null,
           { headers: { refresh: refreshToken } },
         );
 
-        const newAccessToken = data.accessToken;
-        sessionStorage.setItem('accessToken', newAccessToken);
+        const newAccessToken =
+          response.data?.accessToken ||
+          response.headers['access'] ||
+          response.headers['Access'];
+
+        const newRefreshToken =
+          response.data?.refreshToken ||
+          response.headers['refresh'] ||
+          response.headers['Refresh'];
+
+        if (newAccessToken) {
+          sessionStorage.setItem('accessToken', newAccessToken);
+        }
+
+        if (newRefreshToken) {
+          sessionStorage.setItem('refreshToken', newRefreshToken);
+        }
 
         processQueue(null, newAccessToken);
 
