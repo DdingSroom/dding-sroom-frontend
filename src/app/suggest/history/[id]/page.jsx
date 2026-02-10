@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import useTokenStore from '../../../../stores/useTokenStore';
 import axiosInstance from '../../../../libs/api/instance';
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 import FooterNav from '@components/common/FooterNav';
@@ -132,7 +133,13 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
+  const { accessToken } = useTokenStore();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
+
+  // 로그인 체크
+  useEffect(() => {
+    if (!accessToken) router.push('/login');
+  }, [accessToken, router]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
