@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import jwtDecode from 'jwt-decode';
 import useTokenStore from '../../../../stores/useTokenStore';
 import axiosInstance from '../../../../libs/api/instance';
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
@@ -142,23 +141,13 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
-  const { accessToken } = useTokenStore();
+  const { accessToken, userId: myUserId } = useTokenStore();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
     if (!accessToken) router.push('/login');
   }, [accessToken, router]);
-
-  const myUserId = useMemo(() => {
-    try {
-      if (!accessToken) return '';
-      const decoded = jwtDecode(accessToken);
-      return decoded.userId || decoded.user_id || decoded.id || '';
-    } catch {
-      return '';
-    }
-  }, [accessToken]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

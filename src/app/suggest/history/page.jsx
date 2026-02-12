@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import jwtDecode from 'jwt-decode';
 import axiosInstance from '../../../libs/api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
 import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
@@ -21,7 +20,7 @@ function BottomSafeSpacer({ height = 64 }) {
 
 export default function SuggestHistoryPage() {
   const router = useRouter();
-  const { accessToken } = useTokenStore();
+  const { accessToken, userId } = useTokenStore();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,16 +30,6 @@ export default function SuggestHistoryPage() {
   useEffect(() => {
     if (!accessToken) router.push('/login');
   }, [accessToken, router]);
-
-  const userId = useMemo(() => {
-    try {
-      if (!accessToken) return '';
-      const decoded = jwtDecode(accessToken);
-      return decoded.userId || decoded.user_id || decoded.id || '';
-    } catch {
-      return '';
-    }
-  }, [accessToken]);
 
   const toArray = (data) => {
     if (Array.isArray(data?.suggestions)) return data.suggestions;
