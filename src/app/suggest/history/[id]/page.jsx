@@ -2,12 +2,20 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import useTokenStore from '../../../../stores/useTokenStore';
 import axiosInstance from '../../../../libs/api/instance';
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-const CATEGORIES = ['분실물', '기물파손', '시설고장', '소음공해', '기타'];
+const CATEGORIES = [
+  '분실물',
+  '기물 파손',
+  '시설 고장',
+  '소음 공해',
+  '미예약 사용자 신고',
+  '기타',
+];
 const PLACES = [
   '스터디룸1',
   '스터디룸2',
@@ -100,6 +108,7 @@ function safeNormalizeSuggestion(raw) {
     category: raw?.category ?? '',
     location: raw?.location ?? '',
     isAnswered: raw?.is_answered ?? raw?.answered ?? raw?.isAnswered ?? false,
+    userId: raw?.userId ?? raw?.user_id ?? raw?.uid ?? null,
     createdAt,
   };
 }
@@ -132,7 +141,13 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
+  const { accessToken, userId: myUserId } = useTokenStore();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
+
+  // 로그인 체크
+  useEffect(() => {
+    if (!accessToken) router.push('/login');
+  }, [accessToken, router]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -178,6 +193,13 @@ export default function SuggestHistoryDetailPage({ params }) {
       setLoading(true);
       setError('');
       const [d, cmts] = await Promise.all([fetchDetail(), fetchComments()]);
+
+      // 본인 건의가 아니면 접근 차단
+      if (d && myUserId && d.userId && String(d.userId) !== String(myUserId)) {
+        router.replace('/suggest/history');
+        return;
+      }
+
       setDetail(d);
       setComments(cmts);
       setAnswerText(pickLatestAnswerText(cmts));
@@ -186,7 +208,7 @@ export default function SuggestHistoryDetailPage({ params }) {
     } finally {
       setLoading(false);
     }
-  }, [fetchDetail, fetchComments]);
+  }, [fetchDetail, fetchComments, myUserId, router]);
 
   useEffect(() => {
     if (Number.isFinite(suggestId)) reload();
