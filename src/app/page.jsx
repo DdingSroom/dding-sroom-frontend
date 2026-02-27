@@ -9,22 +9,13 @@ import Header from '@components/common/Header';
 import Banner from '@components/common/Banner';
 import SecondBanner from '@components/common/SecondBanner';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import ReservationSection from '@components/common/ReservationSection';
 
 const AfterLoginBanner = dynamic(
   () => import('@components/common/AfterLoginBanner'),
   {
     ssr: false,
     loading: () => null,
-  },
-);
-
-const ReservationSection = dynamic(
-  () => import('@components/common/ReservationSection'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full max-w-[95%] min-h-[240px] rounded-2xl bg-white shadow-sm border border-gray-50" />
-    ),
   },
 );
 

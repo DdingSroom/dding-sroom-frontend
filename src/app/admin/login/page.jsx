@@ -20,8 +20,11 @@ export default function AdminLogin() {
 
   const router = useRouter();
 
-  const { setAccessToken: setGlobalAccessToken, setRefreshToken } =
-    useTokenStore();
+  const {
+    setAccessToken: setGlobalAccessToken,
+    setRefreshToken,
+    clearTokens,
+  } = useTokenStore();
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
@@ -62,6 +65,7 @@ export default function AdminLogin() {
         if (decoded.role === 'ROLE_ADMIN') {
           router.push('/admin/dashboard');
         } else {
+          clearTokens();
           setConfirmError('관리자 권한이 없습니다.');
         }
       } else {

@@ -42,7 +42,10 @@ function LoginForm() {
   useEffect(() => {
     const redirect = searchParams.get('redirect');
     if (redirect) {
-      setRedirectUrl(decodeURIComponent(redirect));
+      const decoded = decodeURIComponent(redirect);
+      if (decoded.startsWith('/') && !decoded.startsWith('//')) {
+        setRedirectUrl(decoded);
+      }
     }
 
     // 저장된 로그인 정보 불러오기
