@@ -25,8 +25,8 @@
           ["@api", "./src/app/api/"],
           ["@components", "./src/components/"],
           ["@constants", "./src/constants/"],
-          ["@hooks", "./src/hooks/"],
-          ["@utils", "./src/utils/"]
+          ["@lib", "./src/lib/"],
+          ["@stores", "./src/stores/"]
         ],
         "extensions": [".js", ".jsx"]
       }

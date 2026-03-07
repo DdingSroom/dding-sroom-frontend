@@ -16,8 +16,10 @@
       "@components/*": ["./src/components/*"],
       "@constants": ["./src/constants"],
       "@constants/*": ["./src/constants/*"],
-      "@hooks": ["./src/hooks"],
-      "@hooks/*": ["./src/hooks/*"]
+      "@lib": ["./src/lib"],
+      "@lib/*": ["./src/lib/*"],
+      "@stores": ["./src/stores"],
+      "@stores/*": ["./src/stores/*"]
     }
   },
   "exclude": ["node_modules", "venv"]

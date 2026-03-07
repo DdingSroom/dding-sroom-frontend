@@ -30,8 +30,8 @@ const nextConfig = {
       '@api': path.resolve(__dirname, './src/app/api'),
       '@components': path.resolve(__dirname, './src/components'),
       '@constants': path.resolve(__dirname, './src/constants'),
-      '@hooks': path.resolve(__dirname, './src/hooks'),
-      '@utils': path.resolve(__dirname, './src/utils'),
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@stores': path.resolve(__dirname, './src/stores'),
     };
 
     config.module.rules.push({
