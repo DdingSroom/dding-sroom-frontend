@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '../../../libs/api/instance';
+import axiosInstance from '@lib/api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
 import UserTableRow from '@components/admin/UserTableRow';
 
