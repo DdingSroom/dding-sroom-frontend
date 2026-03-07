@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '../../libs/api/instance';
-import useTokenStore from '../../stores/useTokenStore';
-import useReservationStore from '../../stores/useReservationStore';
-import MyPageDate from './MyPageDate';
+import axiosInstance from '@lib/api/instance';
+import useTokenStore from '@stores/useTokenStore';
+import useReservationStore from '@stores/useReservationStore';
+import MyPageDate from '@components/my/MyPageDate';
 import ReservationHistory from './ReservationHistory';
 import CancellationModal from './CancellationModal';
 
