@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@lib/api/instance';
 import CommunityHeader from '@components/community/CommunityHeader';
 import PostCard from '@components/community/PostCard';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
