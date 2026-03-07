@@ -1,11 +1,11 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isValidPassword } from '../../../constants/regex';
-import useSignupStore from '../../../stores/useSignupStore';
-import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
+import { isValidPassword } from '@constants/regex';
+import useSignupStore from '@stores/useSignupStore';
+import Button from '@components/common/Button';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '@components/common/FooterNav';
 import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
