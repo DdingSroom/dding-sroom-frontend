@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import axiosInstance from '../libs/api/instance';
+import axiosInstance from '@lib/api/instance';
 import useTokenStore from './useTokenStore';
 
 const parseToDate = (raw) => {
