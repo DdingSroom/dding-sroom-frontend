@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '../../../libs/api/instance';
-import MyPageHeader from '@components/common/MyPageHeader';
+import axiosInstance from '@lib/api/instance';
+import MyPageHeader from '@components/my/MyPageHeader';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
