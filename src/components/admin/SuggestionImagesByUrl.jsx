@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@lib/api/instance';
 import ProtectedImage from './ProtectedImage';
 
 export default function SuggestionImagesByUrl({
