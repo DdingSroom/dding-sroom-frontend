@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '../../libs/api/instance';
-import InfoModal from './InfoModal';
+import axiosInstance from '@api/instance';
+import InfoModal from '@components/common/InfoModal';
 
 const Header = () => {
   const router = useRouter();

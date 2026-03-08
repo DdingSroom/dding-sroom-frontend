@@ -2,9 +2,9 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
+import Button from '@components/common/Button';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '@components/common/FooterNav';
 import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {

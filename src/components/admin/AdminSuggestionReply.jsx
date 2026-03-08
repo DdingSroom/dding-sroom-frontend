@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@api/instance';
 
 function parseError(err) {
   return (

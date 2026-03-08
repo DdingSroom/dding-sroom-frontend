@@ -1,4 +1,4 @@
-import ReservationComponent from '@components/common/ReservationComponent';
+import ReservationComponent from '@components/reservation/ReservationComponent';
 
 const TodayReservationList = () => {
   const rooms = [1, 2, 3, 4, 5];
