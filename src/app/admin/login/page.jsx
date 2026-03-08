@@ -6,8 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import Button from '../../../components/common/Button';
 import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance, { setAccessToken } from '@lib/api/instance';
-import { getLoginErrorMessage } from '@lib/utils/errorMessages';
+import axiosInstance, { setAccessToken } from '@api/instance';
+import { getLoginErrorMessage } from '@utils/errorMessages';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');

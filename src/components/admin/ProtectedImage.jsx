@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 
 export default function ProtectedImage({
   suggestPostId,
