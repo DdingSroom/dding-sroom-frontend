@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import useTokenStore from '../../stores/useTokenStore';
-import axiosInstance from '@lib/api/instance';
-import { getAnonymousName } from '@lib/utils/anonymizeUser';
+import axiosInstance from '@api/instance';
+import { getAnonymousName } from '@utils/anonymizeUser';
 
 const CommentItem = ({
   comment,
