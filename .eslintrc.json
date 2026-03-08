@@ -22,10 +22,11 @@
     "import/resolver": {
       "alias": {
         "map": [
-          ["@api", "./src/app/api/"],
+          ["@api", "./src/api/"],
+          ["@hooks", "./src/hooks/"],
+          ["@utils", "./src/utils/"],
           ["@components", "./src/components/"],
           ["@constants", "./src/constants/"],
-          ["@lib", "./src/lib/"],
           ["@stores", "./src/stores/"]
         ],
         "extensions": [".js", ".jsx"]
