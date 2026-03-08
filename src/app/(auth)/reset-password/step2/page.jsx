@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isValidPassword } from '@constants/regex';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';

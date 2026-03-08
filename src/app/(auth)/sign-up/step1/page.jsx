@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { strictEmailRegex } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
