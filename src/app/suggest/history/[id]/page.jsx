@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import useTokenStore from '../../../../stores/useTokenStore';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';

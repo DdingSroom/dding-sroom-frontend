@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import useTokenStore from '@stores/useTokenStore';
 import useReservationStore from '@stores/useReservationStore';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import CancellationModal from '@components/reservation/CancellationModal';
 
 const AfterLoginBanner = () => {

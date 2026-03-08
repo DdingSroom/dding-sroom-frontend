@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import MyPageHeader from '@components/my/MyPageHeader';
 import MyPageBlock from '@components/my/MyPageBlock';
 import Modal from '@components/common/Modal';

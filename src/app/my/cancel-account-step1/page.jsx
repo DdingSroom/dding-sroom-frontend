@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import Button from '../../../components/common/Button';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';

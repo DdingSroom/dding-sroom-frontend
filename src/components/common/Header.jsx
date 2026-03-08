@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '@lib/api/instance';
+import axiosInstance from '@api/instance';
 import InfoModal from '@components/common/InfoModal';
 
 const Header = () => {
