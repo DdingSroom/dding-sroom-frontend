@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
-import axiosInstance from '../../libs/api/instance';
-import TimeComponent from '@components/common/TimeComponent';
+import axiosInstance from '@api/instance';
+import TimeComponent from '@components/reservation/TimeComponent';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 

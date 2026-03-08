@@ -1,4 +1,4 @@
-import TomorrowReservationComponent from '@components/common/TomorrowReservationComponent';
+import TomorrowReservationComponent from '@components/reservation/TomorrowReservationComponent';
 
 const TomorrowReservationList = () => {
   const rooms = [1, 2, 3, 4, 5];

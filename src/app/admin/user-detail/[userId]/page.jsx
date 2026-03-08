@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '../../../../libs/api/instance';
+import axiosInstance from '@api/instance';
 import useTokenStore from '../../../../stores/useTokenStore';
 import ReservationItem from '@components/admin/ReservationItem';
 

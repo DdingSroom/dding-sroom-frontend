@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import useTokenStore from '../../../stores/useTokenStore';
-import MyPageHeader from '@components/common/MyPageHeader';
-import ReservationList from '@components/common/ReservationList';
+import MyPageHeader from '@components/my/MyPageHeader';
+import ReservationList from '@components/reservation/ReservationList';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '../../../components/common/FooterNav';

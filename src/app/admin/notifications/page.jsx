@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axiosInstance from '../../../libs/api/instance';
+import axiosInstance from '@api/instance';
 
 export default function NotificationManagement() {
   const [notifications, setNotifications] = useState([]);

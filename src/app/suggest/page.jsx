@@ -2,7 +2,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@api/instance';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 

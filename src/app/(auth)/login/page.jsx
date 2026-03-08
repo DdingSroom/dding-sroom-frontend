@@ -3,13 +3,13 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { jwtDecode } from 'jwt-decode';
-import Button from '../../components/common/Button';
-import PrivacyPolicyFooter from '../../components/common/PrivacyPolicyFooter';
-import FooterNav from '../../components/common/FooterNav';
-import { isValidPassword, strictEmailRegex } from '../../constants/regex';
-import useTokenStore from '../../stores/useTokenStore';
-import axiosInstance, { setAccessToken } from '../../libs/api/instance';
-import { getLoginErrorMessage } from '../../utils/errorMessages';
+import Button from '@components/common/Button';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '@components/common/FooterNav';
+import { isValidPassword, strictEmailRegex } from '@constants/regex';
+import useTokenStore from '@stores/useTokenStore';
+import axiosInstance, { setAccessToken } from '@api/instance';
+import { getLoginErrorMessage } from '@utils/errorMessages';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

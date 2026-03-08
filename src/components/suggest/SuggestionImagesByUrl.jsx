@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@api/instance';
 
 export default function SuggestionImagesByUrl({
   suggestPostId,

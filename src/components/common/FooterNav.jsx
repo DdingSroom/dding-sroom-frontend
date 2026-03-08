@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import useTokenStore from '../../stores/useTokenStore';
-import LoginRequiredModal from './LoginRequiredModal';
+import useTokenStore from '@stores/useTokenStore';
+import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
 const FooterNav = () => {
   const router = useRouter();

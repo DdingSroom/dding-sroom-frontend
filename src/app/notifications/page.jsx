@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axiosInstance from '../../libs/api/instance';
+import axiosInstance from '@api/instance';
 import Header from '@components/common/Header';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
