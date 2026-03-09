@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
@@ -9,26 +9,43 @@ import TimeComponent from '@components/reservation/TimeComponent';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
-// 서버로 보낼 때 KST 로컬 시간을 ISO 형식(초까지)으로 전송
-const toKSTISOString = (date) => {
-  const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 19);
+//타임존 안전 유틸 (KST = UTC+9, DST 없음)
+const KST_MS = 9 * 60 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
+
+// UTC 타임스탬프에서 KST 시/분 추출
+const kstHour = (utcMs) => new Date(utcMs + KST_MS).getUTCHours();
+const kstMinute = (utcMs) => new Date(utcMs + KST_MS).getUTCMinutes();
+
+// KST HH:MM 포맷
+const formatTime = (utcMs) =>
+  `${String(kstHour(utcMs)).padStart(2, '0')}:${String(kstMinute(utcMs)).padStart(2, '0')}`;
+
+// 오늘 KST 자정의 UTC 타임스탬프
+const todayKSTMidnightUTC = () => {
+  const kst = new Date(Date.now() + KST_MS);
+  return (
+    Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate()) - KST_MS
+  );
 };
 
-const formatTime = (date) =>
-  `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+// 내일 KST 자정의 UTC 타임스탬프
+const tomorrowKSTMidnightUTC = () =>
+  todayKSTMidnightUTC() + 24 * 60 * 60 * 1000;
 
-// 10분 슬롯 키 (밀리초 단위, 10분 경계에 맞춰 스냅)
+// 10분 슬롯 키 (UTC 타임스탬프를 10분 경계로 스냅)
 const slotKey10m = (d) => {
-  const t = new Date(d);
-  t.setSeconds(0, 0);
-  const m = t.getMinutes();
-  t.setMinutes(m - (m % 10));
-  return t.getTime();
+  const ms = typeof d === 'number' ? d : new Date(d).getTime();
+  return ms - (ms % TEN_MIN);
 };
 
+// ISO 문자열에 분 추가
 const addMinutesISO = (iso, minutes) =>
   new Date(new Date(iso).getTime() + minutes * 60000).toISOString();
+
+// UTC 타임스탬프를 KST ISO 형식 문자열로 변환 (서버 전송용)
+const toKSTISOString = (utcMs) =>
+  new Date(utcMs + KST_MS).toISOString().slice(0, 19);
 
 const TomorrowReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
@@ -47,18 +64,14 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const router = useRouter();
 
-  // 내일 00:00 기준일
-  const tomorrow = useMemo(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 1);
-    date.setHours(0, 0, 0, 0);
-    return date;
-  }, []);
+  // 내일 KST 자정 UTC 타임스탬프
+  const tomorrowMidnight = useMemo(() => tomorrowKSTMidnightUTC(), []);
 
-  const formattedTomorrow = tomorrow.toLocaleDateString('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-  });
+  // KST 내일 날짜 표시용
+  const formattedTomorrow = useMemo(() => {
+    const kst = new Date(tomorrowMidnight + KST_MS);
+    return `${kst.getUTCMonth() + 1}월 ${kst.getUTCDate()}일`;
+  }, [tomorrowMidnight]);
 
   // 예약된 10분 슬롯 키 집합 (빠른 충돌 판정을 위해)
   const reserved10mKeys = useMemo(() => {
@@ -70,40 +83,31 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
     return set;
   }, [reservedTimeSlotsByRoom, roomId]);
 
-  // 내일의 10분 단위 타임슬롯 + 표시 전용 23:59
+  // 내일의 10분 단위 타임슬롯 UTC 타임스탬프 배열 + 표시 전용 23:59
   const timeSlots = useMemo(() => {
     const slots = [];
-    const base = new Date(tomorrow);
-    const end = new Date(tomorrow);
-    end.setHours(23, 50, 0, 0);
-    while (base <= end) {
-      slots.push(new Date(base));
-      base.setMinutes(base.getMinutes() + 10);
+    // 00:00 ~ 23:50 (144개 슬롯)
+    for (let i = 0; i < 144; i++) {
+      slots.push(tomorrowMidnight + i * TEN_MIN);
     }
     // 표시 전용 23:59
-    const disp = new Date(tomorrow);
-    disp.setHours(23, 59, 0, 0);
-    slots.push(disp);
+    slots.push(tomorrowMidnight + (23 * 60 + 59) * 60 * 1000);
     return slots;
-  }, [tomorrow]);
+  }, [tomorrowMidnight]);
 
   // 특정 구간이 예약과 충돌하는지 검사 (start 포함, end 제외)
   const isRangeAvailable = (startISO, endISO) => {
-    const start = new Date(startISO);
-    const end = new Date(endISO);
-    const walker = new Date(start);
-    while (walker < end) {
-      if (reserved10mKeys.has(slotKey10m(walker))) return false;
-      walker.setMinutes(walker.getMinutes() + 10);
+    const startMs = new Date(startISO).getTime();
+    const endMs = new Date(endISO).getTime();
+    for (let ms = startMs; ms < endMs; ms += TEN_MIN) {
+      if (reserved10mKeys.has(slotKey10m(ms))) return false;
     }
     return true;
   };
 
-  const getStatus = (timeISO) => {
+  const getStatus = (slotMs) => {
     // 내일 화면은 전체가 미래이므로 past는 없음. 예약 여부만 표시.
-    // 표시 전용 23:59는 그냥 available과 동일하게 렌더(필요시 별도 처리)
-    const isReserved = reserved10mKeys.has(slotKey10m(timeISO));
-    if (isReserved) return 'reserved';
+    if (reserved10mKeys.has(slotKey10m(slotMs))) return 'reserved';
     return 'available';
   };
 
@@ -126,10 +130,9 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       return;
     }
 
-    const reservationStart = new Date(startTime);
-    const reservationEnd = new Date(endTime);
-    const duration =
-      durationMinutes ?? (reservationEnd - reservationStart) / (1000 * 60);
+    const startMs = new Date(startTime).getTime();
+    const endMs = new Date(endTime).getTime();
+    const duration = durationMinutes ?? (endMs - startMs) / (1000 * 60);
 
     if (duration !== 60 && duration !== 120) {
       alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
@@ -140,8 +143,8 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
       const res = await axiosInstance.post('/api/reservations', {
         userId,
         roomId,
-        reservationStartTime: toKSTISOString(reservationStart),
-        reservationEndTime: toKSTISOString(reservationEnd),
+        reservationStartTime: toKSTISOString(startMs),
+        reservationEndTime: toKSTISOString(endMs),
       });
 
       alert(res.data.message || '예약이 완료되었습니다.');
@@ -165,15 +168,14 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto pb-2">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
-        {slots.map((time) => {
-          const hour = time.getHours();
-          const isFirstOfHour = time.getMinutes() === 0;
-          const timeISO = time.toISOString();
-          const status = getStatus(timeISO);
+        {slots.map((ms) => {
+          const hour = kstHour(ms);
+          const isFirstOfHour = kstMinute(ms) === 0;
+          const status = getStatus(ms);
 
           return (
             <div
-              key={timeISO}
+              key={ms}
               className="flex flex-col items-center"
               style={{ width: '10px' }}
             >
@@ -198,8 +200,8 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
   );
 
   const renderTimeBlocks = () => {
-    const morning = timeSlots.filter((t) => t.getHours() < 12);
-    const afternoon = timeSlots.filter((t) => t.getHours() >= 12);
+    const morning = timeSlots.filter((ms) => kstHour(ms) < 12);
+    const afternoon = timeSlots.filter((ms) => kstHour(ms) >= 12);
     return (
       <div className="flex flex-col gap-2">
         {morning.length > 0 && (
@@ -220,29 +222,42 @@ const TomorrowReservationComponent = ({ index, roomId }) => {
 
   const renderStartTimeOptions = () => {
     return timeSlots
-      .filter((time) => !reserved10mKeys.has(slotKey10m(time)))
-      .map((time) => (
-        <option key={time.toISOString()} value={time.toISOString()}>
-          {formatTime(time)}
-        </option>
-      ));
+      .filter((ms) => {
+        const h = kstHour(ms);
+        const m = kstMinute(ms);
+        // 23:59 표시 전용 슬롯 제외
+        if (h === 23 && m === 59) return false;
+        return !reserved10mKeys.has(slotKey10m(ms));
+      })
+      .map((ms) => {
+        const iso = new Date(ms).toISOString();
+        return (
+          <option key={iso} value={iso}>
+            {formatTime(ms)}
+          </option>
+        );
+      });
   };
 
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
-    const start = new Date(startTime);
-    const end1 = new Date(start.getTime() + 60 * 60000);
-    const end2 = new Date(start.getTime() + 120 * 60000);
+    const startMs = new Date(startTime).getTime();
+    const end1Ms = startMs + 60 * 60000;
+    const end2Ms = startMs + 120 * 60000;
+    const startISO = new Date(startMs).toISOString();
 
-    const candidates = [end1, end2].filter((time) =>
-      isRangeAvailable(start.toISOString(), time.toISOString()),
+    const candidates = [end1Ms, end2Ms].filter((ms) =>
+      isRangeAvailable(startISO, new Date(ms).toISOString()),
     );
 
-    return candidates.map((time) => (
-      <option key={time.toISOString()} value={time.toISOString()}>
-        {formatTime(time)}
-      </option>
-    ));
+    return candidates.map((ms) => {
+      const iso = new Date(ms).toISOString();
+      return (
+        <option key={iso} value={iso}>
+          {formatTime(ms)}
+        </option>
+      );
+    });
   };
 
   return (
