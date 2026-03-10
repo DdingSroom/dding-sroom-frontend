@@ -9,6 +9,9 @@ tone_instructions: > # 리뷰어 페르소나 및 스타일 지침
 
 early_access: false # 실험적 기능 사용 여부
 
+ignore_title_keywords:
+  - "[Docs]"
+
 path_filters:
   - "!public/**"
   - "!.next/**"
@@ -32,6 +35,9 @@ reviews:
     enabled: true # PR 생성 시 자동 리뷰 실행
     auto_incremental_review: true # 새 커밋 push 시 추가 리뷰 실행
     drafts: false # Draft PR 자동 리뷰 포함 여부
+    base_branches:
+    - "develop"
+    - "main"
 
   path_instructions:
     - path: "src/app/**"
@@ -67,4 +73,4 @@ reviews:
         응답 데이터 파싱과 타입 계약이 호출부와 일관되는지, 실패 케이스가 사용자 경험에 맞게 처리되는지 함께 검토해주세요.
 
 chat:
-  auto_reply: true # 멘션 없이도 자동 응답 여부
+  auto_reply: false # 멘션 없이도 자동 응답 여부
