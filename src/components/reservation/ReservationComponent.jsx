@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../stores/useTokenStore';
 import useReservationStore from '../../stores/useReservationStore';
@@ -9,38 +9,39 @@ import TimeComponent from '@components/reservation/TimeComponent';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
-// KST(Asia/Seoul) 현재시각
-const nowInKST = () =>
-  new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+// 타임존 안전 유틸 (KST = UTC+9, DST 없음)
+const KST_MS = 9 * 60 * 60 * 1000;
+const TEN_MIN = 10 * 60 * 1000;
 
-// 서버로 보낼 때 KST 로컬 시간을 ISO 형식(초까지)으로 전송
-const toKSTISOString = (date) => {
-  const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 19);
+// UTC 타임스탬프에서 KST 시/분 추출
+const kstHour = (utcMs) => new Date(utcMs + KST_MS).getUTCHours();
+const kstMinute = (utcMs) => new Date(utcMs + KST_MS).getUTCMinutes();
+
+// KST HH:MM 포맷
+const formatTime = (utcMs) =>
+  `${String(kstHour(utcMs)).padStart(2, '0')}:${String(kstMinute(utcMs)).padStart(2, '0')}`;
+
+// 오늘 KST 자정의 UTC 타임스탬프
+const todayKSTMidnightUTC = () => {
+  const kst = new Date(Date.now() + KST_MS);
+  return (
+    Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth(), kst.getUTCDate()) - KST_MS
+  );
 };
 
-const formatTime = (date) =>
-  `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-
-// 10분 슬롯 키 (밀리초 단위, 10분 경계에 맞춰 스냅)
+// 10분 슬롯 키 (UTC 타임스탬프를 10분 경계로 스냅)
 const slotKey10m = (d) => {
-  const t = new Date(d);
-  t.setSeconds(0, 0);
-  const m = t.getMinutes();
-  t.setMinutes(m - (m % 10));
-  return t.getTime();
+  const ms = typeof d === 'number' ? d : new Date(d).getTime();
+  return ms - (ms % TEN_MIN);
 };
 
+// ISO 문자열에 분 추가
 const addMinutesISO = (iso, minutes) =>
   new Date(new Date(iso).getTime() + minutes * 60000).toISOString();
 
-// 오늘(현지 PC 타임존 무관) KST 기준 00:00 Date
-const todayKSTMidnight = () => {
-  const n = nowInKST();
-  const t = new Date(n);
-  t.setHours(0, 0, 0, 0);
-  return t;
-};
+// UTC 타임스탬프를 KST ISO 형식 문자열로 변환 (서버 전송용)
+const toKSTISOString = (utcMs) =>
+  new Date(utcMs + KST_MS).toISOString().slice(0, 19);
 
 const ReservationComponent = ({ index, roomId }) => {
   const [open, setOpen] = useState(false);
@@ -69,53 +70,45 @@ const ReservationComponent = ({ index, roomId }) => {
     return set;
   }, [reservedTimeSlotsByRoom, roomId]);
 
-  // KST 오늘 타임슬롯(10분 단위) + 표시 전용 23:59
+  // KST 오늘 타임슬롯(10분 단위) UTC 타임스탬프 배열 + 표시 전용 23:59
   const timeSlots = useMemo(() => {
+    const midnight = todayKSTMidnightUTC();
     const slots = [];
-    const base = todayKSTMidnight();
-    const end = new Date(base);
-    end.setHours(23, 50, 0, 0);
-    const walker = new Date(base);
-
-    while (walker <= end) {
-      slots.push(new Date(walker));
-      walker.setMinutes(walker.getMinutes() + 10);
+    // 00:00 ~ 23:50 (144개 슬롯)
+    for (let i = 0; i < 144; i++) {
+      slots.push(midnight + i * TEN_MIN);
     }
-    const disp = new Date(base);
-    disp.setHours(23, 59, 0, 0);
-    slots.push(disp);
-
+    // 표시 전용 23:59
+    slots.push(midnight + (23 * 60 + 59) * 60 * 1000);
     return slots;
   }, []);
 
   // 특정 구간이 예약과 충돌하는지 검사 (start 포함, end 제외)
   const isRangeAvailable = (startISO, endISO) => {
-    const start = new Date(startISO);
-    const end = new Date(endISO);
-    const walker = new Date(start);
-    while (walker < end) {
-      if (reserved10mKeys.has(slotKey10m(walker))) return false;
-      walker.setMinutes(walker.getMinutes() + 10);
+    const startMs = new Date(startISO).getTime();
+    const endMs = new Date(endISO).getTime();
+    for (let ms = startMs; ms < endMs; ms += TEN_MIN) {
+      if (reserved10mKeys.has(slotKey10m(ms))) return false;
     }
     return true;
   };
 
   // 슬롯 색상 판정: past > reserved > available
-  const getStatus = (timeISO) => {
-    const t = new Date(timeISO);
+  const getStatus = (slotMs) => {
+    const h = kstHour(slotMs);
+    const m = kstMinute(slotMs);
 
     // 23:59(표시 전용)는 end 계산에서 10분 더하지 않음
-    const isDisplayLast = t.getHours() === 23 && t.getMinutes() === 59;
+    const isDisplayLast = h === 23 && m === 59;
 
-    const slotEnd = isDisplayLast
-      ? new Date(t) // 표시에만 쓰므로 end == start 취급
-      : new Date(t.getTime() + 10 * 60 * 1000);
+    const slotEndMs = isDisplayLast
+      ? slotMs // 표시에만 쓰므로 end == start 취급
+      : slotMs + TEN_MIN;
 
-    const now = nowInKST();
-    const isPast = slotEnd.getTime() <= now.getTime(); // end <= now 이면 과거
+    const isPast = slotEndMs <= Date.now(); // end <= now 이면 과거
 
     if (!isDisplayLast && isPast) return 'past';
-    if (reserved10mKeys.has(slotKey10m(t))) return 'reserved';
+    if (reserved10mKeys.has(slotKey10m(slotMs))) return 'reserved';
     return 'available';
   };
 
@@ -138,10 +131,9 @@ const ReservationComponent = ({ index, roomId }) => {
       return;
     }
 
-    const reservationStart = new Date(startTime);
-    const reservationEnd = new Date(endTime);
-    const duration =
-      durationMinutes ?? (reservationEnd - reservationStart) / (1000 * 60);
+    const startMs = new Date(startTime).getTime();
+    const endMs = new Date(endTime).getTime();
+    const duration = durationMinutes ?? (endMs - startMs) / (1000 * 60);
 
     if (duration !== 60 && duration !== 120) {
       alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
@@ -152,8 +144,8 @@ const ReservationComponent = ({ index, roomId }) => {
       const res = await axiosInstance.post('/api/reservations', {
         userId,
         roomId,
-        reservationStartTime: toKSTISOString(reservationStart),
-        reservationEndTime: toKSTISOString(reservationEnd),
+        reservationStartTime: toKSTISOString(startMs),
+        reservationEndTime: toKSTISOString(endMs),
       });
 
       alert(res.data.message || '예약이 완료되었습니다.');
@@ -176,67 +168,76 @@ const ReservationComponent = ({ index, roomId }) => {
 
   // KST 현재 시각을 10분 단위로 올림(예: 14:03 → 14:10)
   const kstRoundedUpNow = () => {
-    const n = nowInKST();
-    const r = new Date(n);
-    r.setSeconds(0, 0);
-    const m = r.getMinutes();
-    r.setMinutes(m % 10 === 0 ? m : m + (10 - (m % 10)));
-    return r;
+    const now = Date.now();
+    // 초 이하 제거 (분 단위로 내림)
+    const minuteMs = now - (now % 60000);
+    // 10분 경계로 올림
+    const remainder = minuteMs % TEN_MIN;
+    return remainder === 0 ? minuteMs : minuteMs + (TEN_MIN - remainder);
   };
 
   // 오늘 모달: 시작시간 옵션(미래+비예약만)
   const renderStartTimeOptions = () => {
     const rounded = kstRoundedUpNow();
-    const end = todayKSTMidnight();
-    end.setHours(23, 50, 0, 0);
+    const midnight = todayKSTMidnightUTC();
+    const endMs = midnight + (23 * 60 + 50) * 60 * 1000; // 23:50 KST
 
     const options = [];
-    const walker = new Date(rounded);
-    while (walker <= end) {
-      const k = slotKey10m(walker);
-      if (!reserved10mKeys.has(k)) {
-        options.push(new Date(walker));
+    for (let ms = rounded; ms <= endMs; ms += TEN_MIN) {
+      if (!reserved10mKeys.has(slotKey10m(ms))) {
+        options.push(ms);
       }
-      walker.setMinutes(walker.getMinutes() + 10);
     }
 
-    return options.map((time) => (
-      <option key={time.toISOString()} value={time.toISOString()}>
-        {formatTime(time)}
-      </option>
-    ));
+    return options.map((ms) => {
+      const iso = new Date(ms).toISOString();
+      return (
+        <option key={iso} value={iso}>
+          {formatTime(ms)}
+        </option>
+      );
+    });
   };
 
   // 오늘 모달: 종료시간 후보(1h/2h) 중 충돌 없는 것만
   const renderEndTimeOptions = () => {
     if (!startTime) return [];
-    const start = new Date(startTime);
-    const end1 = new Date(start.getTime() + 60 * 60000);
-    const end2 = new Date(start.getTime() + 120 * 60000);
+    const startMs = new Date(startTime).getTime();
+    const end1Ms = startMs + 60 * 60000;
+    const end2Ms = startMs + 120 * 60000;
+    const startISO = new Date(startMs).toISOString();
 
-    const candidates = [end1, end2].filter((time) =>
-      isRangeAvailable(start.toISOString(), time.toISOString()),
+    const candidates = [end1Ms, end2Ms].filter((ms) =>
+      isRangeAvailable(startISO, new Date(ms).toISOString()),
     );
 
-    return candidates.map((time) => (
-      <option key={time.toISOString()} value={time.toISOString()}>
-        {formatTime(time)}
-      </option>
-    ));
+    return candidates.map((ms) => {
+      const iso = new Date(ms).toISOString();
+      return (
+        <option key={iso} value={iso}>
+          {formatTime(ms)}
+        </option>
+      );
+    });
+  };
+
+  // KST 오늘 날짜 표시용
+  const todayKSTDisplay = () => {
+    const kst = new Date(Date.now() + KST_MS);
+    return `${kst.getUTCMonth() + 1}월 ${kst.getUTCDate()}일`;
   };
 
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto pb-3">
       <div className="flex flex-row min-w-[720px] sm:min-w-0">
-        {slots.map((time) => {
-          const hour = time.getHours();
-          const isFirstOfHour = time.getMinutes() === 0;
-          const timeISO = time.toISOString();
-          const status = getStatus(timeISO);
+        {slots.map((ms) => {
+          const hour = kstHour(ms);
+          const isFirstOfHour = kstMinute(ms) === 0;
+          const status = getStatus(ms);
 
           return (
             <div
-              key={timeISO}
+              key={ms}
               className="flex flex-col items-center"
               style={{ width: '10px' }}
             >
@@ -261,8 +262,8 @@ const ReservationComponent = ({ index, roomId }) => {
   );
 
   const renderTimeBlocks = () => {
-    const morning = timeSlots.filter((t) => t.getHours() < 12);
-    const afternoon = timeSlots.filter((t) => t.getHours() >= 12);
+    const morning = timeSlots.filter((ms) => kstHour(ms) < 12);
+    const afternoon = timeSlots.filter((ms) => kstHour(ms) >= 12);
     return (
       <div className="flex flex-col gap-2">
         {morning.length > 0 && (
@@ -303,10 +304,7 @@ const ReservationComponent = ({ index, roomId }) => {
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">스터디룸 {index}</div>
             <div className="flex justify-center items-center text-sm text-gray-500">
-              {nowInKST().toLocaleDateString('ko-KR', {
-                month: 'long',
-                day: 'numeric',
-              })}
+              {todayKSTDisplay()}
             </div>
             <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
 
