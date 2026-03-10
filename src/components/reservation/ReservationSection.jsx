@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import TodayReservationList from '@components/common/TodayReservationList';
-import TomorrowReservationList from '@components/common/TomorrowReservationList';
-import useReservationStore from '../../stores/useReservationStore';
+import TodayReservationList from '@components/reservation/TodayReservationList';
+import TomorrowReservationList from '@components/reservation/TomorrowReservationList';
+import useReservationStore from '@stores/useReservationStore';
 
 const ReservationSection = () => {
   const [currentTab, setTab] = useState(0);

@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '../../../libs/api/instance';
-import { anonymizeUsers } from '../../../utils/anonymizeUser';
+import axiosInstance from '@api/instance';
+import { anonymizeUsers } from '@utils/anonymizeUser';
 import CommunityHeader from '@components/community/CommunityHeader';
 import CommentItem from '@components/community/CommentItem';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';

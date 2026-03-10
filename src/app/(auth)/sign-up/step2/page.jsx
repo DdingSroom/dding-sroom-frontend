@@ -1,11 +1,12 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isValidPassword } from '../../../constants/regex';
-import axiosInstance from '../../../libs/api/instance';
-import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
+import { isValidPassword } from '@constants/regex';
+import useSignupStore from '@stores/useSignupStore';
+import Button from '@components/common/Button';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import FooterNav from '@components/common/FooterNav';
+import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -16,25 +17,16 @@ function BottomSafeSpacer({ height = 64 }) {
   );
 }
 
-export default function ResetPassword2() {
-  const [email, setEmail] = useState('');
+export default function SignUpStep2() {
+  const router = useRouter();
   const [newPassword, setnewPassword] = useState('');
   const [newPassword_2, setnewPassword_2] = useState('');
   const [isnewPasswordVisible, setIsnewPasswordVisible] = useState(false);
   const [isnewPassword_2Visible, setIsnewPassword_2Visible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
-  const router = useRouter();
 
-  useEffect(() => {
-    const storedEmail = sessionStorage.getItem('resetEmail');
-    if (storedEmail) {
-      setEmail(storedEmail);
-    } else {
-      alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
-      router.push('/login/reset-password-step1');
-    }
-  }, [router]);
+  const { setSignupField } = useSignupStore();
 
   const handlenewPasswordVisible = () => {
     setIsnewPasswordVisible(!isnewPasswordVisible);
@@ -44,40 +36,32 @@ export default function ResetPassword2() {
     setIsnewPassword_2Visible(!isnewPassword_2Visible);
   };
 
-  const isLoginAvailable = () => {
+  const isNextAvailable = () => {
     return isValidPassword(newPassword) && newPassword === newPassword_2;
   };
 
-  const handlePasswordReset = async () => {
-    try {
-      const response = await axiosInstance.post('/user/modify-password', {
-        email,
-        password: newPassword,
-      });
-      console.log('비밀번호 재설정 성공:', response.data);
-      alert('비밀번호가 성공적으로 변경되었습니다.');
-      router.push('/login');
-    } catch (error) {
-      console.error('비밀번호 재설정 실패:', error);
-      console.log('에러 응답:', error?.response?.data);
-      alert('비밀번호 재설정에 실패했습니다.');
-    }
+  const handleNextStep = () => {
+    setSignupField('password', newPassword);
+    router.push('/login/sign-up-step3');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* 본문 */}
       <main className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
+          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
           <p className="text-[#73726e] text-sm">비밀번호 입력</p>
+        </div>
+
+        <div className="mb-8">
+          <CustomizedStepper />
         </div>
 
         <div className="max-w-md mx-auto w-full">
           <div className="space-y-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-[#37352f]">
-                새 비밀번호
+                비밀번호
               </label>
               <NewPasswordField
                 id="newPassword"
@@ -109,7 +93,7 @@ export default function ResetPassword2() {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-[#37352f]">
-                새 비밀번호 확인
+                비밀번호 확인
               </label>
               <ConfirmPasswordField
                 id="newPassword_2"
@@ -134,20 +118,18 @@ export default function ResetPassword2() {
                 <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
               )}
             </div>
-
-            {/* 버튼: 입력 블록 바로 아래 */}
-            <div className="w-full pt-2">
-              <Button
-                onClick={handlePasswordReset}
-                disabled={!isLoginAvailable()}
-                text="확인"
-              />
-            </div>
           </div>
+        </div>
+
+        <div className="max-w-md mx-auto w-full mt-8">
+          <Button
+            onClick={handleNextStep}
+            disabled={!isNextAvailable()}
+            text="확인"
+          />
         </div>
       </main>
 
-      {/* 푸터: 여백 없이 하단 고정 */}
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />

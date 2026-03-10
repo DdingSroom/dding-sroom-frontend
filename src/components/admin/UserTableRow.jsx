@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateUserStatus } from '../../libs/api/admin';
+import { updateUserStatus } from '@api/admin';
 
 export default function UserTableRow({ user, onUserUpdate }) {
   const router = useRouter();

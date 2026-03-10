@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import axiosInstance from '../libs/api/instance';
+import axiosInstance from '@api/instance';
 
 const useCommunityStore = create((set, get) => ({
   posts: [],

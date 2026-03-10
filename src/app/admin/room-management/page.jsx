@@ -3,8 +3,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '../../../libs/api/instance';
-import { updateRoomStatus } from '../../../libs/api/admin';
+import axiosInstance from '@api/instance';
+import { updateRoomStatus } from '@api/admin';
 import useTokenStore from '../../../stores/useTokenStore';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];

@@ -9,7 +9,7 @@ import Header from '@components/common/Header';
 import Banner from '@components/common/Banner';
 import SecondBanner from '@components/common/SecondBanner';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import ReservationSection from '@components/common/ReservationSection';
+import ReservationSection from '@components/reservation/ReservationSection';
 
 const AfterLoginBanner = dynamic(
   () => import('@components/common/AfterLoginBanner'),
