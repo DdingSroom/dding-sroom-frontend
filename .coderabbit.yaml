@@ -9,6 +9,12 @@ tone_instructions: > # 리뷰어 페르소나 및 스타일 지침
 
 early_access: false # 실험적 기능 사용 여부
 
+path_filters:
+  - "!public/**"
+  - "!.next/**"
+  - "!node_modules/**"
+  - "!yarn.lock"
+
 reviews:
   profile: "chill" # 리뷰 강도 ('chill': 일반 / 'assertive': 꼼꼼)
   request_changes_workflow: false # 이슈 미해결 시 PR 승인 보류 여부
