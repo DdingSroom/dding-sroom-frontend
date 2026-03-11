@@ -9,15 +9,6 @@ tone_instructions: > # 리뷰어 페르소나 및 스타일 지침
 
 early_access: false # 실험적 기능 사용 여부
 
-ignore_title_keywords:
-  - "[Docs]"
-
-path_filters:
-  - "!public/**"
-  - "!.next/**"
-  - "!node_modules/**"
-  - "!yarn.lock"
-
 reviews:
   profile: "chill" # 리뷰 강도 ('chill': 일반 / 'assertive': 꼼꼼)
   request_changes_workflow: false # 이슈 미해결 시 PR 승인 보류 여부
@@ -31,13 +22,22 @@ reviews:
   auto_assign_reviewers: false # 추천 리뷰어 자동 배정
   sequence_diagrams: false # 시퀀스 다이어그램 자동 생성
   poem: true # 워크스루 하단에 짧은 시 추가
+
   auto_review:
     enabled: true # PR 생성 시 자동 리뷰 실행
     auto_incremental_review: true # 새 커밋 push 시 추가 리뷰 실행
     drafts: false # Draft PR 자동 리뷰 포함 여부
+    ignore_title_keywords:
+      - "[Docs]"
     base_branches:
-    - "develop"
-    - "main"
+      - "develop"
+      - "main"
+  
+  path_filters:
+    - "!public/**"
+    - "!.next/**"
+    - "!node_modules/**"
+    - "!yarn.lock"
 
   path_instructions:
     - path: "src/app/**"
