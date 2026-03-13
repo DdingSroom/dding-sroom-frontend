@@ -211,7 +211,7 @@ export default function AccountInfo() {
 
                 <MyPageBlock
                   name="비밀번호 재설정"
-                  linkPath="/login/reset-password-step1"
+                  linkPath="/reset-password/step1"
                 />
                 <MyPageBlock
                   name="회원 탈퇴"

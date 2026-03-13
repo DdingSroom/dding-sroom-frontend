@@ -93,7 +93,7 @@ export default function ManualContent() {
       <div className="mt-6 text-right text-xs text-[#73726e]">
         <button
           type="button"
-          onClick={() => router.push('/login/sign-up-step1')}
+          onClick={() => router.push('/sign-up/step1')}
           className="hover:underline underline-offset-4 text-[#788cff]"
         >
           이전 페이지로 돌아가기
