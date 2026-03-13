@@ -42,7 +42,7 @@ export default function SignUpStep2() {
 
   const handleNextStep = () => {
     setSignupField('password', newPassword);
-    router.push('/login/sign-up-step3');
+    router.push('/sign-up/step3');
   };
 
   return (
