@@ -3,9 +3,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '@api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
 import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
+import axiosInstance from '@api/instance';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 

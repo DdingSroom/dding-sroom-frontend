@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import useTokenStore from '../../../stores/useTokenStore';
+import FooterNav from '../../../components/common/FooterNav';
 import MyPageHeader from '@components/my/MyPageHeader';
 import ReservationList from '@components/reservation/ReservationList';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
