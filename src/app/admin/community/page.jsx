@@ -3,8 +3,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '@api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
+import axiosInstance from '@api/instance';
 
 export default function AdminCommunityPage() {
   const router = useRouter();

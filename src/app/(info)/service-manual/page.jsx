@@ -428,10 +428,7 @@ function QuickStart() {
       </h2>
       <ol className="list-decimal pl-5 space-y-2 text-[15px] leading-[1.9]">
         <li>
-          <Link
-            href="/sign-up/step1"
-            className="text-[#788cff] underline"
-          >
+          <Link href="/sign-up/step1" className="text-[#788cff] underline">
             학교 이메일로 회원가입
           </Link>{' '}
           (인증번호 확인)

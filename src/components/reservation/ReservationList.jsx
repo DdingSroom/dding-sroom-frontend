@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import ReservationHistory from './ReservationHistory';
+import CancellationModal from './CancellationModal';
 import axiosInstance from '@api/instance';
 import useTokenStore from '@stores/useTokenStore';
 import useReservationStore from '@stores/useReservationStore';
 import MyPageDate from '@components/my/MyPageDate';
-import ReservationHistory from './ReservationHistory';
-import CancellationModal from './CancellationModal';
 
 const toDateFromRaw = (raw) => {
   if (!raw) return null;
