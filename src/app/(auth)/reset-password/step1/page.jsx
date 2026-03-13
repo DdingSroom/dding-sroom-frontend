@@ -281,7 +281,7 @@ export default function ResetPassWord1() {
 
           <div className="mt-8">
             <Link
-              href={isCodeVerified ? '/login/reset-password-step2' : '#'}
+              href={isCodeVerified ? '/reset-password/step2' : '#'}
               onClick={(e) => !isCodeVerified && e.preventDefault()}
             >
               <Button

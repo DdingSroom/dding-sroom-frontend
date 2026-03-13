@@ -15,7 +15,7 @@ export default function ConfirmAndBack() {
 
   return (
     <Link
-      href="/login/sign-up-step3"
+      href="/sign-up/step3"
       onClick={handleClick}
       className="inline-flex items-center justify-center rounded-xl 
                  bg-[#788cff] text-white px-6 py-3 text-base font-semibold

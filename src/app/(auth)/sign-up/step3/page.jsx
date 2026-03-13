@@ -89,7 +89,7 @@ export default function SignUpStep3() {
       }
       resetSignupData();
 
-      router.push(`/login/sign-up-step4?username=${encodeURIComponent(name)}`);
+      router.push(`/sign-up/step4?username=${encodeURIComponent(name)}`);
     } catch (error) {
       console.error('회원가입 실패:', error);
       alert(

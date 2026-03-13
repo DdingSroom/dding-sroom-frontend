@@ -235,13 +235,13 @@ function LoginForm() {
 
             <div className="flex items-center gap-4 text-xs text-[#73726e]">
               <Link
-                href="/login/sign-up-step1"
+                href="/sign-up/step1"
                 className="hover:text-[#37352f] transition-colors"
               >
                 회원가입
               </Link>
               <Link
-                href="/login/reset-password-step1"
+                href="/reset-password/step1"
                 className="hover:text-[#37352f] transition-colors"
               >
                 비밀번호 재설정

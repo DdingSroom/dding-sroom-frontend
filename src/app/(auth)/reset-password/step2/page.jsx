@@ -32,7 +32,7 @@ export default function ResetPassword2() {
       setEmail(storedEmail);
     } else {
       alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
-      router.push('/login/reset-password-step1');
+      router.push('/reset-password/step1');
     }
   }, [router]);
 
