@@ -163,7 +163,7 @@ export default function SignUpStep1() {
 
   const handleNext = () => {
     setSignupField('email', email);
-    router.push('/login/sign-up-step2');
+    router.push('/sign-up/step2');
   };
 
   const canVerify = codeSent && secondsLeft > 0 && /^[0-9]{6}$/.test(number);
