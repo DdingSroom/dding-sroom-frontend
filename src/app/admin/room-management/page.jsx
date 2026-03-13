@@ -3,9 +3,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import useTokenStore from '../../../stores/useTokenStore';
 import axiosInstance from '@api/instance';
 import { updateRoomStatus } from '@api/admin';
-import useTokenStore from '../../../stores/useTokenStore';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
 const DEFAULT_ROOM_IMAGE_SRC = '/static/icons/studyroom_image.png';

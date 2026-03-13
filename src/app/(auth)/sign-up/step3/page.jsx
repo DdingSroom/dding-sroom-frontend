@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import CustomizedStepper from './customizedStepper';
 import useSignupStore from '@stores/useSignupStore';
 import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
-import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
