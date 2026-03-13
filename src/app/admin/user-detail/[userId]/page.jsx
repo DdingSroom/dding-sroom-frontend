@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '@api/instance';
 import useTokenStore from '../../../../stores/useTokenStore';
+import axiosInstance from '@api/instance';
 import ReservationItem from '@components/admin/ReservationItem';
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -22,26 +22,26 @@ function formatDateTimeRange(startArray, endArray) {
   return `${y}.${pad(m)}.${pad(d)} ${pad(h)}:${pad(min)} ~ ${pad(h2)}:${pad(min2)}`;
 }
 
-function normalizeStatus(v) {
-  if (v == null) return 'normal';
-  const s = String(v).toLowerCase();
-  if (['blocked', 'block', 'banned', 'inactive', 'disabled'].includes(s))
-    return 'blocked';
-  if (['normal', 'active', 'enabled'].includes(s)) return 'normal';
-  return 'normal';
-}
+// function normalizeStatus(v) {
+//   if (v == null) return 'normal';
+//   const s = String(v).toLowerCase();
+//   if (['blocked', 'block', 'banned', 'inactive', 'disabled'].includes(s))
+//     return 'blocked';
+//   if (['normal', 'active', 'enabled'].includes(s)) return 'normal';
+//   return 'normal';
+// }
 
-function deriveStatus(u) {
-  if (!u) return 'normal';
-  if (typeof u.isBlocked === 'boolean')
-    return u.isBlocked ? 'blocked' : 'normal';
-  if (typeof u.enabled === 'boolean') return u.enabled ? 'normal' : 'blocked';
-  if (u.accountStatus != null) return normalizeStatus(u.accountStatus);
-  if (u.status != null) return normalizeStatus(u.status);
-  return 'normal';
-}
+// function deriveStatus(u) {
+//   if (!u) return 'normal';
+//   if (typeof u.isBlocked === 'boolean')
+//     return u.isBlocked ? 'blocked' : 'normal';
+//   if (typeof u.enabled === 'boolean') return u.enabled ? 'normal' : 'blocked';
+//   if (u.accountStatus != null) return normalizeStatus(u.accountStatus);
+//   if (u.status != null) return normalizeStatus(u.status);
+//   return 'normal';
+// }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function UserDetailPage() {
   const { userId } = useParams();
@@ -99,69 +99,69 @@ export default function UserDetailPage() {
     }
   }, [userId, fetchUserDetail, fetchUserReservations]);
 
-  const userStatus = useMemo(() => deriveStatus(user), [user]);
+  // const userStatus = useMemo(() => deriveStatus(user), [user]);
   // const isBlocked = userStatus === 'blocked';
 
-  const updateUserStatus = useCallback(
-    async (nextStatus) => {
-      if (!userId)
-        throw new Error(
-          'userId가 없습니다. 라우트 세그먼트 [userId]를 확인하세요.',
-        );
-      const prevUser = user;
-
-      try {
-        // 즉시 UI 업데이트 (Optimistic update)
-        setUser((p) =>
-          p
-            ? {
-                ...p,
-                status: nextStatus,
-                accountStatus: nextStatus,
-                isBlocked: nextStatus === 'blocked',
-                enabled: nextStatus !== 'blocked',
-              }
-            : p,
-        );
-
-        console.log(`Updating user ${userId} status to:`, nextStatus);
-
-        const response = await axiosInstance.put(
-          `/admin/users/${userId}/status`,
-          null,
-          {
-            params: { status: nextStatus },
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-
-        console.log('User status update success:', response.data);
-
-        // API 성공 후 최신 상태 재조회
-        for (let i = 0; i < 3; i++) {
-          await sleep(250 * (i + 1));
-          const fresh = await fetchUserDetail();
-          if (fresh && deriveStatus(fresh) === nextStatus) break;
-        }
-      } catch (e) {
-        console.error('사용자 상태 변경 실패:', e);
-
-        // 실패 시 이전 상태로 롤백
-        setUser(prevUser);
-        throw e;
-      }
-    },
-    [userId, user, fetchUserDetail, accessToken],
-  );
+  // const updateUserStatus = useCallback(
+  //   async (nextStatus) => {
+  //     if (!userId)
+  //       throw new Error(
+  //         'userId가 없습니다. 라우트 세그먼트 [userId]를 확인하세요.',
+  //       );
+  //     const prevUser = user;
+  //
+  //     try {
+  //       // 즉시 UI 업데이트 (Optimistic update)
+  //       setUser((p) =>
+  //         p
+  //           ? {
+  //               ...p,
+  //               status: nextStatus,
+  //               accountStatus: nextStatus,
+  //               isBlocked: nextStatus === 'blocked',
+  //               enabled: nextStatus !== 'blocked',
+  //             }
+  //           : p,
+  //       );
+  //
+  //       console.log(`Updating user ${userId} status to:`, nextStatus);
+  //
+  //       const response = await axiosInstance.put(
+  //         `/admin/users/${userId}/status`,
+  //         null,
+  //         {
+  //           params: { status: nextStatus },
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         },
+  //       );
+  //
+  //       console.log('User status update success:', response.data);
+  //
+  //       // API 성공 후 최신 상태 재조회
+  //       for (let i = 0; i < 3; i++) {
+  //         await sleep(250 * (i + 1));
+  //         const fresh = await fetchUserDetail();
+  //         if (fresh && deriveStatus(fresh) === nextStatus) break;
+  //       }
+  //     } catch (e) {
+  //       console.error('사용자 상태 변경 실패:', e);
+  //
+  //       // 실패 시 이전 상태로 롤백
+  //       setUser(prevUser);
+  //       throw e;
+  //     }
+  //   },
+  //   [userId, user, fetchUserDetail, accessToken],
+  // );
 
   // const handleStatusToggle = useCallback(async () => {
   if (!user) return;
 
-  const currentStatus = userStatus;
-  const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
-  const statusText = newStatus === 'blocked' ? '차단' : '정상';
+  // const currentStatus = userStatus;
+  // const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
+  // const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
   // if (
   //   !confirm(`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`)
