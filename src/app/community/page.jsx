@@ -127,7 +127,7 @@ export default function CommunityPage() {
                   className={`relative flex-1 py-3 text-sm md:text-base font-medium transition-colors
                     ${active ? 'text-[#4c6fff]' : 'text-gray-500 hover:text-gray-700'}`}
                   role="tab"
-                  aria-pressed={active}
+                  aria-selected={active}
                 >
                   {category.name}
                   <span
