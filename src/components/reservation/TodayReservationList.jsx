@@ -13,7 +13,7 @@ const TodayReservationList = () => {
     {
       id: 9,
       name: '휴게공간 4',
-      notice: '장애우 전용 공간이므로 장애우 분들만 예약 가능합니다.',
+      notice: '장애우 전용 공간이므로\n장애우 분들만 예약 가능합니다.',
     },
   ];
 

@@ -286,11 +286,19 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
     <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-[100%] mt-[1rem]">
       <div className="flex justify-between items-center">
         <div className="flex gap-3 sm:gap-5 items-center">
-          <div className="text-xl sm:text-2xl">
+          <div className="text-xl sm:text-2xl whitespace-nowrap flex-shrink-0">
             {roomName || `스터디룸 ${index}`}
           </div>
-          {caption && <div className="text-[#9999A3] text-sm">{caption}</div>}
-          {notice && <div className="text-[#3250F5] text-xs">{notice}</div>}
+          {caption && (
+            <div className="text-[#9999A3] text-sm whitespace-nowrap flex-shrink-0">
+              {caption}
+            </div>
+          )}
+          {notice && (
+            <div className="text-[#3250F5] text-xs whitespace-pre-line">
+              {notice}
+            </div>
+          )}
         </div>
         <button
           className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-[#2a47e3] transition-colors duration-200 font-medium"
