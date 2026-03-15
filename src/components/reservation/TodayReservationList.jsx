@@ -1,12 +1,18 @@
 import ReservationComponent from '@components/reservation/ReservationComponent';
+import { ROOMS } from '@constants/rooms';
 
 const TodayReservationList = () => {
-  const rooms = [1, 2, 3, 4, 5];
-
   return (
     <div className="w-full">
-      {rooms.map((roomId, index) => (
-        <ReservationComponent key={roomId} index={index + 1} roomId={roomId} />
+      {ROOMS.map((room, index) => (
+        <ReservationComponent
+          key={room.id}
+          index={index + 1}
+          roomId={room.id}
+          roomName={room.name}
+          caption={room.caption}
+          notice={room.notice}
+        />
       ))}
     </div>
   );
