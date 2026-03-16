@@ -1,15 +1,17 @@
 import TomorrowReservationComponent from '@components/reservation/TomorrowReservationComponent';
+import { ROOMS } from '@constants/rooms';
 
 const TomorrowReservationList = () => {
-  const rooms = [1, 2, 3, 4, 5];
-
   return (
     <div className="w-full">
-      {rooms.map((roomId, index) => (
+      {ROOMS.map((room, index) => (
         <TomorrowReservationComponent
-          key={roomId}
+          key={room.id}
           index={index + 1}
-          roomId={roomId}
+          roomId={room.id}
+          roomName={room.name}
+          caption={room.caption}
+          notice={room.notice}
         />
       ))}
     </div>

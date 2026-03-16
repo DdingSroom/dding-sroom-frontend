@@ -43,7 +43,7 @@ const addMinutesISO = (iso, minutes) =>
 const toKSTISOString = (utcMs) =>
   new Date(utcMs + KST_MS).toISOString().slice(0, 19);
 
-const ReservationComponent = ({ index, roomId }) => {
+const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -285,9 +285,20 @@ const ReservationComponent = ({ index, roomId }) => {
   return (
     <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-[100%] mt-[1rem]">
       <div className="flex justify-between items-center">
-        <div className="flex gap-3 sm:gap-5">
-          <div className="text-xl sm:text-2xl">스터디룸 {index}</div>
-          <div className="text-[#9999A3] text-sm">5인실</div>
+        <div className="flex gap-3 sm:gap-5 items-center">
+          <div className="text-xl sm:text-2xl whitespace-nowrap flex-shrink-0">
+            {roomName || `스터디룸 ${index}`}
+          </div>
+          {caption && (
+            <div className="text-[#9999A3] text-sm whitespace-nowrap flex-shrink-0">
+              {caption}
+            </div>
+          )}
+          {notice && (
+            <div className="text-[#3250F5] text-xs whitespace-pre-line">
+              {notice}
+            </div>
+          )}
         </div>
         <button
           className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-[#2a47e3] transition-colors duration-200 font-medium"
@@ -302,7 +313,9 @@ const ReservationComponent = ({ index, roomId }) => {
           text="예약하기"
         >
           <div className="p-4 flex flex-col h-full">
-            <div className="font-semibold text-2xl">스터디룸 {index}</div>
+            <div className="font-semibold text-2xl">
+              {roomName || `스터디룸 ${index}`}
+            </div>
             <div className="flex justify-center items-center text-sm text-gray-500">
               {todayKSTDisplay()}
             </div>
