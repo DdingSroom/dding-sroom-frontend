@@ -29,7 +29,7 @@
           ["@constants", "./src/constants/"],
           ["@stores", "./src/stores/"]
         ],
-        "extensions": [".js", ".jsx"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   }
