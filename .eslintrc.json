@@ -15,8 +15,7 @@
   "rules": {
     "import/order": ["warn"],
     "prettier/prettier": "error",
-    "no-unused-vars": "warn",
-    "@next/next/no-img-element": "off"
+"@next/next/no-img-element": "off"
   },
   "ignorePatterns": ["node_modules/"],
   "settings": {
