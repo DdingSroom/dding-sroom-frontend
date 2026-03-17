@@ -4,7 +4,7 @@ const path = require('path');
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'html'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'html'],
 
   // 프로덕션 빌드에서 모든 console.* 제거
   compiler: {
