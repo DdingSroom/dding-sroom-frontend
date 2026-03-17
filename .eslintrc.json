@@ -8,6 +8,7 @@
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended",
+    "next/typescript",
     "plugin:import/recommended",
     "prettier"
   ],
