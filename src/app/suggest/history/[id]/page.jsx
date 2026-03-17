@@ -3,8 +3,8 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import useTokenStore from '../../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
+import axiosInstance from '@api/instance';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -152,7 +152,7 @@ export default function SuggestHistoryDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [detail, setDetail] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [, setComments] = useState([]);
   const [answerText, setAnswerText] = useState('');
 
   const [editing, setEditing] = useState(false);

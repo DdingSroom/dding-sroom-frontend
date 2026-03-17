@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useTokenStore from '../../../stores/useTokenStore';
+import FooterNav from '../../../components/common/FooterNav';
 import axiosInstance from '@api/instance';
 import MyPageHeader from '@components/my/MyPageHeader';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

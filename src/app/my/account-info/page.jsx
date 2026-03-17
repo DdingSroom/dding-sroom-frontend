@@ -3,13 +3,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import useTokenStore from '../../../stores/useTokenStore';
+import FooterNav from '../../../components/common/FooterNav';
 import axiosInstance from '@api/instance';
 import MyPageHeader from '@components/my/MyPageHeader';
 import MyPageBlock from '@components/my/MyPageBlock';
 import Modal from '@components/common/Modal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -211,7 +211,7 @@ export default function AccountInfo() {
 
                 <MyPageBlock
                   name="비밀번호 재설정"
-                  linkPath="/login/reset-password-step1"
+                  linkPath="/reset-password/step1"
                 />
                 <MyPageBlock
                   name="회원 탈퇴"

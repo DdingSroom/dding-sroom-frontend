@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import CustomizedStepper from './customizedStepper';
 import { isValidPassword } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
 import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
-import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -42,7 +42,7 @@ export default function SignUpStep2() {
 
   const handleNextStep = () => {
     setSignupField('password', newPassword);
-    router.push('/login/sign-up-step3');
+    router.push('/sign-up/step3');
   };
 
   return (

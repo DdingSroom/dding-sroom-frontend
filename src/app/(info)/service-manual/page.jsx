@@ -140,7 +140,7 @@ export default function ServiceManualPage() {
               <b>이미 가입된 이메일</b> →{' '}
               <Link
                 className="text-[#788cff] underline"
-                href="/login/reset-password-step1"
+                href="/reset-password/step1"
               >
                 비밀번호 재설정
               </Link>{' '}
@@ -214,7 +214,7 @@ export default function ServiceManualPage() {
             <Step title="비밀번호를 잊었나요?">
               <Link
                 className="text-[#788cff] underline"
-                href="/login/reset-password-step1"
+                href="/reset-password/step1"
               >
                 비밀번호 재설정
               </Link>
@@ -428,10 +428,7 @@ function QuickStart() {
       </h2>
       <ol className="list-decimal pl-5 space-y-2 text-[15px] leading-[1.9]">
         <li>
-          <Link
-            href="/login/sign-up-step1"
-            className="text-[#788cff] underline"
-          >
+          <Link href="/sign-up/step1" className="text-[#788cff] underline">
             학교 이메일로 회원가입
           </Link>{' '}
           (인증번호 확인)

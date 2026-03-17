@@ -2,13 +2,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import CustomizedStepper from './customizedStepper';
 import { strictEmailRegex } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
 import axiosInstance from '@api/instance';
 import Button from '@components/common/Button';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
-import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -163,7 +163,7 @@ export default function SignUpStep1() {
 
   const handleNext = () => {
     setSignupField('email', email);
-    router.push('/login/sign-up-step2');
+    router.push('/sign-up/step2');
   };
 
   const canVerify = codeSent && secondsLeft > 0 && /^[0-9]{6}$/.test(number);
