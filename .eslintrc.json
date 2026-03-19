@@ -8,15 +8,24 @@
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended",
+    "next/typescript",
     "plugin:import/recommended",
     "prettier"
   ],
   "rules": {
+    "no-undef": "off",
     "import/order": ["warn"],
     "prettier/prettier": "error",
-    "no-unused-vars": "warn",
     "@next/next/no-img-element": "off"
   },
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.jsx"],
+      "rules": {
+        "no-undef": "error"
+      }
+    }
+  ],
   "ignorePatterns": ["node_modules/"],
   "settings": {
     "import/resolver": {
@@ -29,7 +38,7 @@
           ["@constants", "./src/constants/"],
           ["@stores", "./src/stores/"]
         ],
-        "extensions": [".js", ".jsx"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   }

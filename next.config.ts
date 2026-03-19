@@ -1,10 +1,10 @@
-/** @type {import('next').NextConfig} */
-const path = require('path');
+import type { NextConfig } from 'next';
+import path from 'path';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'html'],
+const nextConfig: NextConfig = {
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'html'],
 
   // 프로덕션 빌드에서 모든 console.* 제거
   compiler: {
@@ -25,16 +25,6 @@ const nextConfig = {
   },
 
   webpack(config) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@api': path.resolve(__dirname, './src/api'),
-      '@hooks': path.resolve(__dirname, './src/hooks'),
-      '@utils': path.resolve(__dirname, './src/utils'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@constants': path.resolve(__dirname, './src/constants'),
-      '@stores': path.resolve(__dirname, './src/stores'),
-    };
-
     config.module.rules.push({
       test: /\.svg$/,
       include: path.join(__dirname, './public/static/icons'),
@@ -45,4 +35,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
