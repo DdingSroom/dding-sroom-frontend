@@ -80,8 +80,6 @@ const config = [
     files: ['**/*.js', '**/*.jsx'],
     rules: {
       'no-undef': 'error',
-      '@typescript-eslint/consistent-type-imports': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 
