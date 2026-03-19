@@ -19,9 +19,11 @@ const config = [
     },
     rules: {
       'no-undef': 'off',
-      '@next/next/no-img-element': 'off',
-      'arrow-body-style': ['error', 'always'],
-
+      '@next/next/no-img-element': 'warn',
+      'arrow-body-style': ['error', 'as-needed'],
+      'no-console': ['warn', { allow: ['error'] }],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'react/self-closing-comp': ['warn', { component: true, html: true }],
       'simple-import-sort/imports': [
         'warn',
         {
@@ -43,9 +45,9 @@ const config = [
       ],
       'simple-import-sort/exports': 'warn',
 
-      // 사용하지 않는 import 제거
       'no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'warn',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',
         {
@@ -54,6 +56,11 @@ const config = [
           args: 'after-used',
           argsIgnorePattern: '^_',
         },
+      ],
+
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
     },
   },
