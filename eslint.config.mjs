@@ -4,6 +4,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
+import reactPlugin from 'eslint-plugin-react';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const compat = new FlatCompat({ baseDirectory: __dirname });
@@ -25,6 +26,7 @@ const config = [
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
+      react: reactPlugin,
     },
     rules: {
       '@next/next/no-img-element': 'warn',
