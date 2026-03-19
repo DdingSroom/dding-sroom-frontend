@@ -1094,11 +1094,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.39.4.tgz#a3f83bfc6fd9bf33a853dfacd0b49b398eb596c1"
   integrity sha512-nE7DEIchvtiFTwBw4Lfbu59PG+kCofhjsKaCWzxTpt4lfRjRMqG6uMBzKXuEcyXhOHoUp9riAm7/aWYGhXZ9cw==
 
-"@eslint/js@^9.17.0":
-  version "9.17.0"
-  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.17.0.tgz#1523e586791f80376a6f8398a3964455ecc651ec"
-  integrity sha512-Sxc4hqcs1kTu0iID3kcZDW3JHq2a77HO9P8CP6YEA/FpH3Ll8UXE2r/86Rz9YJLKme39S9vU5OWNjC6Xl0Cr3w==
-
 "@eslint/object-schema@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@eslint/object-schema/-/object-schema-2.1.7.tgz#6e2126a1347e86a4dedf8706ec67ff8e107ebbad"
