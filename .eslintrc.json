@@ -13,11 +13,19 @@
     "prettier"
   ],
   "rules": {
-    "no-undef": "error",
+    "no-undef": "off",
     "import/order": ["warn"],
     "prettier/prettier": "error",
     "@next/next/no-img-element": "off"
   },
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.jsx"],
+      "rules": {
+        "no-undef": "error"
+      }
+    }
+  ],
   "ignorePatterns": ["node_modules/"],
   "settings": {
     "import/resolver": {
