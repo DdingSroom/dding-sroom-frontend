@@ -13,6 +13,7 @@
     "prettier"
   ],
   "rules": {
+    "no-undef": "error",
     "import/order": ["warn"],
     "prettier/prettier": "error",
     "@next/next/no-img-element": "off"
