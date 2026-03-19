@@ -31,7 +31,7 @@ const config = [
     rules: {
       '@next/next/no-img-element': 'warn',
 
-      eqeqeq: ['error', 'always'],
+      eqeqeq: ['error', 'smart'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-var': 'error',
 
