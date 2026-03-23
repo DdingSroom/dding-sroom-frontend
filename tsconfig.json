@@ -28,7 +28,9 @@
       "@constants": ["./src/constants"],
       "@constants/*": ["./src/constants/*"],
       "@stores": ["./src/stores"],
-      "@stores/*": ["./src/stores/*"]
+      "@stores/*": ["./src/stores/*"],
+      "@lib": ["./src/lib"],
+      "@lib/*": ["./src/lib/*"]
     }
   },
   "include": [
