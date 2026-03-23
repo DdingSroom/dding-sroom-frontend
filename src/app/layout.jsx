@@ -1,5 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
+import QueryProvider from '../lib/react-query/QueryProvider';
 
 export const metadata = {
   metadataBase: new URL('https://ddingsroom.com'),
@@ -60,7 +61,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
-        {children}
+        <QueryProvider>{children}</QueryProvider>
 
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-NEXY3X7HZG"
