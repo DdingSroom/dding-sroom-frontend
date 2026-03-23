@@ -1,7 +1,19 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryCache, MutationCache, QueryClient } from '@tanstack/react-query';
 
 function makeQueryClient() {
   return new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error) => {
+        // TODO: handleApiError 연결 예정 (toast, redirect 등)
+        console.error(error);
+      },
+    }),
+    mutationCache: new MutationCache({
+      onError: (error) => {
+        // TODO: handleApiError 연결 예정 (toast, redirect 등)
+        console.error(error);
+      },
+    }),
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000,
