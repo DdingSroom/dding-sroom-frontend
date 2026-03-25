@@ -78,7 +78,7 @@ export default function WritePostPage() {
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <LoginRequiredModal
           isOpen={showLoginModal}
@@ -89,7 +89,7 @@ export default function WritePostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+    <div className="min-h-screen bg-surface-muted flex flex-col">
       <CommunityHeader title="커뮤니티" />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
@@ -110,7 +110,7 @@ export default function WritePostPage() {
                     onChange={(e) => setCategory(parseInt(e.target.value))}
                     className="peer sr-only"
                   />
-                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary">
                     일반 게시판
                   </div>
                 </label>
@@ -123,7 +123,7 @@ export default function WritePostPage() {
                     onChange={(e) => setCategory(parseInt(e.target.value))}
                     className="peer sr-only"
                   />
-                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-[#788DFF]/10 peer-checked:border-[#788DFF] peer-checked:text-[#788DFF]">
+                  <div className="px-4 py-2 rounded-lg border text-sm border-gray-300 bg-white peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary">
                     분실물 게시판
                   </div>
                 </label>
@@ -140,7 +140,7 @@ export default function WritePostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-[15px]"
                 disabled={isSubmitting}
                 maxLength={100}
               />
@@ -163,7 +163,7 @@ export default function WritePostPage() {
 - 서로를 존중하는 언어를 사용해주세요
 - 개인정보나 연락처는 공유하지 마세요`}
                 rows={12}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15 text-[15px] leading-relaxed"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-[15px] leading-relaxed"
                 disabled={isSubmitting}
                 maxLength={1000}
               />
@@ -176,7 +176,7 @@ export default function WritePostPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !title.trim() || !content.trim()}
-                className="w-full py-3.5 rounded-lg text-white bg-[#788DFF] hover:bg-[#6177ff] font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="w-full py-3.5 rounded-lg text-white bg-primary hover:bg-primary-hover font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? '게시글 작성 중…' : '게시글 발행하기'}
               </button>

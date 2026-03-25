@@ -30,7 +30,7 @@ const PostCard = ({ post }) => {
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="text-xs text-[#788DFF] font-medium mb-1">
+          <div className="text-xs text-primary font-medium mb-1">
             {getCategoryName(post.category)}
           </div>
           <h3 className="text-[15px] font-medium text-gray-900 leading-snug line-clamp-1">

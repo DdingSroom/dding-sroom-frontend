@@ -81,9 +81,7 @@ const CommentItem = ({
           <div className="flex items-center gap-2 text-[13px]">
             <span
               className={`font-medium ${
-                isPostAuthor(comment.user_id)
-                  ? 'text-[#788DFF]'
-                  : 'text-gray-800'
+                isPostAuthor(comment.user_id) ? 'text-primary' : 'text-gray-800'
               }`}
             >
               {anonName(comment.user_id)}
@@ -101,7 +99,7 @@ const CommentItem = ({
           <div className="mt-1 flex gap-3 text-[12px] text-gray-500">
             <button
               onClick={() => setShowReplyInput((v) => !v)}
-              className="hover:text-[#788DFF]"
+              className="hover:text-primary"
             >
               답글
             </button>
@@ -125,14 +123,14 @@ const CommentItem = ({
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="대댓글을 입력하세요..."
-              className="flex-1 min-w-0 rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-[#788DFF] focus:ring-[#788DFF]/20"
+              className="flex-1 min-w-0 rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-primary/20"
               disabled={isSubmitting}
               maxLength={300}
             />
             <button
               onClick={handleReplySubmit}
               disabled={!replyContent.trim() || isSubmitting}
-              className="shrink-0 whitespace-nowrap min-w-[56px] px-3 py-2 rounded-md text-sm text-white bg-[#788DFF] hover:bg-[#6177ff] disabled:bg-gray-300"
+              className="shrink-0 whitespace-nowrap min-w-[56px] px-3 py-2 rounded-md text-sm text-white bg-primary hover:bg-primary-hover disabled:bg-gray-300"
             >
               등록
             </button>
@@ -148,7 +146,7 @@ const CommentItem = ({
                 <span
                   className={`font-medium ${
                     isPostAuthor(reply.user_id)
-                      ? 'text-[#788DFF]'
+                      ? 'text-primary'
                       : 'text-gray-800'
                   }`}
                 >

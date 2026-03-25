@@ -167,7 +167,7 @@ export default function PostDetailPage() {
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <LoginRequiredModal
           isOpen={showLoginModal}
@@ -179,11 +179,11 @@ export default function PostDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <div className="flex-1 flex justify-center items-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin h-8 w-8 rounded-full border-2 border-[#788DFF] border-top-transparent" />
+            <div className="animate-spin h-8 w-8 rounded-full border-2 border-primary border-top-transparent" />
             <div className="text-sm text-gray-600">게시글을 불러오는 중...</div>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function PostDetailPage() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <div className="flex-1 flex items-center justify-center">
           <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
@@ -210,14 +210,14 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+    <div className="min-h-screen bg-surface-muted flex flex-col">
       <CommunityHeader title="커뮤니티" />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 pb-28">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-4">
           <div className="px-5 py-4">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-xs font-semibold text-[#788DFF]">
+              <span className="text-xs font-semibold text-primary">
                 {getCategoryName(post.category)}
               </span>
               <span className="text-[11px] text-gray-400">
@@ -263,7 +263,7 @@ export default function PostDetailPage() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-3 border-b border-gray-200 flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-800">댓글</span>
-            <span className="ml-1 text-xs font-semibold text-[#788DFF] bg-[#788DFF]/10 rounded-full px-2 py-0.5">
+            <span className="ml-1 text-xs font-semibold text-primary bg-primary/10 rounded-full px-2 py-0.5">
               {comments.length}
             </span>
           </div>
@@ -299,14 +299,14 @@ export default function PostDetailPage() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="댓글을 입력하세요…"
-                className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-[#788DFF] focus:ring-2 focus:ring-[#788DFF]/15"
+                className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
                 disabled={isSubmittingComment}
                 maxLength={500}
               />
               <button
                 onClick={handleCommentSubmit}
                 disabled={!newComment.trim() || isSubmittingComment}
-                className="px-4 py-3 text-sm font-semibold text-white bg-[#788DFF] rounded-lg hover:bg-[#6177ff] disabled:bg-gray-300"
+                className="px-4 py-3 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover disabled:bg-gray-300"
               >
                 {isSubmittingComment ? '작성중…' : '등록'}
               </button>
