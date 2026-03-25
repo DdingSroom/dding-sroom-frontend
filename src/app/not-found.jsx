@@ -13,7 +13,7 @@ export default function NotFound() {
           draggable={false}
         />
 
-        <h1 className="text-center text-xl font-semibold text-[#788DFF]">
+        <h1 className="text-center text-xl font-semibold text-primary">
           페이지를 찾을 수 없어요
         </h1>
 
@@ -34,7 +34,7 @@ export default function NotFound() {
 
           <Link
             href="/"
-            className="flex-1 rounded-xl bg-[#788DFF] px-4 py-3 text-center text-sm font-semibold text-white hover:opacity-90"
+            className="flex-1 rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white hover:opacity-90"
           >
             홈으로
           </Link>
