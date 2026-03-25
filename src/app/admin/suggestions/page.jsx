@@ -94,7 +94,7 @@ export default function AdminSuggestionsPage() {
   }, [fetchSuggestions]);
 
   return (
-    <div className="bg-[#F1F2F4] p-6 min-h-screen">
+    <div className="bg-surface-admin p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">건의/신고 목록</h1>
 
@@ -119,14 +119,14 @@ export default function AdminSuggestionsPage() {
               <div className="flex items-center gap-2 mb-3">
                 <span
                   className="inline-block w-1.5 h-5 rounded"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                 />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 접수 내역
                 </h2>
                 <div
                   className="h-px flex-1"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                 />
               </div>
 
@@ -190,8 +190,8 @@ function Filters({ filters, setFilters, onSearch }) {
         <button
           className="px-4 py-2 text-sm rounded text-white border"
           style={{
-            backgroundColor: 'var(--primary-color)',
-            borderColor: 'var(--primary-color)',
+            backgroundColor: 'var(--color-primary)',
+            borderColor: 'var(--color-primary)',
           }}
           onClick={onSearch}
         >
@@ -215,12 +215,12 @@ function SuggestionCard({ item, onRefresh }) {
   return (
     <article
       className={`relative rounded-xl border bg-white shadow-sm overflow-hidden transition ${
-        open ? 'border-[var(--primary-color)]' : 'hover:shadow-md'
+        open ? 'border-primary' : 'hover:shadow-md'
       }`}
     >
       <div
         className="h-1"
-        style={{ backgroundColor: 'var(--primary-color)' }}
+        style={{ backgroundColor: 'var(--color-primary)' }}
       />
 
       <div className="p-3 sm:p-4">
@@ -273,7 +273,7 @@ function SuggestionCard({ item, onRefresh }) {
         {open && (
           <div
             className="my-3 border-t border-dashed"
-            style={{ borderColor: 'var(--primary-color)' }}
+            style={{ borderColor: 'var(--color-primary)' }}
           />
         )}
 
@@ -314,11 +314,11 @@ function SuggestionCard({ item, onRefresh }) {
             <section aria-label="관리자 답변 관리">
               <div
                 className="mt-1 border-t border-dashed pt-3"
-                style={{ borderColor: 'var(--primary-color)' }}
+                style={{ borderColor: 'var(--color-primary)' }}
               >
                 <h4
                   className="text-sm font-semibold mb-2"
-                  style={{ color: 'var(--primary-color)' }}
+                  style={{ color: 'var(--color-primary)' }}
                 >
                   관리자 답변 관리
                 </h4>
@@ -335,11 +335,11 @@ function SuggestionCard({ item, onRefresh }) {
             <section aria-label="댓글 및 답변">
               <div
                 className="mt-1 border-t border-dashed pt-3"
-                style={{ borderColor: 'var(--primary-color)' }}
+                style={{ borderColor: 'var(--color-primary)' }}
               >
                 <h4
                   className="text-sm font-semibold mb-2"
-                  style={{ color: 'var(--primary-color)' }}
+                  style={{ color: 'var(--color-primary)' }}
                 >
                   댓글 및 답변
                 </h4>
@@ -474,7 +474,7 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
                 <button
                   onClick={saveEdit}
                   className="px-3 py-1.5 text-sm rounded text-white"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                   disabled={saving}
                 >
                   {saving ? '저장 중…' : '저장'}
@@ -499,7 +499,7 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
                   </button>
                   <button
                     onClick={() => remove(row.id)}
-                    className="px-3 py-1.5 text-sm rounded border bg-[#ffe7e7] text-[#c0392b] hover:bg-[#ffdede]"
+                    className="px-3 py-1.5 text-sm rounded border bg-error-bg text-error hover:bg-error-bg-hover"
                   >
                     삭제
                   </button>

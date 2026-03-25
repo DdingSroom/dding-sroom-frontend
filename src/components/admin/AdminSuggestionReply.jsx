@@ -54,7 +54,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         onChange={(e) => setValue(e.target.value)}
         rows={4}
         placeholder="관리자 답변을 입력해 주세요."
-        className="w-full rounded-lg border border-[var(--border-light)] bg-[#fbfbfb] px-3 py-2 text-sm"
+        className="w-full rounded-lg border border-line bg-surface-subtle px-3 py-2 text-sm"
       />
 
       <div className="mt-2 flex items-center justify-between">
@@ -68,9 +68,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
           onClick={submit}
           disabled={submitting}
           className={`px-3 py-1.5 text-sm rounded text-white ${
-            submitting
-              ? 'bg-[#bfc8ff] cursor-not-allowed'
-              : 'bg-[var(--primary-color)]'
+            submitting ? 'bg-primary-disabled cursor-not-allowed' : 'bg-primary'
           }`}
         >
           {submitting ? '등록 중...' : '답변 등록'}

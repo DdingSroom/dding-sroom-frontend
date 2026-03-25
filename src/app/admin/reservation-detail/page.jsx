@@ -57,7 +57,7 @@ export default function ReservationDetailPage() {
   }, []);
 
   return (
-    <div className="bg-[#F1F2F4] p-6 min-h-screen">
+    <div className="bg-surface-admin p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">예약 목록</h1>
 
@@ -66,7 +66,7 @@ export default function ReservationDetailPage() {
 
         {!loading && !error && (
           <table className="w-full text-sm text-left">
-            <thead className="bg-[#F7F7F7] border-b text-[#333]">
+            <thead className="bg-surface-admin-header border-b text-gray-700">
               <tr>
                 <th className="py-3 px-2 w-8">#</th>
                 <th className="py-3 px-2">스터디룸</th>
@@ -83,7 +83,7 @@ export default function ReservationDetailPage() {
                 >
                   <td className="py-3 px-2">{index + 1}</td>
                   <td className="py-3 px-2">스터디룸 {item.roomName}</td>
-                  <td className="py-3 px-2 text-[#788DFF]">
+                  <td className="py-3 px-2 text-primary">
                     {formatTimeRange(item.startTime, item.endTime)}
                   </td>
                   <td className="py-3 px-2">{item.userId}</td>

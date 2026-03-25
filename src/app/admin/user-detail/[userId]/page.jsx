@@ -187,7 +187,7 @@ export default function UserDetailPage() {
   if (!user) return <p className="p-6">로딩 중...</p>;
 
   return (
-    <div className="p-6 bg-[#EFF0F3] min-h-screen">
+    <div className="p-6 bg-surface-admin min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <div>
           <button
