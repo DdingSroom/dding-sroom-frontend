@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
         <div className="flex border-t border-gray-100">
           <button
             onClick={onClose}
-            className="flex-1 py-4 bg-white text-[#73726e] text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="flex-1 py-4 bg-white text-content-secondary text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             취소
           </button>
@@ -25,7 +25,7 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
               e.stopPropagation();
               if (onSubmit) onSubmit();
             }}
-            className="flex-1 py-4 bg-[#788cff] text-white text-sm font-medium hover:bg-[#6a7dff] transition-colors"
+            className="flex-1 py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
           >
             {text}
           </button>

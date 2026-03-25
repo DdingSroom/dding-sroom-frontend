@@ -7,7 +7,7 @@ const Button = ({ onClick, disabled, text, ...props }) => {
       className={`flex items-center justify-center w-full h-12 rounded-lg text-sm font-medium transition-all duration-200 ${
         disabled
           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          : 'bg-[#788cff] text-white cursor-pointer hover:bg-[#6a7dff] active:bg-[#5d72ff] hover:shadow-md'
+          : 'bg-primary text-white cursor-pointer hover:bg-primary-hover active:bg-primary-active hover:shadow-md'
       }`}
       onClick={onClick}
       disabled={disabled}

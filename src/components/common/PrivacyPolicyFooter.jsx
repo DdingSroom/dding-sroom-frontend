@@ -5,18 +5,18 @@ const PrivacyPolicyFooter = () => {
     <footer className="border-t border-gray-200 bg-gray-100">
       <div className="px-6 py-8">
         <div className="text-left space-y-3">
-          <p className="text-sm font-semibold text-[#37352f]">
+          <p className="text-sm font-semibold text-content">
             <Link
               href="/privacy-policy"
-              className="hover:text-[#788cff] transition-colors"
+              className="hover:text-primary transition-colors"
             >
               개인정보 처리방침
             </Link>
           </p>
-          <p className="text-xs text-[#73726e] leading-relaxed">
+          <p className="text-xs text-content-secondary leading-relaxed">
             Copyright © DdingsRoom. All Rights Reserved
           </p>
-          <p className="text-xs text-[#73726e] leading-relaxed">
+          <p className="text-xs text-content-secondary leading-relaxed">
             E-mail: ddingsroom2025@mju.ac.kr
           </p>
         </div>

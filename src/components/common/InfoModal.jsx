@@ -25,7 +25,7 @@ const InfoModal = ({ isOpen, onClose }) => {
         <div className="flex border-t border-gray-100">
           <button
             onClick={onClose}
-            className="w-full py-4 bg-[#788cff] text-white text-sm font-medium hover:bg-[#6a7dff] transition-colors"
+            className="w-full py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
           >
             확인
           </button>
