@@ -149,17 +149,17 @@ export default function AccountInfo() {
               {/* 내 정보 카드 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-lg font-semibold text-[#37352f]">
+                  <h2 className="text-lg font-semibold text-content">
                     내 정보
                   </h2>
                 </div>
 
                 <div className="px-6 py-4 border-b border-gray-100">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-[#37352f]">
+                    <label className="text-sm font-medium text-content">
                       이메일
                     </label>
-                    <p className="text-sm text-[#73726e]">
+                    <p className="text-sm text-content-secondary">
                       {userInfo.email || '이메일 없음'}
                     </p>
                   </div>
@@ -170,10 +170,10 @@ export default function AccountInfo() {
                   onClick={() => setOpen(true)}
                 >
                   <div className="flex flex-col gap-1 text-left">
-                    <label className="text-sm font-medium text-[#37352f]">
+                    <label className="text-sm font-medium text-content">
                       이름
                     </label>
-                    <p className="text-sm text-[#73726e]">
+                    <p className="text-sm text-content-secondary">
                       {userInfo.name || '이름 없음'}
                     </p>
                   </div>
@@ -193,7 +193,7 @@ export default function AccountInfo() {
               {/* 내 커뮤니티 관리 섹션 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-lg font-semibold text-[#37352f]">
+                  <h2 className="text-lg font-semibold text-content">
                     내 커뮤니티 관리
                   </h2>
                 </div>
@@ -204,7 +204,7 @@ export default function AccountInfo() {
               {/* 개인정보 보호 섹션 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-lg font-semibold text-[#37352f]">
+                  <h2 className="text-lg font-semibold text-content">
                     개인정보 보호
                   </h2>
                 </div>
@@ -221,7 +221,7 @@ export default function AccountInfo() {
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
                   onClick={handleLogout}
                 >
-                  <span className="text-base font-medium text-[#37352f]">
+                  <span className="text-base font-medium text-content">
                     로그아웃
                   </span>
                   <img
@@ -245,10 +245,10 @@ export default function AccountInfo() {
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
-            <h3 className="text-xl font-semibold text-[#37352f]">이름 변경</h3>
+            <h3 className="text-xl font-semibold text-content">이름 변경</h3>
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
+            <label className="block text-sm font-medium text-content">
               이름
             </label>
             <input
@@ -256,14 +256,14 @@ export default function AccountInfo() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               maxLength={20}
-              className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
+              className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
-            <p className="text-xs text-[#9b9998]">
+            <p className="text-xs text-content-muted">
               기존 이름과 다른 이름으로 변경해주세요.
             </p>
             {submitting && (
-              <p className="text-xs text-[#73726e]">이름 변경 중…</p>
+              <p className="text-xs text-content-secondary">이름 변경 중…</p>
             )}
           </div>
         </div>
@@ -299,7 +299,7 @@ export default function AccountInfo() {
           <div className="flex border-t border-gray-100">
             <button
               onClick={handleLogoutConfirm}
-              className="w-full py-4 bg-[#788cff] text-white text-sm font-medium hover:bg-[#6a7dff] transition-colors"
+              className="w-full py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
             >
               확인
             </button>

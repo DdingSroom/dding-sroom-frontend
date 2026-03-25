@@ -7,8 +7,10 @@ const MyPageBlock = ({ name, value, linkPath }) => {
     <Link href={linkPath}>
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
         <div className="flex flex-col gap-1">
-          <span className="text-base font-medium text-[#37352f]">{name}</span>
-          {value && <span className="text-sm text-[#73726e]">{value}</span>}
+          <span className="text-base font-medium text-content">{name}</span>
+          {value && (
+            <span className="text-sm text-content-secondary">{value}</span>
+          )}
         </div>
         <img
           src="/static/icons/arrow_right_icon.svg"

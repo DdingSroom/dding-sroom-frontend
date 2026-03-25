@@ -119,21 +119,21 @@ export default function MyCommentsPage() {
 
       <main className="flex-1 px-6 py-6">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-[#37352f] mb-2">
+          <h1 className="text-xl font-bold text-content mb-2">
             내가 작성한 댓글
           </h1>
-          <p className="text-sm text-[#73726e]">
+          <p className="text-sm text-content-secondary">
             총 {comments.length}개의 댓글
           </p>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-[#73726e]">로딩 중...</div>
+            <div className="text-content-secondary">로딩 중...</div>
           </div>
         ) : comments.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-            <div className="text-[#73726e] mb-4">
+            <div className="text-content-secondary mb-4">
               <svg
                 className="w-16 h-16 mx-auto mb-4 opacity-30"
                 fill="none"
@@ -154,7 +154,7 @@ export default function MyCommentsPage() {
             </div>
             <button
               onClick={() => router.push('/community')}
-              className="px-6 py-3 bg-[#788cff] text-white rounded-lg hover:bg-[#6a7dff] transition-colors font-medium"
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
             >
               커뮤니티 둘러보기
             </button>
@@ -165,32 +165,32 @@ export default function MyCommentsPage() {
               <div
                 key={comment.id}
                 onClick={() => handleCommentClick(comment.post_id)}
-                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-[#788cff]/20 transition-all duration-200 group"
+                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-[#788cff] bg-[#788cff]/10 px-3 py-1 rounded-full">
+                    <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                       댓글
                     </span>
                     {comment.parent_comment_id && (
-                      <span className="text-xs font-medium text-[#ff8c78] bg-[#ff8c78]/10 px-3 py-1 rounded-full">
+                      <span className="text-xs font-medium text-warning bg-warning/10 px-3 py-1 rounded-full">
                         답글
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-[#9b9998]">
+                  <div className="text-xs text-content-muted">
                     {formatDate(comment.created_at)}
                   </div>
                 </div>
 
                 <div className="mb-3">
-                  <p className="text-sm text-[#37352f] leading-relaxed">
+                  <p className="text-sm text-content leading-relaxed">
                     {truncateContent(comment.comment_content, 100)}
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-gray-100">
-                  <p className="text-xs text-[#9b9998]">
+                  <p className="text-xs text-content-muted">
                     게시글에서 작성한 댓글 · 클릭하여 원문 보기
                   </p>
                 </div>

@@ -27,7 +27,7 @@ const MyPageHeader = () => {
         />
       </button>
 
-      <div className="absolute left-1/2 transform -translate-x-1/2 text-xl font-semibold text-[#37352f]">
+      <div className="absolute left-1/2 transform -translate-x-1/2 text-xl font-semibold text-content">
         마이페이지
       </div>
     </header>
