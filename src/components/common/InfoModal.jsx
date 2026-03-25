@@ -5,7 +5,7 @@ const InfoModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999]"
+      className="fixed inset-0 bg-black/50 flex justify-center items-center z-modal"
       style={{ backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
@@ -13,7 +13,7 @@ const InfoModal = ({ isOpen, onClose }) => {
         className="bg-white rounded-2xl w-[90%] max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto max-h-[70vh] p-6">
+        <div className="overflow-y-auto max-h-modal p-6">
           <div className="text-center">
             <h3 className="text-lg font-medium text-gray-900 mb-4">알림</h3>
             <p className="text-gray-600 text-sm leading-relaxed">

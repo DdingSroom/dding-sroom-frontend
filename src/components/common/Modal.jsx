@@ -3,15 +3,15 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999]"
+      className="fixed inset-0 bg-black/50 flex justify-center items-center z-modal"
       style={{ backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-[90%] max-w-[500px] mx-4 shadow-2xl border border-gray-100 overflow-hidden"
+        className="bg-white rounded-2xl w-modal max-w-modal mx-4 shadow-2xl border border-gray-100 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto max-h-[70vh] p-6">{children}</div>
+        <div className="overflow-y-auto max-h-modal p-6">{children}</div>
 
         <div className="flex border-t border-gray-100">
           <button

@@ -4,9 +4,9 @@ const LoginRequiredModal = ({ isOpen, onConfirm }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] backdrop-blur-sm">
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-modal backdrop-blur-sm">
       <div
-        className="bg-white rounded-2xl w-[90%] max-w-[400px] mx-4 shadow-2xl border border-gray-100 overflow-hidden"
+        className="bg-white rounded-2xl w-modal max-w-modal-sm mx-4 shadow-2xl border border-gray-100 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 text-center">

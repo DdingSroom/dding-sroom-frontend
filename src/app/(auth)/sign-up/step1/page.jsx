@@ -40,7 +40,7 @@ export default function SignUpStep1() {
   const MANUAL_URL = '/email-verification-manual';
 
   const commonCodeButtonClass =
-    'inline-flex items-center justify-center w-[100px] h-10 ' +
+    'inline-flex items-center justify-center w-btn-action h-10 ' +
     'border border-primary bg-white text-primary ' +
     'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
@@ -172,7 +172,7 @@ export default function SignUpStep1() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {isSending && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm md:backdrop-blur flex items-center justify-center"
+          className="fixed inset-0 z-modal bg-black/40 backdrop-blur-sm md:backdrop-blur flex items-center justify-center"
           role="status"
           aria-live="polite"
         >

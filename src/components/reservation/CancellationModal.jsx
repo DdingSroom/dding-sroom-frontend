@@ -8,14 +8,14 @@ const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
       className="fixed top-0 left-0 w-full h-full 
                  bg-black bg-opacity-50 
                  flex justify-center items-center 
-                 z-[9999]"
+                 z-modal"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-[20px] w-[90%] max-w-[500px] p-6 sm:p-8 flex flex-col justify-between"
+        className="bg-white rounded-2xl w-modal max-w-modal p-6 sm:p-8 flex flex-col justify-between"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto max-h-[70vh]">{children}</div>
+        <div className="overflow-y-auto max-h-modal">{children}</div>
 
         <div className="flex w-full mt-6 rounded-xl overflow-hidden border border-primary-dark">
           <button

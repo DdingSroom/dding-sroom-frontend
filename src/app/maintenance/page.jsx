@@ -1,6 +1,6 @@
 export default function MaintenancePage() {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-modal flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
       <div className="flex w-full max-w-[420px] flex-col items-center rounded-3xl bg-white px-6 py-8 shadow-2xl">
         <img
           src="/maintenance/horse.svg"
