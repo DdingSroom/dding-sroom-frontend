@@ -16,19 +16,21 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   },
   [`&.${stepConnectorClasses.active}`]: {
     [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: '#788DFF',
+      backgroundColor: 'var(--color-primary)',
     },
   },
   [`&.${stepConnectorClasses.completed}`]: {
     [`& .${stepConnectorClasses.line}`]: {
-      backgroundColor: '#788DFF',
+      backgroundColor: 'var(--color-primary)',
     },
   },
   [`& .${stepConnectorClasses.line}`]: {
     height: 3,
     border: 0,
     backgroundColor:
-      theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#9A9A9B',
+      theme.palette.mode === 'dark'
+        ? theme.palette.grey[800]
+        : 'var(--color-status-inactive)',
     borderRadius: 1,
   },
 }));
@@ -36,10 +38,10 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
 const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
   backgroundColor:
     ownerState.active || ownerState.completed
-      ? '#788DFF'
+      ? 'var(--color-primary)'
       : theme.palette.mode === 'dark'
         ? theme.palette.grey[700]
-        : '#9A9A9B',
+        : 'var(--color-status-inactive)',
   zIndex: 1,
   color: '#fff',
   width: 32,

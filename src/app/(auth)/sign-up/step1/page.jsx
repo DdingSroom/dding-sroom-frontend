@@ -41,8 +41,8 @@ export default function SignUpStep1() {
 
   const commonCodeButtonClass =
     'inline-flex items-center justify-center w-[100px] h-10 ' +
-    'border border-[#788cff] bg-white text-[#788cff] ' +
-    'hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg ' +
+    'border border-primary bg-white text-primary ' +
+    'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
   const startTimer = () => {
@@ -178,7 +178,7 @@ export default function SignUpStep1() {
         >
           <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col items-center space-y-4 max-w-sm mx-4 sm:max-w-none sm:mx-0">
             <div
-              className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
+              className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"
               aria-label="로딩 중"
             />
             <p className="text-sm text-gray-600 text-center">
@@ -191,8 +191,8 @@ export default function SignUpStep1() {
 
       <div className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
-          <p className="text-[#73726e] text-sm">학교 이메일 인증하기</p>
+          <h1 className="text-2xl font-bold text-content">회원가입</h1>
+          <p className="text-content-secondary text-sm">학교 이메일 인증하기</p>
         </div>
 
         <div className="mb-8">
@@ -201,7 +201,7 @@ export default function SignUpStep1() {
 
         <div className="max-w-md mx-auto w-full space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
+            <label className="block text-sm font-medium text-content">
               이메일
             </label>
             <div className="flex gap-2">
@@ -241,7 +241,7 @@ export default function SignUpStep1() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
+            <label className="block text-sm font-medium text-content">
               인증번호
             </label>
             <div className="flex items-center gap-2 flex-nowrap">
@@ -258,7 +258,7 @@ export default function SignUpStep1() {
                   disabled={isSending}
                 />
                 {codeSent && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-content-tertiary">
                     {secondsLeft > 0 ? mmss : '만료'}
                   </span>
                 )}
@@ -284,21 +284,21 @@ export default function SignUpStep1() {
           </div>
 
           <div
-            className="rounded-lg border border-[#e9e9e7] bg-white p-4 sm:p-5 space-y-3"
+            className="rounded-lg border border-line bg-white p-4 sm:p-5 space-y-3"
             aria-live="polite"
           >
             <div className="flex items-start gap-3">
               <span
-                className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-[#d9d9d6] text-xs text-[#73726e]"
+                className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-line-input text-xs text-content-secondary"
                 aria-hidden="true"
               >
                 i
               </span>
               <div className="flex-1 space-y-2">
-                <h3 className="text-sm font-semibold text-[#37352f]">
+                <h3 className="text-sm font-semibold text-content">
                   혹시 메일이 도착하지 않는다면?
                 </h3>
-                <p className="text-xs text-[#73726e] leading-relaxed">
+                <p className="text-xs text-content-secondary leading-relaxed">
                   학교 계정으로 이메일이 발송되지 않는다면, 해당 계정이{' '}
                   <b>2023년 11월 이전 발급된 계정</b>으로{' '}
                   <b>명지대학교 측에서 메일을 이관하여 현재 사용정지된 상태</b>
@@ -309,7 +309,7 @@ export default function SignUpStep1() {
                 <div className="pt-1">
                   <Link
                     href={MANUAL_URL}
-                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-[#788cff] text-[#788cff] hover:bg-[#788cff] hover:text-white text-sm font-medium transition-all duration-200"
+                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white text-sm font-medium transition-all duration-200"
                     aria-label="이메일 인증 문제 해결 매뉴얼 새 창으로 열기"
                   >
                     해결방법
@@ -346,9 +346,9 @@ export default function SignUpStep1() {
 
 const StyledInput = ({ value, className = '', ...props }) => {
   const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm ' +
-    'placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] ' +
-    'focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200';
+    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
+    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
+    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };
 

@@ -28,8 +28,8 @@ function SignUpStep4() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
-          <p className="text-[#73726e] text-sm">정보 입력</p>
+          <h1 className="text-2xl font-bold text-content">회원가입</h1>
+          <p className="text-content-secondary text-sm">정보 입력</p>
         </div>
 
         <div className="mb-8">
@@ -44,7 +44,7 @@ function SignUpStep4() {
               width={56}
               height={56}
             />
-            <div className="text-[#788DFF] text-[25px] font-bold">
+            <div className="text-primary text-[25px] font-bold">
               회원가입 완료!
             </div>
             <div className="flex flex-col items-center text-center">
