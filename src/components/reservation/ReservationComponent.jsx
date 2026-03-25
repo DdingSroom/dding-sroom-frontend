@@ -242,7 +242,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
               style={{ width: '10px' }}
             >
               <span
-                className="text-[10px] text-[#4b4b4b]"
+                className="text-[10px] text-content-time"
                 style={{
                   visibility: isFirstOfHour ? 'visible' : 'hidden',
                   height: '16px',
@@ -290,18 +290,18 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
             {roomName || `스터디룸 ${index}`}
           </div>
           {caption && (
-            <div className="text-[#9999A3] text-sm whitespace-nowrap flex-shrink-0">
+            <div className="text-status-reserved text-sm whitespace-nowrap flex-shrink-0">
               {caption}
             </div>
           )}
           {notice && (
-            <div className="text-[#3250F5] text-xs whitespace-pre-line">
+            <div className="text-primary-dark text-xs whitespace-pre-line">
               {notice}
             </div>
           )}
         </div>
         <button
-          className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-[#2a47e3] transition-colors duration-200 font-medium"
+          className="bg-primary-dark text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-primary-dark-hover transition-colors duration-200 font-medium"
           onClick={handleOpenModal}
         >
           예약
@@ -385,19 +385,19 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#788DFF]"></div>
+          <div className="w-2 h-2 bg-primary"></div>
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#9999A3]"></div>
+          <div className="w-2 h-2 bg-status-reserved"></div>
           <span>예약됨</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#000000]"></div>
+          <div className="w-2 h-2 bg-status-past"></div>
           <span>지난 시간</span>
         </div>
       </div>
-      <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
+      <div className="bg-status-reserved h-0.5 w-full mt-3" />
       <LoginRequiredModal
         isOpen={showLoginModal}
         onConfirm={handleModalConfirm}

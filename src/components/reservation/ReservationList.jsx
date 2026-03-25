@@ -193,7 +193,7 @@ export default function ReservationList() {
   return (
     <div className="w-full">
       {entries.length === 0 ? (
-        <div className="p-6 text-sm text-[#73726e]">
+        <div className="p-6 text-sm text-content-secondary">
           표시할 예약 내역이 없습니다. (취소된 내역은 제외됩니다)
         </div>
       ) : (
@@ -217,21 +217,21 @@ export default function ReservationList() {
           onClose={() => setCancelModalData(null)}
           onConfirm={confirmCancelReservation}
         >
-          <div className="text-lg font-semibold text-left mb-6 text-[#37352f]">
+          <div className="text-lg font-semibold text-left mb-6 text-content">
             예약을 취소할까요?
           </div>
-          <div className="flex items-center gap-4 bg-[#f8f9ff] p-4 rounded-xl border border-gray-100">
+          <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
             <img
               src="/static/icons/studyroom_image.png"
               alt="studyroom"
               className="w-20 h-20 object-cover rounded-lg"
             />
             <div className="flex flex-col gap-1 text-sm">
-              <div className="font-semibold text-[#37352f]">{`스터디룸 ${cancelModalData.roomName}`}</div>
-              <div className="text-[#73726e]">
+              <div className="font-semibold text-content">{`스터디룸 ${cancelModalData.roomName}`}</div>
+              <div className="text-content-secondary">
                 {formatDate(cancelModalData.startTime)}
               </div>
-              <div className="text-[#73726e]">
+              <div className="text-content-secondary">
                 {formatTime(cancelModalData.startTime)} ~{' '}
                 {formatTime(cancelModalData.endTime)}
               </div>

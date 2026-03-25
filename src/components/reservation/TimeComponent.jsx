@@ -2,14 +2,14 @@ const TimeComponent = ({ status }) => {
   const getColor = () => {
     switch (status) {
       case 'reserved':
-        return '#9999A3';
+        return 'var(--color-status-reserved)';
       case 'past':
-        return '#000000';
+        return 'var(--color-status-past)';
       case 'display-only':
-        return '#CCCCCC';
+        return 'var(--color-status-display)';
       case 'available':
       default:
-        return '#788DFF';
+        return 'var(--color-primary)';
     }
   };
 
