@@ -100,6 +100,51 @@ export default {
           'sans-serif',
         ],
       },
+      fontSize: {
+        '2xs': '10px',
+        'xs-plus': '11px',
+        'sm-minus': '13px',
+        md: '15px',
+        'lg-minus': '17px',
+        'heading-sm': '22px',
+        'heading-md': '25px',
+        'heading-lg': '28px',
+        'heading-xl': '32px',
+      },
+      zIndex: {
+        modal: '9999',
+      },
+      lineHeight: {
+        info: '1.9',
+        'info-relaxed': '1.95',
+      },
+      width: {
+        modal: '90%',
+        'btn-action': '100px',
+        'time-slot': '8px',
+      },
+      maxWidth: {
+        modal: '500px',
+        'modal-sm': '400px',
+        layout: '600px',
+        content: '95%',
+        thumb: '160px',
+      },
+      minWidth: {
+        grid: '720px',
+      },
+      height: {
+        'time-slot': '14px',
+        'tab-indicator': '3px',
+      },
+      maxHeight: {
+        modal: '70vh',
+        'modal-lg': '90vh',
+      },
+      minHeight: {
+        banner: '240px',
+        'banner-card': '280px',
+      },
     },
   },
   plugins: [],
