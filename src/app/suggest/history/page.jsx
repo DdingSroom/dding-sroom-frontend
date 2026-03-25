@@ -99,28 +99,26 @@ export default function SuggestHistoryPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] flex flex-col">
-      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[var(--border-light)]">
+    <div className="min-h-screen bg-surface-suggest flex flex-col">
+      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-line">
         <div className="px-5 py-4">
-          <h1 className="text-2xl font-semibold text-[var(--text-primary)]">
-            건의/신고
-          </h1>
+          <h1 className="text-2xl font-semibold text-content">건의/신고</h1>
         </div>
 
         {/* Tabs */}
         <nav className="px-5">
-          <div className="flex space-x-8 border-b border-[var(--border-light)]">
+          <div className="flex space-x-8 border-b border-line">
             <Link
               href="/suggest"
-              className="relative py-3 text-base text-[var(--text-muted)] hover:text-[var(--primary-color)]"
+              className="relative py-3 text-base text-content-muted hover:text-primary"
             >
               건의/신고
             </Link>
-            <span className="relative py-3 text-base text-[var(--primary-color)]">
+            <span className="relative py-3 text-base text-primary">
               건의/신고내역
               <span
                 className="absolute left-0 -bottom-[1px] h-[3px] w-full rounded-full"
-                style={{ backgroundColor: 'var(--primary-color)' }}
+                style={{ backgroundColor: 'var(--color-primary)' }}
               />
             </span>
           </div>
@@ -128,9 +126,7 @@ export default function SuggestHistoryPage() {
       </header>
 
       <main className="flex-1 pb-8">
-        {loading && (
-          <div className="px-6 py-8 text-[var(--text-muted)]">로딩중…</div>
-        )}
+        {loading && <div className="px-6 py-8 text-content-muted">로딩중…</div>}
 
         {/* 에러는 진짜 실패 때만 표시. 403/404는 빈 상태로 처리 */}
         {error && <div className="px-6 py-8 text-red-500">{error}</div>}
@@ -149,7 +145,7 @@ export default function SuggestHistoryPage() {
           ))}
 
         {!loading && !error && dateKeys.length === 0 && (
-          <div className="px-6 py-16 text-center text-[var(--text-muted)]">
+          <div className="px-6 py-16 text-center text-content-muted">
             등록된 건의/신고 내역이 없습니다.
           </div>
         )}
@@ -168,8 +164,8 @@ function StatusBadge({ status }) {
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs flex-shrink-0 whitespace-nowrap ${
         isDone
-          ? 'bg-[#eef2ff] text-[var(--primary-color)]'
-          : 'bg-[#f4f4f5] text-[var(--text-muted)]'
+          ? 'bg-primary-lightest text-primary'
+          : 'bg-surface-neutral text-content-muted'
       }`}
     >
       {isDone ? '답변완료' : '답변대기중'}
@@ -179,11 +175,9 @@ function StatusBadge({ status }) {
 
 function SectionHeader({ dateStr }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-[#eef2ff]/40 px-4 py-3 mx-4 mt-5 mb-3">
-      <span className="inline-block w-2.5 h-2.5 rounded-full bg-[var(--primary-color)]" />
-      <span className="text-[15px] font-medium text-[var(--text-primary)]">
-        {dateStr}
-      </span>
+    <div className="flex items-center gap-3 rounded-xl bg-primary-lightest/40 px-4 py-3 mx-4 mt-5 mb-3">
+      <span className="inline-block w-2.5 h-2.5 rounded-full bg-primary" />
+      <span className="text-[15px] font-medium text-content">{dateStr}</span>
     </div>
   );
 }
@@ -200,21 +194,21 @@ function HistoryCard({ item }) {
     <li className="px-4">
       <Link
         href={`/suggest/history/${id}`}
-        className="block rounded-2xl bg-white shadow-sm border border-[var(--border-light)] px-4 py-4 mb-3 active:scale-[0.99] transition"
+        className="block rounded-2xl bg-white shadow-sm border border-line px-4 py-4 mb-3 active:scale-[0.99] transition"
       >
         <div className="flex items-start gap-3">
           <ThumbByUrl suggestPostId={id} />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="flex-1 min-w-0 text-[16px] leading-6 font-medium text-[var(--text-primary)] truncate">
+              <h3 className="flex-1 min-w-0 text-[16px] leading-6 font-medium text-content truncate">
                 {title}
               </h3>
               <StatusBadge status={isAnswered} />
             </div>
 
-            <p className="mt-1 text-xs text-[var(--text-secondary)]">{meta}</p>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">
+            <p className="mt-1 text-xs text-content-secondary">{meta}</p>
+            <p className="mt-1 text-xs text-content-muted">
               {formatFullDate(item.createdAt)}
             </p>
           </div>

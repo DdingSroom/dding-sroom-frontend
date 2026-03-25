@@ -322,27 +322,25 @@ export default function SuggestPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[var(--border-light)]">
+      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-line">
         <div className="px-5 py-4">
-          <h1 className="text-2xl font-semibold text-[var(--text-primary)]">
-            건의/신고
-          </h1>
+          <h1 className="text-2xl font-semibold text-content">건의/신고</h1>
         </div>
 
         {/* Tabs */}
         <nav className="px-5">
-          <div className="flex space-x-8 border-b border-[var(--border-light)]">
-            <span className="relative py-3 text-base text-[var(--primary-color)]">
+          <div className="flex space-x-8 border-b border-line">
+            <span className="relative py-3 text-base text-primary">
               건의/신고
               <span
                 className="absolute left-0 -bottom-[1px] h-[3px] w-full rounded-full"
-                style={{ backgroundColor: 'var(--primary-color)' }}
+                style={{ backgroundColor: 'var(--color-primary)' }}
               />
             </span>
 
             <Link
               href="/suggest/history"
-              className="relative py-3 text-base text-[var(--text-muted)] hover:text-[var(--primary-color)]"
+              className="relative py-3 text-base text-content-muted hover:text-primary"
             >
               건의/신고내역
             </Link>
@@ -351,11 +349,11 @@ export default function SuggestPage() {
       </header>
 
       {/* Form Body */}
-      <main className="px-5 pt-4 bg-[#f5f7fb] flex-1">
+      <main className="px-5 pt-4 bg-surface-suggest flex-1">
         <form onSubmit={submit} className="space-y-5 pb-8">
           {/* 분류 */}
-          <section className="rounded-xl bg-white border border-[var(--border-light)]">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-[var(--text-primary)]">
+          <section className="rounded-xl bg-white border border-line">
+            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
               건의/신고 분류
             </label>
             <div className="px-4 pb-4">
@@ -363,7 +361,7 @@ export default function SuggestPage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-[#fbfbfb] px-4 py-3 pr-10 text-[15px]"
+                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-[15px]"
                 >
                   {categories.map((c) => (
                     <option key={c} value={c}>
@@ -387,8 +385,8 @@ export default function SuggestPage() {
           </section>
 
           {/* 장소 */}
-          <section className="rounded-xl bg-white border border-[var(--border-light)]">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-[var(--text-primary)]">
+          <section className="rounded-xl bg-white border border-line">
+            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
               건의/신고 장소
             </label>
             <div className="px-4 pb-4">
@@ -396,7 +394,7 @@ export default function SuggestPage() {
                 <select
                   value={place}
                   onChange={(e) => setPlace(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-[#fbfbfb] px-4 py-3 pr-10 text-[15px]"
+                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-[15px]"
                 >
                   {places.map((p) => (
                     <option key={p} value={p}>
@@ -420,8 +418,8 @@ export default function SuggestPage() {
           </section>
 
           {/* 제목 */}
-          <section className="rounded-xl bg-white border border-[var(--border-light)]">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-[var(--text-primary)]">
+          <section className="rounded-xl bg-white border border-line">
+            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
               건의/신고 제목
             </label>
             <div className="px-4 pb-2">
@@ -430,10 +428,10 @@ export default function SuggestPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="제목을 입력해 주세요(20자 이내)"
-                  className="w-full rounded-lg border bg-[#fbfbfb] px-4 py-3 text-[15px]"
+                  className="w-full rounded-lg border bg-surface-subtle px-4 py-3 text-[15px]"
                 />
                 <span
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${overTitle ? 'text-red-500' : 'text-[var(--text-muted)]'}`}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
                 >
                   {titleCount}/{MAX_TITLE}
                 </span>
@@ -442,8 +440,8 @@ export default function SuggestPage() {
           </section>
 
           {/* 내용 */}
-          <section className="rounded-xl bg-white border border-[var(--border-light)]">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-[var(--text-primary)]">
+          <section className="rounded-xl bg-white border border-line">
+            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
               건의/신고 내용
             </label>
             <div className="px-4">
@@ -452,14 +450,12 @@ export default function SuggestPage() {
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
                 rows={10}
-                className="w-full resize-y rounded-lg border bg-[#fbfbfb] px-4 py-3 text-[15px]"
+                className="w-full resize-y rounded-lg border bg-surface-subtle px-4 py-3 text-[15px]"
               />
             </div>
             <div className="px-4 py-2 text-right text-sm">
               <span
-                className={
-                  overContent ? 'text-red-500' : 'text-[var(--text-muted)]'
-                }
+                className={overContent ? 'text-red-500' : 'text-content-muted'}
               >
                 {contentCount}/{MAX_CONTENT}
               </span>
@@ -467,16 +463,16 @@ export default function SuggestPage() {
           </section>
 
           {/* 이미지 첨부 */}
-          <section className="rounded-xl bg-white border border-[var(--border-light)]">
+          <section className="rounded-xl bg-white border border-line">
             <button
               type="button"
               onClick={pickFiles}
               className="flex w-full items-center justify-between gap-3 px-4 py-3"
             >
-              <span className="text-[15px] font-medium text-[var(--text-primary)]">
+              <span className="text-[15px] font-medium text-content">
                 + 이미지 첨부
               </span>
-              <span className="text-[var(--text-muted)]">
+              <span className="text-content-muted">
                 <svg
                   width="20"
                   height="20"
@@ -508,18 +504,18 @@ export default function SuggestPage() {
                 {files.slice(0, MAX_FILES).map((f) => (
                   <li
                     key={`${f.name}-${f.size}`}
-                    className="flex items-center justify-between rounded-lg border bg-[#fbfbfb] px-3 py-2"
+                    className="flex items-center justify-between rounded-lg border bg-surface-subtle px-3 py-2"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-[15px]">
                         {f.name}
                         {uploadProgress[f.name] != null && (
-                          <span className="ml-2 text-xs text-[var(--text-muted)]">
+                          <span className="ml-2 text-xs text-content-muted">
                             {uploadProgress[f.name]}%
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-[var(--text-muted)]">
+                      <p className="text-xs text-content-muted">
                         {bytesToMB(f.size)}MB
                       </p>
                     </div>
@@ -554,12 +550,12 @@ export default function SuggestPage() {
               </ul>
             )}
 
-            <div className="px-4 pb-3 text-sm text-[var(--text-muted)]">
+            <div className="px-4 pb-3 text-sm text-content-muted">
               첨부파일은 최대 5개, 30MB까지 등록 가능합니다.
             </div>
             <div className="flex items-center justify-end border-t px-4 py-2 text-sm">
               <span
-                className={`${overTotal ? 'text-red-500' : 'text-[var(--text-muted)]'}`}
+                className={`${overTotal ? 'text-red-500' : 'text-content-muted'}`}
               >
                 {totalSizeMB}/30MB
               </span>
@@ -573,8 +569,8 @@ export default function SuggestPage() {
               disabled={hasError || submitting}
               className={`w-full rounded-xl py-4 text-base font-semibold text-white shadow-sm transition active:scale-[0.99] ${
                 hasError || submitting
-                  ? 'bg-[#bfc8ff] cursor-not-allowed'
-                  : 'bg-[var(--primary-color)]'
+                  ? 'bg-primary-disabled cursor-not-allowed'
+                  : 'bg-primary'
               }`}
             >
               {submitting ? '전송 중...' : '건의/신고하기'}

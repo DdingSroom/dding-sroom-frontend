@@ -56,7 +56,7 @@ function SuggestDetailHeader() {
         />
       </button>
 
-      <div className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-[#37352f]">
+      <div className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-content">
         건의/신고내역
       </div>
     </header>
@@ -68,8 +68,8 @@ function StatusBadge({ done }) {
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs ${
         done
-          ? 'bg-[#eef2ff] text-[var(--primary-color)]'
-          : 'bg-[#f4f4f5] text-[var(--text-muted)]'
+          ? 'bg-primary-lightest text-primary'
+          : 'bg-surface-neutral text-content-muted'
       }`}
     >
       {done ? '답변완료' : '답변대기중'}
@@ -282,14 +282,14 @@ export default function SuggestHistoryDetailPage({ params }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] flex flex-col">
+    <div className="min-h-screen bg-surface-suggest flex flex-col">
       <SuggestDetailHeader />
 
       <main className="flex-1 px-4 py-5">
-        <section className="rounded-2xl bg-white shadow-sm border border-[var(--border-light)]">
+        <section className="rounded-2xl bg-white shadow-sm border border-line">
           {/* 로딩/에러 */}
           {loading && (
-            <div className="px-5 py-5 text-sm text-[var(--text-muted)]">
+            <div className="px-5 py-5 text-sm text-content-muted">
               로딩 중...
             </div>
           )}
@@ -303,11 +303,11 @@ export default function SuggestHistoryDetailPage({ params }) {
               <div className="px-5 pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h2 className="text-[17px] leading-6 font-medium text-[var(--text-primary)] break-words">
+                    <h2 className="text-[17px] leading-6 font-medium text-content break-words">
                       {detail.title || '제목 없음'}
                     </h2>
                     {meta && (
-                      <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                      <p className="mt-1 text-xs text-content-secondary">
                         {meta}
                       </p>
                     )}
@@ -319,13 +319,13 @@ export default function SuggestHistoryDetailPage({ params }) {
                       <>
                         <button
                           onClick={beginEdit}
-                          className="px-3 py-1.5 text-sm rounded bg-[#eef2ff] text-[var(--primary-color)] border hover:bg-[#e0e7ff]"
+                          className="px-3 py-1.5 text-sm rounded bg-primary-lightest text-primary border hover:bg-primary-lighter"
                         >
                           수정
                         </button>
                         <button
                           onClick={deleteItem}
-                          className="px-3 py-1.5 text-sm rounded bg-[#ffe7e7] text-[#c0392b] border hover:bg-[#ffdede]"
+                          className="px-3 py-1.5 text-sm rounded bg-error-bg text-error border hover:bg-error-bg-hover"
                         >
                           삭제
                         </button>
@@ -339,7 +339,7 @@ export default function SuggestHistoryDetailPage({ params }) {
               {!editing ? (
                 <>
                   <div className="px-5 pt-4">
-                    <div className="whitespace-pre-wrap text-[15px] leading-6 text-[var(--text-primary)] break-words">
+                    <div className="whitespace-pre-wrap text-[15px] leading-6 text-content break-words">
                       {detail.content || '내용이 없습니다.'}
                     </div>
                   </div>
@@ -456,7 +456,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                     </button>
                     <button
                       onClick={saveEdit}
-                      className="px-3 py-2 text-sm rounded bg-[var(--primary-color)] text-white hover:opacity-90 disabled:opacity-60"
+                      className="px-3 py-2 text-sm rounded bg-primary text-white hover:opacity-90 disabled:opacity-60"
                       disabled={saving || (isDone && !ackAnswerDone)} // ✅ 가드
                     >
                       {saving ? '저장 중...' : '저장'}
@@ -465,7 +465,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                 </div>
               )}
 
-              <div className="h-[10px] bg-[#eef0f5]" />
+              <div className="h-[10px] bg-surface-neutral" />
 
               {/* 관리자 답변(댓글에서 최신 answer_content) */}
               <div className="px-5 py-5">
@@ -473,7 +473,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M6 12h8l-3-3m3 3l-3 3"
-                      stroke="#788cff"
+                      stroke="var(--color-primary)"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -481,8 +481,8 @@ export default function SuggestHistoryDetailPage({ params }) {
                   </svg>
                 </div>
 
-                <div className="rounded-xl bg-[#f8f9ff] border border-[var(--border-light)] px-4 py-3">
-                  <div className="whitespace-pre-wrap text-[15px] leading-6 text-[var(--text-secondary)]">
+                <div className="rounded-xl bg-surface-card border border-line px-4 py-3">
+                  <div className="whitespace-pre-wrap text-[15px] leading-6 text-content-secondary">
                     {answerText
                       ? answerText
                       : '관리자 답변이 등록되면 이곳에 표시됩니다.'}
