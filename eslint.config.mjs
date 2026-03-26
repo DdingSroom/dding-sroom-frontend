@@ -2,9 +2,9 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactPlugin from 'eslint-plugin-react';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
-import reactPlugin from 'eslint-plugin-react';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const compat = new FlatCompat({ baseDirectory: __dirname });
@@ -34,6 +34,7 @@ const config = [
       eqeqeq: ['error', 'smart'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-var': 'error',
+      'prefer-const': 'warn',
 
       'arrow-body-style': ['warn', 'as-needed'],
       'react/self-closing-comp': ['warn', { component: true, html: true }],
