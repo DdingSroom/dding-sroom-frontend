@@ -13,7 +13,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <html lang="ko">
-      <body className="admin-body bg-surface-admin min-h-screen overflow-x-hidden">
+      <body className="bg-surface-admin min-h-screen overflow-x-hidden">
         <div className="w-full min-h-screen bg-surface-admin flex">
           <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col">
             <h1 className="text-xl font-bold mb-8">사이트 관리</h1>
