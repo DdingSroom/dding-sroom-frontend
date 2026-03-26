@@ -5,7 +5,7 @@ import axiosInstance from '@api/instance';
 
 export default function ThumbByUrl({
   suggestPostId,
-  className = 'w-[64px] h-[64px] rounded-xl overflow-hidden shrink-0 bg-surface-neutral',
+  className = 'w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-surface-neutral',
   imgClassName = 'w-full h-full object-cover',
 }) {
   const [url, setUrl] = useState('');
