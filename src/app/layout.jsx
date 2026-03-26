@@ -60,7 +60,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
-        {children}
+        <div className="mx-auto w-full max-w-layout min-h-screen bg-surface-page">
+          {children}
+        </div>
 
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-NEXY3X7HZG"
