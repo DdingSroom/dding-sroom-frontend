@@ -78,7 +78,7 @@ const CommentItem = ({
     <div className="px-4 py-3 border-b border-gray-100">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-2 text-[13px]">
+          <div className="flex items-center gap-2 text-sm-minus">
             <span
               className={`font-medium ${
                 isPostAuthor(comment.user_id) ? 'text-primary' : 'text-gray-800'
@@ -87,16 +87,16 @@ const CommentItem = ({
               {anonName(comment.user_id)}
               {isPostAuthor(comment.user_id) && '(글쓴이)'}
             </span>
-            <span className="text-[12px] text-gray-400">
+            <span className="text-xs text-gray-400">
               {formatDate(comment.created_at)}
             </span>
           </div>
 
-          <p className="mt-1 text-[14px] text-gray-800 leading-relaxed">
+          <p className="mt-1 text-sm text-gray-800 leading-relaxed">
             {comment.comment_content}
           </p>
 
-          <div className="mt-1 flex gap-3 text-[12px] text-gray-500">
+          <div className="mt-1 flex gap-3 text-xs text-gray-500">
             <button
               onClick={() => setShowReplyInput((v) => !v)}
               className="hover:text-primary"
@@ -141,7 +141,7 @@ const CommentItem = ({
       {comment.replies?.length > 0 && (
         <div className="mt-2 pl-3 border-l border-gray-200 space-y-2">
           {comment.replies.map((reply) => (
-            <div key={reply.id} className="text-[13px]">
+            <div key={reply.id} className="text-sm-minus">
               <div className="flex items-center gap-2">
                 <span
                   className={`font-medium ${
@@ -153,7 +153,7 @@ const CommentItem = ({
                   {anonName(reply.user_id)}
                   {isPostAuthor(reply.user_id) && '(글쓴이)'}
                 </span>
-                <span className="text-[12px] text-gray-400">
+                <span className="text-xs text-gray-400">
                   {formatDate(reply.created_at)}
                 </span>
               </div>
@@ -163,7 +163,7 @@ const CommentItem = ({
               {reply.user_id === userId && (
                 <button
                   onClick={() => handleDeleteComment(reply.id)}
-                  className="mt-1 text-[12px] text-red-500 hover:text-red-600"
+                  className="mt-1 text-xs text-red-500 hover:text-red-600"
                 >
                   삭제
                 </button>

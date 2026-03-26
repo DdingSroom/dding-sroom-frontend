@@ -372,7 +372,7 @@ export default function NotificationManagement() {
 
       {showDetailModal && selectedNotification && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-modal-lg overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-lg font-bold text-gray-900 pr-4">
@@ -454,10 +454,10 @@ function NotificationCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-gray-100 text-gray-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-gray-100 text-gray-700">
                 #{notification.id}
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-blue-50 text-blue-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-blue-50 text-blue-700">
                 공지사항
               </span>
             </div>
@@ -469,7 +469,7 @@ function NotificationCard({
               {truncateContent(notification.content)}
             </p>
 
-            <p className="mt-2 text-[11px] text-gray-400">
+            <p className="mt-2 text-xs-plus text-gray-400">
               작성일: {formatDate(notification.createdAt)} · 조회수:{' '}
               {notification.viewCount}
             </p>

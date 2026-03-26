@@ -28,7 +28,7 @@ const CommunityHeader = ({ title = '커뮤니티' }) => {
           />
         </button>
 
-        <div className="absolute left-1/2 -translate-x-1/2 text-[17px] font-semibold text-gray-900">
+        <div className="absolute left-1/2 -translate-x-1/2 text-lg-minus font-semibold text-gray-900">
           {title}
         </div>
       </div>

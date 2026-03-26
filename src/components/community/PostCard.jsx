@@ -33,14 +33,14 @@ const PostCard = ({ post }) => {
           <div className="text-xs text-primary font-medium mb-1">
             {getCategoryName(post.category)}
           </div>
-          <h3 className="text-[15px] font-medium text-gray-900 leading-snug line-clamp-1">
+          <h3 className="text-md font-medium text-gray-900 leading-snug line-clamp-1">
             {post.title}
           </h3>
-          <p className="text-[13px] text-gray-600 line-clamp-1 mt-0.5">
+          <p className="text-sm-minus text-gray-600 line-clamp-1 mt-0.5">
             {post.content}
           </p>
         </div>
-        <time className="ml-3 text-[12px] text-gray-400 whitespace-nowrap">
+        <time className="ml-3 text-xs text-gray-400 whitespace-nowrap">
           {formatDate(post.created_at)}
         </time>
       </div>

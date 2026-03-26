@@ -140,11 +140,11 @@ export default function WritePostPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-[15px]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-md"
                 disabled={isSubmitting}
                 maxLength={100}
               />
-              <div className="mt-1 text-right text-[11px] text-gray-400">
+              <div className="mt-1 text-right text-xs-plus text-gray-400">
                 {title.length}/100
               </div>
             </div>
@@ -163,11 +163,11 @@ export default function WritePostPage() {
 - 서로를 존중하는 언어를 사용해주세요
 - 개인정보나 연락처는 공유하지 마세요`}
                 rows={12}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-[15px] leading-relaxed"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 text-md leading-relaxed"
                 disabled={isSubmitting}
                 maxLength={1000}
               />
-              <div className="mt-1 text-right text-[11px] text-gray-400">
+              <div className="mt-1 text-right text-xs-plus text-gray-400">
                 {content.length}/1000
               </div>
             </div>

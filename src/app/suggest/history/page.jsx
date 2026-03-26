@@ -117,7 +117,7 @@ export default function SuggestHistoryPage() {
             <span className="relative py-3 text-base text-primary">
               건의/신고내역
               <span
-                className="absolute left-0 -bottom-[1px] h-[3px] w-full rounded-full"
+                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full"
                 style={{ backgroundColor: 'var(--color-primary)' }}
               />
             </span>
@@ -177,7 +177,7 @@ function SectionHeader({ dateStr }) {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-primary-lightest/40 px-4 py-3 mx-4 mt-5 mb-3">
       <span className="inline-block w-2.5 h-2.5 rounded-full bg-primary" />
-      <span className="text-[15px] font-medium text-content">{dateStr}</span>
+      <span className="text-md font-medium text-content">{dateStr}</span>
     </div>
   );
 }
@@ -201,7 +201,7 @@ function HistoryCard({ item }) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="flex-1 min-w-0 text-[16px] leading-6 font-medium text-content truncate">
+              <h3 className="flex-1 min-w-0 text-base leading-6 font-medium text-content truncate">
                 {title}
               </h3>
               <StatusBadge status={isAnswered} />

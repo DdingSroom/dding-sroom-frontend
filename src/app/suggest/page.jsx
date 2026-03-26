@@ -333,7 +333,7 @@ export default function SuggestPage() {
             <span className="relative py-3 text-base text-primary">
               건의/신고
               <span
-                className="absolute left-0 -bottom-[1px] h-[3px] w-full rounded-full"
+                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full"
                 style={{ backgroundColor: 'var(--color-primary)' }}
               />
             </span>
@@ -353,7 +353,7 @@ export default function SuggestPage() {
         <form onSubmit={submit} className="space-y-5 pb-8">
           {/* 분류 */}
           <section className="rounded-xl bg-white border border-line">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
+            <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 분류
             </label>
             <div className="px-4 pb-4">
@@ -361,7 +361,7 @@ export default function SuggestPage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-[15px]"
+                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-md"
                 >
                   {categories.map((c) => (
                     <option key={c} value={c}>
@@ -386,7 +386,7 @@ export default function SuggestPage() {
 
           {/* 장소 */}
           <section className="rounded-xl bg-white border border-line">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
+            <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 장소
             </label>
             <div className="px-4 pb-4">
@@ -394,7 +394,7 @@ export default function SuggestPage() {
                 <select
                   value={place}
                   onChange={(e) => setPlace(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-[15px]"
+                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-md"
                 >
                   {places.map((p) => (
                     <option key={p} value={p}>
@@ -419,7 +419,7 @@ export default function SuggestPage() {
 
           {/* 제목 */}
           <section className="rounded-xl bg-white border border-line">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
+            <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 제목
             </label>
             <div className="px-4 pb-2">
@@ -428,7 +428,7 @@ export default function SuggestPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="제목을 입력해 주세요(20자 이내)"
-                  className="w-full rounded-lg border bg-surface-subtle px-4 py-3 text-[15px]"
+                  className="w-full rounded-lg border bg-surface-subtle px-4 py-3 text-md"
                 />
                 <span
                   className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
@@ -441,7 +441,7 @@ export default function SuggestPage() {
 
           {/* 내용 */}
           <section className="rounded-xl bg-white border border-line">
-            <label className="block px-4 pt-4 pb-2 text-[15px] font-semibold text-content">
+            <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 내용
             </label>
             <div className="px-4">
@@ -450,7 +450,7 @@ export default function SuggestPage() {
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
                 rows={10}
-                className="w-full resize-y rounded-lg border bg-surface-subtle px-4 py-3 text-[15px]"
+                className="w-full resize-y rounded-lg border bg-surface-subtle px-4 py-3 text-md"
               />
             </div>
             <div className="px-4 py-2 text-right text-sm">
@@ -469,7 +469,7 @@ export default function SuggestPage() {
               onClick={pickFiles}
               className="flex w-full items-center justify-between gap-3 px-4 py-3"
             >
-              <span className="text-[15px] font-medium text-content">
+              <span className="text-md font-medium text-content">
                 + 이미지 첨부
               </span>
               <span className="text-content-muted">
@@ -507,7 +507,7 @@ export default function SuggestPage() {
                     className="flex items-center justify-between rounded-lg border bg-surface-subtle px-3 py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-[15px]">
+                      <p className="truncate text-md">
                         {f.name}
                         {uploadProgress[f.name] != null && (
                           <span className="ml-2 text-xs text-content-muted">

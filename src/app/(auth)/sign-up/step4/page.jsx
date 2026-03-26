@@ -44,15 +44,15 @@ function SignUpStep4() {
               width={56}
               height={56}
             />
-            <div className="text-primary text-[25px] font-bold">
+            <div className="text-primary text-heading-md font-bold">
               회원가입 완료!
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="text-[14px]">
+              <div className="text-sm">
                 {username}님의 회원가입을 축하합니다.
               </div>
-              <div className="text-[14px]">띵스룸을 통해 빠르고 쾌적하게</div>
-              <div className="text-[14px]">스터디룸을 이용할 수 있어요!</div>
+              <div className="text-sm">띵스룸을 통해 빠르고 쾌적하게</div>
+              <div className="text-sm">스터디룸을 이용할 수 있어요!</div>
             </div>
           </div>
 

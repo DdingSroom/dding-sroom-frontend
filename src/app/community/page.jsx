@@ -131,7 +131,7 @@ export default function CommunityPage() {
                 >
                   {category.name}
                   <span
-                    className={`absolute left-0 right-0 -bottom-px h-[2px] 
+                    className={`absolute left-0 right-0 -bottom-px h-0.5 
                     ${active ? 'bg-accent' : 'bg-transparent'}`}
                   />
                 </button>

@@ -25,15 +25,15 @@ export default function CancelAccountStep2() {
         <div className="max-w-md mx-auto w-full space-y-6">
           <div className="flex flex-col items-center gap-4 mt-20">
             <img src="/static/icons/maru_sad_icon.svg" alt="maru" />
-            <div className="text-primary text-[25px] font-bold">
+            <div className="text-primary text-heading-md font-bold">
               안녕히가세요
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="text-[14px]">회원 탈퇴가 완료되었습니다.</div>
-              <div className="text-[14px]">
+              <div className="text-sm">회원 탈퇴가 완료되었습니다.</div>
+              <div className="text-sm">
                 확인을 누르시면 비회원용 홈으로 돌아갑니다.
               </div>
-              <div className="text-[14px] mt-4">다시 만날 날을 기다릴게요!</div>
+              <div className="text-sm mt-4">다시 만날 날을 기다릴게요!</div>
             </div>
           </div>
 

@@ -21,14 +21,14 @@ export default function ServiceManualPage() {
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <header className="mb-10">
-        <h1 className="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-primary">
+        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-primary">
           띵스룸 이용 가이드
         </h1>
         <p className="mt-2 text-sm text-info-link">
           마지막 업데이트: <time dateTime="2025-08-14">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-[1.9] text-[15px] text-content">
+        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-info text-md text-content">
           띵스룸은 <b>명지대학교 학생 전용 스터디룸 예약 서비스</b>입니다. 처음
           방문하신 분도 이 문서만 따라 하면 <b>회원가입 → 로그인 → 예약</b>까지
           어렵지 않게 완료할 수 있어요. 각 단계별 화면 캡처와 주의사항, 자주
@@ -46,7 +46,7 @@ export default function ServiceManualPage() {
         className="mb-12 rounded-2xl border border-primary-lighter bg-white/70 p-5"
       >
         <h2 className="text-sm font-semibold text-primary mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-[15px] text-primary">
+        <ol className="list-decimal ml-5 space-y-2 text-md text-primary">
           {[
             ['#section-signup', '회원가입'],
             ['#section-reset', '비밀번호 재설정'],
@@ -423,7 +423,7 @@ function QuickStart() {
       <h2 className="text-sm font-semibold text-primary mb-3">
         5분 만에 시작하기
       </h2>
-      <ol className="list-decimal pl-5 space-y-2 text-[15px] leading-[1.9]">
+      <ol className="list-decimal pl-5 space-y-2 text-md leading-info">
         <li>
           <Link href="/sign-up/step1" className="text-primary underline">
             학교 이메일로 회원가입
@@ -449,9 +449,9 @@ function Section({ id, title, children }) {
   return (
     <section
       id={id}
-      className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-[1.95] text-content"
+      className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-info-relaxed text-content"
     >
-      <h2 className="text-[22px] sm:text-[24px] font-extrabold text-primary mb-5">
+      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-primary mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -461,25 +461,25 @@ function Section({ id, title, children }) {
 
 function SubTitle({ children }) {
   return (
-    <h3 className="text-[17px] font-bold text-primary mt-1">{children}</h3>
+    <h3 className="text-lg-minus font-bold text-primary mt-1">{children}</h3>
   );
 }
 
 function MiniTitle({ children }) {
   return (
-    <h4 className="text-[15px] font-semibold text-primary-hover mt-1">
+    <h4 className="text-md font-semibold text-primary-hover mt-1">
       {children}
     </h4>
   );
 }
 
 function P({ children }) {
-  return <p className="text-[15px] leading-[1.95]">{children}</p>;
+  return <p className="text-md leading-info-relaxed">{children}</p>;
 }
 
 function UL({ children }) {
   return (
-    <ul className="list-disc pl-5 sm:pl-6 space-y-2.5 text-[15px] leading-[1.95]">
+    <ul className="list-disc pl-5 sm:pl-6 space-y-2.5 text-md leading-info-relaxed">
       {children}
     </ul>
   );
@@ -487,7 +487,7 @@ function UL({ children }) {
 
 function OL({ children }) {
   return (
-    <ol className="list-decimal pl-5 sm:pl-6 space-y-2.5 text-[15px] leading-[1.95]">
+    <ol className="list-decimal pl-5 sm:pl-6 space-y-2.5 text-md leading-info-relaxed">
       {children}
     </ol>
   );
@@ -534,19 +534,17 @@ function Callout({ type = 'info', title, children }) {
       : 'border-warning-muted bg-warning-bg';
   const badge =
     type === 'info' ? (
-      <span className="rounded-md bg-tag-info-bg text-tag-info-text px-2 py-0.5 text-[11px] font-semibold">
+      <span className="rounded-md bg-tag-info-bg text-tag-info-text px-2 py-0.5 text-xs-plus font-semibold">
         TIP
       </span>
     ) : (
-      <span className="rounded-md bg-tag-warning-bg text-tag-warning-text px-2 py-0.5 text-[11px] font-semibold">
+      <span className="rounded-md bg-tag-warning-bg text-tag-warning-text px-2 py-0.5 text-xs-plus font-semibold">
         주의
       </span>
     );
 
   return (
-    <div
-      className={`rounded-2xl border ${styles} p-4 text-[14px] leading-[1.9]`}
-    >
+    <div className={`rounded-2xl border ${styles} p-4 text-sm leading-info`}>
       <div className="mb-1 flex items-center gap-2">
         {badge}
         <span className="font-semibold">{title}</span>

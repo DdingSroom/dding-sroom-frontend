@@ -220,7 +220,7 @@ export default function PostDetailPage() {
               <span className="text-xs font-semibold text-primary">
                 {getCategoryName(post.category)}
               </span>
-              <span className="text-[11px] text-gray-400">
+              <span className="text-xs-plus text-gray-400">
                 {formatDate(
                   isUpdated(post.created_at, post.updated_at)
                     ? post.updated_at
@@ -228,7 +228,7 @@ export default function PostDetailPage() {
                 )}
               </span>
               {isUpdated(post.created_at, post.updated_at) && (
-                <span className="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                <span className="ml-1 text-2xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                   수정됨
                 </span>
               )}
@@ -237,7 +237,7 @@ export default function PostDetailPage() {
             <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-relaxed mb-2">
               {post.title}
             </h1>
-            <div className="text-[15px] text-gray-800 leading-relaxed whitespace-pre-wrap">
+            <div className="text-md text-gray-800 leading-relaxed whitespace-pre-wrap">
               {post.content}
             </div>
 
@@ -311,7 +311,7 @@ export default function PostDetailPage() {
                 {isSubmittingComment ? '작성중…' : '등록'}
               </button>
             </div>
-            <div className="mt-1 text-right text-[11px] text-gray-400">
+            <div className="mt-1 text-right text-xs-plus text-gray-400">
               {newComment.length}/500
             </div>
           </div>

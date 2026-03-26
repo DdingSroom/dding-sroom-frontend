@@ -19,14 +19,14 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       <header className="mb-10">
-        <h1 className="text-[28px] sm:text-[32px] font-extrabold tracking-tight text-primary">
+        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-primary">
           개인정보처리방침
         </h1>
         <p className="mt-2 text-sm text-info-link">
           마지막 업데이트: <time dateTime="2025-08-14">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-[1.9] text-[15px] text-content">
+        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-info text-md text-content">
           본 개인정보처리방침은 명지대 띵스룸(ddingsroom) 서비스가 이용자들의
           개인정보를 어떻게 수집·이용·보관·파기하는지, 그리고 이용자의 권리를
           어떻게 보호하는지를 설명합니다. 본 방침은 서비스 이용 시 적용되는
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
         className="mb-12 rounded-2xl border border-primary-lighter bg-white/70 p-5"
       >
         <h2 className="text-sm font-semibold text-primary mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-[15px] text-primary">
+        <ol className="list-decimal ml-5 space-y-2 text-md text-primary">
           {[
             ['#section-1', '개인정보 수집 항목 및 수집 방법'],
             ['#section-2', '개인정보의 이용 목적'],
@@ -246,9 +246,9 @@ function Section({ id, title, children }) {
   return (
     <section
       id={id}
-      className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-[1.95] text-content"
+      className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-info-relaxed text-content"
     >
-      <h2 className="text-[22px] sm:text-[24px] font-extrabold text-primary mb-5">
+      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-primary mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -258,25 +258,25 @@ function Section({ id, title, children }) {
 
 function SubTitle({ children }) {
   return (
-    <h3 className="text-[17px] font-bold text-primary mt-1">{children}</h3>
+    <h3 className="text-lg-minus font-bold text-primary mt-1">{children}</h3>
   );
 }
 
 function MiniTitle({ children }) {
   return (
-    <h4 className="text-[15px] font-semibold text-primary-hover mt-1">
+    <h4 className="text-md font-semibold text-primary-hover mt-1">
       {children}
     </h4>
   );
 }
 
 function P({ children }) {
-  return <p className="text-[15px] leading-[1.95]">{children}</p>;
+  return <p className="text-md leading-info-relaxed">{children}</p>;
 }
 
 function UL({ children }) {
   return (
-    <ul className="list-disc pl-5 sm:pl-6 space-y-2.5 text-[15px] leading-[1.95]">
+    <ul className="list-disc pl-5 sm:pl-6 space-y-2.5 text-md leading-info-relaxed">
       {children}
     </ul>
   );

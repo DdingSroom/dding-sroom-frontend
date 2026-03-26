@@ -227,17 +227,17 @@ function SuggestionCard({ item, onRefresh }) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-gray-100 text-gray-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-gray-100 text-gray-700">
                 #{item.id}
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-gray-50 text-gray-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-gray-50 text-gray-700">
                 {item.category || '카테고리 없음'}
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-gray-50 text-gray-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-gray-50 text-gray-700">
                 {item.location || '위치 미상'}
               </span>
               <span
-                className={`inline-flex items-center px-2 py-0.5 text-[11px] rounded ${
+                className={`inline-flex items-center px-2 py-0.5 text-xs-plus rounded ${
                   item.isAnswered
                     ? 'bg-green-50 text-green-700'
                     : 'bg-amber-50 text-amber-700'
@@ -254,7 +254,7 @@ function SuggestionCard({ item, onRefresh }) {
               {item.content}
             </p>
 
-            <p className="mt-2 text-[11px] text-gray-400">
+            <p className="mt-2 text-xs-plus text-gray-400">
               작성자: {item.userId ?? '알수없음'} ·{' '}
               {formatFullDate(item.createdAt)}
             </p>
@@ -292,7 +292,7 @@ function SuggestionCard({ item, onRefresh }) {
               <SuggestionImagesByUrl
                 suggestPostId={item.id}
                 className="flex flex-wrap gap-2"
-                imgClassName="max-w-[160px] rounded border"
+                imgClassName="max-w-thumb rounded border"
                 fallback={
                   <div className="text-sm text-gray-500 py-2">
                     첨부 이미지가 없습니다.
