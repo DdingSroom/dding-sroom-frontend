@@ -33,7 +33,7 @@ export default function CancelAccountStep1() {
   const router = useRouter();
 
   const commonCodeButtonClass =
-    'inline-flex items-center justify-center w-[100px] h-10 ' +
+    'inline-flex items-center justify-center w-btn-action h-10 ' +
     'border border-primary bg-white text-primary ' +
     'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';

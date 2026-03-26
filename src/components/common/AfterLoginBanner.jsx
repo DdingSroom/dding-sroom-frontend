@@ -75,9 +75,9 @@ const AfterLoginBanner = () => {
   };
 
   return (
-    <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-[95%]">
+    <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-content">
       {/* 혼잡도 박스 */}
-      <div className="relative flex bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
+      <div className="relative flex bg-white rounded-2xl min-h-banner-card w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
         <div className="flex flex-col gap-2 sm:gap-3">
           <div className="text-content-secondary text-xs sm:text-sm font-bold">
             오늘의 혼잡도
@@ -94,7 +94,7 @@ const AfterLoginBanner = () => {
       </div>
 
       {/* 예약 내역 박스 */}
-      <div className="flex flex-col bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 shadow-sm border border-gray-50">
+      <div className="flex flex-col bg-white rounded-2xl min-h-banner-card w-1/2 p-3 sm:p-6 shadow-sm border border-gray-50">
         <div className="font-bold text-base sm:text-lg md:text-xl mb-3 sm:mb-4 text-content whitespace-nowrap overflow-hidden">
           내가 예약한 방
         </div>

@@ -229,7 +229,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto pb-3">
-      <div className="flex flex-row min-w-[720px] sm:min-w-0">
+      <div className="flex flex-row min-w-grid sm:min-w-0">
         {slots.map((ms) => {
           const hour = kstHour(ms);
           const isFirstOfHour = kstMinute(ms) === 0;
@@ -242,7 +242,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
               style={{ width: '10px' }}
             >
               <span
-                className="text-[10px] text-content-time"
+                className="text-2xs text-content-time"
                 style={{
                   visibility: isFirstOfHour ? 'visible' : 'hidden',
                   height: '16px',
@@ -283,7 +283,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-[100%] mt-[1rem]">
+    <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-full mt-4">
       <div className="flex justify-between items-center">
         <div className="flex gap-3 sm:gap-5 items-center">
           <div className="text-xl sm:text-2xl whitespace-nowrap flex-shrink-0">
@@ -301,7 +301,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
           )}
         </div>
         <button
-          className="bg-primary-dark text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-primary-dark-hover transition-colors duration-200 font-medium"
+          className="bg-primary-dark text-white text-lg rounded-3xl px-4 py-2 w-btn-action hover:bg-primary-dark-hover transition-colors duration-200 font-medium"
           onClick={handleOpenModal}
         >
           예약

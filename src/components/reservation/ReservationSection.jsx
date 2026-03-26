@@ -41,7 +41,7 @@ const ReservationSection = () => {
       </div>
 
       <div className="w-full flex justify-center items-center">
-        <div className="w-full max-w-[95%]">
+        <div className="w-full max-w-content">
           <div style={{ display: currentTab === 0 ? 'block' : 'none' }}>
             <TodayReservationList />
           </div>

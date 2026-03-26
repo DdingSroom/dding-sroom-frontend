@@ -166,7 +166,7 @@ export default function NotificationList() {
 
       {showDetailModal && selectedNotification && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 animate-in fade-in duration-300">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full mx-4 max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full mx-4 max-h-modal-lg overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="sticky top-0 bg-primary px-6 py-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">

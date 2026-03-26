@@ -14,7 +14,7 @@ const SecondBanner = () => {
     <div
       className="
         text-white
-        w-full max-w-[95%]
+        w-full max-w-content
         rounded-2xl
         bg-primary
         mt-4

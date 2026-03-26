@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const Banner = () => {
   return (
-    <div className="flex justify-between items-center p-8 bg-white rounded-2xl w-full max-w-[95%] min-h-[240px] shadow-sm border border-gray-50">
+    <div className="flex justify-between items-center p-8 bg-white rounded-2xl w-full max-w-content min-h-banner shadow-sm border border-gray-50">
       <div className="flex flex-col gap-6">
         <div className="space-y-2">
           <div className="text-content-secondary text-sm font-medium">

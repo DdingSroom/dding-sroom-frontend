@@ -303,7 +303,7 @@ export default function SuggestHistoryDetailPage({ params }) {
               <div className="px-5 pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h2 className="text-[17px] leading-6 font-medium text-content break-words">
+                    <h2 className="text-lg-minus leading-6 font-medium text-content break-words">
                       {detail.title || '제목 없음'}
                     </h2>
                     {meta && (
@@ -339,7 +339,7 @@ export default function SuggestHistoryDetailPage({ params }) {
               {!editing ? (
                 <>
                   <div className="px-5 pt-4">
-                    <div className="whitespace-pre-wrap text-[15px] leading-6 text-content break-words">
+                    <div className="whitespace-pre-wrap text-md leading-6 text-content break-words">
                       {detail.content || '내용이 없습니다.'}
                     </div>
                   </div>
@@ -350,7 +350,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                     <SuggestionImagesByUrl
                       suggestPostId={detail.id}
                       className="flex flex-wrap gap-2"
-                      imgClassName="max-w-[160px] rounded border"
+                      imgClassName="max-w-thumb rounded border"
                       fallback={
                         <div className="text-sm text-gray-500 py-2">
                           첨부 이미지가 없습니다.
@@ -465,7 +465,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                 </div>
               )}
 
-              <div className="h-[10px] bg-surface-neutral" />
+              <div className="h-2.5 bg-surface-neutral" />
 
               {/* 관리자 답변(댓글에서 최신 answer_content) */}
               <div className="px-5 py-5">
@@ -482,7 +482,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                 </div>
 
                 <div className="rounded-xl bg-surface-card border border-line px-4 py-3">
-                  <div className="whitespace-pre-wrap text-[15px] leading-6 text-content-secondary">
+                  <div className="whitespace-pre-wrap text-md leading-6 text-content-secondary">
                     {answerText
                       ? answerText
                       : '관리자 답변이 등록되면 이곳에 표시됩니다.'}

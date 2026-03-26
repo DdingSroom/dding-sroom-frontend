@@ -15,7 +15,7 @@ const TimeComponent = ({ status }) => {
 
   return (
     <div
-      className="w-[8px] h-[14px] transition-colors duration-200"
+      className="w-time-slot h-time-slot transition-colors duration-200"
       style={{ backgroundColor: getColor() }}
     />
   );

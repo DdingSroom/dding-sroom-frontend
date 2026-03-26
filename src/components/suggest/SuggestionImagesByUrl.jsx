@@ -6,7 +6,7 @@ import axiosInstance from '@api/instance';
 export default function SuggestionImagesByUrl({
   suggestPostId,
   className = '',
-  imgClassName = 'max-w-[160px] rounded border',
+  imgClassName = 'max-w-thumb rounded border',
   fallback = (
     <div className="text-sm text-gray-500 py-2">첨부 이미지가 없습니다.</div>
   ),
