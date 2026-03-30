@@ -1,8 +1,8 @@
 'use client';
 
-import { QueryClientProvider } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
-import { getQueryClient } from './queryClient';
+import { getQueryClient } from '@libs/query-client';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 interface QueryProviderProps {
   children: React.ReactNode;

@@ -29,8 +29,8 @@
       "@constants/*": ["./src/constants/*"],
       "@stores": ["./src/stores"],
       "@stores/*": ["./src/stores/*"],
-      "@lib": ["./src/lib"],
-      "@lib/*": ["./src/lib/*"],
+      "@libs": ["./src/libs"],
+      "@libs/*": ["./src/libs/*"],
       "@providers": ["./src/providers"],
       "@providers/*": ["./src/providers/*"]
     }
