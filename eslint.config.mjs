@@ -44,18 +44,18 @@ const config = [
         'warn',
         {
           groups: [
-            // 1. 라이브러리: node 빌트인, react, next, 외부 패키지
-            ['^node:', '^react', '^next', '^@?\\w'],
-            // 2. 컴포넌트 (@components)
-            ['^@components(/|$)'],
-            // 3. 나머지 내부 alias (@api, @constants, @hooks, @stores, @utils)
-            ['^@(api|constants|hooks|stores|utils)(/|$)'],
-            // 4. 상위 디렉토리 (../)
-            ['^\\.\\.(?!/?$)', '^\\.\\./'],
-            // 5. 같은/하위 디렉토리 (./)
-            ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
-            // 6. Side effect imports (e.g. import './styles.css')
+            // 1. Side effect imports (e.g. import './styles.css')
             ['^\\u0000'],
+            // 2. 라이브러리: node 빌트인, react, next, 외부 패키지
+            ['^node:', '^react', '^next', '^@?\\w'],
+            // 3. 컴포넌트 (@components)
+            ['^@components(/|$)'],
+            // 4. 나머지 내부 alias (@api, @constants, @hooks, @stores, @utils)
+            ['^@(api|constants|hooks|stores|utils)(/|$)'],
+            // 5. 상위 디렉토리 (../)
+            ['^\\.\\.(?!/?$)', '^\\.\\./'],
+            // 6. 같은/하위 디렉토리 (./)
+            ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
           ],
         },
       ],
