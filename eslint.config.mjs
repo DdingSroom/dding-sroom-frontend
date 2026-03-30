@@ -35,6 +35,7 @@ const config = [
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-var': 'error',
       'prefer-const': 'warn',
+      curly: ['warn', 'all'],
 
       'arrow-body-style': ['warn', 'as-needed'],
       'react/self-closing-comp': ['warn', { component: true, html: true }],
