@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import useTokenStore from '@stores/useTokenStore';
-import useReservationStore from '@stores/useReservationStore';
-import axiosInstance from '@api/instance';
+import { useCallback, useEffect, useState } from 'react';
+
 import CancellationModal from '@components/reservation/CancellationModal';
+
+import axiosInstance from '@api/instance';
+import useReservationStore from '@stores/useReservationStore';
+import useTokenStore from '@stores/useTokenStore';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
@@ -13,7 +15,9 @@ const AfterLoginBanner = () => {
     useReservationStore();
 
   const parseDate = (raw) => {
-    if (!raw) return null;
+    if (!raw) {
+      return null;
+    }
     if (Array.isArray(raw)) {
       const [year, month, day, hour = 0, minute = 0] = raw;
       return new Date(year, month - 1, day, hour, minute);
@@ -28,14 +32,18 @@ const AfterLoginBanner = () => {
 
   const formatTime = (input) => {
     const d = parseDate(input);
-    if (!d) return '--:--';
+    if (!d) {
+      return '--:--';
+    }
     const hours = String(d.getHours()).padStart(2, '0');
     const minutes = String(d.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
   };
 
   const fetchAllUserReservations = useCallback(async () => {
-    if (!userId || !accessToken) return;
+    if (!userId || !accessToken) {
+      return;
+    }
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
       const nowKST = new Date();

@@ -19,18 +19,21 @@ const useTokenStore = create((set) => {
 
     setAccessToken: (token) => {
       set({ accessToken: token });
-      if (typeof window !== 'undefined')
+      if (typeof window !== 'undefined') {
         sessionStorage.setItem('accessToken', token);
+      }
     },
     setRefreshToken: (token) => {
       set({ refreshToken: token });
-      if (typeof window !== 'undefined')
+      if (typeof window !== 'undefined') {
         sessionStorage.setItem('refreshToken', token);
+      }
     },
     setUserId: (id) => {
       set({ userId: id });
-      if (typeof window !== 'undefined')
+      if (typeof window !== 'undefined') {
         sessionStorage.setItem('userId', id?.toString() ?? '');
+      }
     },
     clearTokens: () => {
       set({ accessToken: '', refreshToken: '', userId: null });
@@ -42,7 +45,9 @@ const useTokenStore = create((set) => {
     },
 
     rehydrate: () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       const at = sessionStorage.getItem('accessToken') || '';
       const rt = sessionStorage.getItem('refreshToken') || '';
       const uid = sessionStorage.getItem('userId');

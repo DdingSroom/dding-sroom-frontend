@@ -3,11 +3,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
-import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
-import axiosInstance from '@api/instance';
+
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
+
+import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -28,13 +31,21 @@ export default function SuggestHistoryPage() {
 
   // 로그인 체크
   useEffect(() => {
-    if (!accessToken) router.push('/login');
+    if (!accessToken) {
+      router.push('/login');
+    }
   }, [accessToken, router]);
 
   const toArray = (data) => {
-    if (Array.isArray(data?.suggestions)) return data.suggestions;
-    if (Array.isArray(data?.data)) return data.data;
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.suggestions)) {
+      return data.suggestions;
+    }
+    if (Array.isArray(data?.data)) {
+      return data.data;
+    }
+    if (Array.isArray(data)) {
+      return data;
+    }
     return [];
   };
 
@@ -84,7 +95,9 @@ export default function SuggestHistoryPage() {
     const b = {};
     for (const s of items) {
       const key = formatDateOnly(s.createdAt);
-      if (!b[key]) b[key] = [];
+      if (!b[key]) {
+        b[key] = [];
+      }
       b[key].push(s);
     }
     return b;
@@ -243,18 +256,24 @@ function normalizeSuggest(raw) {
 }
 
 function formatKR(yyyyMMDD) {
-  if (!yyyyMMDD) return '';
+  if (!yyyyMMDD) {
+    return '';
+  }
   const [y, m, d] = yyyyMMDD.split('-');
   return `${y}. ${m}. ${d}.`;
 }
 
 function formatDateOnly(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) return '';
+  if (!Array.isArray(arr) || arr.length < 3) {
+    return '';
+  }
   const [y, mo, d] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 function toDate(arr) {
-  if (!Array.isArray(arr)) return new Date(0);
+  if (!Array.isArray(arr)) {
+    return new Date(0);
+  }
   const [y, mo, d, h = 0, m = 0, s = 0] = arr;
   return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
 }
@@ -262,7 +281,9 @@ function tsDesc(a, b) {
   return toDate(b) - toDate(a);
 }
 function formatFullDate(arr) {
-  if (!Array.isArray(arr)) return '';
+  if (!Array.isArray(arr)) {
+    return '';
+  }
   const [y, mo, d, h = 0, m = 0] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }

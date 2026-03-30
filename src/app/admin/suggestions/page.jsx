@@ -3,11 +3,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
+
+import axiosInstance from '@api/instance';
+
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
 import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply';
-import axiosInstance from '@api/instance';
+import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function AdminSuggestionsPage() {
   const router = useRouter();
@@ -44,11 +46,18 @@ export default function AdminSuggestionsPage() {
 
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
-    if (filters.suggest_id)
+    if (filters.suggest_id) {
       params.set('suggest_id', String(filters.suggest_id));
-    if (filters.user_id) params.set('user_id', String(filters.user_id));
-    if (filters.category) params.set('category', filters.category);
-    if (filters.location) params.set('location', filters.location);
+    }
+    if (filters.user_id) {
+      params.set('user_id', String(filters.user_id));
+    }
+    if (filters.category) {
+      params.set('category', filters.category);
+    }
+    if (filters.location) {
+      params.set('location', filters.location);
+    }
     if (filters.is_answered === 'true' || filters.is_answered === 'false') {
       params.set('is_answered', filters.is_answered);
     }
@@ -69,7 +78,9 @@ export default function AdminSuggestionsPage() {
       const bucket = {};
       for (const s of suggestions) {
         const key = formatDateOnly(s.createdAt);
-        if (!bucket[key]) bucket[key] = [];
+        if (!bucket[key]) {
+          bucket[key] = [];
+        }
         bucket[key].push(s);
       }
       Object.keys(bucket).forEach((k) => {
@@ -208,7 +219,9 @@ function SuggestionCard({ item, onRefresh }) {
   const toggle = () => setOpen(!open);
 
   const handleChanged = () => {
-    if (typeof onRefresh === 'function') onRefresh();
+    if (typeof onRefresh === 'function') {
+      onRefresh();
+    }
     setRefreshTick((t) => t + 1);
   };
 
@@ -394,7 +407,9 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
   }, [suggestPostId]);
 
   useEffect(() => {
-    if (!suggestPostId) return;
+    if (!suggestPostId) {
+      return;
+    }
     load();
   }, [suggestPostId, load, refreshKey]);
 
@@ -408,8 +423,12 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
   };
 
   const saveEdit = async () => {
-    if (!editingId) return;
-    if (!String(draft).trim()) return;
+    if (!editingId) {
+      return;
+    }
+    if (!String(draft).trim()) {
+      return;
+    }
     try {
       setSaving(true);
       await axiosInstance.put('/api/suggestions/comments', {
@@ -419,7 +438,9 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
       await load();
       setEditingId(null);
       setDraft('');
-      if (typeof onChanged === 'function') onChanged();
+      if (typeof onChanged === 'function') {
+        onChanged();
+      }
     } catch (e) {
       setErr(parseError(e));
     } finally {
@@ -428,12 +449,16 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
   };
 
   const remove = async (id) => {
-    if (!confirm('이 답변을 삭제하시겠습니까?')) return;
+    if (!confirm('이 답변을 삭제하시겠습니까?')) {
+      return;
+    }
     try {
       setSaving(true);
       await axiosInstance.delete(`/api/suggestions/comments/${id}`);
       await load();
-      if (typeof onChanged === 'function') onChanged();
+      if (typeof onChanged === 'function') {
+        onChanged();
+      }
     } catch (e) {
       setErr(parseError(e));
     } finally {
@@ -543,7 +568,9 @@ function parseError(err) {
 }
 
 function formatDateOnly(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) return '';
+  if (!Array.isArray(arr) || arr.length < 3) {
+    return '';
+  }
   const [y, mo, d] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
@@ -555,13 +582,17 @@ function tsDesc(b, a) {
 }
 
 function toDate(arr) {
-  if (!Array.isArray(arr)) return new Date(0);
+  if (!Array.isArray(arr)) {
+    return new Date(0);
+  }
   const [y, mo, d, h = 0, m = 0, s = 0] = arr;
   return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
 }
 
 function formatFullDate(arr) {
-  if (!Array.isArray(arr)) return '';
+  if (!Array.isArray(arr)) {
+    return '';
+  }
   const [y, mo, d, h = 0, m = 0] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(
     h,

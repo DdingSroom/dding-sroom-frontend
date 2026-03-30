@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import FooterNav from '../../../components/common/FooterNav';
-import axiosInstance from '@api/instance';
-import MyPageHeader from '@components/my/MyPageHeader';
-import Modal from '@components/common/Modal';
+
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import Modal from '@components/common/Modal';
+import MyPageHeader from '@components/my/MyPageHeader';
+
+import axiosInstance from '@api/instance';
+
+import Button from '../../../components/common/Button';
+import FooterNav from '../../../components/common/FooterNav';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+
 import useTokenStore from '@stores/useTokenStore';
 
 export default function useAuthReady() {
@@ -15,11 +16,15 @@ export default function useAuthReady() {
   }, [rehydrate]);
 
   useEffect(() => {
-    if (!authReady || userId || !accessToken) return;
+    if (!authReady || userId || !accessToken) {
+      return;
+    }
     try {
       const d = jwtDecode(accessToken);
       const uid = d?.userId ?? d?.id ?? d?.uid ?? d?.sub ?? null;
-      if (uid) setUserId(Number(uid));
+      if (uid) {
+        setUserId(Number(uid));
+      }
     } catch {
       // ignore
     }

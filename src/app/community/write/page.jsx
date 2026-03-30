@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
-import CommunityHeader from '@components/community/CommunityHeader';
+
+import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+import CommunityHeader from '@components/community/CommunityHeader';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -66,7 +69,9 @@ export default function WritePostPage() {
       if (res.data.error) {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
-      } else router.push('/community');
+      } else {
+        router.push('/community');
+      }
     } catch (e) {
       console.error('게시글 작성 실패:', e);
       setErrorMessage('게시글 작성 중 오류가 발생했습니다.');

@@ -1,14 +1,16 @@
 'use client';
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+
 import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance, { setAccessToken } from '@api/instance';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
 import useTokenStore from '@stores/useTokenStore';
-import axiosInstance, { setAccessToken } from '@api/instance';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 
 function BottomSafeSpacer({ height = 64 }) {
@@ -265,15 +267,13 @@ function LoginForm() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, ...props }) => (
+  <input
+    className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
+    value={value}
+    {...props}
+  />
+);
 
 const StyledEmailInput = ({ value, setEmail, ...props }) => {
   const handleRemoveEmailValue = () => {
@@ -307,65 +307,59 @@ const StyledPasswordInput = ({
   isVisible = false,
   handlePasswordVisible,
   ...props
-}) => {
-  return (
-    <div className="relative">
-      <StyledInput
-        {...props}
-        value={value}
-        type={isVisible ? 'text' : 'password'}
+}) => (
+  <div className="relative">
+    <StyledInput
+      {...props}
+      value={value}
+      type={isVisible ? 'text' : 'password'}
+    />
+    <button
+      type="button"
+      onClick={handlePasswordVisible}
+      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+    >
+      <img
+        src={
+          isVisible
+            ? '/static/icons/eye_on_icon.svg'
+            : '/static/icons/eye_off_icon.svg'
+        }
+        alt="Toggle Password Visibility"
+        width={18}
+        height={18}
+        className="opacity-60 hover:opacity-80"
       />
-      <button
-        type="button"
-        onClick={handlePasswordVisible}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-      >
+    </button>
+  </div>
+);
+
+const StyledCheckbox = ({ onChange, children, ...props }) => (
+  <label className="inline-flex items-center cursor-pointer group">
+    <div className="relative">
+      <input
+        type="checkbox"
+        checked={props.checked}
+        onChange={onChange}
+        className="appearance-none w-5 h-5 focus:outline-none"
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
         <img
           src={
-            isVisible
-              ? '/static/icons/eye_on_icon.svg'
-              : '/static/icons/eye_off_icon.svg'
+            props.checked
+              ? '/static/icons/check_off_icon.svg'
+              : '/static/icons/check_on_icon.svg'
           }
-          alt="Toggle Password Visibility"
-          width={18}
-          height={18}
-          className="opacity-60 hover:opacity-80"
+          alt="Checkbox"
+          width={20}
+          height={20}
+          className="group-hover:opacity-80 transition-opacity"
         />
-      </button>
-    </div>
-  );
-};
-
-const StyledCheckbox = ({ onChange, children, ...props }) => {
-  return (
-    <label className="inline-flex items-center cursor-pointer group">
-      <div className="relative">
-        <input
-          type="checkbox"
-          checked={props.checked}
-          onChange={onChange}
-          className="appearance-none w-5 h-5 focus:outline-none"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <img
-            src={
-              props.checked
-                ? '/static/icons/check_off_icon.svg'
-                : '/static/icons/check_on_icon.svg'
-            }
-            alt="Checkbox"
-            width={20}
-            height={20}
-            className="group-hover:opacity-80 transition-opacity"
-          />
-        </div>
       </div>
-      <span className="ml-2 text-xs text-[#73726e] select-none">
-        {children}
-      </span>
-    </label>
-  );
-};
+    </div>
+    <span className="ml-2 text-xs text-[#73726e] select-none">{children}</span>
+  </label>
+);
 
 export default function Login() {
   return (

@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+
 import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import FooterNav from '../../../components/common/FooterNav';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

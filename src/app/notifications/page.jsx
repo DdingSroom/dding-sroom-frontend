@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import axiosInstance from '@api/instance';
-import Header from '@components/common/Header';
+import { useEffect, useState } from 'react';
+
 import FooterNav from '@components/common/FooterNav';
+import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
 
 export default function NotificationList() {
   const [notifications, setNotifications] = useState([]);
@@ -53,13 +55,17 @@ export default function NotificationList() {
   };
 
   const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 6) return '';
+    if (!Array.isArray(dateArray) || dateArray.length < 6) {
+      return '';
+    }
     const [year, month, day, hour, minute] = dateArray;
     return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
   const truncateContent = (content, maxLength = 50) => {
-    if (!content) return '';
+    if (!content) {
+      return '';
+    }
     return content.length > maxLength
       ? content.substring(0, maxLength) + '...'
       : content;
@@ -113,7 +119,7 @@ export default function NotificationList() {
               {isLoading ? (
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-4">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-[#788cff] rounded-full animate-spin"></div>
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-[#788cff] rounded-full animate-spin" />
                   </div>
                   <p className="text-gray-500 font-medium">
                     공지사항을 불러오는 중...
