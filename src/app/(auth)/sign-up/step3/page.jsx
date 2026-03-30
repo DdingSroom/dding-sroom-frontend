@@ -78,13 +78,11 @@ export default function SignUpStep3() {
         privacyAgreed: true,
       };
 
-      const res = await axios.post(
+      await axios.post(
         'https://ddingsroomserver.click:8443/user/sign-up',
         dataToSend,
         { headers: { Authorization: undefined } },
       );
-
-      console.log('회원가입 성공:', res.data);
 
       // 3) 성공 시 임시 이름 제거 + 스토어 초기화
       if (typeof window !== 'undefined') {

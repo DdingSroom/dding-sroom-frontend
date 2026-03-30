@@ -61,7 +61,6 @@ export default function AdminLogin() {
         setGlobalAccessToken(accessToken);
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
-        console.log('토큰 디코드 결과:', decoded);
 
         // 관리자 role 확인 후 적절한 페이지로 리다이렉트
         if (decoded.role === 'ROLE_ADMIN') {

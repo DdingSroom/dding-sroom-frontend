@@ -68,7 +68,7 @@ export default function CancelAccountStep1() {
       }
 
       setIsSendingVerify(true);
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         '/user/verify-email',
         { email: emailInput },
         {
@@ -78,7 +78,6 @@ export default function CancelAccountStep1() {
         },
       );
 
-      console.log('이메일 인증 성공:', response.data);
       setIsVerified(true);
       alert('이메일 인증이 완료되었습니다.');
     } catch (error) {
@@ -97,13 +96,12 @@ export default function CancelAccountStep1() {
 
     try {
       setIsWithdrawing(true);
-      const response = await axiosInstance.delete('/user/withdraw', {
+      await axiosInstance.delete('/user/withdraw', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
-      console.log('탈퇴 성공:', response.data);
       alert('회원 탈퇴가 완료되었습니다.');
       router.push('/login');
     } catch (error) {

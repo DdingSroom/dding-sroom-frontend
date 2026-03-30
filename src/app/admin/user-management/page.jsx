@@ -40,9 +40,6 @@ export default function UserManagement() {
     try {
       const response = await axiosInstance.get('/admin/users');
 
-      console.log('전체 응답:', response);
-      console.log('response.data:', response.data);
-
       setUsers(response.data.users || []);
     } catch (err) {
       console.error('사용자 불러오기 실패:', err);

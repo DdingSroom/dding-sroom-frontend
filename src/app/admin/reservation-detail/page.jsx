@@ -37,7 +37,6 @@ export default function ReservationDetailPage() {
   const fetchReservations = async () => {
     try {
       const response = await axiosInstance.get('/admin/reservations');
-      console.log('예약 데이터:', response.data);
 
       setReservations(
         (response.data.reservations || []).sort((a, b) => {

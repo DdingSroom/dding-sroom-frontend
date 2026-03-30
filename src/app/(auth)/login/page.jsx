@@ -109,7 +109,6 @@ function LoginForm() {
         setGlobalAccessToken(accessToken);
         setRefreshToken(refreshToken || '');
         const decoded = jwtDecode(accessToken);
-        console.log('토큰 디코드 결과:', decoded);
 
         // userId를 토큰에서 추출하여 설정
         const extractedUserId =

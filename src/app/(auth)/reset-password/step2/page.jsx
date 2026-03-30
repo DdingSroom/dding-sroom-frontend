@@ -51,16 +51,14 @@ export default function ResetPassword2() {
 
   const handlePasswordReset = async () => {
     try {
-      const response = await axiosInstance.post('/user/modify-password', {
+      await axiosInstance.post('/user/modify-password', {
         email,
         password: newPassword,
       });
-      console.log('비밀번호 재설정 성공:', response.data);
       alert('비밀번호가 성공적으로 변경되었습니다.');
       router.push('/login');
     } catch (error) {
       console.error('비밀번호 재설정 실패:', error);
-      console.log('에러 응답:', error?.response?.data);
       alert('비밀번호 재설정에 실패했습니다.');
     }
   };
