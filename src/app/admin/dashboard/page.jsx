@@ -189,9 +189,9 @@ export default function AdminDashboard() {
   return (
     <div className="w-full min-h-screen bg-gray-50 px-8 py-6">
       <div className="flex justify-between items-center bg-white border border-gray-100 p-6 rounded-2xl shadow-sm mb-8">
-        <h1 className="text-2xl font-bold text-[#37352f]">관리자 대시보드</h1>
+        <h1 className="text-2xl font-bold text-content">관리자 대시보드</h1>
         <button
-          className="bg-[#788DFF] hover:bg-[#6a7dff] text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+          className="bg-primary hover:bg-primary-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
           onClick={() => router.push('/')}
         >
           예약 서비스 화면으로 가기
@@ -202,11 +202,11 @@ export default function AdminDashboard() {
         {/* 날짜별 예약 현황 */}
         <div className="col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-[#37352f]">
+            <h2 className="text-lg font-semibold text-content">
               날짜별 예약 현황
             </h2>
             <button
-              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
               onClick={() => router.push('/admin/reservations-by-date')}
             >
               더보기 →
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
 
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <h3 className="text-sm font-semibold mb-4 text-[#37352f] pb-2 border-b border-gray-100">
+              <h3 className="text-sm font-semibold mb-4 text-content pb-2 border-b border-gray-100">
                 오늘 예약
               </h3>
               <div className="space-y-3">
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-semibold mb-4 text-[#37352f] pb-2 border-b border-gray-100">
+              <h3 className="text-sm font-semibold mb-4 text-content pb-2 border-b border-gray-100">
                 내일 예약
               </h3>
               <div className="space-y-3">
@@ -252,9 +252,9 @@ export default function AdminDashboard() {
         {/* 커뮤니티 */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-[#37352f]">커뮤니티</h2>
+            <h2 className="text-lg font-semibold text-content">커뮤니티</h2>
             <button
-              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
               onClick={() => router.push('/admin/community')}
             >
               더보기 →
@@ -267,10 +267,10 @@ export default function AdminDashboard() {
                   key={post.id}
                   className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <p className="text-sm font-medium text-[#37352f] mb-1">
+                  <p className="text-sm font-medium text-content mb-1">
                     [게시물 작성] {post.title}
                   </p>
-                  <p className="text-xs text-[#73726e]">
+                  <p className="text-xs text-content-secondary">
                     {post.author} · {formatTimestamp(post.createdAt)}
                   </p>
                 </li>
@@ -288,11 +288,11 @@ export default function AdminDashboard() {
         {/* 스터디룸 관리 */}
         <div className="col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-[#37352f]">
+            <h2 className="text-lg font-semibold text-content">
               스터디룸 관리
             </h2>
             <button
-              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
               onClick={() => router.push('/admin/room-management')}
             >
               더보기 →
@@ -313,10 +313,12 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-[#37352f]">
+                    <p className="text-sm font-medium text-content">
                       스터디룸 {room.id}
                     </p>
-                    <p className="text-xs text-[#73726e]">방 번호: {room.id}</p>
+                    <p className="text-xs text-content-secondary">
+                      방 번호: {room.id}
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -344,11 +346,11 @@ export default function AdminDashboard() {
         {/* 답변대기 건의 */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-[#37352f]">
+            <h2 className="text-lg font-semibold text-content">
               답변대기 건의
             </h2>
             <button
-              className="text-sm text-[#788DFF] hover:text-[#6a7dff] font-medium transition-colors"
+              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
               onClick={() => router.push('/admin/suggestions')}
             >
               더보기 →
@@ -361,10 +363,10 @@ export default function AdminDashboard() {
                   key={suggestion.id}
                   className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <p className="text-sm font-medium text-[#37352f] mb-1">
+                  <p className="text-sm font-medium text-content mb-1">
                     [{suggestion.category}] {suggestion.title}
                   </p>
-                  <p className="text-xs text-[#73726e]">
+                  <p className="text-xs text-content-secondary">
                     USER {suggestion.userId} ·{' '}
                     {formatTimestamp(suggestion.createdAt)}
                   </p>

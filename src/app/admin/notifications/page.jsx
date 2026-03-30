@@ -167,7 +167,7 @@ export default function NotificationManagement() {
 
   if (showCreateForm) {
     return (
-      <div className="bg-[#F1F2F4] p-6 min-h-screen">
+      <div className="bg-surface-admin p-6 min-h-screen">
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-center gap-4 mb-6">
             <button
@@ -193,7 +193,7 @@ export default function NotificationManagement() {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="공지사항 제목을 입력하세요"
               />
             </div>
@@ -208,7 +208,7 @@ export default function NotificationManagement() {
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
                 }
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] resize-y"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y"
                 placeholder="공지사항 내용을 입력하세요"
               />
             </div>
@@ -217,7 +217,7 @@ export default function NotificationManagement() {
               <button
                 onClick={handleCreateNotification}
                 className="px-4 py-2 text-white rounded-md transition-colors"
-                style={{ backgroundColor: 'var(--primary-color)' }}
+                style={{ backgroundColor: 'var(--color-primary)' }}
               >
                 작성하기
               </button>
@@ -239,7 +239,7 @@ export default function NotificationManagement() {
 
   if (showEditForm) {
     return (
-      <div className="bg-[#F1F2F4] p-6 min-h-screen">
+      <div className="bg-surface-admin p-6 min-h-screen">
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-center gap-4 mb-6">
             <button
@@ -266,7 +266,7 @@ export default function NotificationManagement() {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="공지사항 제목을 입력하세요"
               />
             </div>
@@ -281,7 +281,7 @@ export default function NotificationManagement() {
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
                 }
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] resize-y"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y"
                 placeholder="공지사항 내용을 입력하세요"
               />
             </div>
@@ -290,7 +290,7 @@ export default function NotificationManagement() {
               <button
                 onClick={handleUpdateNotification}
                 className="px-4 py-2 text-white rounded-md transition-colors"
-                style={{ backgroundColor: 'var(--primary-color)' }}
+                style={{ backgroundColor: 'var(--color-primary)' }}
               >
                 수정하기
               </button>
@@ -315,7 +315,7 @@ export default function NotificationManagement() {
   const sortedDates = getSortedDates(groupedNotifications);
 
   return (
-    <div className="bg-[#F1F2F4] p-6 min-h-screen">
+    <div className="bg-surface-admin p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">공지사항 관리</h1>
 
@@ -324,8 +324,8 @@ export default function NotificationManagement() {
             onClick={() => setShowCreateForm(true)}
             className="px-4 py-2 text-white rounded transition-colors"
             style={{
-              backgroundColor: 'var(--primary-color)',
-              borderColor: 'var(--primary-color)',
+              backgroundColor: 'var(--color-primary)',
+              borderColor: 'var(--color-primary)',
             }}
           >
             공지사항 작성
@@ -344,14 +344,14 @@ export default function NotificationManagement() {
               <div className="flex items-center gap-2 mb-3">
                 <span
                   className="inline-block w-1.5 h-5 rounded"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                 />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 작성된 공지사항
                 </h2>
                 <div
                   className="h-px flex-1"
-                  style={{ backgroundColor: 'var(--primary-color)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                 />
               </div>
 
@@ -372,7 +372,7 @@ export default function NotificationManagement() {
 
       {showDetailModal && selectedNotification && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-modal-lg overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-lg font-bold text-gray-900 pr-4">
@@ -447,17 +447,17 @@ function NotificationCard({
     <article className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md">
       <div
         className="h-1"
-        style={{ backgroundColor: 'var(--primary-color)' }}
+        style={{ backgroundColor: 'var(--color-primary)' }}
       />
 
       <div className="p-3 sm:p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-gray-100 text-gray-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-gray-100 text-gray-700">
                 #{notification.id}
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 text-[11px] rounded bg-blue-50 text-blue-700">
+              <span className="inline-flex items-center px-2 py-0.5 text-xs-plus rounded bg-blue-50 text-blue-700">
                 공지사항
               </span>
             </div>
@@ -469,7 +469,7 @@ function NotificationCard({
               {truncateContent(notification.content)}
             </p>
 
-            <p className="mt-2 text-[11px] text-gray-400">
+            <p className="mt-2 text-xs-plus text-gray-400">
               작성일: {formatDate(notification.createdAt)} · 조회수:{' '}
               {notification.viewCount}
             </p>

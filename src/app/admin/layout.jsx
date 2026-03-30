@@ -13,56 +13,56 @@ export default function AdminLayout({ children }) {
 
   return (
     <html lang="ko">
-      <body className="admin-body bg-[#F5F5F5] min-h-screen overflow-x-hidden">
-        <div className="w-full min-h-screen bg-[#F5F5F5] flex">
+      <body className="bg-surface-admin min-h-screen overflow-x-hidden">
+        <div className="w-full min-h-screen bg-surface-admin flex">
           <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col">
             <h1 className="text-xl font-bold mb-8">사이트 관리</h1>
             <nav className="flex flex-col gap-4 text-sm text-gray-700">
               <a
                 href="/admin/dashboard"
-                className="text-gray-700 hover:text-[#5B72EE] font-semibold transition-colors"
+                className="text-gray-700 hover:text-login-btn font-semibold transition-colors"
               >
                 대시보드
               </a>
               <a
                 href="/admin/user-management"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 사용자 관리
               </a>
               <a
                 href="/admin/reservations-by-date"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 날짜별 예약 현황
               </a>
               <a
                 href="/admin/reservation-detail"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 예약 목록
               </a>
               <a
                 href="/admin/community"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 커뮤니티 관리
               </a>
               <a
                 href="/admin/suggestions"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 건의 내역
               </a>
               <a
                 href="/admin/room-management"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 스터디룸 관리
               </a>
               <a
                 href="/admin/notifications"
-                className="hover:text-[#788cff] transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 공지사항 관리
               </a>

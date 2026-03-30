@@ -25,7 +25,7 @@ const FooterNav = () => {
 
   return (
     <>
-      <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[600px] flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
+      <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-layout flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
         <button
           className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
           onClick={() => router.push('/')}
@@ -42,7 +42,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
             예약하기
           </span>
         </button>
@@ -63,7 +63,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
             커뮤니티
           </span>
         </button>
@@ -84,7 +84,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
             건의/신고
           </span>
         </button>

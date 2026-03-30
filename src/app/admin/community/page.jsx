@@ -169,7 +169,7 @@ export default function AdminCommunityPage() {
   };
 
   return (
-    <div className="bg-[#F1F2F4] p-6 min-h-screen">
+    <div className="bg-surface-admin p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">커뮤니티 게시글</h1>
 

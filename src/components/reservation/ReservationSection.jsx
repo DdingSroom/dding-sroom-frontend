@@ -29,7 +29,7 @@ const ReservationSection = () => {
               key={index}
               className={`flex-1 text-center p-4 cursor-pointer transition-all duration-300 ${
                 currentTab === index
-                  ? 'text-gray-800 font-medium border-b-2 border-[#788cff] bg-transparent'
+                  ? 'text-gray-800 font-medium border-b-2 border-primary bg-transparent'
                   : 'text-gray-500 font-normal border-b-2 border-transparent bg-transparent hover:text-gray-700'
               }`}
               onClick={() => selectMenuHandler(index)}
@@ -41,11 +41,11 @@ const ReservationSection = () => {
       </div>
 
       <div className="w-full flex justify-center items-center">
-        <div className="w-full max-w-[95%]">
-          <div style={{ display: currentTab === 0 ? 'block' : 'none' }}>
+        <div className="w-full max-w-content">
+          <div className={currentTab === 0 ? 'block' : 'hidden'}>
             <TodayReservationList />
           </div>
-          <div style={{ display: currentTab === 1 ? 'block' : 'none' }}>
+          <div className={currentTab === 1 ? 'block' : 'hidden'}>
             <TomorrowReservationList />
           </div>
         </div>

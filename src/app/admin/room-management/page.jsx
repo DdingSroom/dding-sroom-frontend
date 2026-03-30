@@ -161,14 +161,14 @@ export default function RoomsManagePage() {
 
   if (loading) {
     return (
-      <div className="bg-[#F1F2F4] p-6 min-h-screen">
+      <div className="bg-surface-admin p-6 min-h-screen">
         <div className="bg-white p-4 rounded-lg shadow-sm">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F1F2F4] p-6 min-h-screen">
+    <div className="bg-surface-admin p-6 min-h-screen">
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">스터디룸 관리</h1>
 

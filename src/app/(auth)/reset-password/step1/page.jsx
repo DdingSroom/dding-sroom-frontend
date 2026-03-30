@@ -33,9 +33,9 @@ export default function ResetPassWord1() {
   const timerRef = useRef(null);
 
   const commonCodeButtonClass =
-    'inline-flex items-center justify-center w-[100px] h-10 ' +
-    'border border-[#788cff] bg-white text-[#788cff] ' +
-    'hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg ' +
+    'inline-flex items-center justify-center w-btn-action h-10 ' +
+    'border border-primary bg-white text-primary ' +
+    'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
   const startTimer = () => {
@@ -170,7 +170,7 @@ export default function ResetPassWord1() {
         >
           <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col items-center space-y-4 max-w-sm mx-4 sm:max-w-none sm:mx-0">
             <div
-              className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
+              className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"
               aria-label="로딩 중"
             ></div>
             <p className="text-sm text-gray-600 text-center">
@@ -183,13 +183,13 @@ export default function ResetPassWord1() {
 
       <main className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">비밀번호 재설정</h1>
-          <p className="text-[#73726e] text-sm">등록한 이메일로 찾기</p>
+          <h1 className="text-2xl font-bold text-content">비밀번호 재설정</h1>
+          <p className="text-content-secondary text-sm">등록한 이메일로 찾기</p>
         </div>
 
         <div className="max-w-md mx-auto w-full space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
+            <label className="block text-sm font-medium text-content">
               이메일
             </label>
             <div className="flex gap-2">
@@ -229,7 +229,7 @@ export default function ResetPassWord1() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-[#37352f]">
+            <label className="block text-sm font-medium text-content">
               인증번호
             </label>
             <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export default function ResetPassWord1() {
                   disabled={isSending}
                 />
                 {codeSent && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-content-tertiary">
                     {secondsLeft > 0 ? mmss : '만료'}
                   </span>
                 )}
@@ -304,7 +304,7 @@ export default function ResetPassWord1() {
 const StyledInput = ({ value, className = '', ...props }) => {
   return (
     <input
-      className={`w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200 ${className}`}
+      className={`w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200 ${className}`}
       value={value}
       {...props}
     />

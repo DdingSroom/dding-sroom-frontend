@@ -33,9 +33,9 @@ export default function CancelAccountStep1() {
   const router = useRouter();
 
   const commonCodeButtonClass =
-    'inline-flex items-center justify-center w-[100px] h-10 ' +
-    'border border-[#788cff] bg-white text-[#788cff] ' +
-    'hover:bg-[#788cff] hover:text-white text-sm font-medium rounded-lg ' +
+    'inline-flex items-center justify-center w-btn-action h-10 ' +
+    'border border-primary bg-white text-primary ' +
+    'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function CancelAccountStep1() {
             <div className="px-6 py-8">
               <div className="max-w-md mx-auto w-full space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-[#37352f]">
+                  <label className="block text-sm font-medium text-content">
                     계정 이메일
                   </label>
                   <div className="flex gap-2">
@@ -150,7 +150,7 @@ export default function CancelAccountStep1() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-[#6E6E6E] text-sm">
+                <div className="space-y-1.5 text-content-tertiary text-sm">
                   <p>
                     * 탈퇴 후 개인정보, 예약 등의 데이터가 삭제되며, 복구할 수
                     없습니다.
@@ -183,10 +183,10 @@ export default function CancelAccountStep1() {
                   <p className="font-semibold text-2xl text-left mb-2">
                     정말 탈퇴하시겠습니까?
                   </p>
-                  <p className="text-[#6E6E6E] text-sm text-left">
+                  <p className="text-content-tertiary text-sm text-left">
                     탈퇴하기 버튼 선택 시, 계정은 삭제되며 복구되지 않습니다.
                   </p>
-                  <p className="text-[#6E6E6E] text-sm text-left">
+                  <p className="text-content-tertiary text-sm text-left">
                     복구되지 않습니다.
                   </p>
                 </div>
@@ -210,8 +210,8 @@ export default function CancelAccountStep1() {
 
 const StyledInput = ({ value, className = '', ...props }) => {
   const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm ' +
-    'placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] ' +
-    'focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200';
+    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
+    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
+    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };

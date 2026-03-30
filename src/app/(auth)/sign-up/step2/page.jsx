@@ -49,8 +49,8 @@ export default function SignUpStep2() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
-          <p className="text-[#73726e] text-sm">비밀번호 입력</p>
+          <h1 className="text-2xl font-bold text-content">회원가입</h1>
+          <p className="text-content-secondary text-sm">비밀번호 입력</p>
         </div>
 
         <div className="mb-8">
@@ -60,7 +60,7 @@ export default function SignUpStep2() {
         <div className="max-w-md mx-auto w-full">
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
+              <label className="block text-sm font-medium text-content">
                 비밀번호
               </label>
               <NewPasswordField
@@ -92,7 +92,7 @@ export default function SignUpStep2() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
+              <label className="block text-sm font-medium text-content">
                 비밀번호 확인
               </label>
               <ConfirmPasswordField
@@ -140,7 +140,7 @@ export default function SignUpStep2() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
       value={value}
       {...props}
     />

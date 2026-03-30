@@ -49,7 +49,7 @@ export default function UserTableRow({ user, onUserUpdate }) {
 
   return (
     <tr className="border-b hover:bg-gray-50 transition-colors duration-200">
-      <td className="py-3 px-2 text-[#666]">{user.id}</td>
+      <td className="py-3 px-2 text-gray-500">{user.id}</td>
       <td className="py-3 px-2">{user.username}</td>
       <td className="py-3 px-2">{user.email}</td>
       <td className="py-3 px-2 text-center">
@@ -61,7 +61,7 @@ export default function UserTableRow({ user, onUserUpdate }) {
           </span>
           <button
             onClick={handleDetailClick}
-            className="bg-[#788DFF] text-white px-3 py-1 text-xs rounded hover:bg-[#6a7dff] transition-colors duration-200 font-medium"
+            className="bg-primary text-white px-3 py-1 text-xs rounded hover:bg-primary-hover transition-colors duration-200 font-medium"
           >
             사용자 상세보기
           </button>

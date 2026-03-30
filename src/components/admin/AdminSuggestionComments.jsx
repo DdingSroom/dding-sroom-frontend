@@ -56,37 +56,31 @@ export default function AdminSuggestionComments({
 
   return (
     <div className="rounded-lg border border-gray-100 p-3">
-      {loading && (
-        <p className="text-sm text-[var(--text-muted)]">불러오는 중...</p>
-      )}
+      {loading && <p className="text-sm text-content-muted">불러오는 중...</p>}
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       {!loading && !error && comments.length === 0 && (
-        <p className="text-sm text-[var(--text-muted)]">
-          등록된 댓글이 없습니다.
-        </p>
+        <p className="text-sm text-content-muted">등록된 댓글이 없습니다.</p>
       )}
 
       {!loading && !error && comments.length > 0 && (
         <ul className="space-y-3">
           {comments.map((c) => (
             <li key={c.id} className="text-sm">
-              <div className="font-medium text-[var(--text-primary)]">
+              <div className="font-medium text-content">
                 {c.author ?? '사용자'}
               </div>
 
               {c.content && (
-                <div className="text-[var(--text-secondary)] whitespace-pre-wrap">
+                <div className="text-content-secondary whitespace-pre-wrap">
                   {c.content}
                 </div>
               )}
 
               {c.answer_content && (
-                <div className="mt-2 rounded bg-[#f8f9ff] border px-3 py-2">
-                  <div className="text-[var(--text-primary)] font-medium">
-                    관리자 답변
-                  </div>
-                  <div className="text-[var(--text-secondary)] whitespace-pre-wrap">
+                <div className="mt-2 rounded bg-surface-card border px-3 py-2">
+                  <div className="text-content font-medium">관리자 답변</div>
+                  <div className="text-content-secondary whitespace-pre-wrap">
                     {c.answer_content}
                   </div>
                 </div>

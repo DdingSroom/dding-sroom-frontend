@@ -136,19 +136,21 @@ export default function MyPostsPage() {
 
       <main className="flex-1 px-6 py-6">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-[#37352f] mb-2">
+          <h1 className="text-xl font-bold text-content mb-2">
             내가 작성한 글
           </h1>
-          <p className="text-sm text-[#73726e]">총 {posts.length}개의 게시글</p>
+          <p className="text-sm text-content-secondary">
+            총 {posts.length}개의 게시글
+          </p>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-[#73726e]">로딩 중...</div>
+            <div className="text-content-secondary">로딩 중...</div>
           </div>
         ) : posts.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-            <div className="text-[#73726e] mb-4">
+            <div className="text-content-secondary mb-4">
               <svg
                 className="w-16 h-16 mx-auto mb-4 opacity-30"
                 fill="none"
@@ -169,7 +171,7 @@ export default function MyPostsPage() {
             </div>
             <button
               onClick={() => router.push('/community/write')}
-              className="px-6 py-3 bg-[#788cff] text-white rounded-lg hover:bg-[#6a7dff] transition-colors font-medium"
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
             >
               게시글 작성하기
             </button>
@@ -180,13 +182,13 @@ export default function MyPostsPage() {
               <div
                 key={post.id}
                 onClick={() => handlePostClick(post.id)}
-                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-[#788cff]/20 transition-all duration-200 group"
+                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="inline-block px-3 py-1 rounded-full text-xs font-bold text-[#788cff] bg-[#788cff]/10 group-hover:bg-[#788cff]/15 transition-colors">
+                  <div className="inline-block px-3 py-1 rounded-full text-xs font-bold text-primary bg-primary/10 group-hover:bg-primary/15 transition-colors">
                     {getCategoryName(post.category)}
                   </div>
-                  <div className="text-xs text-[#9b9998]">
+                  <div className="text-xs text-content-muted">
                     {formatDate(
                       isUpdated(post.created_at, post.updated_at)
                         ? post.updated_at
@@ -196,11 +198,11 @@ export default function MyPostsPage() {
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-[#37352f] mb-2 leading-relaxed group-hover:text-[#788cff] transition-colors line-clamp-2">
+                <h3 className="text-base font-bold text-content mb-2 leading-relaxed group-hover:text-primary transition-colors line-clamp-2">
                   {post.title}
                 </h3>
 
-                <p className="text-sm text-[#73726e] leading-relaxed line-clamp-2">
+                <p className="text-sm text-content-secondary leading-relaxed line-clamp-2">
                   {truncateContent(post.content, 80)}
                 </p>
               </div>

@@ -100,7 +100,7 @@ export default function CommunityPage() {
 
   if (showLoginModal) {
     return (
-      <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+      <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader showSearch />
         <LoginRequiredModal
           isOpen={showLoginModal}
@@ -111,7 +111,7 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9] flex flex-col">
+    <div className="min-h-screen bg-surface-muted flex flex-col">
       <CommunityHeader showSearch />
 
       {/* 상단 카테고리 탭 */}
@@ -125,14 +125,14 @@ export default function CommunityPage() {
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
                   className={`relative flex-1 py-3 text-sm md:text-base font-medium transition-colors
-                    ${active ? 'text-[#4c6fff]' : 'text-gray-500 hover:text-gray-700'}`}
+                    ${active ? 'text-accent' : 'text-gray-500 hover:text-gray-700'}`}
                   role="tab"
                   aria-selected={active}
                 >
                   {category.name}
                   <span
-                    className={`absolute left-0 right-0 -bottom-px h-[2px] 
-                    ${active ? 'bg-[#4c6fff]' : 'bg-transparent'}`}
+                    className={`absolute left-0 right-0 -bottom-px h-0.5 
+                    ${active ? 'bg-accent' : 'bg-transparent'}`}
                   />
                 </button>
               );
@@ -145,7 +145,7 @@ export default function CommunityPage() {
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
             <div className="flex flex-col items-center gap-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#4c6fff] border-t-transparent" />
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent" />
               <div className="text-gray-600 text-sm">
                 게시글을 불러오는 중...
               </div>
@@ -156,7 +156,7 @@ export default function CommunityPage() {
             <div className="text-center bg-white rounded-2xl p-10 border border-gray-200 shadow-sm max-w-md">
               <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-7 h-7 text-[#4c6fff]"
+                  className="w-7 h-7 text-accent"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -177,7 +177,7 @@ export default function CommunityPage() {
               </p>
               <button
                 onClick={handleWritePost}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4c6fff] text-white text-sm font-semibold rounded-lg hover:bg-[#3f58e6] transition-shadow shadow-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-accent-hover transition-shadow shadow-sm"
               >
                 <svg
                   className="w-4 h-4"
@@ -200,8 +200,8 @@ export default function CommunityPage() {
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
               <h2 className="text-sm font-semibold text-gray-800">
-                전체 게시글{' '}
-                <span className="text-[#4c6fff]">{posts.length}</span>개
+                전체 게시글 <span className="text-accent">{posts.length}</span>
+                개
               </h2>
             </div>
             <div className="divide-y divide-gray-200">
@@ -217,7 +217,7 @@ export default function CommunityPage() {
             <button
               onClick={handleWritePost}
               aria-label="새 글 작성"
-              className="w-14 h-14 rounded-full bg-[#788DFF] text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+              className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
             >
               <svg
                 className="w-6 h-6"
@@ -246,7 +246,7 @@ export default function CommunityPage() {
           <button
             onClick={handleWritePost}
             aria-label="새 글 작성"
-            className="w-14 h-14 rounded-full bg-[#788DFF] text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+            className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
           >
             <svg
               className="w-6 h-6"

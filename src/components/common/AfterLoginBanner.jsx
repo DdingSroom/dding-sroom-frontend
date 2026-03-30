@@ -75,14 +75,14 @@ const AfterLoginBanner = () => {
   };
 
   return (
-    <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-[95%]">
+    <div className="flex flex-row gap-2 sm:gap-3 w-full max-w-content">
       {/* 혼잡도 박스 */}
-      <div className="relative flex bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
+      <div className="relative flex bg-white rounded-2xl min-h-banner-card w-1/2 p-3 sm:p-6 flex-col justify-between shadow-sm border border-gray-50">
         <div className="flex flex-col gap-2 sm:gap-3">
-          <div className="text-[#73726e] text-xs sm:text-sm font-bold">
+          <div className="text-content-secondary text-xs sm:text-sm font-bold">
             오늘의 혼잡도
           </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl text-[#788DFF] font-black whitespace-nowrap overflow-hidden">
+          <div className="text-2xl sm:text-3xl md:text-4xl text-primary font-black whitespace-nowrap overflow-hidden">
             여유로움
           </div>
         </div>
@@ -94,15 +94,15 @@ const AfterLoginBanner = () => {
       </div>
 
       {/* 예약 내역 박스 */}
-      <div className="flex flex-col bg-white rounded-2xl min-h-[280px] w-1/2 p-3 sm:p-6 shadow-sm border border-gray-50">
-        <div className="font-bold text-base sm:text-lg md:text-xl mb-3 sm:mb-4 text-[#37352f] whitespace-nowrap overflow-hidden">
+      <div className="flex flex-col bg-white rounded-2xl min-h-banner-card w-1/2 p-3 sm:p-6 shadow-sm border border-gray-50">
+        <div className="font-bold text-base sm:text-lg md:text-xl mb-3 sm:mb-4 text-content whitespace-nowrap overflow-hidden">
           내가 예약한 방
         </div>
 
         {/* 예약 리스트 영역 */}
         <div className="flex flex-col gap-2 sm:gap-3 overflow-y-auto pr-1 sm:pr-2 flex-1 max-h-48">
           {!Array.isArray(userReservations) || userReservations.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-[#9b9998] text-xs sm:text-sm">
+            <div className="flex items-center justify-center h-full text-content-muted text-xs sm:text-sm">
               예약 내역이 없습니다.
             </div>
           ) : (
@@ -112,17 +112,17 @@ const AfterLoginBanner = () => {
                 className="flex justify-between items-center p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex flex-col gap-1 flex-1 min-w-0 mr-2 sm:mr-3 overflow-x-auto sm:overflow-x-visible xScrollHide">
-                  <div className="text-xs text-[#73726e] whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
+                  <div className="text-xs text-content-secondary whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
                     {r.roomName}
                   </div>
-                  <div className="text-xs sm:text-sm font-medium text-[#37352f] whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
+                  <div className="text-xs sm:text-sm font-medium text-content whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
                     {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
                     {formatTime(r.endTime)}
                   </div>
                 </div>
 
                 <button
-                  className="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-[#788DFF] hover:bg-[#788DFF] hover:text-white rounded-md transition-colors whitespace-nowrap"
+                  className="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-primary hover:bg-primary hover:text-white rounded-md transition-colors whitespace-nowrap"
                   onClick={() => setOpenReservationId(r.id)}
                 >
                   취소
@@ -133,21 +133,21 @@ const AfterLoginBanner = () => {
                   onClose={() => setOpenReservationId(null)}
                   onConfirm={() => cancelReservation(r.id)}
                 >
-                  <div className="text-lg font-semibold text-left mb-6 text-[#37352f]">
+                  <div className="text-lg font-semibold text-left mb-6 text-content">
                     예약을 취소할까요?
                   </div>
-                  <div className="flex items-center gap-4 bg-[#f8f9ff] p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
                     <img
                       src="/static/icons/studyroom_image.png"
                       alt="studyroom"
                       className="w-20 h-20 object-cover rounded-lg"
                     />
                     <div className="flex flex-col gap-1 text-sm">
-                      <div className="font-semibold text-[#37352f]">{`${r.roomName}`}</div>
-                      <div className="text-[#73726e]">
+                      <div className="font-semibold text-content">{`${r.roomName}`}</div>
+                      <div className="text-content-secondary">
                         {formatDate(r.startTime)}
                       </div>
-                      <div className="text-[#73726e]">
+                      <div className="text-content-secondary">
                         {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
                       </div>
                     </div>

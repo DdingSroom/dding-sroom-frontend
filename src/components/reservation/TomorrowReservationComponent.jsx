@@ -173,7 +173,7 @@ const TomorrowReservationComponent = ({
 
   const renderLine = (slots) => (
     <div className="w-full overflow-x-auto pb-2">
-      <div className="flex flex-row min-w-[720px] sm:min-w-0">
+      <div className="flex flex-row min-w-grid sm:min-w-0">
         {slots.map((ms) => {
           const hour = kstHour(ms);
           const isFirstOfHour = kstMinute(ms) === 0;
@@ -186,7 +186,7 @@ const TomorrowReservationComponent = ({
               style={{ width: '10px' }}
             >
               <span
-                className="text-[10px] text-[#4b4b4b]"
+                className="text-2xs text-content-time"
                 style={{
                   visibility: isFirstOfHour ? 'visible' : 'hidden',
                   height: '16px',
@@ -267,25 +267,25 @@ const TomorrowReservationComponent = ({
   };
 
   return (
-    <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-[100%] mt-[1rem]">
+    <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-full mt-4">
       <div className="flex justify-between items-center">
         <div className="flex gap-3 sm:gap-5 items-center">
           <div className="text-xl sm:text-2xl whitespace-nowrap flex-shrink-0">
             {roomName || `스터디룸 ${index}`}
           </div>
           {caption && (
-            <div className="text-[#9999A3] text-sm whitespace-nowrap flex-shrink-0">
+            <div className="text-status-reserved text-sm whitespace-nowrap flex-shrink-0">
               {caption}
             </div>
           )}
           {notice && (
-            <div className="text-[#3250F5] text-xs whitespace-pre-line">
+            <div className="text-primary-dark text-xs whitespace-pre-line">
               {notice}
             </div>
           )}
         </div>
         <button
-          className="bg-[#3250F5] text-white text-lg rounded-3xl px-4 py-2 w-[100px] hover:bg-[#2a47e3] transition-colors duration-200 font-medium"
+          className="bg-primary-dark text-white text-lg rounded-3xl px-4 py-2 w-btn-action hover:bg-primary-dark-hover transition-colors duration-200 font-medium"
           onClick={handleOpenModal}
         >
           예약
@@ -365,19 +365,19 @@ const TomorrowReservationComponent = ({
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#788DFF]"></div>
+          <div className="w-2 h-2 bg-primary"></div>
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#9999A3]"></div>
+          <div className="w-2 h-2 bg-status-reserved"></div>
           <span>예약됨</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#000000]"></div>
+          <div className="w-2 h-2 bg-status-past"></div>
           <span>지난 시간</span>
         </div>
       </div>
-      <div className="bg-[#9999A3] h-0.5 w-full mt-3" />
+      <div className="bg-status-reserved h-0.5 w-full mt-3" />
       <LoginRequiredModal
         isOpen={showLoginModal}
         onConfirm={handleModalConfirm}

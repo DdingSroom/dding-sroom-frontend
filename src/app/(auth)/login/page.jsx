@@ -155,10 +155,10 @@ function LoginForm() {
       {/* 본문 */}
       <div className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#788cff] tracking-tight">
+          <h1 className="text-2xl font-bold text-primary tracking-tight">
             띵스룸
           </h1>
-          <div className="text-[#73726e] text-sm leading-relaxed">
+          <div className="text-content-secondary text-sm leading-relaxed">
             <p>명지대학교 이메일로 가입하여</p>
             <p>스터디룸을 간편히 사용해요!</p>
           </div>
@@ -173,7 +173,7 @@ function LoginForm() {
             className="space-y-6"
           >
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
+              <label className="block text-sm font-medium text-content">
                 이메일
               </label>
               <StyledEmailInput
@@ -198,7 +198,7 @@ function LoginForm() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-[#37352f]">
+              <label className="block text-sm font-medium text-content">
                 비밀번호
               </label>
               <StyledPasswordInput
@@ -233,16 +233,16 @@ function LoginForm() {
               로그인 유지
             </StyledCheckbox>
 
-            <div className="flex items-center gap-4 text-xs text-[#73726e]">
+            <div className="flex items-center gap-4 text-xs text-content-secondary">
               <Link
                 href="/sign-up/step1"
-                className="hover:text-[#37352f] transition-colors"
+                className="hover:text-content transition-colors"
               >
                 회원가입
               </Link>
               <Link
                 href="/reset-password/step1"
-                className="hover:text-[#37352f] transition-colors"
+                className="hover:text-content transition-colors"
               >
                 비밀번호 재설정
               </Link>
@@ -268,7 +268,7 @@ function LoginForm() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
       value={value}
       {...props}
     />
@@ -360,7 +360,7 @@ const StyledCheckbox = ({ onChange, children, ...props }) => {
           />
         </div>
       </div>
-      <span className="ml-2 text-xs text-[#73726e] select-none">
+      <span className="ml-2 text-xs text-content-secondary select-none">
         {children}
       </span>
     </label>
