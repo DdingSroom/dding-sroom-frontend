@@ -183,7 +183,7 @@ export default function PostDetailPage() {
         <CommunityHeader title="커뮤니티" />
         <div className="flex-1 flex justify-center items-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin h-8 w-8 rounded-full border-2 border-primary border-top-transparent" />
+            <div className="animate-spin h-8 w-8 rounded-full border-2 border-primary border-t-transparent" />
             <div className="text-sm text-gray-600">게시글을 불러오는 중...</div>
           </div>
         </div>
