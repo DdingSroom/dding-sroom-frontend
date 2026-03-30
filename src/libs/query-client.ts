@@ -1,4 +1,4 @@
-import { QueryCache, MutationCache, QueryClient } from '@tanstack/react-query';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -34,6 +34,8 @@ export function getQueryClient() {
   if (typeof window === 'undefined') {
     return makeQueryClient();
   }
-  if (!browserQueryClient) browserQueryClient = makeQueryClient();
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();
+  }
   return browserQueryClient;
 }

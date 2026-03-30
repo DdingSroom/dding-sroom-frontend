@@ -1,6 +1,7 @@
 import './globals.css';
+
 import Script from 'next/script';
-import QueryProvider from '@providers/react-query/QueryProvider';
+import QueryProvider from '@providers/query-provider';
 
 export const metadata = {
   metadataBase: new URL('https://ddingsroom.com'),
