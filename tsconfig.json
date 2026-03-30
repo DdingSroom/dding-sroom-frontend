@@ -30,7 +30,9 @@
       "@stores": ["./src/stores"],
       "@stores/*": ["./src/stores/*"],
       "@lib": ["./src/lib"],
-      "@lib/*": ["./src/lib/*"]
+      "@lib/*": ["./src/lib/*"],
+      "@providers": ["./src/providers"],
+      "@providers/*": ["./src/providers/*"]
     }
   },
   "include": [
