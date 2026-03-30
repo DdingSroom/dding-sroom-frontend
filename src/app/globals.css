@@ -87,6 +87,7 @@
 @layer base {
   html {
     @apply font-sans w-full bg-surface text-content leading-normal antialiased;
+
     font-size: 14px;
   }
 
