@@ -11,7 +11,7 @@ const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const config = [
   {
-    ignores: ['node_modules/', '.next/'],
+    ignores: ['node_modules/', '.next/', 'next-env.d.ts'],
   },
 
   ...compat.extends('next/core-web-vitals'),
