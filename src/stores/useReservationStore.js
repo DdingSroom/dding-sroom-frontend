@@ -1,9 +1,13 @@
 import { create } from 'zustand';
-import useTokenStore from './useTokenStore';
+
 import axiosInstance from '@api/instance';
 
+import useTokenStore from './useTokenStore';
+
 const parseToDate = (raw) => {
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
   if (Array.isArray(raw)) {
     const [y, m, d, h = 0, min = 0] = raw;
     return new Date(y, m - 1, d, h, min);
@@ -24,7 +28,9 @@ const useReservationStore = create((set) => ({
 
   fetchLatestReservation: async () => {
     const { userId, accessToken } = useTokenStore.getState();
-    if (!userId || !accessToken) return;
+    if (!userId || !accessToken) {
+      return;
+    }
 
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
@@ -40,7 +46,9 @@ const useReservationStore = create((set) => ({
 
   fetchAllUserReservations: async () => {
     const { userId, accessToken } = useTokenStore.getState();
-    if (!userId || !accessToken) return;
+    if (!userId || !accessToken) {
+      return;
+    }
 
     try {
       const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
@@ -68,7 +76,9 @@ const useReservationStore = create((set) => ({
       const reservedMap = {};
 
       all.forEach((r, i) => {
-        if (r.status !== 'RESERVED') return;
+        if (r.status !== 'RESERVED') {
+          return;
+        }
 
         const roomId = r.roomId;
         const start = parseToDate(r.startTime || r.reservationStartTime);
@@ -82,7 +92,9 @@ const useReservationStore = create((set) => ({
         const temp = new Date(start);
         while (temp < end) {
           const iso = temp.toISOString();
-          if (!reservedMap[roomId]) reservedMap[roomId] = [];
+          if (!reservedMap[roomId]) {
+            reservedMap[roomId] = [];
+          }
           reservedMap[roomId].push(iso);
           temp.setMinutes(temp.getMinutes() + 10);
         }

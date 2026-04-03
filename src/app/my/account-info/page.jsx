@@ -2,14 +2,17 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import FooterNav from '../../../components/common/FooterNav';
-import axiosInstance from '@api/instance';
-import MyPageHeader from '@components/my/MyPageHeader';
-import MyPageBlock from '@components/my/MyPageBlock';
-import Modal from '@components/common/Modal';
+
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import MyPageBlock from '@components/my/MyPageBlock';
+import MyPageHeader from '@components/my/MyPageHeader';
+
+import axiosInstance from '@api/instance';
+
+import FooterNav from '../../../components/common/FooterNav';
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -38,7 +41,9 @@ export default function AccountInfo() {
   }, [rehydrate]);
 
   useEffect(() => {
-    if (!authReady) return;
+    if (!authReady) {
+      return;
+    }
     setShowLoginModal(!accessToken);
   }, [authReady, accessToken]);
 
@@ -55,7 +60,9 @@ export default function AccountInfo() {
   const [userInfo, setUserInfo] = useState(getDecodedUserInfo);
 
   useEffect(() => {
-    if (!authReady) return;
+    if (!authReady) {
+      return;
+    }
     setUserInfo(getDecodedUserInfo());
   }, [authReady, accessToken, getDecodedUserInfo]);
 
@@ -75,7 +82,9 @@ export default function AccountInfo() {
       alert('기존 이름과 동일합니다.');
       return;
     }
-    if (submitting) return;
+    if (submitting) {
+      return;
+    }
 
     try {
       setSubmitting(true);

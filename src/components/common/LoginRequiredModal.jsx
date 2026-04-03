@@ -1,7 +1,9 @@
 import React from 'react';
 
 const LoginRequiredModal = ({ isOpen, onConfirm }) => {
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] backdrop-blur-sm">

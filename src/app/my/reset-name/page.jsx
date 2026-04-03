@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+
 import FooterNav from '../../../components/common/FooterNav';
 
 export default function ResetName() {
@@ -11,9 +12,5 @@ export default function ResetName() {
     router.replace('/my/account-info');
   }, [router]);
 
-  return (
-    <>
-      <FooterNav />
-    </>
-  );
+  return <FooterNav />;
 }

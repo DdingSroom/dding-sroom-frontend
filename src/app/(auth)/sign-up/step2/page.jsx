@@ -1,12 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import CustomizedStepper from './customizedStepper';
+
+import Button from '@components/common/Button';
+import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
 import { isValidPassword } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
-import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+
+import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -36,9 +39,8 @@ export default function SignUpStep2() {
     setIsnewPassword_2Visible(!isnewPassword_2Visible);
   };
 
-  const isNextAvailable = () => {
-    return isValidPassword(newPassword) && newPassword === newPassword_2;
-  };
+  const isNextAvailable = () =>
+    isValidPassword(newPassword) && newPassword === newPassword_2;
 
   const handleNextStep = () => {
     setSignupField('password', newPassword);
@@ -137,49 +139,45 @@ export default function SignUpStep2() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, ...props }) => (
+  <input
+    className="w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200"
+    value={value}
+    {...props}
+  />
+);
 
 const NewPasswordField = ({
   value,
   isVisible = false,
   handlePasswordVisible,
   ...props
-}) => {
-  return (
-    <div className="relative">
-      <StyledInput
-        {...props}
-        value={value}
-        type={isVisible ? 'text' : 'password'}
+}) => (
+  <div className="relative">
+    <StyledInput
+      {...props}
+      value={value}
+      type={isVisible ? 'text' : 'password'}
+    />
+    <button
+      type="button"
+      onClick={handlePasswordVisible}
+      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+    >
+      <img
+        src={
+          isVisible
+            ? '/static/icons/eye_on_icon.svg'
+            : '/static/icons/eye_off_icon.svg'
+        }
+        alt="Toggle Password Visibility"
+        width={18}
+        height={18}
+        className="opacity-60 hover:opacity-80"
       />
-      <button
-        type="button"
-        onClick={handlePasswordVisible}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-      >
-        <img
-          src={
-            isVisible
-              ? '/static/icons/eye_on_icon.svg'
-              : '/static/icons/eye_off_icon.svg'
-          }
-          alt="Toggle Password Visibility"
-          width={18}
-          height={18}
-          className="opacity-60 hover:opacity-80"
-        />
-      </button>
-    </div>
-  );
-};
+    </button>
+  </div>
+);
 
 const ConfirmPasswordField = ({
   value,
@@ -187,31 +185,29 @@ const ConfirmPasswordField = ({
   handlePasswordVisible,
   isMatch,
   ...props
-}) => {
-  return (
-    <div className="relative">
-      <StyledInput
-        {...props}
-        value={value}
-        type={isVisible ? 'text' : 'password'}
+}) => (
+  <div className="relative">
+    <StyledInput
+      {...props}
+      value={value}
+      type={isVisible ? 'text' : 'password'}
+    />
+    <button
+      type="button"
+      onClick={handlePasswordVisible}
+      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
+    >
+      <img
+        src={
+          isMatch
+            ? '/static/icons/check_off_icon.svg'
+            : '/static/icons/check_on_icon.svg'
+        }
+        alt="Password Match Indicator"
+        width={18}
+        height={18}
+        className="opacity-60 hover:opacity-80"
       />
-      <button
-        type="button"
-        onClick={handlePasswordVisible}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-      >
-        <img
-          src={
-            isMatch
-              ? '/static/icons/check_off_icon.svg'
-              : '/static/icons/check_on_icon.svg'
-          }
-          alt="Password Match Indicator"
-          width={18}
-          height={18}
-          className="opacity-60 hover:opacity-80"
-        />
-      </button>
-    </div>
-  );
-};
+    </button>
+  </div>
+);

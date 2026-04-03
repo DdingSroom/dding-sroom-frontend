@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../stores/useTokenStore';
-import useReservationStore from '../../stores/useReservationStore';
-import axiosInstance from '@api/instance';
-import TimeComponent from '@components/reservation/TimeComponent';
-import Modal from '@components/common/Modal';
+
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import Modal from '@components/common/Modal';
+import TimeComponent from '@components/reservation/TimeComponent';
+
+import axiosInstance from '@api/instance';
+
+import useReservationStore from '../../stores/useReservationStore';
+import useTokenStore from '../../stores/useTokenStore';
 
 //타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
@@ -106,14 +109,18 @@ const TomorrowReservationComponent = ({
     const startMs = new Date(startISO).getTime();
     const endMs = new Date(endISO).getTime();
     for (let ms = startMs; ms < endMs; ms += TEN_MIN) {
-      if (reserved10mKeys.has(slotKey10m(ms))) return false;
+      if (reserved10mKeys.has(slotKey10m(ms))) {
+        return false;
+      }
     }
     return true;
   };
 
   const getStatus = (slotMs) => {
     // 내일 화면은 전체가 미래이므로 past는 없음. 예약 여부만 표시.
-    if (reserved10mKeys.has(slotKey10m(slotMs))) return 'reserved';
+    if (reserved10mKeys.has(slotKey10m(slotMs))) {
+      return 'reserved';
+    }
     return 'available';
   };
 
@@ -226,13 +233,15 @@ const TomorrowReservationComponent = ({
     );
   };
 
-  const renderStartTimeOptions = () => {
-    return timeSlots
+  const renderStartTimeOptions = () =>
+    timeSlots
       .filter((ms) => {
         const h = kstHour(ms);
         const m = kstMinute(ms);
         // 23:59 표시 전용 슬롯 제외
-        if (h === 23 && m === 59) return false;
+        if (h === 23 && m === 59) {
+          return false;
+        }
         return !reserved10mKeys.has(slotKey10m(ms));
       })
       .map((ms) => {
@@ -243,10 +252,11 @@ const TomorrowReservationComponent = ({
           </option>
         );
       });
-  };
 
   const renderEndTimeOptions = () => {
-    if (!startTime) return [];
+    if (!startTime) {
+      return [];
+    }
     const startMs = new Date(startTime).getTime();
     const end1Ms = startMs + 60 * 60000;
     const end2Ms = startMs + 120 * 60000;
@@ -348,7 +358,9 @@ const TomorrowReservationComponent = ({
                     const dur =
                       (new Date(selectedEnd) - new Date(startTime)) /
                       (1000 * 60);
-                    if (dur === 60 || dur === 120) setDurationMinutes(dur);
+                    if (dur === 60 || dur === 120) {
+                      setDurationMinutes(dur);
+                    }
                   }
                 }}
                 disabled={!startTime}
@@ -365,15 +377,15 @@ const TomorrowReservationComponent = ({
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#788DFF]"></div>
+          <div className="w-2 h-2 bg-[#788DFF]" />
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#9999A3]"></div>
+          <div className="w-2 h-2 bg-[#9999A3]" />
           <span>예약됨</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-[#000000]"></div>
+          <div className="w-2 h-2 bg-[#000000]" />
           <span>지난 시간</span>
         </div>
       </div>

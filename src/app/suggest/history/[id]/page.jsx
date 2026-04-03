@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import useTokenStore from '../../../../stores/useTokenStore';
-import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
-import axiosInstance from '@api/instance';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
+
+import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
+import useTokenStore from '../../../../stores/useTokenStore';
 
 const CATEGORIES = [
   '분실물',
@@ -38,8 +41,11 @@ function SuggestDetailHeader() {
   const pathname = usePathname();
 
   const handleBack = () => {
-    if (pathname === '/my/account-info') router.push('/');
-    else router.back();
+    if (pathname === '/my/account-info') {
+      router.push('/');
+    } else {
+      router.back();
+    }
   };
 
   return (
@@ -88,13 +94,17 @@ function parseError(err) {
 }
 
 function toDate(arr) {
-  if (!Array.isArray(arr)) return new Date(0);
+  if (!Array.isArray(arr)) {
+    return new Date(0);
+  }
   const [y, mo, d, h = 0, m = 0, s = 0] = arr;
   return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
 }
 
 function safeNormalizeSuggestion(raw) {
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
   const createdAt =
     raw?.createdAt ||
     raw?.created_at ||
@@ -114,14 +124,22 @@ function safeNormalizeSuggestion(raw) {
 }
 
 function formatMeta(cat, loc) {
-  if (!cat && !loc) return '';
-  if (!cat) return loc;
-  if (!loc) return cat;
+  if (!cat && !loc) {
+    return '';
+  }
+  if (!cat) {
+    return loc;
+  }
+  if (!loc) {
+    return cat;
+  }
   return `${cat} | ${loc}`;
 }
 
 function pickLatestAnswerText(list) {
-  if (!Array.isArray(list)) return '';
+  if (!Array.isArray(list)) {
+    return '';
+  }
   const candidates = list
     .map((c) => ({
       txt:
@@ -134,7 +152,9 @@ function pickLatestAnswerText(list) {
         c?.answered_at || c?.answeredAt || c?.createdAt || c?.created_at || [],
     }))
     .filter((x) => !!String(x.txt || '').trim());
-  if (candidates.length === 0) return '';
+  if (candidates.length === 0) {
+    return '';
+  }
   candidates.sort((a, b) => +toDate(b.at) - +toDate(a.at));
   return candidates[0].txt;
 }
@@ -146,7 +166,9 @@ export default function SuggestHistoryDetailPage({ params }) {
 
   // 로그인 체크
   useEffect(() => {
-    if (!accessToken) router.push('/login');
+    if (!accessToken) {
+      router.push('/login');
+    }
   }, [accessToken, router]);
 
   const [loading, setLoading] = useState(true);
@@ -211,11 +233,15 @@ export default function SuggestHistoryDetailPage({ params }) {
   }, [fetchDetail, fetchComments, myUserId, router]);
 
   useEffect(() => {
-    if (Number.isFinite(suggestId)) reload();
+    if (Number.isFinite(suggestId)) {
+      reload();
+    }
   }, [suggestId, reload]);
 
   const beginEdit = () => {
-    if (!detail) return;
+    if (!detail) {
+      return;
+    }
     setETitle(detail.title || '');
     setEContent(detail.content || '');
     setECategory(detail.category || CATEGORIES[0]);
@@ -232,9 +258,15 @@ export default function SuggestHistoryDetailPage({ params }) {
   const isDone = Boolean(detail?.isAnswered) || !!answerText;
 
   const saveEdit = async () => {
-    if (!detail) return;
-    if (!eTitle.trim()) return setOpMsg('제목을 입력해 주세요.');
-    if (!eContent.trim()) return setOpMsg('내용을 입력해 주세요.');
+    if (!detail) {
+      return;
+    }
+    if (!eTitle.trim()) {
+      return setOpMsg('제목을 입력해 주세요.');
+    }
+    if (!eContent.trim()) {
+      return setOpMsg('내용을 입력해 주세요.');
+    }
     if (isDone && !ackAnswerDone) {
       return setOpMsg('답변 완료 건의는 체크 확인 후에만 수정할 수 있습니다.');
     }
@@ -261,8 +293,12 @@ export default function SuggestHistoryDetailPage({ params }) {
   };
 
   const deleteItem = async () => {
-    if (!detail) return;
-    if (!confirm('정말로 삭제하시겠습니까?')) return;
+    if (!detail) {
+      return;
+    }
+    if (!confirm('정말로 삭제하시겠습니까?')) {
+      return;
+    }
     try {
       setSaving(true);
       setOpMsg('');

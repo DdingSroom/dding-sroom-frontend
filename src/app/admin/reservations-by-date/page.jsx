@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
+
 import ReservationCard from '@components/admin/ReservationCard';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function ReservationListPage() {
   const [groupedReservations, setGroupedReservations] = useState({});
@@ -44,7 +47,9 @@ export default function ReservationListPage() {
       const grouped = {};
       reservations.forEach((r) => {
         const key = formatDateOnly(r.createdAt);
-        if (!grouped[key]) grouped[key] = [];
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
         grouped[key].push(r);
       });
 
@@ -86,8 +91,12 @@ export default function ReservationListPage() {
 
   const handleForceCancel = useCallback(
     async (reservationId) => {
-      if (!reservationId) return;
-      if (!confirm('이 예약을 강제로 취소하시겠습니까?')) return;
+      if (!reservationId) {
+        return;
+      }
+      if (!confirm('이 예약을 강제로 취소하시겠습니까?')) {
+        return;
+      }
 
       setCancelLoadingIds((s) => new Set(s).add(reservationId));
 
@@ -156,7 +165,6 @@ export default function ReservationListPage() {
                           disabled={isCancelling}
                           className={`px-3 py-2 text-sm rounded-md border bg-white text-red-600 border-red-300
                               hover:bg-red-50 hover:border-red-400 transition ${
-                                // eslint-disable-next-line prettier/prettier
                                 isCancelling
                                   ? 'opacity-60 cursor-not-allowed'
                                   : ''
@@ -186,7 +194,9 @@ function formatDateOnly(arr) {
 
 // 전체 날짜 & 시간 포맷
 function formatFullDate(arr) {
-  if (!Array.isArray(arr)) return '';
+  if (!Array.isArray(arr)) {
+    return '';
+  }
   const [y, mo, d, h = 0, m = 0] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(
     h,
@@ -195,7 +205,9 @@ function formatFullDate(arr) {
 
 // 시간 범위 포맷
 function formatHM(array) {
-  if (!Array.isArray(array)) return '';
+  if (!Array.isArray(array)) {
+    return '';
+  }
   const [, , , h = 0, m = 0] = array;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }

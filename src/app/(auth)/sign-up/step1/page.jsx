@@ -1,14 +1,17 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import CustomizedStepper from './customizedStepper';
+import { useRouter } from 'next/navigation';
+
+import Button from '@components/common/Button';
+import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
 import { strictEmailRegex } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
-import axiosInstance from '@api/instance';
-import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+
+import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -47,7 +50,9 @@ export default function SignUpStep1() {
 
   const startTimer = () => {
     setSecondsLeft(300);
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
@@ -59,11 +64,14 @@ export default function SignUpStep1() {
     }, 1000);
   };
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    },
+    [],
+  );
 
   const mmss = useMemo(() => {
     const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
@@ -388,6 +396,6 @@ const StyledEmailInput = ({
   );
 };
 
-const StyledNumberInput = ({ value, className = '', ...props }) => {
-  return <StyledInput {...props} value={value} className={className} />;
-};
+const StyledNumberInput = ({ value, className = '', ...props }) => (
+  <StyledInput {...props} value={value} className={className} />
+);

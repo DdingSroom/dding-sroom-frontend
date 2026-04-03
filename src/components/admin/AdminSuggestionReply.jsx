@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 function parseError(err) {
@@ -37,7 +38,9 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         answer_content: value.trim(),
       });
       setValue('');
-      if (typeof onUpdate === 'function') onUpdate();
+      if (typeof onUpdate === 'function') {
+        onUpdate();
+      }
     } catch (e) {
       setError(parseError(e));
     } finally {
