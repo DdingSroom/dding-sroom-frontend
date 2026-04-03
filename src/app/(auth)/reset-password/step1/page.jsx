@@ -1,11 +1,13 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { strictEmailRegex } from '@constants/regex';
-import axiosInstance from '@api/instance';
+
 import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
+import { strictEmailRegex } from '@constants/regex';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -40,7 +42,9 @@ export default function ResetPassWord1() {
 
   const startTimer = () => {
     setSecondsLeft(300);
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
@@ -52,11 +56,14 @@ export default function ResetPassWord1() {
     }, 1000);
   };
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    },
+    [],
+  );
 
   const mmss = useMemo(() => {
     const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
@@ -172,7 +179,7 @@ export default function ResetPassWord1() {
             <div
               className="w-8 h-8 border-4 border-[#788cff] border-t-transparent rounded-full animate-spin"
               aria-label="로딩 중"
-            ></div>
+            />
             <p className="text-sm text-gray-600 text-center">
               메일을 전송 중이예요. 시스템 환경에 따라 딜레이가 발생할 수
               있어요.
@@ -301,15 +308,13 @@ export default function ResetPassWord1() {
   );
 }
 
-const StyledInput = ({ value, className = '', ...props }) => {
-  return (
-    <input
-      className={`w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200 ${className}`}
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, className = '', ...props }) => (
+  <input
+    className={`w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200 ${className}`}
+    value={value}
+    {...props}
+  />
+);
 
 const StyledEmailInput = ({ value, setEmail, disabled, ...props }) => {
   const handleRemoveEmailValue = () => {
@@ -338,6 +343,6 @@ const StyledEmailInput = ({ value, setEmail, disabled, ...props }) => {
   );
 };
 
-const StyledNumberInput = ({ value, className = '', ...props }) => {
-  return <StyledInput {...props} value={value} className={className} />;
-};
+const StyledNumberInput = ({ value, className = '', ...props }) => (
+  <StyledInput {...props} value={value} className={className} />
+);

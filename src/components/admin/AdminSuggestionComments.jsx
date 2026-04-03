@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 function parseError(err) {
@@ -14,7 +15,9 @@ function parseError(err) {
 }
 
 function fmt(arr) {
-  if (!Array.isArray(arr)) return '';
+  if (!Array.isArray(arr)) {
+    return '';
+  }
   const [y, mo, d, h = 0, m = 0] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(
     h,
@@ -51,7 +54,9 @@ export default function AdminSuggestionComments({
   }, [suggestPostId]);
 
   useEffect(() => {
-    if (suggestPostId) fetchComments();
+    if (suggestPostId) {
+      fetchComments();
+    }
   }, [suggestPostId, refreshKey, fetchComments]);
 
   return (

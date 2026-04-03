@@ -2,10 +2,12 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import CustomizedStepper from './customizedStepper';
+
 import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -19,10 +21,6 @@ function BottomSafeSpacer({ height = 64 }) {
 function SignUpStep4() {
   const searchParams = useSearchParams();
   const username = searchParams.get('username') || 'USER 01';
-
-  const handleSignup = () => {
-    console.log('확인 버튼 클릭:', '회원가입 성공');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -59,7 +57,7 @@ function SignUpStep4() {
           <div className="mt-4">
             <Link href="/login">
               <div className="max-w-xs mx-auto">
-                <Button onClick={handleSignup} text="확인" />
+                <Button text="확인" />
               </div>
             </Link>
           </div>

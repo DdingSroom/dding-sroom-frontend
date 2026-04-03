@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
+
 import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function ReservationDetailPage() {
   const [reservations, setReservations] = useState([]);
@@ -35,7 +37,6 @@ export default function ReservationDetailPage() {
   const fetchReservations = async () => {
     try {
       const response = await axiosInstance.get('/admin/reservations');
-      console.log('예약 데이터:', response.data);
 
       setReservations(
         (response.data.reservations || []).sort((a, b) => {
@@ -101,7 +102,9 @@ export default function ReservationDetailPage() {
 }
 
 function formatHM(array) {
-  if (!Array.isArray(array)) return '';
+  if (!Array.isArray(array)) {
+    return '';
+  }
   const [, , , h = 0, m = 0] = array;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
@@ -111,7 +114,9 @@ function formatTimeRange(start, end) {
 }
 
 function formatDate(arr) {
-  if (!Array.isArray(arr)) return '';
+  if (!Array.isArray(arr)) {
+    return '';
+  }
   const [y, mo, d, h = 0, m = 0] = arr;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }

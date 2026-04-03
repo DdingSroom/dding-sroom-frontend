@@ -1,5 +1,7 @@
 const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div
@@ -23,7 +25,9 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (onSubmit) onSubmit();
+              if (onSubmit) {
+                onSubmit();
+              }
             }}
             className="flex-1 py-4 bg-[#788cff] text-white text-sm font-medium hover:bg-[#6a7dff] transition-colors"
           >

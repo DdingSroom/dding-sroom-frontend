@@ -3,9 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
+
 import UserTableRow from '@components/admin/UserTableRow';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -36,9 +39,6 @@ export default function UserManagement() {
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get('/admin/users');
-
-      console.log('전체 응답:', response);
-      console.log('response.data:', response.data);
 
       setUsers(response.data.users || []);
     } catch (err) {

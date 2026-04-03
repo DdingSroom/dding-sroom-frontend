@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 export default function ProtectedImage({
@@ -31,18 +32,23 @@ export default function ProtectedImage({
       try {
         const b = new Uint8Array(buf);
         // JPEG FF D8 FF
-        if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff)
+        if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) {
           return 'image/jpeg';
+        }
         // PNG 89 50 4E 47
-        if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47)
+        if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) {
           return 'image/png';
+        }
         // GIF 47 49 46 38
-        if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38)
+        if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38) {
           return 'image/gif';
+        }
         // WEBP: "RIFF....WEBP"
         const riff = String.fromCharCode(b[0], b[1], b[2], b[3]) === 'RIFF';
         const webp = String.fromCharCode(b[8], b[9], b[10], b[11]) === 'WEBP';
-        if (riff && webp) return 'image/webp';
+        if (riff && webp) {
+          return 'image/webp';
+        }
       } catch (e) {
         // error
       }
@@ -95,7 +101,9 @@ export default function ProtectedImage({
           setError(true);
         }
       } finally {
-        if (!ac.signal.aborted) setLoading(false);
+        if (!ac.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -103,7 +111,9 @@ export default function ProtectedImage({
 
     return () => {
       ac.abort();
-      if (urlToRevoke) URL.revokeObjectURL(urlToRevoke);
+      if (urlToRevoke) {
+        URL.revokeObjectURL(urlToRevoke);
+      }
     };
   }, [suggestPostId]);
 
@@ -117,7 +127,9 @@ export default function ProtectedImage({
     );
   }
 
-  if (error || !src) return fallback;
+  if (error || !src) {
+    return fallback;
+  }
 
   return (
     <img

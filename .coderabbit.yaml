@@ -1,4 +1,4 @@
-language: "ko-KR" # 리뷰 언어 설정
+language: 'ko-KR' # 리뷰 언어 설정
 
 tone_instructions: > # 리뷰어 페르소나 및 스타일 지침
   경험 많은 시니어 개발자로서 동료 개발자의 성장을 돕는 코드 리뷰를 진행하세요.
@@ -10,7 +10,7 @@ tone_instructions: > # 리뷰어 페르소나 및 스타일 지침
 early_access: false # 실험적 기능 사용 여부
 
 reviews:
-  profile: "chill" # 리뷰 강도 ('chill': 일반 / 'assertive': 꼼꼼)
+  profile: 'chill' # 리뷰 강도 ('chill': 일반 / 'assertive': 꼼꼼)
   request_changes_workflow: false # 이슈 미해결 시 PR 승인 보류 여부
   high_level_summary: true # PR 상단에 변경사항 요약 표시
   changed_files_summary: true # 변경된 파일별 요약 표시
@@ -28,45 +28,45 @@ reviews:
     auto_incremental_review: true # 새 커밋 push 시 추가 리뷰 실행
     drafts: false # Draft PR 자동 리뷰 포함 여부
     ignore_title_keywords:
-      - "[Docs]"
+      - '[Docs]'
     base_branches:
-      - "develop"
-      - "main"
-  
+      - 'develop'
+      - 'main'
+
   path_filters:
-    - "!public/**"
-    - "!.next/**"
-    - "!node_modules/**"
-    - "!pnpm-lock.yaml"
+    - '!public/**'
+    - '!.next/**'
+    - '!node_modules/**'
+    - '!pnpm-lock.yaml'
 
   path_instructions:
-    - path: "src/app/**"
+    - path: 'src/app/**'
       instructions: |
         Next.js App Router 기준으로 서버 컴포넌트와 클라이언트 컴포넌트의 경계가 적절한지 검토해주세요.
         데이터 패칭 위치, 렌더링 전략, route segment 구성이 적절한지 확인해주세요.
         불필요하게 클라이언트 컴포넌트로 내려간 부분이 있다면 더 나은 분리 방향을 제안해주세요.
         성능 최적화는 실제로 필요한 경우에만 언급하고, useMemo/useCallback의 과도한 사용은 지양하는 방향으로 리뷰해주세요.
 
-    - path: "src/components/**"
+    - path: 'src/components/**'
       instructions: |
         컴포넌트의 책임, 재사용성, 접근성, props 인터페이스, 스타일 구조를 중심으로 리뷰해주세요.
         프레젠테이셔널 성격의 컴포넌트에 도메인 로직이 과하게 들어가 있지 않은지도 함께 검토해주세요.
         UI와 비즈니스 로직이 과하게 섞여 있다면 분리 방향을 제안해주세요.
         성능 최적화는 실제로 필요한 경우에만 언급하고, useMemo/useCallback의 과도한 사용은 지양하는 방향으로 리뷰해주세요.
 
-    - path: "src/hooks/**"
+    - path: 'src/hooks/**'
       instructions: |
         훅의 단일 책임 원칙, 의존성 배열 누락 또는 과잉, 불필요한 리렌더링 유발 여부를 중심으로 검토해주세요.
         현재는 JavaScript 코드베이스이므로 TypeScript 미도입 자체보다는 런타임 안정성, null/undefined 처리, 인터페이스 일관성을 중심으로 확인해주세요.
         향후 TypeScript 마이그레이션 시 경계가 모호해질 부분이 있다면 선택적으로 제안해주세요.
         도메인 로직이 훅 안에 과하게 들어가 있다면 분리 방향을 제안해주세요.
 
-    - path: "src/utils/**"
+    - path: 'src/utils/**'
       instructions: |
         유틸 함수의 순수성, 사이드 이펙트 여부, 엣지케이스 처리, 네이밍 명확성을 중심으로 검토해주세요.
         현재는 JavaScript 코드베이스이므로 TypeScript 미도입 자체보다는 런타임 안정성, null/undefined 처리, 입력값 계약의 명확성을 함께 확인해주세요.
 
-    - path: "src/api/**"
+    - path: 'src/api/**'
       instructions: |
         API 클라이언트 계층(axios/fetch)의 책임 분리, 에러 처리 일관성, 재시도/타임아웃 전략의 적절성을 검토해주세요.
         인증 토큰 주입/갱신 인터셉터 로직에서 동시성 이슈(race condition), 무한 재시도, 보안 리스크가 없는지 확인해주세요.

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata = {
   title: '서비스 이용 가이드 | 띵스룸(ddingsroom)',

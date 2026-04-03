@@ -1,16 +1,19 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
-import { anonymizeUsers } from '@utils/anonymizeUser';
-import CommunityHeader from '@components/community/CommunityHeader';
-import CommentItem from '@components/community/CommentItem';
+import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+
+import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+import CommentItem from '@components/community/CommentItem';
+import CommunityHeader from '@components/community/CommunityHeader';
+
+import axiosInstance from '@api/instance';
+import { anonymizeUsers } from '@utils/anonymizeUser';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -55,8 +58,9 @@ export default function PostDetailPage() {
       const found = (res?.data?.data ?? []).find(
         (p) => p.id === parseInt(postId, 10),
       );
-      if (found) setPost(found);
-      else {
+      if (found) {
+        setPost(found);
+      } else {
         setErrorMessage('존재하지 않는 게시글입니다.');
         setShowErrorModal(true);
       }
@@ -81,7 +85,9 @@ export default function PostDetailPage() {
       }
       const list = res?.data?.data ?? [];
       setComments(list);
-      if (list.length > 0) setUserMap(anonymizeUsers(list));
+      if (list.length > 0) {
+        setUserMap(anonymizeUsers(list));
+      }
     } catch (e) {
       console.error('댓글 불러오기 실패:', e);
     }
@@ -100,7 +106,9 @@ export default function PostDetailPage() {
   };
 
   const handleCommentSubmit = async () => {
-    if (!newComment.trim()) return;
+    if (!newComment.trim()) {
+      return;
+    }
     setIsSubmittingComment(true);
     try {
       const res = await axiosInstance.post('/api/community-posts/comments', {
@@ -125,7 +133,9 @@ export default function PostDetailPage() {
   };
 
   const handleDeletePost = async () => {
-    if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
+    if (!window.confirm('게시글을 삭제하시겠습니까?')) {
+      return;
+    }
     try {
       const res = await axiosInstance.delete('/api/community-posts', {
         data: { post_id: parseInt(postId, 10), user_id: userId },
@@ -133,7 +143,9 @@ export default function PostDetailPage() {
       if (res?.data?.error) {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
-      } else router.push('/community');
+      } else {
+        router.push('/community');
+      }
     } catch (e) {
       console.error('게시글 삭제 실패:', e);
       setErrorMessage('게시글 삭제 중 오류가 발생했습니다.');
@@ -142,24 +154,31 @@ export default function PostDetailPage() {
   };
 
   const formatDate = (arr) => {
-    if (!Array.isArray(arr)) return '';
+    if (!Array.isArray(arr)) {
+      return '';
+    }
     const [y, m, d, h, min] = arr;
     const date = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
     const now = new Date();
     const diff = now - date;
     const hrs = diff / (1000 * 60 * 60);
     const days = diff / (1000 * 60 * 60 * 24);
-    if (hrs < 24)
+    if (hrs < 24) {
       return hrs < 1
         ? `${Math.floor(diff / (1000 * 60))}분 전`
         : `${Math.floor(hrs)}시간 전`;
-    if (days < 30) return `${Math.floor(days)}일 전`;
+    }
+    if (days < 30) {
+      return `${Math.floor(days)}일 전`;
+    }
     return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 
   const getCategoryName = (c) => (c === 1 ? '일반 게시판' : '분실물 게시판');
   const isUpdated = (createdAt, updatedAt) => {
-    if (!Array.isArray(createdAt) || !Array.isArray(updatedAt)) return false;
+    if (!Array.isArray(createdAt) || !Array.isArray(updatedAt)) {
+      return false;
+    }
     const ts = (a) =>
       new Date(...a.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v))).getTime();
     return Math.abs(ts(updatedAt) - ts(createdAt)) > 1000;

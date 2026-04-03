@@ -1,22 +1,29 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
+
 import ReservationItem from '@components/admin/ReservationItem';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../../stores/useTokenStore';
 
 const pad = (n) => String(n).padStart(2, '0');
 
 function formatDateArrayExactly(arr) {
-  if (!Array.isArray(arr)) return '없음';
+  if (!Array.isArray(arr)) {
+    return '없음';
+  }
   const [y, m, d, h, min, s] = arr;
   return `${y}. ${pad(m)}. ${pad(d)}. ${pad(h)}:${pad(min)}:${pad(s)}`;
 }
 
 function formatDateTimeRange(startArray, endArray) {
-  if (!Array.isArray(startArray) || !Array.isArray(endArray)) return '';
+  if (!Array.isArray(startArray) || !Array.isArray(endArray)) {
+    return '';
+  }
   const [y, m, d, h, min] = startArray;
   const [, , , h2, min2] = endArray;
   return `${y}.${pad(m)}.${pad(d)} ${pad(h)}:${pad(min)} ~ ${pad(h2)}:${pad(min2)}`;
@@ -60,7 +67,9 @@ export default function UserDetailPage() {
     }
     try {
       const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') router.push('/admin/login');
+      if (decoded.role !== 'ROLE_ADMIN') {
+        router.push('/admin/login');
+      }
     } catch (e) {
       console.error('토큰 디코드 오류:', e);
       router.push('/admin/login');
@@ -68,7 +77,9 @@ export default function UserDetailPage() {
   }, [accessToken, router]);
 
   const fetchUserDetail = useCallback(async () => {
-    if (!userId) return null;
+    if (!userId) {
+      return null;
+    }
     try {
       const res = await axiosInstance.get(`/admin/users/${userId}`);
       const data = res?.data?.data;
@@ -81,7 +92,9 @@ export default function UserDetailPage() {
   }, [userId]);
 
   const fetchUserReservations = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      return;
+    }
     try {
       const res = await axiosInstance.get(`/admin/reservations/user/${userId}`);
       setReservations(res.data.reservations || []);
@@ -157,7 +170,9 @@ export default function UserDetailPage() {
   // );
 
   // const handleStatusToggle = useCallback(async () => {
-  if (!user) return;
+  if (!user) {
+    return;
+  }
 
   // const currentStatus = userStatus;
   // const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
@@ -184,7 +199,9 @@ export default function UserDetailPage() {
   // }, [user, userStatus, updateUserStatus]);
 
   /* Loading */
-  if (!user) return <p className="p-6">로딩 중...</p>;
+  if (!user) {
+    return <p className="p-6">로딩 중...</p>;
+  }
 
   return (
     <div className="p-6 bg-[#EFF0F3] min-h-screen">

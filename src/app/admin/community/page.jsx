@@ -3,8 +3,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
+
 import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function AdminCommunityPage() {
   const router = useRouter();
@@ -342,7 +344,9 @@ function parseError(err) {
 }
 
 function formatDate(dateArray) {
-  if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
+  if (!Array.isArray(dateArray) || dateArray.length < 3) {
+    return '';
+  }
   const [year, month, day, hour = 0, minute = 0] = dateArray;
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }

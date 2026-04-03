@@ -1,7 +1,9 @@
 'use client';
 
 const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div
@@ -27,7 +29,9 @@ const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (onConfirm) onConfirm();
+              if (onConfirm) {
+                onConfirm();
+              }
             }}
             className="w-1/2 py-3 bg-[#7389FF] text-white text-sm font-semibold rounded-none hover:bg-[#6a7dff] transition-colors duration-200"
           >
