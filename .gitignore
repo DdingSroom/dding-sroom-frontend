@@ -2,14 +2,7 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.*
-.yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnpm-store/
 
 # testing
 /coverage
