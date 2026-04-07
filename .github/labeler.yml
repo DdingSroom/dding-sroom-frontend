@@ -1,0 +1,106 @@
+enable:
+  issues: true
+  prs: true
+
+labels:
+  "Fix":
+    include:
+      - '\bFix\b'
+      - '\bfix\b'
+      - '\bFIX\b'
+      - '\bBug\b'
+      - '\bbug\b'
+      - '\bBUG\b'
+
+  "Feature":
+    include:
+      - '\bFeat\b'
+      - '\bfeat\b'
+      - '\bFEAT\b'
+      - '\bFeature\b'
+      - '\bfeature\b'
+      - '\bFEATURE\b'
+
+  "Docs":
+    include:
+      - '\bDocs\b'
+      - '\bdocs\b'
+      - '\bDOCS\b'
+
+  "Design":
+    include:
+      - '\bStyle\b'
+      - '\bstyle\b'
+      - '\bSTYLE\b'
+      - '\bDesign\b'
+      - '\bdesign\b'
+      - '\bDESIGN\b'
+      - '\bUI\b'
+      - '\bui\b'
+      - '\bUX\b'
+      - '\bux\b'
+
+  "Chore":
+    include:
+      - '\bChore\b'
+      - '\bchore\b'
+      - '\bCHORE\b'
+
+  "Refactor":
+    include:
+      - '\bRefactor\b'
+      - '\brefactor\b'
+      - '\bREFACTOR\b'
+
+  "Deploy":
+    include:
+      - '\bDeploy\b'
+      - '\bdeploy\b'
+      - '\bDEPLOY\b'
+
+  "Hotfix":
+    include:
+      - '\bHotfix\b'
+      - '\bhotfix\b'
+      - '\bHOTFIX\b'
+
+  "Infra":
+    include:
+      - '\bInfra\b'
+      - '\binfra\b'
+      - '\bINFRA\b'
+      - '\bCI\b'
+      - '\bci\b'
+      - '\bCD\b'
+      - '\bcd\b'
+      - '\bWorkflow\b'
+      - '\bworkflow\b'
+      - '\bWORKFLOW\b'
+      - '\bDocker\b'
+      - '\bdocker\b'
+
+  "Config":
+    include:
+      - '\bConfig\b'
+      - '\bconfig\b'
+      - '\bCONFIG\b'
+      - '\bInit\b'
+      - '\binit\b'
+      - '\bINIT\b'
+      - '\bSetting\b'
+      - '\bsetting\b'
+      - '\bSETTING\b'
+      - '\bSettings\b'
+      - '\bsettings\b'
+      - '\bSETTINGS\b'
+
+  "Pre-release":
+    include:
+      - '\bPre-release\b'
+      - '\bpre-release\b'
+      - '\bPRE-RELEASE\b'
+      - '\bPrerelease\b'
+      - '\bprerelease\b'
+      - '\bPRERELEASE\b'
+      - '\bDemo\b'
+      - '\bdemo\b'
