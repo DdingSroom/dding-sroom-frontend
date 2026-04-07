@@ -3,7 +3,7 @@ enable:
   prs: true
 
 labels:
-  "Fix":
+  "🛠️ Fix":
     include:
       - '\bFix\b'
       - '\bfix\b'
@@ -12,7 +12,7 @@ labels:
       - '\bbug\b'
       - '\bBUG\b'
 
-  "Feature":
+  "✨ Feature":
     include:
       - '\bFeat\b'
       - '\bfeat\b'
@@ -21,13 +21,13 @@ labels:
       - '\bfeature\b'
       - '\bFEATURE\b'
 
-  "Docs":
+  "📄 Docs":
     include:
       - '\bDocs\b'
       - '\bdocs\b'
       - '\bDOCS\b'
 
-  "Design":
+  "🎨 Design":
     include:
       - '\bStyle\b'
       - '\bstyle\b'
@@ -40,31 +40,31 @@ labels:
       - '\bUX\b'
       - '\bux\b'
 
-  "Chore":
+  "🧹 Chore":
     include:
       - '\bChore\b'
       - '\bchore\b'
       - '\bCHORE\b'
 
-  "Refactor":
+  "🔨 Refactor":
     include:
       - '\bRefactor\b'
       - '\brefactor\b'
       - '\bREFACTOR\b'
 
-  "Deploy":
+  "🚀 Deploy":
     include:
       - '\bDeploy\b'
       - '\bdeploy\b'
       - '\bDEPLOY\b'
 
-  "Hotfix":
+  "🔥 Hotfix":
     include:
       - '\bHotfix\b'
       - '\bhotfix\b'
       - '\bHOTFIX\b'
 
-  "Infra":
+  "🔩 Infra":
     include:
       - '\bInfra\b'
       - '\binfra\b'
@@ -79,7 +79,7 @@ labels:
       - '\bDocker\b'
       - '\bdocker\b'
 
-  "Config":
+  "⚙️ Config":
     include:
       - '\bConfig\b'
       - '\bconfig\b'
@@ -94,7 +94,7 @@ labels:
       - '\bsettings\b'
       - '\bSETTINGS\b'
 
-  "Pre-release":
+  "🧪 Pre-release":
     include:
       - '\bPre-release\b'
       - '\bpre-release\b'
