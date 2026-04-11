@@ -1,0 +1,109 @@
+name: ci
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v5
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check project
+        id: check_step
+        run: pnpm run lint && pnpm exec tsc --noEmit
+        continue-on-error: true
+
+      - name: Build project
+        id: build_step
+        run: pnpm run build
+        continue-on-error: true
+
+      - name: Output build result
+        if: github.event_name == 'pull_request' && always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: build-result
+          message: |
+            ### 🚀 빌드 결과
+            ${{ steps.check_step.outcome == 'success' && '🩵 린트 검사 완료' || '😥 린트 검사 실패' }}
+            ${{ steps.build_step.outcome == 'success' && '💙 빌드 성공' || '😭 빌드 실패' }}
+
+            <details>
+              <summary>✔️ 로그 확인하기</summary>
+              <br>
+              <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+                Actions 탭에서 자세히 보기!
+              </a>
+            </details>
+
+      - name: Notify Discord Alarm
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_USER="${{ github.event.pull_request.user.login }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+
+          if [ "${{ steps.build_step.outcome }}" == "success" ]; then
+            COLOR=3066993
+            TITLE="💙 빌드 성공"
+          else
+            COLOR=15158332
+            TITLE="😭 빌드 실패"
+          fi
+
+          DESCRIPTION="**📄 Title : \`$PR_TITLE\`\n ✏️ 작성자 : \`$PR_USER\`\n\n[🔎 PR보러가기]($PR_URL)"
+          curl -H "Content-Type: application/json" \
+               -d "{
+                 \"embeds\": [{
+                   \"title\": \"$TITLE\",
+                   \"description\": \"$DESCRIPTION\",
+                   \"color\": $COLOR
+                 }]
+               }" \
+               "${{ secrets.DISCORD_WEBHOOK_URL }}"
+
+      - name: Check Build Status
+        if: steps.check_step.outcome == 'failure' || steps.build_step.outcome == 'failure'
+        run: exit 1
+
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: auto-assign-author-and-reviewer
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        uses: hkusu/review-assign-action@v1
+        with:
+          assignees: ${{ github.actor }}
+          reviewers: u-zzn, jogpfls
