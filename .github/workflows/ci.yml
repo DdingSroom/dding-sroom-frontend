@@ -90,13 +90,3 @@ jobs:
       - name: Check Build Status
         if: steps.check_step.outcome == 'failure' || steps.build_step.outcome == 'failure'
         run: exit 1
-
-  assign:
-    runs-on: ubuntu-latest
-    steps:
-      - name: auto-assign-author-and-reviewer
-        if: github.event_name == 'pull_request' && github.event.action == 'opened'
-        uses: hkusu/review-assign-action@v1
-        with:
-          assignees: ${{ github.actor }}
-          reviewers: u-zzn, jogpfls
