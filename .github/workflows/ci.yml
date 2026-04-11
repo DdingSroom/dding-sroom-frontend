@@ -42,7 +42,7 @@ jobs:
 
       - name: Check project
         id: check_step
-        run: pnpm run lint && pnpm exec tsc --noEmit
+        run: pnpm run lint && pnpm run typecheck
         continue-on-error: true
 
       - name: Build project
