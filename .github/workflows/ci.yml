@@ -76,7 +76,7 @@ jobs:
             TITLE="😭 빌드 실패"
           fi
 
-          DESCRIPTION="**📄 Title : \`$PR_TITLE\`\n ✏️ 작성자 : \`$PR_USER\`\n\n[🔎 PR보러가기]($PR_URL)"
+          DESCRIPTION="📄 Title : \`$PR_TITLE\`\n ✏️ 작성자 : \`$PR_USER\`\n\n[🔎 PR보러가기]($PR_URL)"
           curl -H "Content-Type: application/json" \
                -d "{
                  \"embeds\": [{
