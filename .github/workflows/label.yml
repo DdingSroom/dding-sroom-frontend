@@ -37,7 +37,8 @@ jobs:
 
             const userLabels = {
               "u-zzn": "유진 ୨ৎ",
-              "jogpfls": "혜린 ୨ৎ",
+              "Sohyunnnn": "소현 ୨ৎ",
+              "odukong": "수빈 ୨ৎ",
             };
 
             const labelToAdd = userLabels[author];
@@ -84,8 +85,9 @@ jobs:
             });
 
             const reviewerMap = {
-              "u-zzn": ["jogpfls"],
-              "jogpfls": ["u-zzn"],
+              "u-zzn": ["Sohyunnnn", "odukong"],
+              "Sohyunnnn": ["u-zzn", "odukong"],
+              "odukong": ["u-zzn", "Sohyunnnn"],
             };
 
             const reviewers = reviewerMap[author];
