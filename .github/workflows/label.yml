@@ -84,15 +84,10 @@ jobs:
               assignees: [author],
             });
 
-            const reviewerMap = {
-              "u-zzn": ["Sohyunnnn", "odukong"],
-              "Sohyunnnn": ["u-zzn", "odukong"],
-              "odukong": ["u-zzn", "Sohyunnnn"],
-            };
+            const allMembers = ["u-zzn", "Sohyunnnn", "odukong"];
+            const reviewers = allMembers.filter((member) => member !== author);
 
-            const reviewers = reviewerMap[author];
-
-            if (reviewers && reviewers.length > 0) {
+            if (reviewers.length > 0) {
               await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
