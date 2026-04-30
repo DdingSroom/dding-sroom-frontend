@@ -4,7 +4,7 @@ on:
   issues:
     types: [opened, reopened, edited]
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened]
 
 jobs:
   labeler:
