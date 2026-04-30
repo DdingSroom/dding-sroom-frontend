@@ -14,16 +14,6 @@ const nextConfig: NextConfig = {
   // 프로덕션에서 소스맵 노출 방지
   productionBrowserSourceMaps: false,
 
-  experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-        },
-      },
-    },
-  },
-
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
