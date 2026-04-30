@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import InfoModal from '@components/common/InfoModal';
 
 import axiosInstance from '@api/instance';
-import { Bell } from 'public/static/icons';
+import { Bell, Person } from 'public/static/icons';
 
 const Header = () => {
   const router = useRouter();
@@ -72,13 +72,12 @@ const Header = () => {
           )}
         </button>
         <button
-          className="w-9 h-9 bg-[#788DFF] rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-[#6a7dff] transition-colors shadow-sm"
+          className="w-[29px] h-[29px] bg-[#788DFF] relative rounded-full overflow-hidden cursor-pointer hover:bg-[#6a7dff] transition-colors shadow-sm"
           onClick={handleClickProfile}
         >
-          <img
-            src="/static/icons/person_icon.png"
+          <Person
             alt="person_icon"
-            className="w-6 h-6 object-contain"
+            className="text-white absolute bottom-[-1px] left-1/2 -translate-x-1/2"
           />
         </button>
       </div>
