@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { MaruSad } from 'public/static/icons';
 
 export default function NotFound() {
   return (
     <main className="min-h-screen bg-white px-4">
       <div className="mx-auto flex min-h-screen max-w-[560px] flex-col items-center justify-center py-16">
-        <img
-          src="/maintenance/horse.svg"
+        <MaruSad
           alt="404 안내 이미지"
           className="mb-8 h-[160px] w-auto select-none"
           draggable={false}
