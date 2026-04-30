@@ -25,7 +25,7 @@ const ReservationHistory = ({ reservation, onCancel }) => {
     <div className="flex items-center p-5 bg-gray-50/50 mt-3 gap-4 rounded-lg border border-gray-100/80 hover:bg-gray-50 transition-colors duration-300">
       <div>
         <img
-          src="/static/icons/studyroom_image.png"
+          src="/static/images/studyroom_image.png"
           alt="studyroom"
           className="w-16 h-16 object-cover rounded-lg"
         />

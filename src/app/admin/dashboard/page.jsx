@@ -318,7 +318,7 @@ export default function AdminDashboard() {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                     <img
-                      src="/static/icons/studyroom_image.png"
+                      src="/static/images/studyroom_image.png"
                       alt={`스터디룸 ${room.id}`}
                       className="w-full h-full object-cover rounded-lg"
                     />

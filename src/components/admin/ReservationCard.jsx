@@ -11,7 +11,7 @@ export default function ReservationCard({
   return (
     <div className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl hover:border-gray-200 transition-colors bg-white shadow-sm">
       <img
-        src="/static/icons/studyroom_image.png"
+        src="/static/images/studyroom_image.png"
         className="w-12 h-12 object-cover rounded-lg"
         alt="스터디룸"
       />

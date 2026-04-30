@@ -146,7 +146,7 @@ const AfterLoginBanner = () => {
                   </div>
                   <div className="flex items-center gap-4 bg-[#f8f9ff] p-4 rounded-xl border border-gray-100">
                     <img
-                      src="/static/icons/studyroom_image.png"
+                      src="/static/images/studyroom_image.png"
                       alt="studyroom"
                       className="w-20 h-20 object-cover rounded-lg"
                     />

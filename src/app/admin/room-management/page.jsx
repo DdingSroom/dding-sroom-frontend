@@ -10,7 +10,7 @@ import axiosInstance from '@api/instance';
 import useTokenStore from '../../../stores/useTokenStore';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
-const DEFAULT_ROOM_IMAGE_SRC = '/static/icons/studyroom_image.png';
+const DEFAULT_ROOM_IMAGE_SRC = '/static/images/studyroom_image.png';
 
 // 배지(상태표시)
 const BADGE_BY_STATUS = {
