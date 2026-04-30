@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import InfoModal from '@components/common/InfoModal';
 
 import axiosInstance from '@api/instance';
+import { Bell } from 'public/static/icons';
 
 const Header = () => {
   const router = useRouter();
@@ -56,11 +57,7 @@ const Header = () => {
           className="relative p-2 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:scale-105"
           onClick={handleClickNotification}
         >
-          <img
-            src="/static/icons/bell_icon.png"
-            alt="notification"
-            className="h-6 w-6"
-          />
+          <Bell alt="notification" />
           {recentNotificationCount > 0 && (
             <div className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center">
               <span className="relative flex items-center justify-center">

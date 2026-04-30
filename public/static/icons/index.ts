@@ -1,6 +1,8 @@
 export { default as ArrowLeft } from './arrow_left_icon.svg';
 export { default as ArrowRight } from './arrow_right_icon.svg';
 
+export { default as Bell } from './bell_icon.svg';
+
 // 하단 메뉴바 아이콘
 export { default as Reservation } from './reservation_icon.svg';
 export { default as Community } from './community_icon.svg';
