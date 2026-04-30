@@ -17,6 +17,7 @@ export { default as EyeOn } from './eye_on_icon.svg';
 export { default as EyeOff } from './eye_off_icon.svg';
 
 export { default as Logo } from './logo.svg';
+export { default as Maru } from './maru_icon.svg';
 export { default as MaruSad } from './maru_sad_icon.svg';
 
 export { default as X } from './x_icon.svg';

@@ -7,6 +7,7 @@ import CancellationModal from '@components/reservation/CancellationModal';
 import axiosInstance from '@api/instance';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
+import { Maru } from 'public/static/icons';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
@@ -94,8 +95,7 @@ const AfterLoginBanner = () => {
             여유로움
           </div>
         </div>
-        <img
-          src="/static/icons/maru_icon.png"
+        <Maru
           alt="maru"
           className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-16 h-16 sm:w-24 sm:h-24 object-contain opacity-90"
         />
