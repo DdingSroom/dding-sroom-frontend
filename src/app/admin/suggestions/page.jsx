@@ -118,15 +118,13 @@ export default function AdminSuggestionsPage() {
             <section key={date} className="mb-8">
               <div className="flex items-center gap-2 mb-3">
                 <span
-                  className="inline-block w-1.5 h-5 rounded"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  className="inline-block w-1.5 h-5 rounded bg-primary"
                 />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 접수 내역
                 </h2>
                 <div
-                  className="h-px flex-1"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  className="h-px flex-1 bg-primary"
                 />
               </div>
 
@@ -219,8 +217,7 @@ function SuggestionCard({ item, onRefresh }) {
       }`}
     >
       <div
-        className="h-1"
-        style={{ backgroundColor: 'var(--color-primary)' }}
+        className="h-1 bg-primary"
       />
 
       <div className="p-3 sm:p-4">
@@ -272,8 +269,7 @@ function SuggestionCard({ item, onRefresh }) {
 
         {open && (
           <div
-            className="my-3 border-t border-dashed"
-            style={{ borderColor: 'var(--color-primary)' }}
+            className="my-3 border-t border-dashed border-primary"
           />
         )}
 
@@ -313,12 +309,10 @@ function SuggestionCard({ item, onRefresh }) {
             {/* 답변 관리 (수정/삭제) */}
             <section aria-label="관리자 답변 관리">
               <div
-                className="mt-1 border-t border-dashed pt-3"
-                style={{ borderColor: 'var(--color-primary)' }}
+                className="mt-1 border-t border-dashed pt-3 border-primary"
               >
                 <h4
-                  className="text-sm font-semibold mb-2"
-                  style={{ color: 'var(--color-primary)' }}
+                  className="text-sm font-semibold mb-2 text-primary"
                 >
                   관리자 답변 관리
                 </h4>
@@ -334,12 +328,10 @@ function SuggestionCard({ item, onRefresh }) {
             {/* 댓글/답변(기존 목록 뷰) */}
             <section aria-label="댓글 및 답변">
               <div
-                className="mt-1 border-t border-dashed pt-3"
-                style={{ borderColor: 'var(--color-primary)' }}
+                className="mt-1 border-t border-dashed pt-3 border-primary"
               >
                 <h4
-                  className="text-sm font-semibold mb-2"
-                  style={{ color: 'var(--color-primary)' }}
+                  className="text-sm font-semibold mb-2 text-primary"
                 >
                   댓글 및 답변
                 </h4>
@@ -473,8 +465,7 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
                 </button>
                 <button
                   onClick={saveEdit}
-                  className="px-3 py-1.5 text-sm rounded text-white"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  className="px-3 py-1.5 text-sm rounded text-white bg-primary"
                   disabled={saving}
                 >
                   {saving ? '저장 중…' : '저장'}
