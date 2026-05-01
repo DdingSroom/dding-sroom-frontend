@@ -117,8 +117,7 @@ export default function SuggestHistoryPage() {
             <span className="relative py-3 text-base text-primary">
               건의/신고내역
               <span
-                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full"
-                style={{ backgroundColor: 'var(--color-primary)' }}
+                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full bg-primary"
               />
             </span>
           </div>
