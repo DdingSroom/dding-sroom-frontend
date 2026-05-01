@@ -216,8 +216,7 @@ export default function NotificationManagement() {
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleCreateNotification}
-                className="px-4 py-2 text-white rounded-md transition-colors"
-                style={{ backgroundColor: 'var(--color-primary)' }}
+                className="px-4 py-2 text-white rounded-md transition-colors bg-primary"
               >
                 작성하기
               </button>
@@ -289,8 +288,7 @@ export default function NotificationManagement() {
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleUpdateNotification}
-                className="px-4 py-2 text-white rounded-md transition-colors"
-                style={{ backgroundColor: 'var(--color-primary)' }}
+                className="px-4 py-2 text-white rounded-md transition-colors bg-primary"
               >
                 수정하기
               </button>
@@ -343,15 +341,13 @@ export default function NotificationManagement() {
             <section key={date} className="mb-8">
               <div className="flex items-center gap-2 mb-3">
                 <span
-                  className="inline-block w-1.5 h-5 rounded"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  className="inline-block w-1.5 h-5 rounded bg-primary"
                 />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 작성된 공지사항
                 </h2>
                 <div
-                  className="h-px flex-1"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  className="h-px flex-1 bg-primary"
                 />
               </div>
 
@@ -446,8 +442,7 @@ function NotificationCard({
   return (
     <article className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md">
       <div
-        className="h-1"
-        style={{ backgroundColor: 'var(--color-primary)' }}
+        className="h-1 bg-primary"
       />
 
       <div className="p-3 sm:p-4">
