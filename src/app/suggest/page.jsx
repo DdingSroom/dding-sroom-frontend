@@ -332,9 +332,7 @@ export default function SuggestPage() {
           <div className="flex space-x-8 border-b border-line">
             <span className="relative py-3 text-base text-primary">
               건의/신고
-              <span
-                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full bg-primary"
-              />
+              <span className="absolute left-0 -bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
             </span>
 
             <Link
@@ -566,7 +564,7 @@ export default function SuggestPage() {
             <button
               type="submit"
               disabled={hasError || submitting}
-              className={`w-full rounded-xl py-4 text-base font-semibold text-white shadow-sm transition active:scale-[0.99] ${
+              className={`w-full rounded-xl py-4 text-base font-semibold text-white shadow-sm transition active:scale-press ${
                 hasError || submitting
                   ? 'bg-primary-disabled cursor-not-allowed'
                   : 'bg-primary'
