@@ -208,7 +208,7 @@ export default function NotificationList() {
               </div>
             </div>
 
-            <div className="p-8 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <div className="p-8 overflow-y-auto max-h-modal-body">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
                   {selectedNotification.title}
