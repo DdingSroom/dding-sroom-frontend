@@ -140,10 +140,17 @@ export default {
       maxHeight: {
         modal: '70vh',
         'modal-lg': '90vh',
+        'modal-body': 'calc(90vh - 80px)',
       },
       minHeight: {
         banner: '240px',
         'banner-card': '280px',
+      },
+      bottom: {
+        'tab-indicator': '1px',
+      },
+      scale: {
+        press: '0.99',
       },
     },
   },
