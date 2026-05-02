@@ -116,9 +116,7 @@ export default function SuggestHistoryPage() {
             </Link>
             <span className="relative py-3 text-base text-primary">
               건의/신고내역
-              <span
-                className="absolute left-0 -bottom-[1px] h-tab-indicator w-full rounded-full bg-primary"
-              />
+              <span className="absolute left-0 -bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
             </span>
           </div>
         </nav>
@@ -193,7 +191,7 @@ function HistoryCard({ item }) {
     <li className="px-4">
       <Link
         href={`/suggest/history/${id}`}
-        className="block rounded-2xl bg-white shadow-sm border border-line px-4 py-4 mb-3 active:scale-[0.99] transition"
+        className="block rounded-2xl bg-white shadow-sm border border-line px-4 py-4 mb-3 active:scale-press transition"
       >
         <div className="flex items-start gap-3">
           <ThumbByUrl suggestPostId={id} />
