@@ -3,16 +3,16 @@ pre-commit:
     - name: eslint
       glob:
         - '**/*.{js,jsx,ts,tsx}'
-      run: pnpm exec eslint --fix --quiet -- {staged_files}
+      run: 'pnpm exec eslint --fix --quiet -- {staged_files} || (echo "ESLint failed. Fix errors and commit again." && exit 1)'
       stage_fixed: true
 
     - name: prettier
       glob:
         - '**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}'
-      run: pnpm exec prettier --write --log-level warn --ignore-unknown -- {staged_files}
+      run: 'pnpm exec prettier --write --log-level warn --ignore-unknown -- {staged_files} || (echo "Prettier failed. Check formatting and commit again." && exit 1)'
       stage_fixed: true
 
 pre-push:
   jobs:
     - name: typecheck
-      run: pnpm typecheck
+      run: 'pnpm typecheck || (echo "Typecheck failed. Resolve type errors and push again." && exit 1)'
