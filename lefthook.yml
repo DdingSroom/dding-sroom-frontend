@@ -1,18 +1,18 @@
 pre-commit:
-  jobs:
-    - name: eslint
-      glob:
-        - '**/*.{js,jsx,ts,tsx}'
-      run: 'pnpm exec eslint --fix --quiet -- {staged_files} || (echo "ESLint failed. Fix errors and commit again." && exit 1)'
+  parallel: false
+  commands:
+    lint-staged:
+      glob: '**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}'
+      run: bash scripts/lint-staged.sh {staged_files}
       stage_fixed: true
-
-    - name: prettier
-      glob:
-        - '**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}'
-      run: 'pnpm exec prettier --write --log-level warn --ignore-unknown -- {staged_files} || (echo "Prettier failed. Check formatting and commit again." && exit 1)'
-      stage_fixed: true
-
 pre-push:
-  jobs:
-    - name: typecheck
-      run: 'pnpm typecheck || (echo "Typecheck failed. Resolve type errors and push again." && exit 1)'
+  parallel: true
+  commands:
+    audit-check:
+      run: npm audit
+    type-check:
+      run: npm run type-check
+commit-msg:
+  commands:
+    commit-convention:
+      run: bash scripts/validate-commit-msg.sh {1}
