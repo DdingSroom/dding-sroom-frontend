@@ -1,0 +1,27 @@
+name: sync-fork-for-vercel-deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-fork:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.FORK_SYNC_TOKEN }}
+
+      - name: Sync upstream -> fork (u-zzn)
+        uses: tgymnich/fork-sync@v2.3.1
+        with:
+          github_token: ${{ secrets.FORK_SYNC_TOKEN }}
+          owner: u-zzn
+          base: main
+          head: main
