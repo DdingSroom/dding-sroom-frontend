@@ -1,38 +1,24 @@
-name: vercel-sync-after-success
+name: sync-fork-for-vercel-deploy
 
 on:
-  repository_dispatch:
-    types: [vercel.deployment.success]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   sync-fork:
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event.client_payload.environment == 'production' &&
-        github.event.client_payload.git_ref == 'refs/heads/main'
-      )
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Vercel payload
-        run: |
-          echo "event: ${{ github.event.action }}"
-          echo "environment: ${{ github.event.client_payload.environment }}"
-          echo "git_ref: ${{ github.event.client_payload.git_ref }}"
-          echo "deployment_url: ${{ github.event.client_payload.url }}"
-
-      - name: Checkout fork repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.FORK_SYNC_TOKEN }}
 
-      - name: Sync upstream -> fork
+      - name: Sync upstream -> fork (u-zzn)
         uses: tgymnich/fork-sync@v2.3.1
         with:
           github_token: ${{ secrets.FORK_SYNC_TOKEN }}
