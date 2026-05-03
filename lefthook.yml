@@ -5,14 +5,14 @@ pre-commit:
       glob: '**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}'
       run: bash scripts/lint-staged.sh {staged_files}
       stage_fixed: true
-pre-push:
-  parallel: true
-  commands:
-    audit-check:
-      run: npm audit
-    type-check:
-      run: npm run type-check
+
 commit-msg:
   commands:
     commit-convention:
       run: bash scripts/validate-commit-msg.sh {1}
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: pnpm typecheck

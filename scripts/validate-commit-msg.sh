@@ -11,7 +11,6 @@ fi
 
 first_line="$(head -n 1 "$commit_msg_file" | tr -d '\r')"
 
-# Allow default merge/revert commits created by Git.
 if [[ "$first_line" =~ ^Merge\  ]] || [[ "$first_line" =~ ^Revert\  ]]; then
   exit 0
 fi
@@ -35,7 +34,6 @@ if [ -z "$message" ]; then
   exit 1
 fi
 
-# Special characters are not allowed.
 if [[ "$message" =~ [^a-zA-Z0-9[:space:]가-힣] ]]; then
   echo "Special characters are not allowed in commit message."
   echo "Use only Korean/English letters, numbers, and spaces."
