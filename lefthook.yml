@@ -3,13 +3,13 @@ pre-commit:
     - name: eslint
       glob:
         - '**/*.{js,jsx,ts,tsx}'
-      run: pnpm exec eslint --fix -- {staged_files}
+      run: pnpm exec eslint --fix --quiet -- {staged_files}
       stage_fixed: true
 
     - name: prettier
       glob:
         - '**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx,yml,yaml}'
-      run: pnpm exec prettier --write --ignore-unknown -- {staged_files}
+      run: pnpm exec prettier --write --log-level warn --ignore-unknown -- {staged_files}
       stage_fixed: true
 
 pre-push:
