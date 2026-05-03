@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const normalizePathParams = (path) => path.replace(/\/\d+(?=\/|$)/g, '/{id}');
+
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 10000,
@@ -141,6 +143,14 @@ axiosInstance.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    if (error.response && error.config?.url) {
+      try {
+        const fullUrl = new URL(error.config.url, error.config.baseURL);
+        const normalizedPath = normalizePathParams(fullUrl.pathname);
+        error.name = `[${error.response.status} Error] - ${fullUrl.origin}${normalizedPath}`;
+      } catch {}
     }
 
     return Promise.reject(error);
