@@ -1,4 +1,5 @@
 import './globals.css';
+
 import Script from 'next/script';
 import LayoutWrapper from '@components/layout/LayoutWrapper';
 

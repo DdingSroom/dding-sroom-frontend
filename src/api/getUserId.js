@@ -3,7 +3,6 @@ import axiosInstance from './instance.js';
 const getUserId = async () => {
   try {
     const response = await axiosInstance.get('/api/users/token-userid');
-    console.log(response);
 
     if (response && response.data) {
       return response.data;

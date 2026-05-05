@@ -2,15 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import ReservationHistory from './ReservationHistory';
-import CancellationModal from './CancellationModal';
-import axiosInstance from '@api/instance';
-import useTokenStore from '@stores/useTokenStore';
-import useReservationStore from '@stores/useReservationStore';
+
 import MyPageDate from '@components/my/MyPageDate';
 
+import axiosInstance from '@api/instance';
+import useReservationStore from '@stores/useReservationStore';
+import useTokenStore from '@stores/useTokenStore';
+
+import CancellationModal from './CancellationModal';
+import ReservationHistory from './ReservationHistory';
+
 const toDateFromRaw = (raw) => {
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
   if (Array.isArray(raw)) {
     const [y, m = 1, d = 1, hh = 0, mm = 0, ss = 0, ms = 0] = raw;
     return new Date(y, m - 1, d, hh, mm, ss, ms);
@@ -26,8 +31,12 @@ const norm = (v) =>
 
 const isCanceled = (r) => {
   const s = norm(r.status);
-  if (r.canceledAt || r.cancelledAt) return true;
-  if (s === 'CANCELLED' || s === 'CANCELED') return true;
+  if (r.canceledAt || r.cancelledAt) {
+    return true;
+  }
+  if (s === 'CANCELLED' || s === 'CANCELED') {
+    return true;
+  }
   return false;
 };
 
@@ -70,8 +79,12 @@ export default function ReservationList() {
 
   // userId 미존재 시 토큰에서 보조 추출
   const resolvedUserId = useMemo(() => {
-    if (userId) return userId;
-    if (!accessToken) return null;
+    if (userId) {
+      return userId;
+    }
+    if (!accessToken) {
+      return null;
+    }
     try {
       const d = jwtDecode(accessToken);
       const extractedId = d?.userId ?? d?.id ?? d?.uid ?? d?.sub ?? null;
@@ -117,7 +130,9 @@ export default function ReservationList() {
 
   // authReady 이후에만 판단/요청 실행
   useEffect(() => {
-    if (!authReady) return;
+    if (!authReady) {
+      return;
+    }
 
     if (!accessToken || !resolvedUserId) {
       setGroupedReservations({});
@@ -153,7 +168,9 @@ export default function ReservationList() {
   };
 
   const confirmCancelReservation = async () => {
-    if (!cancelModalData || !resolvedUserId) return;
+    if (!cancelModalData || !resolvedUserId) {
+      return;
+    }
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
         userId: resolvedUserId,
@@ -167,7 +184,9 @@ export default function ReservationList() {
       );
       setGroupedReservations(buildGrouped(res2.data?.reservations));
 
-      if (fetchAllReservedTimes) await fetchAllReservedTimes();
+      if (fetchAllReservedTimes) {
+        await fetchAllReservedTimes();
+      }
     } catch (err) {
       console.error('예약 취소 실패:', err);
       alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
@@ -180,11 +199,15 @@ export default function ReservationList() {
   };
   const formatTime = (input) => {
     const d = toDateFromRaw(input);
-    if (!d) return '--:--';
+    if (!d) {
+      return '--:--';
+    }
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
-  if (!authReady || loading) return <div className="p-6">로딩 중...</div>;
+  if (!authReady || loading) {
+    return <div className="p-6">로딩 중...</div>;
+  }
 
   const entries = Object.entries(groupedReservations).filter(
     ([date]) => date !== 'Invalid Date',

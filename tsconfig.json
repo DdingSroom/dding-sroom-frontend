@@ -28,7 +28,11 @@
       "@constants": ["./src/constants"],
       "@constants/*": ["./src/constants/*"],
       "@stores": ["./src/stores"],
-      "@stores/*": ["./src/stores/*"]
+      "@stores/*": ["./src/stores/*"],
+      "@libs": ["./src/libs"],
+      "@libs/*": ["./src/libs/*"],
+      "@providers": ["./src/providers"],
+      "@providers/*": ["./src/providers/*"]
     }
   },
   "include": [
@@ -39,8 +43,5 @@
     "**/*.jsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "venv"
-  ]
+  "exclude": ["node_modules", "venv"]
 }

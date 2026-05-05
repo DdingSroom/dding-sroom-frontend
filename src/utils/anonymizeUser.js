@@ -35,6 +35,5 @@ export const anonymizeUsers = (comments) => {
   return userMap;
 };
 
-export const getAnonymousName = (userId, userMap) => {
-  return userMap.get(userId) || `익명${userId}`;
-};
+export const getAnonymousName = (userId, userMap) =>
+  userMap.get(userId) || `익명${userId}`;

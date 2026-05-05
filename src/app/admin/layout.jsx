@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import InfoModal from '../../components/common/InfoModal';
 
 // export const metadata = {

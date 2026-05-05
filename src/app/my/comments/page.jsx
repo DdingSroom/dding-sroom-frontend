@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../../stores/useTokenStore';
-import FooterNav from '../../../components/common/FooterNav';
-import axiosInstance from '@api/instance';
-import MyPageHeader from '@components/my/MyPageHeader';
+
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import MyPageHeader from '@components/my/MyPageHeader';
+
+import axiosInstance from '@api/instance';
+
+import FooterNav from '../../../components/common/FooterNav';
+import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -74,7 +77,9 @@ export default function MyCommentsPage() {
   };
 
   const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray)) return '';
+    if (!Array.isArray(dateArray)) {
+      return '';
+    }
     const [year, month, day, hour, minute] = dateArray;
     const date = new Date(year, month - 1, day, hour || 0, minute || 0);
 
@@ -97,7 +102,9 @@ export default function MyCommentsPage() {
   };
 
   const truncateContent = (content, maxLength = 100) => {
-    if (content.length <= maxLength) return content;
+    if (content.length <= maxLength) {
+      return content;
+    }
     return content.substring(0, maxLength) + '...';
   };
 

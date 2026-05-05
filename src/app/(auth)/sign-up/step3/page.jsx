@@ -1,12 +1,15 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import CustomizedStepper from './customizedStepper';
-import useSignupStore from '@stores/useSignupStore';
+
 import Button from '@components/common/Button';
-import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import FooterNav from '@components/common/FooterNav';
+import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import useSignupStore from '@stores/useSignupStore';
+
+import CustomizedStepper from './customizedStepper';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -75,13 +78,11 @@ export default function SignUpStep3() {
         privacyAgreed: true,
       };
 
-      const res = await axios.post(
+      await axios.post(
         'https://ddingsroomserver.click:8443/user/sign-up',
         dataToSend,
         { headers: { Authorization: undefined } },
       );
-
-      console.log('회원가입 성공:', res.data);
 
       // 3) 성공 시 임시 이름 제거 + 스토어 초기화
       if (typeof window !== 'undefined') {
@@ -98,9 +99,8 @@ export default function SignUpStep3() {
     }
   };
 
-  const isSignupAvailable = () => {
-    return Boolean(name && name.trim().length > 0 && consentChecked);
-  };
+  const isSignupAvailable = () =>
+    Boolean(name && name.trim().length > 0 && consentChecked);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

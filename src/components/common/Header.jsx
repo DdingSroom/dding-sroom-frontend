@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axiosInstance from '@api/instance';
+
 import InfoModal from '@components/common/InfoModal';
+
+import axiosInstance from '@api/instance';
 
 const Header = () => {
   const router = useRouter();
@@ -62,7 +64,7 @@ const Header = () => {
           {recentNotificationCount > 0 && (
             <div className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center">
               <span className="relative flex items-center justify-center">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                 <span className="relative inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-red-400 rounded-full min-w-[18px] h-4 shadow-lg">
                   {recentNotificationCount > 99
                     ? '99+'

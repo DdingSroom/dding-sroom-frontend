@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
-import CommunityHeader from '@components/community/CommunityHeader';
-import PostCard from '@components/community/PostCard';
+
+import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+import CommunityHeader from '@components/community/CommunityHeader';
+import PostCard from '@components/community/PostCard';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (

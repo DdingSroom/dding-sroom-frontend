@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 export default function ThumbByUrl({
@@ -25,14 +26,22 @@ export default function ThumbByUrl({
             ? res.data
             : [];
         const first = arr.find((x) => x?.file_url);
-        if (mounted) setUrl(first?.file_url || '');
+        if (mounted) {
+          setUrl(first?.file_url || '');
+        }
       } catch (e) {
-        if (mounted) setUrl('');
+        if (mounted) {
+          setUrl('');
+        }
       } finally {
-        if (mounted) setLoaded(true);
+        if (mounted) {
+          setLoaded(true);
+        }
       }
     }
-    if (suggestPostId) load();
+    if (suggestPostId) {
+      load();
+    }
     return () => {
       mounted = false;
     };
@@ -47,7 +56,9 @@ export default function ThumbByUrl({
       </div>
     );
   }
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
 
   return (
     <div className={className} title="첫 번째 첨부 이미지">

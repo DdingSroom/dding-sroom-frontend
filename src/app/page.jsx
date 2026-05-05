@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import dynamic from 'next/dynamic';
-import useTokenStore from '../stores/useTokenStore';
+import { jwtDecode } from 'jwt-decode';
 
-import Header from '@components/common/Header';
 import Banner from '@components/common/Banner';
-import SecondBanner from '@components/common/SecondBanner';
+import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import SecondBanner from '@components/common/SecondBanner';
 import ReservationSection from '@components/reservation/ReservationSection';
+
+import useTokenStore from '../stores/useTokenStore';
 
 const AfterLoginBanner = dynamic(
   () => import('@components/common/AfterLoginBanner'),
@@ -34,7 +35,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken) {
+      return;
+    }
 
     try {
       const decoded = jwtDecode(accessToken);

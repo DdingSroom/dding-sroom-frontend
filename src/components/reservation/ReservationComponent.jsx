@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import useTokenStore from '../../stores/useTokenStore';
-import useReservationStore from '../../stores/useReservationStore';
-import axiosInstance from '@api/instance';
-import TimeComponent from '@components/reservation/TimeComponent';
-import Modal from '@components/common/Modal';
+
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import Modal from '@components/common/Modal';
+import TimeComponent from '@components/reservation/TimeComponent';
+
+import axiosInstance from '@api/instance';
+
+import useReservationStore from '../../stores/useReservationStore';
+import useTokenStore from '../../stores/useTokenStore';
 
 // 타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
@@ -88,7 +91,9 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
     const startMs = new Date(startISO).getTime();
     const endMs = new Date(endISO).getTime();
     for (let ms = startMs; ms < endMs; ms += TEN_MIN) {
-      if (reserved10mKeys.has(slotKey10m(ms))) return false;
+      if (reserved10mKeys.has(slotKey10m(ms))) {
+        return false;
+      }
     }
     return true;
   };
@@ -107,8 +112,12 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
     const isPast = slotEndMs <= Date.now(); // end <= now 이면 과거
 
-    if (!isDisplayLast && isPast) return 'past';
-    if (reserved10mKeys.has(slotKey10m(slotMs))) return 'reserved';
+    if (!isDisplayLast && isPast) {
+      return 'past';
+    }
+    if (reserved10mKeys.has(slotKey10m(slotMs))) {
+      return 'reserved';
+    }
     return 'available';
   };
 
@@ -201,7 +210,9 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
   // 오늘 모달: 종료시간 후보(1h/2h) 중 충돌 없는 것만
   const renderEndTimeOptions = () => {
-    if (!startTime) return [];
+    if (!startTime) {
+      return [];
+    }
     const startMs = new Date(startTime).getTime();
     const end1Ms = startMs + 60 * 60000;
     const end2Ms = startMs + 120 * 60000;
@@ -366,7 +377,9 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                     const dur =
                       (new Date(selectedEnd) - new Date(startTime)) /
                       (1000 * 60);
-                    if (dur === 60 || dur === 120) setDurationMinutes(dur);
+                    if (dur === 60 || dur === 120) {
+                      setDurationMinutes(dur);
+                    }
                   }
                 }}
                 disabled={!startTime}

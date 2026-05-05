@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 export default function SuggestionImagesByUrl({
@@ -38,23 +39,32 @@ export default function SuggestionImagesByUrl({
             name: x?.file_name ?? '',
           }))
           .filter((x) => !!x.url);
-        if (mounted) setImages(normalized);
+        if (mounted) {
+          setImages(normalized);
+        }
       } catch (e) {
-        if (mounted) setErr(e);
+        if (mounted) {
+          setErr(e);
+        }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
-    if (suggestPostId) load();
+    if (suggestPostId) {
+      load();
+    }
     return () => {
       mounted = false;
     };
   }, [suggestPostId]);
 
-  if (loading)
+  if (loading) {
     return (
       <div className={`text-sm text-gray-400 ${className}`}>로딩중...</div>
     );
+  }
   if (err) {
     console.warn(
       '[SuggestionImagesByUrl] 목록 조회 실패:',
@@ -62,7 +72,9 @@ export default function SuggestionImagesByUrl({
     );
     return fallback;
   }
-  if (images.length === 0) return fallback;
+  if (images.length === 0) {
+    return fallback;
+  }
 
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>

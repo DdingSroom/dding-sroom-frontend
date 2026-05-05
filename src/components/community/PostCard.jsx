@@ -6,18 +6,23 @@ const PostCard = ({ post }) => {
   const router = useRouter();
 
   const formatDate = (arr) => {
-    if (!Array.isArray(arr)) return '';
+    if (!Array.isArray(arr)) {
+      return '';
+    }
     const [y, m, d, h, min] = arr;
     const date = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
     const now = new Date();
     const diff = now - date;
     const hrs = diff / (1000 * 60 * 60);
     const days = diff / (1000 * 60 * 60 * 24);
-    if (hrs < 24)
+    if (hrs < 24) {
       return hrs < 1
         ? `${Math.floor(diff / (1000 * 60))}분 전`
         : `${Math.floor(hrs)}시간 전`;
-    if (days < 30) return `${Math.floor(days)}일 전`;
+    }
+    if (days < 30) {
+      return `${Math.floor(days)}일 전`;
+    }
     return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 

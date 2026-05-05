@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import useTokenStore from '../../stores/useTokenStore';
+
 import axiosInstance from '@api/instance';
 import { getAnonymousName } from '@utils/anonymizeUser';
+
+import useTokenStore from '../../stores/useTokenStore';
 
 const CommentItem = ({
   comment,
@@ -23,36 +25,48 @@ const CommentItem = ({
   const anonName = (uid) => getAnonymousName(uid, userMap);
 
   const formatDate = (arr) => {
-    if (!Array.isArray(arr)) return '';
+    if (!Array.isArray(arr)) {
+      return '';
+    }
     const [y, m, d, h, min] = arr;
     const date = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
     const now = new Date();
     const diff = now - date;
     const hrs = diff / (1000 * 60 * 60);
     const days = diff / (1000 * 60 * 60 * 24);
-    if (hrs < 24)
+    if (hrs < 24) {
       return hrs < 1
         ? `${Math.floor(diff / (1000 * 60))}분 전`
         : `${Math.floor(hrs)}시간 전`;
-    if (days < 30) return `${Math.floor(days)}일 전`;
+    }
+    if (days < 30) {
+      return `${Math.floor(days)}일 전`;
+    }
     return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
+    if (!window.confirm('댓글을 삭제하시겠습니까?')) {
+      return;
+    }
     try {
       const res = await axiosInstance.delete('/api/community-posts/comments', {
         data: { comment_id: commentId, user_id: userId },
       });
-      if (res.data.error) onError(res.data.error);
-      else onCommentUpdate();
+      if (res.data.error) {
+        onError(res.data.error);
+      } else {
+        onCommentUpdate();
+      }
     } catch {
       onError('댓글 삭제 중 오류가 발생했습니다.');
     }
   };
 
   const handleReplySubmit = async () => {
-    if (!replyContent.trim()) return;
+    if (!replyContent.trim()) {
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await axiosInstance.post('/api/community-posts/comments', {
@@ -61,8 +75,9 @@ const CommentItem = ({
         comment_content: replyContent.trim(),
         parent_comment_id: comment.id,
       });
-      if (res.data.error) onError(res.data.error);
-      else {
+      if (res.data.error) {
+        onError(res.data.error);
+      } else {
         setReplyContent('');
         setShowReplyInput(false);
         onCommentUpdate();

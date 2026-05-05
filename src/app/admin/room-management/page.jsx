@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
+
 import { updateRoomStatus } from '@api/admin';
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../stores/useTokenStore';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
 const DEFAULT_ROOM_IMAGE_SRC = '/static/icons/studyroom_image.png';
@@ -49,7 +51,9 @@ export default function RoomsManagePage() {
     }
     try {
       const decoded = jwtDecode(accessToken);
-      if (decoded?.role !== 'ROLE_ADMIN') router.push('/admin/login');
+      if (decoded?.role !== 'ROLE_ADMIN') {
+        router.push('/admin/login');
+      }
     } catch {
       router.push('/admin/login');
     }
@@ -89,7 +93,9 @@ export default function RoomsManagePage() {
       );
       setRooms((prev) => {
         const next = { ...prev };
-        for (const [id, info] of results) next[id] = info;
+        for (const [id, info] of results) {
+          next[id] = info;
+        }
         return next;
       });
     } finally {
@@ -104,7 +110,9 @@ export default function RoomsManagePage() {
   const handleStatusChange = useCallback(
     async (roomId, newStatus) => {
       const current = rooms[roomId]?.status || 'IDLE';
-      if (current === newStatus) return;
+      if (current === newStatus) {
+        return;
+      }
 
       const statusLabels = {
         IDLE: '예약 가능',
@@ -116,8 +124,9 @@ export default function RoomsManagePage() {
         !confirm(
           `스터디룸 ${roomId}호를 ${statusLabels[newStatus]} 상태로 전환할까요?`,
         )
-      )
+      ) {
         return;
+      }
 
       setSavingIds((s) => new Set(s).add(roomId));
 

@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+
 import Button from '../../../components/common/Button';
-import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import FooterNav from '../../../components/common/FooterNav';
+import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -15,10 +16,6 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function CancelAccountStep2() {
-  const handleCancelAccount = () => {
-    console.log('회원 탈퇴 완료:', '회원 탈퇴 완료');
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1 px-6 py-8">
@@ -38,7 +35,7 @@ export default function CancelAccountStep2() {
           </div>
 
           <Link href="/">
-            <Button onClick={handleCancelAccount} text="확인" />
+            <Button text="확인" />
           </Link>
         </div>
       </main>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 import axiosInstance from '@api/instance';
 
 export default function NotificationManagement() {
@@ -116,19 +117,25 @@ export default function NotificationManagement() {
   };
 
   const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 6) return '';
+    if (!Array.isArray(dateArray) || dateArray.length < 6) {
+      return '';
+    }
     const [year, month, day, hour, minute] = dateArray;
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
   const formatDateOnly = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
+    if (!Array.isArray(dateArray) || dateArray.length < 3) {
+      return '';
+    }
     const [year, month, day] = dateArray;
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
   const truncateContent = (content, maxLength = 50) => {
-    if (!content) return '';
+    if (!content) {
+      return '';
+    }
     return content.length > maxLength
       ? content.substring(0, maxLength) + '...'
       : content;
@@ -146,9 +153,8 @@ export default function NotificationManagement() {
     return grouped;
   };
 
-  const getSortedDates = (grouped) => {
-    return Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
-  };
+  const getSortedDates = (grouped) =>
+    Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
 
   const openDetailModal = (notification) => {
     setSelectedNotification(notification);

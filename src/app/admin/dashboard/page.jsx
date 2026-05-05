@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+
+import ReservationCard from '@components/admin/ReservationCard';
+
+import axiosInstance from '@api/instance';
+
 import InfoModal from '../../../components/common/InfoModal';
 import useTokenStore from '../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
-import ReservationCard from '@components/admin/ReservationCard';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -36,7 +39,9 @@ export default function AdminDashboard() {
 
   const formatTimeRange = useCallback((start, end) => {
     const formatHM = (arr) => {
-      if (!Array.isArray(arr)) return '';
+      if (!Array.isArray(arr)) {
+        return '';
+      }
       const [, , , h = 0, m = 0] = arr;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     };
@@ -44,24 +49,27 @@ export default function AdminDashboard() {
   }, []);
 
   const formatTimestamp = useCallback((arr) => {
-    if (!Array.isArray(arr)) return '';
+    if (!Array.isArray(arr)) {
+      return '';
+    }
     const [y, mo, d, h = 0, m = 0] = arr;
     return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }, []);
 
-  const normalizePost = useCallback((raw) => {
-    return {
+  const normalizePost = useCallback(
+    (raw) => ({
       id: raw?.id ?? raw?.post_id ?? raw?.postId,
       title: raw?.title ?? raw?.post_title ?? '(제목 없음)',
       author: raw?.author ?? raw?.user_name ?? raw?.userName ?? '익명',
       content: raw?.content ?? raw?.post_content ?? '',
       createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
       commentCount: raw?.comment_count ?? raw?.commentCount ?? 0,
-    };
-  }, []);
+    }),
+    [],
+  );
 
-  const normalizeSuggestion = useCallback((raw) => {
-    return {
+  const normalizeSuggestion = useCallback(
+    (raw) => ({
       id: raw?.id ?? raw?.suggest_id ?? raw?.suggestionId,
       userId: raw?.userId ?? raw?.user_id ?? raw?.uid,
       category: raw?.category ?? '',
@@ -69,8 +77,9 @@ export default function AdminDashboard() {
       title: raw?.title ?? raw?.suggest_title ?? '',
       content: raw?.content ?? raw?.suggest_content ?? '',
       createdAt: raw?.createdAt ?? raw?.created_at ?? raw?.created_date ?? [],
-    };
-  }, []);
+    }),
+    [],
+  );
 
   const fetchReservations = useCallback(async () => {
     try {
@@ -169,7 +178,9 @@ export default function AdminDashboard() {
 
     // 탭 활성화 시 갱신
     const handleVisibilityChange = () => {
-      if (!document.hidden) fetchRoomData();
+      if (!document.hidden) {
+        fetchRoomData();
+      }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', fetchRoomData);

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import axiosInstance from '@api/instance';
 
 const useCommunityStore = create((set, get) => ({

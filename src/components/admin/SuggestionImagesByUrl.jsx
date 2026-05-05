@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProtectedImage from './ProtectedImage';
+
 import axiosInstance from '@api/instance';
+
+import ProtectedImage from './ProtectedImage';
 
 export default function SuggestionImagesByUrl({
   suggestPostId,
@@ -42,23 +44,32 @@ export default function SuggestionImagesByUrl({
           }))
           .filter((x) => !!x.url);
 
-        if (mounted) setImages(normalized);
+        if (mounted) {
+          setImages(normalized);
+        }
       } catch (e) {
-        if (mounted) setErr(e);
+        if (mounted) {
+          setErr(e);
+        }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
-    if (suggestPostId) load();
+    if (suggestPostId) {
+      load();
+    }
     return () => {
       mounted = false;
     };
   }, [suggestPostId]);
 
-  if (loading)
+  if (loading) {
     return (
       <div className={`text-sm text-gray-400 ${className}`}>로딩중...</div>
     );
+  }
   if (err) {
     console.warn(
       '[SuggestionImagesByUrl] 목록 조회 실패:',

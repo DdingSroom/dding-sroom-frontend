@@ -2,9 +2,11 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import axiosInstance from '@api/instance';
+
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+
+import axiosInstance from '@api/instance';
 
 const MAX_TITLE = 20;
 const MAX_CONTENT = 3000;
@@ -160,7 +162,9 @@ export default function SuggestPage() {
         : Array.isArray(res?.data)
           ? res.data
           : [];
-      if (list.length === 0) return null;
+      if (list.length === 0) {
+        return null;
+      }
 
       const normalized = list.map((raw) => ({
         id: raw?.id ?? raw?.suggest_id ?? raw?.suggestionId ?? null,
@@ -188,7 +192,9 @@ export default function SuggestPage() {
   }
 
   async function uploadSingleImage(suggestionId, file) {
-    if (!file) return null;
+    if (!file) {
+      return null;
+    }
 
     const attempts = [
       (id) => {
@@ -215,13 +221,17 @@ export default function SuggestPage() {
       },
       (id) => {
         const fd = new FormData();
-        if (id) fd.append('suggest_post_id', id);
+        if (id) {
+          fd.append('suggest_post_id', id);
+        }
         fd.append('image_file', file, file.name);
         return fd;
       },
       (id) => {
         const fd = new FormData();
-        if (id) fd.append('suggest_id', id);
+        if (id) {
+          fd.append('suggest_id', id);
+        }
         fd.append('image_file', file, file.name);
         return fd;
       },
@@ -238,7 +248,9 @@ export default function SuggestPage() {
       },
       (id) => {
         const fd = new FormData();
-        if (id) fd.append('suggest_post_id', id);
+        if (id) {
+          fd.append('suggest_post_id', id);
+        }
         fd.append('imageFile', file, file.name);
         return fd;
       },
@@ -250,7 +262,9 @@ export default function SuggestPage() {
         const fd = attempts[i](suggestionId);
         const res = await axiosInstance.post('/api/suggestions/images', fd, {
           onUploadProgress: (evt) => {
-            if (!evt.total) return;
+            if (!evt.total) {
+              return;
+            }
             const percent = Math.round((evt.loaded * 100) / evt.total);
             setUploadProgress((prev) => ({ ...prev, [file.name]: percent }));
           },
@@ -264,7 +278,9 @@ export default function SuggestPage() {
           status,
           data,
         });
-        if (status && status >= 500) break;
+        if (status && status >= 500) {
+          break;
+        }
       }
     }
     throw lastErr;
@@ -295,9 +311,15 @@ export default function SuggestPage() {
     setErrorMsg('');
     setSuccessMsg('');
 
-    if (hasError) return;
-    if (!title.trim()) return setErrorMsg('제목을 입력해 주세요.');
-    if (!content.trim()) return setErrorMsg('내용을 입력해 주세요.');
+    if (hasError) {
+      return;
+    }
+    if (!title.trim()) {
+      return setErrorMsg('제목을 입력해 주세요.');
+    }
+    if (!content.trim()) {
+      return setErrorMsg('내용을 입력해 주세요.');
+    }
 
     try {
       setSubmitting(true);

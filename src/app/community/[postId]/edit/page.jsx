@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import useTokenStore from '../../../../stores/useTokenStore';
-import axiosInstance from '@api/instance';
-import CommunityHeader from '@components/community/CommunityHeader';
+import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+
+import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import FooterNav from '@components/common/FooterNav';
+import CommunityHeader from '@components/community/CommunityHeader';
+
+import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -70,7 +73,9 @@ export default function EditPostPage() {
   }, [postId, userId]);
 
   useEffect(() => {
-    if (accessToken && postId) fetchPost();
+    if (accessToken && postId) {
+      fetchPost();
+    }
   }, [accessToken, postId, fetchPost]);
 
   const handleLoginConfirm = () => {
@@ -103,7 +108,9 @@ export default function EditPostPage() {
       if (res.data.error) {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
-      } else router.push(`/community/${postId}`);
+      } else {
+        router.push(`/community/${postId}`);
+      }
     } catch (e) {
       console.error('게시글 수정 실패:', e);
       setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
@@ -118,8 +125,9 @@ export default function EditPostPage() {
     if (
       errorMessage.includes('권한이 없습니다') ||
       errorMessage.includes('존재하지 않는')
-    )
+    ) {
       router.push('/community');
+    }
   };
 
   if (showLoginModal) {
