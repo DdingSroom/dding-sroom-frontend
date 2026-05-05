@@ -146,8 +146,8 @@ export default {
         banner: '240px',
         'banner-card': '280px',
       },
-      bottom: {
-        'tab-indicator': '1px',
+      inset: {
+        'tab-indicator': '-1px',
       },
       scale: {
         press: '0.99',

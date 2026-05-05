@@ -354,7 +354,7 @@ export default function SuggestPage() {
           <div className="flex space-x-8 border-b border-line">
             <span className="relative py-3 text-base text-primary">
               건의/신고
-              <span className="absolute left-0 -bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
+              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
             </span>
 
             <Link

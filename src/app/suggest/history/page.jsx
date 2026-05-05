@@ -129,7 +129,7 @@ export default function SuggestHistoryPage() {
             </Link>
             <span className="relative py-3 text-base text-primary">
               건의/신고내역
-              <span className="absolute left-0 -bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
+              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
             </span>
           </div>
         </nav>
