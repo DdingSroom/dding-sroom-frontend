@@ -346,15 +346,11 @@ export default function NotificationManagement() {
           sortedDates.map((date) => (
             <section key={date} className="mb-8">
               <div className="flex items-center gap-2 mb-3">
-                <span
-                  className="inline-block w-1.5 h-5 rounded bg-primary"
-                />
+                <span className="inline-block w-1.5 h-5 rounded bg-primary" />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 작성된 공지사항
                 </h2>
-                <div
-                  className="h-px flex-1 bg-primary"
-                />
+                <div className="h-px flex-1 bg-primary" />
               </div>
 
               <div className="grid gap-4">
@@ -447,9 +443,7 @@ function NotificationCard({
 }) {
   return (
     <article className="relative rounded-xl border bg-white shadow-sm overflow-hidden transition hover:shadow-md">
-      <div
-        className="h-1 bg-primary"
-      />
+      <div className="h-1 bg-primary" />
 
       <div className="p-3 sm:p-4">
         <div className="flex items-start justify-between gap-3">

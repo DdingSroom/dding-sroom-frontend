@@ -128,15 +128,11 @@ export default function AdminSuggestionsPage() {
           sortedDates.map((date) => (
             <section key={date} className="mb-8">
               <div className="flex items-center gap-2 mb-3">
-                <span
-                  className="inline-block w-1.5 h-5 rounded bg-primary"
-                />
+                <span className="inline-block w-1.5 h-5 rounded bg-primary" />
                 <h2 className="text-sm font-bold text-gray-800">
                   {date} 접수 내역
                 </h2>
-                <div
-                  className="h-px flex-1 bg-primary"
-                />
+                <div className="h-px flex-1 bg-primary" />
               </div>
 
               <div className="grid gap-4">
@@ -229,9 +225,7 @@ function SuggestionCard({ item, onRefresh }) {
         open ? 'border-primary' : 'hover:shadow-md'
       }`}
     >
-      <div
-        className="h-1 bg-primary"
-      />
+      <div className="h-1 bg-primary" />
 
       <div className="p-3 sm:p-4">
         <div className="flex items-start justify-between gap-3">
@@ -280,11 +274,7 @@ function SuggestionCard({ item, onRefresh }) {
           </div>
         </div>
 
-        {open && (
-          <div
-            className="my-3 border-t border-dashed border-primary"
-          />
-        )}
+        {open && <div className="my-3 border-t border-dashed border-primary" />}
 
         {open && (
           <div className="space-y-4">
@@ -321,12 +311,8 @@ function SuggestionCard({ item, onRefresh }) {
 
             {/* 답변 관리 (수정/삭제) */}
             <section aria-label="관리자 답변 관리">
-              <div
-                className="mt-1 border-t border-dashed pt-3 border-primary"
-              >
-                <h4
-                  className="text-sm font-semibold mb-2 text-primary"
-                >
+              <div className="mt-1 border-t border-dashed pt-3 border-primary">
+                <h4 className="text-sm font-semibold mb-2 text-primary">
                   관리자 답변 관리
                 </h4>
 
@@ -340,12 +326,8 @@ function SuggestionCard({ item, onRefresh }) {
 
             {/* 댓글/답변(기존 목록 뷰) */}
             <section aria-label="댓글 및 답변">
-              <div
-                className="mt-1 border-t border-dashed pt-3 border-primary"
-              >
-                <h4
-                  className="text-sm font-semibold mb-2 text-primary"
-                >
+              <div className="mt-1 border-t border-dashed pt-3 border-primary">
+                <h4 className="text-sm font-semibold mb-2 text-primary">
                   댓글 및 답변
                 </h4>
                 <AdminSuggestionComments
