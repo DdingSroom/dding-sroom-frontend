@@ -106,8 +106,8 @@ export default function SignUpStep3() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <main className="flex-1 px-6 py-8">
         <div className="text-center space-y-3 mb-8">
-          <h1 className="text-2xl font-bold text-[#37352f]">회원가입</h1>
-          <p className="text-[#73726e] text-sm">정보 입력</p>
+          <h1 className="text-2xl font-bold text-content">회원가입</h1>
+          <p className="text-content-secondary text-sm">정보 입력</p>
         </div>
 
         <div className="mb-8">
@@ -119,7 +119,7 @@ export default function SignUpStep3() {
           <div className="space-y-2">
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-[#37352f]"
+              className="block text-sm font-medium text-content"
             >
               이름
             </label>
@@ -135,14 +135,16 @@ export default function SignUpStep3() {
           </div>
 
           {/* 개인정보처리방침 동의 섹션 */}
-          <div className="rounded-lg border border-[#e9e9e7] bg-white p-4 space-y-3">
+          <div className="rounded-lg border border-line bg-white p-4 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-[#37352f]">
+                <p className="text-sm font-medium text-content">
                   개인정보처리방침 동의
-                  <span className="ml-1 text-[#9b9998] text-xs">(필수)</span>
+                  <span className="ml-1 text-content-muted text-xs">
+                    (필수)
+                  </span>
                 </p>
-                <p className="text-xs text-[#73726e] mt-1">
+                <p className="text-xs text-content-secondary mt-1">
                   버튼을 눌러 개인정보처리방침을 확인한 뒤, 동의 체크를
                   해주세요.
                 </p>
@@ -150,7 +152,7 @@ export default function SignUpStep3() {
               <button
                 type="button"
                 onClick={openPrivacyPolicy}
-                className="shrink-0 px-3 py-1.5 rounded-md border border-[#e9e9e7] text-sm text-[#37352f] hover:bg-gray-50 transition"
+                className="shrink-0 px-3 py-1.5 rounded-md border border-line text-sm text-content hover:bg-gray-50 transition"
               >
                 개인정보처리방침 보기
               </button>
@@ -160,9 +162,9 @@ export default function SignUpStep3() {
               <input
                 id="privacy-consent"
                 type="checkbox"
-                className="h-4 w-4 shrink-0 inline-block align-middle rounded border-[#e9e9e7]
-                           bg-white appearance-auto accent-[#788cff]
-                           focus:ring-2 focus:ring-[#788cff]/20
+                className="h-4 w-4 shrink-0 inline-block align-middle rounded border-line
+                           bg-white appearance-auto accent-primary
+                           focus:ring-2 focus:ring-primary/20
                            disabled:opacity-60 disabled:cursor-not-allowed"
                 checked={consentChecked}
                 onChange={(e) => setConsentChecked(e.target.checked)}
@@ -171,7 +173,7 @@ export default function SignUpStep3() {
               />
               <label
                 htmlFor="privacy-consent"
-                className={`text-sm ${hasOpenedPolicy ? 'text-[#37352f]' : 'text-[#9b9998]'}`}
+                className={`text-sm ${hasOpenedPolicy ? 'text-content' : 'text-content-muted'}`}
               >
                 (필수) 개인정보처리방침에 동의합니다.
               </label>
@@ -198,8 +200,8 @@ export default function SignUpStep3() {
 
 const StyledTextInput = ({ value, className = '', ...props }) => {
   const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-[#e9e9e7] text-sm ' +
-    'placeholder:text-[#9b9998] focus:outline-none focus:border-[#788cff] ' +
-    'focus:ring-2 focus:ring-[#788cff]/10 transition-all duration-200';
+    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
+    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
+    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };

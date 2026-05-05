@@ -16,10 +16,10 @@ export default function ReservationCard({
         alt="스터디룸"
       />
       <div className="flex flex-col gap-1 text-sm min-w-0">
-        <p className="font-semibold text-[#37352f] truncate">{roomName}</p>
-        <p className="text-[#788DFF] font-medium">{time}</p>
-        <p className="text-[#73726e] text-xs truncate">{userName}</p>
-        <p className="text-[#9b9998] text-xs">{timestamp}</p>
+        <p className="font-semibold text-content truncate">{roomName}</p>
+        <p className="text-primary font-medium">{time}</p>
+        <p className="text-content-secondary text-xs truncate">{userName}</p>
+        <p className="text-content-muted text-xs">{timestamp}</p>
       </div>
     </div>
   );

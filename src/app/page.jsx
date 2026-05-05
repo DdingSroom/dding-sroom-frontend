@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { jwtDecode } from 'jwt-decode';
 
 import Banner from '@components/common/Banner';
+import FooterNav from '@components/common/FooterNav';
 import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import SecondBanner from '@components/common/SecondBanner';
@@ -19,11 +20,6 @@ const AfterLoginBanner = dynamic(
     loading: () => null,
   },
 );
-
-const FooterNav = dynamic(() => import('@components/common/FooterNav'), {
-  ssr: false,
-  loading: () => null,
-});
 
 export default function Home() {
   const { accessToken, setUserId } = useTokenStore();

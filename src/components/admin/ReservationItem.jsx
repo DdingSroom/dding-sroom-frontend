@@ -12,7 +12,7 @@ export default function ReservationItem({ room, time }) {
       />
       <div>
         <p className="font-medium">{room}</p>
-        <p className="text-[#788DFF] text-sm">{time}</p>
+        <p className="text-primary text-sm">{time}</p>
       </div>
     </div>
   );
