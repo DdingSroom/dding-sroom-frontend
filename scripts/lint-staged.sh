@@ -45,7 +45,10 @@ if [ "${#eslint_files[@]}" -gt 0 ]; then
 fi
 
 if [ "${#prettier_files[@]}" -gt 0 ]; then
-  pnpm exec prettier --write --log-level warn --ignore-unknown -- "${prettier_files[@]}"
+  prettier_log_file="/tmp/lefthook-prettier.log"
+  rm -f "$prettier_log_file"
+
+  pnpm exec prettier --write --log-level warn --ignore-unknown -- "${prettier_files[@]}" >"$prettier_log_file" 2>&1
   prettier_status=$?
 
   if [ $prettier_status -ne 0 ]; then
@@ -53,8 +56,10 @@ if [ "${#prettier_files[@]}" -gt 0 ]; then
     echo "Prettier failed ฅ(ᗒᗣᗕ)՞"
     echo "Check formatting and commit again."
     echo ""
-    echo "Run this command to check details:"
-    echo "pnpm exec prettier --check ."
+    echo "Recent logs:"
+    tail -n 80 "$prettier_log_file"
+    echo ""
+    echo "See details: $prettier_log_file"
     exit $prettier_status
   fi
 fi
