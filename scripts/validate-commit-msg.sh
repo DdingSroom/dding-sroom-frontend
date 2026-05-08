@@ -11,7 +11,7 @@ fi
 
 first_line="$(head -n 1 "$commit_msg_file" | tr -d '\r')"
 
-if [[ "$first_line" =~ ^Merge\  ]] || [[ "$first_line" =~ ^Revert\  ]]; then
+if [[ "$first_line" =~ ^Merge[[:space:]] ]] || [[ "$first_line" =~ ^Revert[[:space:]] ]]; then
   exit 0
 fi
 
