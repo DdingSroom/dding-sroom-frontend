@@ -25,7 +25,7 @@ done
 echo "Checking staged files ฅ^•ﻌ•^ฅ"
 
 if [ "${#eslint_files[@]}" -gt 0 ]; then
-  pnpm exec eslint --fix --quiet -- "${eslint_files[@]}" >/tmp/lefthook-eslint.log 2>&1
+  pnpm exec eslint --fix --quiet -- "${eslint_files[@]}"
   eslint_status=$?
 
   if [ $eslint_status -ne 0 ]; then
@@ -40,7 +40,7 @@ if [ "${#eslint_files[@]}" -gt 0 ]; then
 fi
 
 if [ "${#prettier_files[@]}" -gt 0 ]; then
-  pnpm exec prettier --write --log-level warn --ignore-unknown -- "${prettier_files[@]}" >/tmp/lefthook-prettier.log 2>&1
+  pnpm exec prettier --write --log-level warn --ignore-unknown -- "${prettier_files[@]}"
   prettier_status=$?
 
   if [ $prettier_status -ne 0 ]; then
@@ -49,7 +49,7 @@ if [ "${#prettier_files[@]}" -gt 0 ]; then
     echo "Check formatting and commit again."
     echo ""
     echo "Run this command to check details:"
-    echo "pnpm format:check"
+    echo "pnpm exec prettier --check ."
     exit $prettier_status
   fi
 fi
