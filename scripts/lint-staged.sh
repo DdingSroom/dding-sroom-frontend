@@ -25,7 +25,10 @@ done
 echo "Checking staged files ฅ^•ﻌ•^ฅ"
 
 if [ "${#eslint_files[@]}" -gt 0 ]; then
-  pnpm exec eslint --fix --quiet -- "${eslint_files[@]}"
+  eslint_log_file="/tmp/lefthook-eslint.log"
+  rm -f "$eslint_log_file"
+
+  pnpm exec eslint --fix --quiet -- "${eslint_files[@]}" >"$eslint_log_file" 2>&1
   eslint_status=$?
 
   if [ $eslint_status -ne 0 ]; then
@@ -33,8 +36,10 @@ if [ "${#eslint_files[@]}" -gt 0 ]; then
     echo "ESLint failed ฅ(ᗒᗣᗕ)՞"
     echo "Fix lint errors and commit again."
     echo ""
-    echo "Run this command to check details:"
-    echo "pnpm lint"
+    echo "Recent logs:"
+    tail -n 80 "$eslint_log_file"
+    echo ""
+    echo "See details: $eslint_log_file"
     exit $eslint_status
   fi
 fi

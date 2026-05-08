@@ -34,9 +34,8 @@ if [ -z "$message" ]; then
   exit 1
 fi
 
-if [[ "$message" =~ [^a-zA-Z0-9[:space:]가-힣] ]]; then
-  echo "Special characters are not allowed in commit message."
-  echo "Use only Korean/English letters, numbers, and spaces."
+if [[ "$message" =~ [\`\;\<\>] ]]; then
+  echo "Commit message contains disallowed special characters."
   exit 1
 fi
 
