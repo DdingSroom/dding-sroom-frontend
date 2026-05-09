@@ -1,7 +1,7 @@
 import './globals.css';
 
 import Script from 'next/script';
-import QueryProvider from '@providers/query-provider';
+import LayoutWrapper from '@components/layout/LayoutWrapper';
 
 export const metadata = {
   metadataBase: new URL('https://ddingsroom.com'),
@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <LayoutWrapper>{children}</LayoutWrapper>
 
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-NEXY3X7HZG"
