@@ -1,1 +1,6 @@
 /node_modules
+
+public/**
+!public/static/
+!public/static/icons/
+!public/static/icons/index.ts
