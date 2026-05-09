@@ -157,7 +157,7 @@ export default function ResetPassword2() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
       value={value}
       {...props}
     />

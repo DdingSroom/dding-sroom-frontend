@@ -220,7 +220,7 @@ export default function CommunityPage() {
             <button
               onClick={handleWritePost}
               aria-label="새 글 작성"
-              className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+              className="w-14 h-14 rounded-full bg-brand text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
             >
               <svg
                 className="w-6 h-6"
@@ -249,7 +249,7 @@ export default function CommunityPage() {
           <button
             onClick={handleWritePost}
             aria-label="새 글 작성"
-            className="w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+            className="w-14 h-14 rounded-full bg-brand text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
           >
             <svg
               className="w-6 h-6"

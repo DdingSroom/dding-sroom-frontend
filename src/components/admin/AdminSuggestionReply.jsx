@@ -71,7 +71,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
           onClick={submit}
           disabled={submitting}
           className={`px-3 py-1.5 text-sm rounded text-white ${
-            submitting ? 'bg-primary-disabled cursor-not-allowed' : 'bg-primary'
+            submitting ? 'bg-brand-disabled cursor-not-allowed' : 'bg-brand'
           }`}
         >
           {submitting ? '등록 중...' : '답변 등록'}

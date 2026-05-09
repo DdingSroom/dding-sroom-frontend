@@ -90,7 +90,7 @@ const AfterLoginBanner = () => {
           <div className="text-content-secondary text-xs sm:text-sm font-bold">
             오늘의 혼잡도
           </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl text-primary font-black whitespace-nowrap overflow-hidden">
+          <div className="text-2xl sm:text-3xl md:text-4xl text-brand font-black whitespace-nowrap overflow-hidden">
             여유로움
           </div>
         </div>
@@ -130,7 +130,7 @@ const AfterLoginBanner = () => {
                 </div>
 
                 <button
-                  className="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-primary hover:bg-primary hover:text-white rounded-md transition-colors whitespace-nowrap"
+                  className="flex-shrink-0 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-brand hover:bg-brand hover:text-white rounded-md transition-colors whitespace-nowrap"
                   onClick={() => setOpenReservationId(r.id)}
                 >
                   취소

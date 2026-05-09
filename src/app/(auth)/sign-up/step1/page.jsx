@@ -44,8 +44,8 @@ export default function SignUpStep1() {
 
   const commonCodeButtonClass =
     'inline-flex items-center justify-center w-btn-action h-10 ' +
-    'border border-primary bg-white text-primary ' +
-    'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
+    'border border-brand bg-white text-brand ' +
+    'hover:bg-brand hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
   const startTimer = () => {
@@ -186,7 +186,7 @@ export default function SignUpStep1() {
         >
           <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col items-center space-y-4 max-w-sm mx-4 sm:max-w-none sm:mx-0">
             <div
-              className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"
+              className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"
               aria-label="로딩 중"
             />
             <p className="text-sm text-gray-600 text-center">
@@ -317,7 +317,7 @@ export default function SignUpStep1() {
                 <div className="pt-1">
                   <Link
                     href={MANUAL_URL}
-                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white text-sm font-medium transition-all duration-200"
+                    className="inline-flex items-center justify-center h-10 px-3 rounded-lg border border-brand text-brand hover:bg-brand hover:text-white text-sm font-medium transition-all duration-200"
                     aria-label="이메일 인증 문제 해결 매뉴얼 새 창으로 열기"
                   >
                     해결방법
@@ -355,8 +355,8 @@ export default function SignUpStep1() {
 const StyledInput = ({ value, className = '', ...props }) => {
   const base =
     'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
-    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
+    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
+    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };
 

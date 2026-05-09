@@ -179,7 +179,7 @@ export default function MyPostsPage() {
             </div>
             <button
               onClick={() => router.push('/community/write')}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
+              className="px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
             >
               게시글 작성하기
             </button>
@@ -190,10 +190,10 @@ export default function MyPostsPage() {
               <div
                 key={post.id}
                 onClick={() => handlePostClick(post.id)}
-                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all duration-200 group"
+                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-brand/20 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="inline-block px-3 py-1 rounded-full text-xs font-bold text-primary bg-primary/10 group-hover:bg-primary/15 transition-colors">
+                  <div className="inline-block px-3 py-1 rounded-full text-xs font-bold text-brand bg-brand/10 group-hover:bg-brand/15 transition-colors">
                     {getCategoryName(post.category)}
                   </div>
                   <div className="text-xs text-content-muted">
@@ -206,7 +206,7 @@ export default function MyPostsPage() {
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-content mb-2 leading-relaxed group-hover:text-primary transition-colors line-clamp-2">
+                <h3 className="text-base font-bold text-content mb-2 leading-relaxed group-hover:text-brand transition-colors line-clamp-2">
                   {post.title}
                 </h3>
 

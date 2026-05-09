@@ -265,7 +265,7 @@ export default function AccountInfo() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               maxLength={20}
-              className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
+              className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
             <p className="text-xs text-content-muted">
@@ -308,7 +308,7 @@ export default function AccountInfo() {
           <div className="flex border-t border-gray-100">
             <button
               onClick={handleLogoutConfirm}
-              className="w-full py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
+              className="w-full py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
             >
               확인
             </button>

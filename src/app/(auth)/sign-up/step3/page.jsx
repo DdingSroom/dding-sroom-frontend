@@ -163,8 +163,8 @@ export default function SignUpStep3() {
                 id="privacy-consent"
                 type="checkbox"
                 className="h-4 w-4 shrink-0 inline-block align-middle rounded border-line
-                           bg-white appearance-auto accent-primary
-                           focus:ring-2 focus:ring-primary/20
+                           bg-white appearance-auto accent-brand
+                           focus:ring-2 focus:ring-brand/20
                            disabled:opacity-60 disabled:cursor-not-allowed"
                 checked={consentChecked}
                 onChange={(e) => setConsentChecked(e.target.checked)}
@@ -201,7 +201,7 @@ export default function SignUpStep3() {
 const StyledTextInput = ({ value, className = '', ...props }) => {
   const base =
     'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
-    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
+    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
+    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };

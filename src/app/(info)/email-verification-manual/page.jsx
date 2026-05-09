@@ -12,14 +12,14 @@ export default function ManualContent() {
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       {/* 헤더 */}
       <header className="mb-10">
-        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-primary">
+        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-brand">
           학교 이메일 인증 매뉴얼
         </h1>
         <p className="mt-2 text-sm text-info-link">
           마지막 업데이트: <time dateTime="2025-08-19">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-info text-md text-content">
+        <p className="mt-6 rounded-2xl border border-brand-lighter bg-white/70 p-5 leading-info text-md text-content">
           일부 학우분들이 학교 이메일 인증 메일을 받지 못하는 현상이 발생하고
           있습니다. 이는 서비스 문제가 아닌 <b>명지대학교 측 시스템 변경</b>에
           따른 것으로, 아래 매뉴얼을 참고해 이메일 계정을 정상화하신 후
@@ -71,7 +71,7 @@ export default function ManualContent() {
               href="https://www.mju.ac.kr/mjukr/255/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGbWp1a3IlMkYxNDElMkYyMDY2NTglMkZhcnRjbFZpZXcuZG8lM0Y%3D"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-gray-50 transition"
+              className="inline-flex items-center rounded-xl border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-gray-50 transition"
             >
               구글 워크스페이스 메일 이관 매뉴얼 바로가기
             </a>
@@ -82,7 +82,7 @@ export default function ManualContent() {
       <div className="mt-14 flex items-center justify-end">
         <a
           href="#"
-          className="inline-flex items-center rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-gray-50 transition"
+          className="inline-flex items-center rounded-xl border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-gray-50 transition"
         >
           ↑ 맨 위로
         </a>
@@ -94,7 +94,7 @@ export default function ManualContent() {
         <button
           type="button"
           onClick={() => router.push('/sign-up/step1')}
-          className="hover:underline underline-offset-4 text-primary"
+          className="hover:underline underline-offset-4 text-brand"
         >
           이전 페이지로 돌아가기
         </button>
@@ -109,7 +109,7 @@ function Section({ id, title, children }) {
       id={id}
       className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-info-relaxed text-content"
     >
-      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-primary mb-5">
+      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-brand mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -130,5 +130,5 @@ function UL({ children }) {
 }
 
 function LI({ children }) {
-  return <li className="marker:text-primary">{children}</li>;
+  return <li className="marker:text-brand">{children}</li>;
 }

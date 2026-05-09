@@ -123,13 +123,13 @@ export default function SuggestHistoryPage() {
           <div className="flex space-x-8 border-b border-line">
             <Link
               href="/suggest"
-              className="relative py-3 text-base text-content-muted hover:text-primary"
+              className="relative py-3 text-base text-content-muted hover:text-brand"
             >
               건의/신고
             </Link>
-            <span className="relative py-3 text-base text-primary">
+            <span className="relative py-3 text-base text-brand">
               건의/신고내역
-              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
+              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-brand" />
             </span>
           </div>
         </nav>
@@ -174,7 +174,7 @@ function StatusBadge({ status }) {
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs flex-shrink-0 whitespace-nowrap ${
         isDone
-          ? 'bg-primary-lightest text-primary'
+          ? 'bg-brand-lightest text-brand'
           : 'bg-surface-neutral text-content-muted'
       }`}
     >
@@ -185,8 +185,8 @@ function StatusBadge({ status }) {
 
 function SectionHeader({ dateStr }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-primary-lightest/40 px-4 py-3 mx-4 mt-5 mb-3">
-      <span className="inline-block w-2.5 h-2.5 rounded-full bg-primary" />
+    <div className="flex items-center gap-3 rounded-xl bg-brand-lightest/40 px-4 py-3 mx-4 mt-5 mb-3">
+      <span className="inline-block w-2.5 h-2.5 rounded-full bg-brand" />
       <span className="text-md font-medium text-content">{dateStr}</span>
     </div>
   );

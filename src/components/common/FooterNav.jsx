@@ -44,7 +44,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
             예약하기
           </span>
         </button>
@@ -65,7 +65,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
             커뮤니티
           </span>
         </button>
@@ -86,7 +86,7 @@ const FooterNav = () => {
               className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             />
           </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-primary transition-colors">
+          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
             건의/신고
           </span>
         </button>

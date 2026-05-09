@@ -85,7 +85,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-6 py-8">
       <div className="text-center space-y-3 mb-8">
-        <h1 className="text-2xl font-bold text-primary tracking-tight">
+        <h1 className="text-2xl font-bold text-brand tracking-tight">
           띵스룸 관리자 로그인
         </h1>
         <div className="text-content-secondary text-sm leading-relaxed">
@@ -195,7 +195,7 @@ export default function AdminLogin() {
 const StyledInput = ({ value, ...props }) => {
   return (
     <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200"
+      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
       value={value}
       {...props}
     />

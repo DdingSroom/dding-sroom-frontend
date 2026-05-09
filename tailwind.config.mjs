@@ -60,8 +60,8 @@ export default {
           base: 'var(--color-content-base)',
           tertiary: 'var(--color-content-tertiary)',
         },
-        /* Primary */
-        primary: {
+        /* brand */
+        brand: {
           DEFAULT: 'rgb(var(--color-primary-rgb) / <alpha-value>)',
           hover: 'var(--color-primary-hover)',
           active: 'var(--color-primary-active)',

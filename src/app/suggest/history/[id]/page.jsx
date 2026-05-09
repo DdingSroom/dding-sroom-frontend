@@ -74,7 +74,7 @@ function StatusBadge({ done }) {
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs ${
         done
-          ? 'bg-primary-lightest text-primary'
+          ? 'bg-brand-lightest text-brand'
           : 'bg-surface-neutral text-content-muted'
       }`}
     >
@@ -355,7 +355,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                       <>
                         <button
                           onClick={beginEdit}
-                          className="px-3 py-1.5 text-sm rounded bg-primary-lightest text-primary border hover:bg-primary-lighter"
+                          className="px-3 py-1.5 text-sm rounded bg-brand-lightest text-brand border hover:bg-brand-lighter"
                         >
                           수정
                         </button>
@@ -492,7 +492,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                     </button>
                     <button
                       onClick={saveEdit}
-                      className="px-3 py-2 text-sm rounded bg-primary text-white hover:opacity-90 disabled:opacity-60"
+                      className="px-3 py-2 text-sm rounded bg-brand text-white hover:opacity-90 disabled:opacity-60"
                       disabled={saving || (isDone && !ackAnswerDone)} // ✅ 가드
                     >
                       {saving ? '저장 중...' : '저장'}

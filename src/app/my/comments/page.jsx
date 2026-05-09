@@ -161,7 +161,7 @@ export default function MyCommentsPage() {
             </div>
             <button
               onClick={() => router.push('/community')}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
+              className="px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
             >
               커뮤니티 둘러보기
             </button>
@@ -172,11 +172,11 @@ export default function MyCommentsPage() {
               <div
                 key={comment.id}
                 onClick={() => handleCommentClick(comment.post_id)}
-                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all duration-200 group"
+                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-brand/20 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                    <span className="text-xs font-medium text-brand bg-brand/10 px-3 py-1 rounded-full">
                       댓글
                     </span>
                     {comment.parent_comment_id && (

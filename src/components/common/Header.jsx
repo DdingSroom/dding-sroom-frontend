@@ -75,7 +75,7 @@ const Header = () => {
           )}
         </button>
         <button
-          className="w-9 h-9 bg-primary rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-primary-hover transition-colors shadow-sm"
+          className="w-9 h-9 bg-brand rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-brand-hover transition-colors shadow-sm"
           onClick={handleClickProfile}
         >
           <img
