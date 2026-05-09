@@ -11,6 +11,8 @@ import axiosInstance from '@api/instance';
 import InfoModal from '../../../components/common/InfoModal';
 import useTokenStore from '../../../stores/useTokenStore';
 
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [todayReservations, setTodayReservations] = useState([]);
@@ -318,7 +320,7 @@ export default function AdminDashboard() {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                     <img
-                      src="/static/images/studyroom_image.png"
+                      src={STUDYROOM_IMAGE_SRC}
                       alt={`스터디룸 ${room.id}`}
                       className="w-full h-full object-cover rounded-lg"
                     />

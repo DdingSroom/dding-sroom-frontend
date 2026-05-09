@@ -9,8 +9,9 @@ import axiosInstance from '@api/instance';
 
 import useTokenStore from '../../../stores/useTokenStore';
 
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+
 const ROOM_IDS = [1, 2, 3, 4, 5];
-const DEFAULT_ROOM_IMAGE_SRC = '/static/images/studyroom_image.png';
 
 // 배지(상태표시)
 const BADGE_BY_STATUS = {
@@ -195,7 +196,7 @@ export default function RoomsManagePage() {
                 <div className="flex items-start gap-3">
                   <div className="w-20 h-20 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
                     <img
-                      src={DEFAULT_ROOM_IMAGE_SRC}
+                      src={STUDYROOM_IMAGE_SRC}
                       alt={`스터디룸 ${id}`}
                       className="w-full h-full object-cover"
                     />
