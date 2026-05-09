@@ -7,7 +7,6 @@ export default function MaintenancePage() {
         <MaruSad
           alt="점검 안내 이미지"
           className="mb-5 h-[140px] w-auto select-none"
-          draggable={false}
         />
 
         <h1 className="text-center text-lg font-semibold text-[#788DFF]">
