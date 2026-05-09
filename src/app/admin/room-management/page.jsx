@@ -36,7 +36,7 @@ export default function RoomsManagePage() {
     ROOM_IDS.reduce((acc, id) => {
       acc[id] = {
         status: 'IDLE',
-        imageUrl: DEFAULT_ROOM_IMAGE_SRC,
+        imageUrl: STUDYROOM_IMAGE_SRC,
         name: `스터디룸 ${id}`,
       };
       return acc;
@@ -66,7 +66,7 @@ export default function RoomsManagePage() {
     const data = res?.data?.data || {};
     return {
       status: normalizeStatus(data.status ?? 'IDLE'),
-      imageUrl: DEFAULT_ROOM_IMAGE_SRC,
+      imageUrl: STUDYROOM_IMAGE_SRC,
       name: data.name || `스터디룸 ${roomId}`,
     };
   }, []);
@@ -85,7 +85,7 @@ export default function RoomsManagePage() {
               id,
               {
                 status: 'IDLE',
-                imageUrl: DEFAULT_ROOM_IMAGE_SRC,
+                imageUrl: STUDYROOM_IMAGE_SRC,
                 name: `스터디룸 ${id}`,
               },
             ];
