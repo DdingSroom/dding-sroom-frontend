@@ -52,8 +52,8 @@ const FooterNav = () => {
           >
             <div className="relative w-6 h-6">
               <Icon
+                aria-hidden="true"
                 className="absolute inset-0 text-[#73726e] group-hover:text-[#788cff] transition-colors"
-                alt={label}
               />
             </div>
             <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
