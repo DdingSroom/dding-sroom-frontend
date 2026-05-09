@@ -14,7 +14,6 @@ Sentry.init({
     process.env.NODE_ENV === 'production' ||
     process.env.NEXT_PUBLIC_SENTRY_ENABLED === 'true',
 
-  // [추가] 예상 가능한 API 에러(401,403,404)는 Sentry 전송 제외
   beforeSend(event, hint) {
     const error = hint.originalException;
 
