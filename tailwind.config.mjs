@@ -146,10 +146,10 @@ export default {
 
         // body
         'body-01': ['1rem', { lineHeight: '1.2', fontWeight: '400' }], // 16px
-        'body-02': ['0.75rem', { lineHeight: '1.2', fontWeight: '400' }], // 14px
+        'body-02': ['0.875rem', { lineHeight: '1.2', fontWeight: '400' }], // 14px
 
         // caption
-        caption: ['0.625rem', { lineHeight: '1.2', fontWeight: '400' }], // 12px
+        caption: ['0.75rem', { lineHeight: '1.2', fontWeight: '400' }], // 12px
 
         // (사용하지 않을 예정)
         '2xs': '10px',
