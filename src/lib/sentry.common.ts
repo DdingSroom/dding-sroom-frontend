@@ -1,5 +1,7 @@
+import { init } from '@sentry/nextjs';
 import axios from 'axios';
-import type { ClientOptions } from '@sentry/nextjs';
+
+type SentryOptions = NonNullable<Parameters<typeof init>[0]>;
 
 const IGNORED_STATUS_CODES = [401, 403, 404];
 
@@ -25,4 +27,4 @@ export const sentryCommonConfig = {
 
     return event;
   },
-} satisfies ClientOptions;
+} satisfies SentryOptions;
