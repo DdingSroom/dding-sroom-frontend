@@ -42,7 +42,7 @@ function SignUpStep4() {
               width={56}
               height={56}
             />
-            <div className="text-primary text-heading-md font-bold">
+            <div className="text-brand text-heading-md font-bold">
               회원가입 완료!
             </div>
             <div className="flex flex-col items-center text-center">

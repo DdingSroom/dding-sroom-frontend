@@ -26,43 +26,43 @@ export default function AdminLayout({ children }) {
             </a>
             <a
               href="/admin/user-management"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               사용자 관리
             </a>
             <a
               href="/admin/reservations-by-date"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               날짜별 예약 현황
             </a>
             <a
               href="/admin/reservation-detail"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               예약 목록
             </a>
             <a
               href="/admin/community"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               커뮤니티 관리
             </a>
             <a
               href="/admin/suggestions"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               건의 내역
             </a>
             <a
               href="/admin/room-management"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               스터디룸 관리
             </a>
             <a
               href="/admin/notifications"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               공지사항 관리
             </a>

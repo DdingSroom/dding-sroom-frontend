@@ -84,7 +84,7 @@ export default function ReservationDetailPage() {
                 >
                   <td className="py-3 px-2">{index + 1}</td>
                   <td className="py-3 px-2">스터디룸 {item.roomName}</td>
-                  <td className="py-3 px-2 text-primary">
+                  <td className="py-3 px-2 text-brand">
                     {formatTimeRange(item.startTime, item.endTime)}
                   </td>
                   <td className="py-3 px-2">{item.userId}</td>

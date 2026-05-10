@@ -202,7 +202,7 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center bg-white border border-gray-100 p-6 rounded-2xl shadow-sm mb-8">
         <h1 className="text-2xl font-bold text-content">관리자 대시보드</h1>
         <button
-          className="bg-primary hover:bg-primary-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+          className="bg-brand hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
           onClick={() => router.push('/')}
         >
           예약 서비스 화면으로 가기
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
               날짜별 예약 현황
             </h2>
             <button
-              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+              className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
               onClick={() => router.push('/admin/reservations-by-date')}
             >
               더보기 →
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-semibold text-content">커뮤니티</h2>
             <button
-              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+              className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
               onClick={() => router.push('/admin/community')}
             >
               더보기 →
@@ -303,7 +303,7 @@ export default function AdminDashboard() {
               스터디룸 관리
             </h2>
             <button
-              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+              className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
               onClick={() => router.push('/admin/room-management')}
             >
               더보기 →
@@ -361,7 +361,7 @@ export default function AdminDashboard() {
               답변대기 건의
             </h2>
             <button
-              className="text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+              className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
               onClick={() => router.push('/admin/suggestions')}
             >
               더보기 →

@@ -23,7 +23,7 @@ const LoginRequiredModal = ({ isOpen, onConfirm }) => {
         <div className="border-t border-gray-100">
           <button
             onClick={onConfirm}
-            className="w-full py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
+            className="w-full py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
           >
             확인
           </button>

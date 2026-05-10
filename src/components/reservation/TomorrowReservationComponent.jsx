@@ -289,13 +289,13 @@ const TomorrowReservationComponent = ({
             </div>
           )}
           {notice && (
-            <div className="text-primary-dark text-xs whitespace-pre-line">
+            <div className="text-brand-dark text-xs whitespace-pre-line">
               {notice}
             </div>
           )}
         </div>
         <button
-          className="bg-primary-dark text-white text-lg rounded-3xl px-4 py-2 w-btn-action hover:bg-primary-dark-hover transition-colors duration-200 font-medium"
+          className="bg-brand-dark text-white text-lg rounded-3xl px-4 py-2 w-btn-action hover:bg-brand-dark-hover transition-colors duration-200 font-medium"
           onClick={handleOpenModal}
         >
           예약
@@ -377,7 +377,7 @@ const TomorrowReservationComponent = ({
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-primary"></div>
+          <div className="w-2 h-2 bg-brand"></div>
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">

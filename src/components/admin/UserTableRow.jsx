@@ -62,7 +62,7 @@ export default function UserTableRow({ user, onUserUpdate }) {
           </span>
           <button
             onClick={handleDetailClick}
-            className="bg-primary text-white px-3 py-1 text-xs rounded hover:bg-primary-hover transition-colors duration-200 font-medium"
+            className="bg-brand text-white px-3 py-1 text-xs rounded hover:bg-brand-hover transition-colors duration-200 font-medium"
           >
             사용자 상세보기
           </button>
