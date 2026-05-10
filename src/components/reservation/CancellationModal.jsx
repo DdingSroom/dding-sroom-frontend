@@ -19,7 +19,7 @@ const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
       >
         <div className="overflow-y-auto max-h-modal">{children}</div>
 
-        <div className="flex w-full mt-6 rounded-xl overflow-hidden border border-primary-dark">
+        <div className="flex w-full mt-6 rounded-xl overflow-hidden border border-brand-dark">
           <button
             onClick={onClose}
             className="w-1/2 py-3 bg-white text-gray-600 text-sm font-medium rounded-none hover:bg-gray-50 transition-colors duration-200"
@@ -33,7 +33,7 @@ const CancellationModal = ({ isOpen, onClose, onConfirm, children }) => {
                 onConfirm();
               }
             }}
-            className="w-1/2 py-3 bg-primary text-white text-sm font-semibold rounded-none hover:bg-primary-hover transition-colors duration-200"
+            className="w-1/2 py-3 bg-brand text-white text-sm font-semibold rounded-none hover:bg-brand-hover transition-colors duration-200"
           >
             예약 취소
           </button>

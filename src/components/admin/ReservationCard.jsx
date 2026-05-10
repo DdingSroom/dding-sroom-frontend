@@ -19,7 +19,7 @@ export default function ReservationCard({
       />
       <div className="flex flex-col gap-1 text-sm min-w-0">
         <p className="font-semibold text-content truncate">{roomName}</p>
-        <p className="text-primary font-medium">{time}</p>
+        <p className="text-brand font-medium">{time}</p>
         <p className="text-content-secondary text-xs truncate">{userName}</p>
         <p className="text-content-muted text-xs">{timestamp}</p>
       </div>

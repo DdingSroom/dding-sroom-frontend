@@ -29,7 +29,7 @@ const Modal = ({ isOpen, onClose, onSubmit, children, text }) => {
                 onSubmit();
               }
             }}
-            className="flex-1 py-4 bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
+            className="flex-1 py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
           >
             {text}
           </button>

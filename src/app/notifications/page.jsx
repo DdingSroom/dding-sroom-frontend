@@ -92,7 +92,7 @@ export default function NotificationList() {
         <div className="max-w-4xl mx-auto w-full">
           <div className="py-8">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand rounded-2xl mb-4 shadow-lg">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -173,7 +173,7 @@ export default function NotificationList() {
       {showDetailModal && selectedNotification && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full mx-4 max-h-modal-lg overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="sticky top-0 bg-primary px-6 py-4">
+            <div className="sticky top-0 bg-brand px-6 py-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -221,9 +221,9 @@ export default function NotificationList() {
                 </h2>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-brand/10 rounded-full">
                     <svg
-                      className="w-4 h-4 text-primary"
+                      className="w-4 h-4 text-brand"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -291,7 +291,7 @@ export default function NotificationList() {
               <div className="flex justify-center pt-8">
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="px-8 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover font-semibold shadow-lg"
+                  className="px-8 py-3 bg-brand text-white rounded-xl hover:bg-brand-hover font-semibold shadow-lg"
                 >
                   확인
                 </button>
@@ -318,15 +318,15 @@ function UserNotificationCard({
       className="group relative rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg overflow-hidden cursor-pointer"
       onClick={() => onViewClick(notification)}
     >
-      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100" />
 
       <div className="relative">
-        <div className="h-1 bg-primary" />
+        <div className="h-1 bg-brand" />
 
         <div className="p-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-primary text-white shadow-sm">
+              <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-brand text-white shadow-sm">
                 <svg
                   className="w-3 h-3 mr-1.5"
                   fill="currentColor"
@@ -376,7 +376,7 @@ function UserNotificationCard({
             </div>
           </div>
 
-          <h3 className="font-bold text-lg text-gray-900 break-all mb-3 group-hover:text-primary">
+          <h3 className="font-bold text-lg text-gray-900 break-all mb-3 group-hover:text-brand">
             {notification.title}
           </h3>
 
@@ -404,7 +404,7 @@ function UserNotificationCard({
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-medium text-primary group-hover:text-primary-hover">
+            <div className="flex items-center gap-2 text-xs font-medium text-brand group-hover:text-brand-hover">
               자세히 보기
               <svg
                 className="w-4 h-4"

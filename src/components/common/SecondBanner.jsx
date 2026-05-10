@@ -16,7 +16,7 @@ const SecondBanner = () => {
         text-white
         w-full max-w-content
         rounded-2xl
-        bg-primary
+        bg-brand
         mt-4
         /* spacing */
         p-5 sm:p-6 md:p-7
@@ -55,8 +55,8 @@ const SecondBanner = () => {
             text-sm font-medium
             rounded
             px-4 py-2
-            bg-white text-primary
-            hover:bg-gray-50 hover:text-primary-hover
+            bg-white text-brand
+            hover:bg-gray-50 hover:text-brand-hover
             transition-colors duration-200
             shadow-sm
           "

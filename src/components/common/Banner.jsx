@@ -12,7 +12,7 @@ const Banner = () => (
         <div className="text-content-secondary text-sm font-medium">
           오늘의 혼잡도
         </div>
-        <div className="text-4xl md:text-5xl text-primary font-bold">
+        <div className="text-4xl md:text-5xl text-brand font-bold">
           여유로움
         </div>
       </div>

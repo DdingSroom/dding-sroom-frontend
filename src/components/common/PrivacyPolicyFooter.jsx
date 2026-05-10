@@ -8,7 +8,7 @@ const PrivacyPolicyFooter = () => {
           <p className="text-sm font-semibold text-content">
             <Link
               href="/privacy-policy"
-              className="hover:text-primary transition-colors"
+              className="hover:text-brand transition-colors"
             >
               개인정보 처리방침
             </Link>

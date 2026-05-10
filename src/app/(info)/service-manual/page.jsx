@@ -21,14 +21,14 @@ export default function ServiceManualPage() {
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <header className="mb-10">
-        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-primary">
+        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-brand">
           띵스룸 이용 가이드
         </h1>
         <p className="mt-2 text-sm text-info-link">
           마지막 업데이트: <time dateTime="2025-08-14">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-info text-md text-content">
+        <p className="mt-6 rounded-2xl border border-brand-lighter bg-white/70 p-5 leading-info text-md text-content">
           띵스룸은 <b>명지대학교 학생 전용 스터디룸 예약 서비스</b>입니다. 처음
           방문하신 분도 이 문서만 따라 하면 <b>회원가입 → 로그인 → 예약</b>까지
           어렵지 않게 완료할 수 있어요. 각 단계별 화면 캡처와 주의사항, 자주
@@ -43,10 +43,10 @@ export default function ServiceManualPage() {
       {/* TOC */}
       <nav
         aria-label="문서 목차"
-        className="mb-12 rounded-2xl border border-primary-lighter bg-white/70 p-5"
+        className="mb-12 rounded-2xl border border-brand-lighter bg-white/70 p-5"
       >
-        <h2 className="text-sm font-semibold text-primary mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-md text-primary">
+        <h2 className="text-sm font-semibold text-brand mb-3">목차</h2>
+        <ol className="list-decimal ml-5 space-y-2 text-md text-brand">
           {[
             ['#section-signup', '회원가입'],
             ['#section-reset', '비밀번호 재설정'],
@@ -59,7 +59,7 @@ export default function ServiceManualPage() {
             <li key={href}>
               <a
                 href={href}
-                className="text-primary hover:underline underline-offset-4"
+                className="text-brand hover:underline underline-offset-4"
               >
                 {label}
               </a>
@@ -136,7 +136,7 @@ export default function ServiceManualPage() {
             <LI>
               <b>이미 가입된 이메일</b> →{' '}
               <Link
-                className="text-primary underline"
+                className="text-brand underline"
                 href="/reset-password/step1"
               >
                 비밀번호 재설정
@@ -210,7 +210,7 @@ export default function ServiceManualPage() {
             <Step title="로그인 버튼">성공하면 홈으로 이동합니다.</Step>
             <Step title="비밀번호를 잊었나요?">
               <Link
-                className="text-primary underline"
+                className="text-brand underline"
                 href="/reset-password/step1"
               >
                 비밀번호 재설정
@@ -382,7 +382,7 @@ export default function ServiceManualPage() {
           <P>
             <Link
               href="/privacy-policy"
-              className="text-primary underline underline-offset-4"
+              className="text-brand underline underline-offset-4"
             >
               개인정보처리방침
             </Link>
@@ -395,7 +395,7 @@ export default function ServiceManualPage() {
       <div className="mt-14 flex items-center justify-end">
         <a
           href="#"
-          className="inline-flex items-center rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-gray-50 transition"
+          className="inline-flex items-center rounded-xl border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-gray-50 transition"
           aria-label="맨 위로 이동"
         >
           ↑ 맨 위로
@@ -407,7 +407,7 @@ export default function ServiceManualPage() {
       <div className="mt-6 text-right text-xs text-content-secondary">
         <Link
           href="/"
-          className="hover:underline underline-offset-4 text-primary"
+          className="hover:underline underline-offset-4 text-brand"
         >
           홈으로
         </Link>
@@ -419,19 +419,19 @@ export default function ServiceManualPage() {
 /* ========== 빠른 시작 ========== */
 function QuickStart() {
   return (
-    <div className="mt-6 rounded-2xl border border-primary-lighter bg-primary-bg p-5">
-      <h2 className="text-sm font-semibold text-primary mb-3">
+    <div className="mt-6 rounded-2xl border border-brand-lighter bg-brand-bg p-5">
+      <h2 className="text-sm font-semibold text-brand mb-3">
         5분 만에 시작하기
       </h2>
       <ol className="list-decimal pl-5 space-y-2 text-md leading-info">
         <li>
-          <Link href="/sign-up/step1" className="text-primary underline">
+          <Link href="/sign-up/step1" className="text-brand underline">
             학교 이메일로 회원가입
           </Link>{' '}
           (인증번호 확인)
         </li>
         <li>
-          <Link href="/login" className="text-primary underline">
+          <Link href="/login" className="text-brand underline">
             로그인
           </Link>{' '}
           후 홈으로 이동
@@ -451,7 +451,7 @@ function Section({ id, title, children }) {
       id={id}
       className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-info-relaxed text-content"
     >
-      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-primary mb-5">
+      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-brand mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -461,15 +461,13 @@ function Section({ id, title, children }) {
 
 function SubTitle({ children }) {
   return (
-    <h3 className="text-lg-minus font-bold text-primary mt-1">{children}</h3>
+    <h3 className="text-lg-minus font-bold text-brand mt-1">{children}</h3>
   );
 }
 
 function MiniTitle({ children }) {
   return (
-    <h4 className="text-md font-semibold text-primary-hover mt-1">
-      {children}
-    </h4>
+    <h4 className="text-md font-semibold text-brand-hover mt-1">{children}</h4>
   );
 }
 
@@ -494,7 +492,7 @@ function OL({ children }) {
 }
 
 function LI({ children }) {
-  return <li className="marker:text-primary">{children}</li>;
+  return <li className="marker:text-brand">{children}</li>;
 }
 
 function Step({ title, children }) {
@@ -530,7 +528,7 @@ function ImgCard({ src, alt, caption }) {
 function Callout({ type = 'info', title, children }) {
   const styles =
     type === 'info'
-      ? 'border-primary-lighter bg-primary-bg'
+      ? 'border-brand-lighter bg-brand-bg'
       : 'border-warning-muted bg-warning-bg';
   const badge =
     type === 'info' ? (

@@ -19,14 +19,14 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-12">
       <header className="mb-10">
-        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-primary">
+        <h1 className="text-heading-lg sm:text-heading-xl font-extrabold tracking-tight text-brand">
           개인정보처리방침
         </h1>
         <p className="mt-2 text-sm text-info-link">
           마지막 업데이트: <time dateTime="2025-08-14">{updatedAt}</time>
         </p>
 
-        <p className="mt-6 rounded-2xl border border-primary-lighter bg-white/70 p-5 leading-info text-md text-content">
+        <p className="mt-6 rounded-2xl border border-brand-lighter bg-white/70 p-5 leading-info text-md text-content">
           본 개인정보처리방침은 명지대 띵스룸(ddingsroom) 서비스가 이용자들의
           개인정보를 어떻게 수집·이용·보관·파기하는지, 그리고 이용자의 권리를
           어떻게 보호하는지를 설명합니다. 본 방침은 서비스 이용 시 적용되는
@@ -38,10 +38,10 @@ export default function PrivacyPolicyPage() {
 
       <nav
         aria-label="문서 목차"
-        className="mb-12 rounded-2xl border border-primary-lighter bg-white/70 p-5"
+        className="mb-12 rounded-2xl border border-brand-lighter bg-white/70 p-5"
       >
-        <h2 className="text-sm font-semibold text-primary mb-3">목차</h2>
-        <ol className="list-decimal ml-5 space-y-2 text-md text-primary">
+        <h2 className="text-sm font-semibold text-brand mb-3">목차</h2>
+        <ol className="list-decimal ml-5 space-y-2 text-md text-brand">
           {[
             ['#section-1', '개인정보 수집 항목 및 수집 방법'],
             ['#section-2', '개인정보의 이용 목적'],
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
             <li key={href}>
               <a
                 href={href}
-                className="text-primary hover:underline underline-offset-4"
+                className="text-brand hover:underline underline-offset-4"
               >
                 {label}
               </a>
@@ -209,7 +209,7 @@ export default function PrivacyPolicyPage() {
               <b>이메일</b>:{' '}
               <a
                 href="mailto:ddingsroom2025@mju.ac.kr"
-                className="text-primary underline underline-offset-4 hover:opacity-80"
+                className="text-brand underline underline-offset-4 hover:opacity-80"
               >
                 ddingsroom2025@gmail.com
               </a>
@@ -222,7 +222,7 @@ export default function PrivacyPolicyPage() {
       <div className="mt-14 flex items-center justify-end">
         <a
           href="#"
-          className="inline-flex items-center rounded-xl border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-gray-50 transition"
+          className="inline-flex items-center rounded-xl border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-gray-50 transition"
         >
           ↑ 맨 위로
         </a>
@@ -233,7 +233,7 @@ export default function PrivacyPolicyPage() {
       <div className="mt-6 text-right text-xs text-content-secondary">
         <Link
           href="/"
-          className="hover:underline underline-offset-4 text-primary"
+          className="hover:underline underline-offset-4 text-brand"
         >
           홈으로
         </Link>
@@ -248,7 +248,7 @@ function Section({ id, title, children }) {
       id={id}
       className="scroll-mt-28 rounded-2xl border border-line bg-white p-6 sm:p-7 leading-info-relaxed text-content"
     >
-      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-primary mb-5">
+      <h2 className="text-heading-sm sm:text-2xl font-extrabold text-brand mb-5">
         {title}
       </h2>
       <div className="space-y-5">{children}</div>
@@ -258,15 +258,13 @@ function Section({ id, title, children }) {
 
 function SubTitle({ children }) {
   return (
-    <h3 className="text-lg-minus font-bold text-primary mt-1">{children}</h3>
+    <h3 className="text-lg-minus font-bold text-brand mt-1">{children}</h3>
   );
 }
 
 function MiniTitle({ children }) {
   return (
-    <h4 className="text-md font-semibold text-primary-hover mt-1">
-      {children}
-    </h4>
+    <h4 className="text-md font-semibold text-brand-hover mt-1">{children}</h4>
   );
 }
 
@@ -283,5 +281,5 @@ function UL({ children }) {
 }
 
 function LI({ children }) {
-  return <li className="marker:text-primary">{children}</li>;
+  return <li className="marker:text-brand">{children}</li>;
 }

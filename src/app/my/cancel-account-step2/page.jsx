@@ -22,7 +22,7 @@ export default function CancelAccountStep2() {
         <div className="max-w-md mx-auto w-full space-y-6">
           <div className="flex flex-col items-center gap-4 mt-20">
             <img src="/static/icons/maru_sad_icon.svg" alt="maru" />
-            <div className="text-primary text-heading-md font-bold">
+            <div className="text-brand text-heading-md font-bold">
               안녕히가세요
             </div>
             <div className="flex flex-col items-center text-center">

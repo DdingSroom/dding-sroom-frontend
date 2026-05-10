@@ -352,14 +352,14 @@ export default function SuggestPage() {
         {/* Tabs */}
         <nav className="px-5">
           <div className="flex space-x-8 border-b border-line">
-            <span className="relative py-3 text-base text-primary">
+            <span className="relative py-3 text-base text-brand">
               건의/신고
-              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-primary" />
+              <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-brand" />
             </span>
 
             <Link
               href="/suggest/history"
-              className="relative py-3 text-base text-content-muted hover:text-primary"
+              className="relative py-3 text-base text-content-muted hover:text-brand"
             >
               건의/신고내역
             </Link>
@@ -588,8 +588,8 @@ export default function SuggestPage() {
               disabled={hasError || submitting}
               className={`w-full rounded-xl py-4 text-base font-semibold text-white shadow-sm transition active:scale-press ${
                 hasError || submitting
-                  ? 'bg-primary-disabled cursor-not-allowed'
-                  : 'bg-primary'
+                  ? 'bg-brand-disabled cursor-not-allowed'
+                  : 'bg-brand'
               }`}
             >
               {submitting ? '전송 중...' : '건의/신고하기'}

@@ -37,8 +37,8 @@ export default function CancelAccountStep1() {
 
   const commonCodeButtonClass =
     'inline-flex items-center justify-center w-btn-action h-10 ' +
-    'border border-primary bg-white text-primary ' +
-    'hover:bg-primary hover:text-white text-sm font-medium rounded-lg ' +
+    'border border-brand bg-white text-brand ' +
+    'hover:bg-brand hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
   useEffect(() => {
@@ -212,7 +212,7 @@ export default function CancelAccountStep1() {
 const StyledInput = ({ value, className = '', ...props }) => {
   const base =
     'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-primary ' +
-    'focus:ring-2 focus:ring-primary/10 transition-all duration-200';
+    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
+    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
   return <input className={`${base} ${className}`} value={value} {...props} />;
 };
