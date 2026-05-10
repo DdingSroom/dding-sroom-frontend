@@ -5,10 +5,12 @@ type SentryOptions = NonNullable<Parameters<typeof init>[0]>;
 
 const IGNORED_STATUS_CODES = [401, 403, 404];
 
+const isSentryTestEnabled = process.env.NEXT_PUBLIC_SENTRY_ENABLED === 'true';
+
 export const sentryCommonConfig = {
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  tracesSampleRate: 1.0,
+  tracesSampleRate: isSentryTestEnabled ? 1.0 : 0.1,
 
   debug: false,
 
