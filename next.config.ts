@@ -43,7 +43,9 @@ export default withSentryConfig(nextConfig, {
 
   authToken: process.env.SENTRY_AUTH_TOKEN,
 
-  silent: true,
+  silent: !process.env.CI,
+
+  disableLogger: true,
 
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
