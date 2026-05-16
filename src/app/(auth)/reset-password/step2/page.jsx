@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -139,8 +139,9 @@ export default function ResetPassword2() {
               <Button
                 onClick={handlePasswordReset}
                 disabled={!isLoginAvailable()}
-                text="확인"
-              />
+              >
+                확인
+              </Button>
             </div>
           </div>
         </div>

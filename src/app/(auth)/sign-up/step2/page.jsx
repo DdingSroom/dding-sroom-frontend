@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -124,11 +124,9 @@ export default function SignUpStep2() {
         </div>
 
         <div className="max-w-md mx-auto w-full mt-8">
-          <Button
-            onClick={handleNextStep}
-            disabled={!isNextAvailable()}
-            text="확인"
-          />
+          <Button onClick={handleNextStep} disabled={!isNextAvailable()}>
+            확인
+          </Button>
         </div>
       </main>
 

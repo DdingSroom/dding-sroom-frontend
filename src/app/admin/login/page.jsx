@@ -7,9 +7,9 @@ import { jwtDecode } from 'jwt-decode';
 import axiosInstance, { setAccessToken } from '@api/instance';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 
-import Button from '../../../components/common/Button';
 import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
 import useTokenStore from '../../../stores/useTokenStore';
+import Button from '@components/common/button';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -183,10 +183,11 @@ export default function AdminLogin() {
       <div className="max-w-md mx-auto w-full mt-8">
         <Button
           disabled={!isLoginAvailable()}
-          text="관리자 로그인"
           type="submit"
           onClick={handleLogin}
-        />
+        >
+          관리자 로그인
+        </Button>
       </div>
     </div>
   );

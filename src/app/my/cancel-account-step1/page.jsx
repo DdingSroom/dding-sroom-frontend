@@ -10,10 +10,10 @@ import MyPageHeader from '@components/my/MyPageHeader';
 
 import axiosInstance from '@api/instance';
 
-import Button from '../../../components/common/Button';
 import FooterNav from '../../../components/common/FooterNav';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import useTokenStore from '../../../stores/useTokenStore';
+import Button from '@components/common/button';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -167,8 +167,9 @@ export default function CancelAccountStep1() {
                   <Button
                     onClick={() => setOpen(true)}
                     disabled={!isVerified || isWithdrawing}
-                    text={isWithdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
-                  />
+                  >
+                    {isWithdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
+                  </Button>
                 </div>
               </div>
 

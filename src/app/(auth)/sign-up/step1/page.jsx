@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -337,11 +337,9 @@ export default function SignUpStep1() {
             </div>
           </div>
 
-          <Button
-            onClick={handleNext}
-            disabled={!isCodeVerified}
-            text="다음으로"
-          />
+          <Button onClick={handleNext} disabled={!isCodeVerified}>
+            다음으로
+          </Button>
         </div>
       </div>
 
