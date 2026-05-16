@@ -20,10 +20,10 @@ if [ -z "$first_line" ]; then
   exit 1
 fi
 
-if ! [[ "$first_line" =~ ^(init|feat|fix|chore|refactor|docs|perf|test):\  ]]; then
+if ! [[ "$first_line" =~ ^(init|feat|fix|chore|refactor|docs|test|api|design):\  ]]; then
   echo "Invalid commit type."
   echo "Use: type: message"
-  echo "Allowed types: init, feat, fix, chore, refactor, docs, perf, test"
+  echo "Allowed types: init, feat, fix, chore, refactor, docs, test, api, design"
   exit 1
 fi
 
