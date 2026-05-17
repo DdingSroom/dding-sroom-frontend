@@ -8,6 +8,9 @@ import axiosInstance from '@api/instance';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
+import { Maru } from 'public/static/icons';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
   const { userId, accessToken } = useTokenStore();
@@ -94,8 +97,7 @@ const AfterLoginBanner = () => {
             여유로움
           </div>
         </div>
-        <img
-          src="/static/icons/maru_icon.png"
+        <Maru
           alt="maru"
           className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-16 h-16 sm:w-24 sm:h-24 object-contain opacity-90"
         />
@@ -146,7 +148,7 @@ const AfterLoginBanner = () => {
                   </div>
                   <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
                     <img
-                      src="/static/icons/studyroom_image.png"
+                      src={STUDYROOM_IMAGE_SRC}
                       alt="studyroom"
                       className="w-20 h-20 object-cover rounded-lg"
                     />

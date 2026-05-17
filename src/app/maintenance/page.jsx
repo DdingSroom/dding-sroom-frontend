@@ -1,12 +1,13 @@
+import { MaruSad } from 'public/static/icons';
+
 export default function MaintenancePage() {
   return (
     <div className="fixed inset-0 z-modal flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
       <div className="flex w-full max-w-[420px] flex-col items-center rounded-3xl bg-white px-6 py-8 shadow-2xl">
-        <img
-          src="/maintenance/horse.svg"
-          alt="점검 안내 이미지"
+        <MaruSad
+          role="img"
+          aria-label="점검 안내 이미지"
           className="mb-5 h-[140px] w-auto select-none"
-          draggable={false}
         />
 
         <h1 className="text-center text-lg font-semibold text-brand">

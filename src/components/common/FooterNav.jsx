@@ -7,6 +7,8 @@ import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
 import useTokenStore from '@stores/useTokenStore';
 
+import { Reservation, Community, Proposal } from 'public/static/icons';
+
 const FooterNav = () => {
   const router = useRouter();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -25,71 +27,40 @@ const FooterNav = () => {
     router.push('/login?redirect=' + encodeURIComponent('/suggest'));
   };
 
+  const navItems = [
+    {
+      Icon: Reservation,
+      label: '예약하기',
+      onClick: () => router.push('/'),
+    },
+    {
+      Icon: Community,
+      label: '커뮤니티',
+      onClick: () => router.push('/community'),
+    },
+    { Icon: Proposal, label: '건의/신고', onClick: handleSuggestClick },
+  ];
+
   return (
     <>
-      <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-layout flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
-        <button
-          className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => router.push('/')}
-        >
-          <div className="relative w-6 h-6">
-            <img
-              src="/static/icons/reservation_icon.svg"
-              alt="reservation"
-              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
-            />
-            <img
-              src="/static/icons/reservation_2_icon.svg"
-              alt="reservation hover"
-              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            />
-          </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
-            예약하기
-          </span>
-        </button>
-
-        <button
-          className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={() => router.push('/community')}
-        >
-          <div className="relative w-6 h-6">
-            <img
-              src="/static/icons/community_icon.svg"
-              alt="community"
-              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
-            />
-            <img
-              src="/static/icons/community_2_icon.svg"
-              alt="community hover"
-              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            />
-          </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
-            커뮤니티
-          </span>
-        </button>
-
-        <button
-          className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-          onClick={handleSuggestClick}
-        >
-          <div className="relative w-6 h-6">
-            <img
-              src="/static/icons/proposal_icon.svg"
-              alt="proposal"
-              className="w-6 h-6 absolute inset-0 opacity-100 group-hover:opacity-0 transition-opacity duration-200"
-            />
-            <img
-              src="/static/icons/proposal_2_icon.svg"
-              alt="proposal hover"
-              className="w-6 h-6 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            />
-          </div>
-          <span className="text-xs text-content-secondary font-medium group-hover:text-brand transition-colors">
-            건의/신고
-          </span>
-        </button>
+      <footer className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[600px] flex justify-around items-center p-4 bg-white border-t border-gray-100 z-50">
+        {navItems.map(({ Icon, label, onClick }) => (
+          <button
+            key={label}
+            className="flex flex-col items-center gap-1 p-2 hover:bg-gray-50 rounded-lg transition-colors group"
+            onClick={onClick}
+          >
+            <div className="relative w-6 h-6">
+              <Icon
+                aria-hidden="true"
+                className="absolute inset-0 text-[#73726e] group-hover:text-[#788cff] transition-colors"
+              />
+            </div>
+            <span className="text-xs text-[#73726e] font-medium group-hover:text-[#788cff] transition-colors">
+              {label}
+            </span>
+          </button>
+        ))}
       </footer>
 
       <LoginRequiredModal

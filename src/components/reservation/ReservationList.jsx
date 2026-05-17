@@ -12,6 +12,8 @@ import useTokenStore from '@stores/useTokenStore';
 import CancellationModal from './CancellationModal';
 import ReservationHistory from './ReservationHistory';
 
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+
 const toDateFromRaw = (raw) => {
   if (!raw) {
     return null;
@@ -245,7 +247,7 @@ export default function ReservationList() {
           </div>
           <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
             <img
-              src="/static/icons/studyroom_image.png"
+              src={STUDYROOM_IMAGE_SRC}
               alt="studyroom"
               className="w-20 h-20 object-cover rounded-lg"
             />
