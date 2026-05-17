@@ -1,4 +1,7 @@
+import * as Sentry from '@sentry/nextjs';
 import axios from 'axios';
+
+const normalizePathParams = (path) => path.replace(/\/\d+(?=\/|$)/g, '/{id}');
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -141,6 +144,19 @@ axiosInstance.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    if (error.response && error.config?.url) {
+      try {
+        const fullUrl = new URL(error.config.url, error.config.baseURL);
+        const normalizedPath = normalizePathParams(fullUrl.pathname);
+        error.name = `[${error.response.status} Error] - ${fullUrl.origin}${normalizedPath}`;
+
+        Sentry.captureException(error, {
+          fingerprint: [String(error.response.status), normalizedPath],
+        });
+        error.__sentry_captured__ = true;
+      } catch {}
     }
 
     return Promise.reject(error);
