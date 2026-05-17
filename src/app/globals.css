@@ -11,61 +11,87 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary-color: #788cff;
-  --text-primary: #37352f;
-  --text-secondary: #73726e;
-  --text-muted: #9b9998;
-  --border-light: #e9e9e7;
-  --bg-light: #fbfbfb;
+  /* 배경 */
+  --color-surface: #ffffff;
+  --color-surface-page: #f9fafb;
+  --color-surface-subtle: #fbfbfb;
+  --color-surface-muted: #f6f7f9;
+  --color-surface-admin: #f1f2f4;
+  --color-surface-admin-header: #f7f7f7;
+  --color-surface-suggest: #f5f7fb;
+  --color-surface-card: #f8f9ff;
+  --color-surface-neutral: #f4f4f5;
+
+  /* 텍스트 */
+  --color-content: #37352f;
+  --color-content-secondary: #73726e;
+  --color-content-muted: #9b9998;
+  --color-content-time: #4b4b4b;
+  --color-content-base: #171717;
+  --color-content-tertiary: #6e6e6e;
+
+  /* Primary */
+  --color-primary: #788cff;
+  --color-primary-rgb: 120 140 255;
+  --color-primary-hover: #6a7dff;
+  --color-primary-active: #5d72ff;
+  --color-primary-dark: #3250f5;
+  --color-primary-dark-hover: #2a47e3;
+  --color-primary-light: #a8b8ff;
+  --color-primary-lighter: #dbe5ff;
+  --color-primary-lightest: #eef2ff;
+  --color-primary-lightest-rgb: 238 242 255;
+  --color-primary-bg: #f7faff;
+  --color-primary-disabled: #bfc8ff;
+
+  /* 커뮤니티 */
+  --color-accent: #4c6fff;
+  --color-accent-hover: #3f58e6;
+
+  /* Login Banner */
+  --color-login-btn: #5b72ee;
+  --color-login-btn-hover: #4f63d1;
+
+  /* border */
+  --color-line: #e9e9e7;
+  --color-line-input: #d9d9d6;
+
+  /* Status */
+  --color-status-reserved: #9999a3;
+  --color-status-inactive: #9a9a9b;
+  --color-status-past: #000000;
+  --color-status-display: #cccccc;
+
+  /* Info Link */
+  --color-info-link: #6a7cb0;
+
+  /* Error */
+  --color-error: #c0392b;
+  --color-error-bg: #ffe7e7;
+  --color-error-bg-hover: #ffdede;
+
+  /* Warning */
+  --color-warning: #ff8c78;
+  --color-warning-rgb: 255 140 120;
+  --color-warning-bg: #fff9f0;
+  --color-warning-muted: #ffe3bf;
+
+  /* Tag */
+  --color-tag-info-bg: #e7efff;
+  --color-tag-info-text: #4361ee;
+  --color-tag-warning-bg: #fff0d9;
+  --color-tag-warning-text: #ad6200;
+
 }
 
-html,
-body {
-  font-family:
-    'GmarketSans',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Helvetica,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  width: 100%;
-  font-size: 14px;
-  background-color: #ffffff;
-  color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@layer base {
+  html {
+    @apply font-sans w-full bg-surface text-content leading-normal antialiased;
 
-body {
-  margin-left: auto;
-  margin-right: auto;
-  background-color: #f9fafb;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-@media (max-width: 600px) {
-  body {
-    width: 100%;
-    padding: 0;
+    font-size: 14px;
   }
-}
 
-@media (min-width: 601px) {
   body {
-    width: 600px;
+    @apply w-full max-w-full overflow-x-hidden;
   }
-}
-
-body.admin-body {
-  margin: 0;
-  width: 100% !important;
-  max-width: none !important;
-  background-color: #f5f5f5 !important;
-  font-size: 14px;
 }

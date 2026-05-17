@@ -1,19 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import { MaruSad } from 'public/static/icons';
 
 export default function NotFound() {
   return (
     <main className="min-h-screen bg-white px-4">
       <div className="mx-auto flex min-h-screen max-w-[560px] flex-col items-center justify-center py-16">
-        <img
-          src="/maintenance/horse.svg"
-          alt="404 안내 이미지"
+        <MaruSad
+          role="img"
+          aria-label="안내 이미지"
           className="mb-8 h-[160px] w-auto select-none"
           draggable={false}
         />
 
-        <h1 className="text-center text-xl font-semibold text-[#788DFF]">
+        <h1 className="text-center text-xl font-semibold text-brand">
           페이지를 찾을 수 없어요
         </h1>
 
@@ -34,7 +35,7 @@ export default function NotFound() {
 
           <Link
             href="/"
-            className="flex-1 rounded-xl bg-[#788DFF] px-4 py-3 text-center text-sm font-semibold text-white hover:opacity-90"
+            className="flex-1 rounded-xl bg-brand px-4 py-3 text-center text-sm font-semibold text-white hover:opacity-90"
           >
             홈으로
           </Link>
