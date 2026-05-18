@@ -12,6 +12,8 @@ import axiosInstance from '@api/instance';
 import useReservationStore from '../../stores/useReservationStore';
 import useTokenStore from '../../stores/useTokenStore';
 
+import Dropdown from '@components/common/dropdown';
+
 // 타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
 const TEN_MIN = 10 * 60 * 1000;
@@ -194,43 +196,32 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
     const options = [];
     for (let ms = rounded; ms <= endMs; ms += TEN_MIN) {
       if (!reserved10mKeys.has(slotKey10m(ms))) {
-        options.push(ms);
+        options.push({
+          label: formatTime(ms),
+          value: new Date(ms).toISOString(),
+        });
       }
     }
 
-    return options.map((ms) => {
-      const iso = new Date(ms).toISOString();
-      return (
-        <option key={iso} value={iso}>
-          {formatTime(ms)}
-        </option>
-      );
-    });
+    return options;
   };
 
   // 오늘 모달: 종료시간 후보(1h/2h) 중 충돌 없는 것만
   const renderEndTimeOptions = () => {
-    if (!startTime) {
-      return [];
-    }
+    if (!startTime) return [];
     const startMs = new Date(startTime).getTime();
-    const end1Ms = startMs + 60 * 60000;
-    const end2Ms = startMs + 120 * 60000;
     const startISO = new Date(startMs).toISOString();
 
-    const candidates = [end1Ms, end2Ms].filter((ms) =>
-      isRangeAvailable(startISO, new Date(ms).toISOString()),
-    );
-
-    return candidates.map((ms) => {
-      const iso = new Date(ms).toISOString();
-      return (
-        <option key={iso} value={iso}>
-          {formatTime(ms)}
-        </option>
-      );
-    });
+    return [startMs + 60 * 60000, startMs + 120 * 60000]
+      .filter((ms) => isRangeAvailable(startISO, new Date(ms).toISOString()))
+      .map((ms) => ({
+        label: formatTime(ms),
+        value: new Date(ms).toISOString(),
+      }));
   };
+
+  const startTimeOptions = renderStartTimeOptions();
+  const endTimeOptions = renderEndTimeOptions();
 
   // KST 오늘 날짜 표시용
   const todayKSTDisplay = () => {
@@ -334,11 +325,11 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
             <div className="mb-3">
               <div>예약 시간</div>
-              <select
-                className="border rounded-md p-2 w-full"
+              <Dropdown
+                options={startTimeOptions}
                 value={startTime}
-                onChange={(e) => {
-                  const newStart = e.target.value;
+                onChange={(value) => {
+                  const newStart = value;
                   setStartTime(newStart);
 
                   const tryAuto = (len) => {
@@ -357,21 +348,18 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                     tryAuto(60);
                   }
                 }}
-              >
-                <option value="" disabled>
-                  시간 선택
-                </option>
-                {renderStartTimeOptions()}
-              </select>
+                placeholder="시간 선택"
+                variant="modal"
+              />
             </div>
 
             <div>
               <div>퇴실 시간</div>
-              <select
-                className="border rounded-md p-2 w-full"
+              <Dropdown
+                options={endTimeOptions}
                 value={endTime}
-                onChange={(e) => {
-                  const selectedEnd = e.target.value;
+                onChange={(value) => {
+                  const selectedEnd = value;
                   setEndTime(selectedEnd);
                   if (startTime) {
                     const dur =
@@ -382,13 +370,10 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                     }
                   }
                 }}
-                disabled={!startTime}
-              >
-                <option value="" disabled>
-                  {startTime === '' ? '예약 시간 먼저 선택' : '시간 선택'}
-                </option>
-                {renderEndTimeOptions()}
-              </select>
+                placeholder={!startTime ? '예약시간 먼저 선택' : '선택'}
+                disabled={!startTime || endTimeOptions.length == 0}
+                variant="modal"
+              />
             </div>
           </div>
         </Modal>
