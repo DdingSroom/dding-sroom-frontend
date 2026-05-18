@@ -1,4 +1,3 @@
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
@@ -75,7 +74,7 @@ const Dropdown = ({
               left: `${position.left}px`,
               width: `${position.width}px`,
             }}
-            className={`max-h-[320px] p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden border border-gray-200 rounded-lg bg-white ${variant == 'modal' ? 'z-modal' : 'z-dropdown'}`}
+            className={`max-h-[320px] p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden border border-gray-200 rounded-lg bg-white ${variant === 'modal' ? 'z-modal' : 'z-dropdown'}`}
           >
             <ul
               role="listbox"

@@ -371,7 +371,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                   }
                 }}
                 placeholder={!startTime ? '예약시간 먼저 선택' : '선택'}
-                disabled={!startTime || endTimeOptions.length == 0}
+                disabled={!startTime || endTimeOptions.length === 0}
                 variant="modal"
               />
             </div>

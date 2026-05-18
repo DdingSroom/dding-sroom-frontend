@@ -125,9 +125,8 @@ export default function SuggestPage() {
 
   async function fetchLatestSuggestionId() {
     try {
-      const normalizedLocation = normalizeLocation(place);
       const res = await axiosInstance.get('/api/suggestions', {
-        params: { category, location: normalizedLocation },
+        params: { category, location: place },
       });
       const list = Array.isArray(res?.data?.suggestions)
         ? res.data.suggestions
