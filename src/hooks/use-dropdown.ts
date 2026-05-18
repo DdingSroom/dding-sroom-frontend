@@ -14,6 +14,7 @@ export const useDropdown = () => {
   useLayoutEffect(() => {
     if (!isOpen) return;
 
+    // 드롭다운 옵션 위치 계산
     const updatePosition = () => {
       if (triggerRef.current) {
         const ref = triggerRef.current.getBoundingClientRect();
@@ -25,14 +26,22 @@ export const useDropdown = () => {
       }
     };
 
+    let rafId = 0;
+
+    const handleThrottle = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
     updatePosition(); // 처음 드롭다운 토글 시, 최초 계산
 
-    window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition);
+    window.addEventListener('resize', handleThrottle);
+    window.addEventListener('scroll', handleThrottle);
 
     return () => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', handleThrottle);
+      window.removeEventListener('scroll', handleThrottle);
+      cancelAnimationFrame(rafId);
     };
   }, [isOpen]);
 
@@ -52,7 +61,6 @@ export const useDropdown = () => {
     };
 
     document.addEventListener('pointerdown', handleOutSideClick);
-
     return () =>
       document.removeEventListener('pointerdown', handleOutSideClick);
   }, [isOpen]);
