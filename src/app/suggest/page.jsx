@@ -9,6 +9,8 @@ import Textarea from '@components/common/Textarea';
 
 import axiosInstance from '@api/instance';
 
+import useTokenStore from '../../stores/useTokenStore';
+
 const MAX_TITLE = 20;
 const MAX_CONTENT = 3000;
 const MAX_FILES = 5;
@@ -50,6 +52,8 @@ const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(1);
 
 export default function SuggestPage() {
   // const router = useRouter();
+
+  const { userId } = useTokenStore();
 
   const [category, setCategory] = useState(categories[0]);
   const [place, setPlace] = useState(places[0]);
@@ -467,7 +471,7 @@ export default function SuggestPage() {
             <div className="px-4 pb-2">
               <Textarea
                 ref={contentRef}
-                draftKey="suggest-content"
+                draftKey={`suggest-content-${userId ?? 'guest'}`}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
