@@ -164,7 +164,7 @@ export default function WritePostPage() {
               </label>
               <Textarea
                 ref={contentRef}
-                draftKey="community-write"
+                draftKey={`community-write-${userId ?? 'guest'}`}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder={`내용을 입력하세요...
