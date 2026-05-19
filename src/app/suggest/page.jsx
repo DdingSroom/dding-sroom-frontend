@@ -57,6 +57,7 @@ export default function SuggestPage() {
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null);
+  const contentRef = useRef(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -332,6 +333,7 @@ export default function SuggestPage() {
       setSuccessMsg('건의가 정상적으로 접수되었어요.');
       setTitle('');
       setContent('');
+      contentRef.current?.clearDraft();
       setFiles([]);
       setUploadProgress({});
     } catch (err) {
@@ -464,6 +466,8 @@ export default function SuggestPage() {
             </label>
             <div className="px-4 pb-2">
               <Textarea
+                ref={contentRef}
+                draftKey="suggest-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."

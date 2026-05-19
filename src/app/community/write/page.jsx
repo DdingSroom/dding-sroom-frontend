@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
@@ -26,6 +26,7 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function WritePostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const contentRef = useRef(null);
   const [category, setCategory] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -71,6 +72,7 @@ export default function WritePostPage() {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
+        contentRef.current?.clearDraft();
         router.push('/community');
       }
     } catch (e) {
@@ -161,6 +163,8 @@ export default function WritePostPage() {
                 내용
               </label>
               <Textarea
+                ref={contentRef}
+                draftKey="community-write"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder={`내용을 입력하세요...
