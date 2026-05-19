@@ -106,6 +106,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
         onCompositionEnd={handleCompositionEnd}
         placeholder={placeholder}
         rows={rows}
+        maxLength={maxLength}
         disabled={disabled}
         className={[
           'w-full rounded-lg border bg-surface-subtle text-content leading-relaxed',
