@@ -4,8 +4,15 @@ import {
   type ChangeEvent,
   type CompositionEvent,
   TextareaHTMLAttributes,
+  forwardRef,
+  useImperativeHandle,
   useState,
 } from 'react';
+import { useDraft } from '@hooks/useDraft';
+
+export interface TextareaHandle {
+  clearDraft: () => void;
+}
 
 type Size = 'sm' | 'md';
 type Resize = 'none' | 'y' | 'both';
@@ -14,7 +21,8 @@ interface TextareaProps extends Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   'size' | 'value'
 > {
-  value: string;
+  value?: string;
+  draftKey?: string;
   resize?: Resize;
   size?: Size;
   error?: boolean;
@@ -31,20 +39,31 @@ const resizeStyles: Record<Resize, string> = {
   both: 'resize',
 };
 
-export default function Textarea({
-  value,
-  onChange,
-  placeholder,
-  rows = 4,
-  maxLength,
-  disabled = false,
-  resize = 'none',
-  size = 'md',
-  error = false,
-  className = '',
-  ...rest
-}: TextareaProps) {
+const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
+  {
+    value: externalValue = '',
+    onChange: externalOnChange,
+    draftKey,
+    placeholder,
+    rows = 4,
+    maxLength,
+    disabled = false,
+    resize = 'none',
+    size = 'md',
+    error = false,
+    className = '',
+    ...rest
+  },
+  ref,
+) {
   const [isComposing, setIsComposing] = useState(false);
+  const draft = useDraft(draftKey, externalValue);
+
+  useImperativeHandle(ref, () => ({
+    clearDraft: () => draft.clear(),
+  }));
+
+  const value = draftKey != null ? draft.value : externalValue;
 
   const atLimit =
     !isComposing && maxLength != null && value.length >= maxLength;
@@ -58,16 +77,18 @@ export default function Textarea({
     ) {
       return;
     }
-    onChange?.(e);
+    if (draftKey != null) draft.set(e.target.value);
+    externalOnChange?.(e);
   };
 
   const handleCompositionEnd = (e: CompositionEvent<HTMLTextAreaElement>) => {
     setIsComposing(false);
-    if (maxLength == null || !onChange) return;
+    if (maxLength == null) return;
     const target = e.target as HTMLTextAreaElement;
     if (target.value.length > maxLength) {
       target.value = target.value.slice(0, maxLength);
-      onChange({
+      if (draftKey != null) draft.set(target.value);
+      externalOnChange?.({
         ...e,
         target,
         currentTarget: target,
@@ -109,4 +130,6 @@ export default function Textarea({
       )}
     </div>
   );
-}
+});
+
+export default Textarea;
