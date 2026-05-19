@@ -13,7 +13,11 @@ const DEBOUNCE_MS = 500;
 export function useDraft(key: string | undefined, initialValue = '') {
   const [value, setValue] = useState(() => {
     if (!key || typeof window === 'undefined') return initialValue;
-    return localStorage.getItem(key) ?? initialValue;
+    try {
+      return localStorage.getItem(key) ?? initialValue;
+    } catch {
+      return initialValue;
+    }
   });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -23,7 +27,9 @@ export function useDraft(key: string | undefined, initialValue = '') {
       if (!key) return;
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
-        localStorage.setItem(key, newValue);
+        try {
+          localStorage.setItem(key, newValue);
+        } catch {}
       }, DEBOUNCE_MS);
     },
     [key],
@@ -47,7 +53,9 @@ export function useDraft(key: string | undefined, initialValue = '') {
   const clear = useCallback(() => {
     if (!key) return;
     if (timerRef.current) clearTimeout(timerRef.current);
-    localStorage.removeItem(key);
+    try {
+      localStorage.removeItem(key);
+    } catch {}
     setValue('');
   }, [key]);
 
