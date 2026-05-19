@@ -1,6 +1,11 @@
 'use client';
 
-import { TextareaHTMLAttributes } from 'react';
+import {
+  type ChangeEvent,
+  type CompositionEvent,
+  TextareaHTMLAttributes,
+  useState,
+} from 'react';
 
 type Size = 'sm' | 'md';
 type Resize = 'none' | 'y' | 'both';
@@ -39,17 +44,47 @@ export default function Textarea({
   className = '',
   ...rest
 }: TextareaProps) {
-  const atLimit = maxLength != null && value.length >= maxLength;
+  const [isComposing, setIsComposing] = useState(false);
+
+  const atLimit =
+    !isComposing && maxLength != null && value.length >= maxLength;
   const hasError = error || atLimit;
+
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (
+      !isComposing &&
+      maxLength != null &&
+      e.target.value.length > maxLength
+    ) {
+      return;
+    }
+    onChange?.(e);
+  };
+
+  const handleCompositionEnd = (e: CompositionEvent<HTMLTextAreaElement>) => {
+    setIsComposing(false);
+    if (maxLength == null || !onChange) return;
+    const target = e.target as HTMLTextAreaElement;
+    if (target.value.length > maxLength) {
+      target.value = target.value.slice(0, maxLength);
+      onChange({
+        ...e,
+        target,
+        currentTarget: target,
+      } as unknown as ChangeEvent<HTMLTextAreaElement>);
+    }
+  };
 
   return (
     <div className="w-full">
       <textarea
+        {...rest}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
+        onCompositionStart={() => setIsComposing(true)}
+        onCompositionEnd={handleCompositionEnd}
         placeholder={placeholder}
         rows={rows}
-        maxLength={maxLength}
         disabled={disabled}
         className={[
           'w-full rounded-lg border bg-surface-subtle text-content leading-relaxed',
@@ -64,7 +99,6 @@ export default function Textarea({
         ]
           .filter(Boolean)
           .join(' ')}
-        {...rest}
       />
       {maxLength != null && (
         <div
