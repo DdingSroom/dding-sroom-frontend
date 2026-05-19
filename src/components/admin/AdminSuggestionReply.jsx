@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 
+import Textarea from '@components/common/Textarea';
+
 import axiosInstance from '@api/instance';
 
 function parseError(err) {
@@ -52,12 +54,12 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
     <div className="mt-4">
       <h4 className="text-sm font-semibold mb-2">관리자 답변</h4>
 
-      <textarea
+      <Textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
         rows={4}
         placeholder="관리자 답변을 입력해 주세요."
-        className="w-full rounded-lg border border-line bg-surface-subtle px-3 py-2 text-sm"
+        size="sm"
       />
 
       <div className="mt-2 flex items-center justify-between">

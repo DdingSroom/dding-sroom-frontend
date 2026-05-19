@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import Textarea from '@components/common/Textarea';
+
 import axiosInstance from '@api/instance';
 
 export default function NotificationManagement() {
@@ -208,14 +210,15 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <textarea
+              <Textarea
                 value={formData.content}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
                 }
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand resize-y"
                 placeholder="공지사항 내용을 입력하세요"
+                size="sm"
+                resize="y"
               />
             </div>
 
@@ -280,14 +283,15 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <textarea
+              <Textarea
                 value={formData.content}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
                 }
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand resize-y"
                 placeholder="공지사항 내용을 입력하세요"
+                size="sm"
+                resize="y"
               />
             </div>
 
