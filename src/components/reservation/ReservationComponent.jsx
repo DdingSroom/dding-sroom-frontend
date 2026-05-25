@@ -168,8 +168,8 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
       ]);
 
       setOpen(false);
-      setStartTime('');
-      setEndTime('');
+      setStartTime(null);
+      setEndTime(null);
       setDurationMinutes(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
@@ -338,7 +338,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                       setEndTime(candidateEnd);
                       setDurationMinutes(len);
                     } else {
-                      setEndTime('');
+                      setEndTime(null);
                     }
                   };
 
@@ -370,7 +370,11 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
                     }
                   }
                 }}
-                placeholder={!startTime ? '예약시간 먼저 선택' : '선택'}
+                placeholder={
+                  endTimeOptions.length === 0 || !startTime
+                    ? '예약시간 먼저 선택'
+                    : '선택'
+                }
                 disabled={!startTime || endTimeOptions.length === 0}
                 variant="modal"
               />
