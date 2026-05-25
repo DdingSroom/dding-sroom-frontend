@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 export const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setIsPosition] = useState({ top: 0, left: 0, width: 0 }); // 드롭다운 옵션 위치
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 }); // 드롭다운 옵션 위치
 
   const triggerRef = useRef<HTMLButtonElement>(null); // 드롭다운 트리거
   const dropdownRef = useRef<HTMLDivElement>(null); // 드롭다운 옵션 ref
@@ -18,7 +18,7 @@ export const useDropdown = () => {
     const updatePosition = () => {
       if (triggerRef.current) {
         const ref = triggerRef.current.getBoundingClientRect();
-        setIsPosition({
+        setPosition({
           top: window.scrollY + ref?.bottom,
           left: window.scrollX + ref?.left,
           width: ref.width,
@@ -49,7 +49,7 @@ export const useDropdown = () => {
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleOutSideClick = (e: MouseEvent) => {
+    const handleOutSideClick = (e: PointerEvent) => {
       const target = e.target as Node;
       if (
         triggerRef.current?.contains(target) ||
