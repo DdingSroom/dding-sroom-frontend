@@ -75,8 +75,9 @@ const Dropdown = ({
               top: `${position.top + 8}px`,
               left: `${position.left}px`,
               width: `${position.width}px`,
+              maxHeight: `calc(100vh - ${position.top + 32}px)`,
             }}
-            className={`max-h-[320px] p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden border border-gray-200 rounded-lg bg-white ${variant === 'modal' ? 'z-modal' : 'z-dropdown'}`}
+            className={`p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden border border-gray-200 rounded-lg bg-white ${variant === 'modal' ? 'z-modal' : 'z-dropdown'}`}
           >
             <ul
               role="listbox"
