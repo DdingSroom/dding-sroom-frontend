@@ -53,7 +53,7 @@ const Dropdown = ({
         disabled={disabled}
       >
         <span className={`${disabled ? 'text-gray-200' : 'text-gray-700'}`}>
-          {!value
+          {value === null || value === undefined
             ? placeholder
             : (options.find((o) => o.value === value)?.label ?? value)}
         </span>
