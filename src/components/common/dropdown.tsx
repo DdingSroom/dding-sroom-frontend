@@ -71,7 +71,7 @@ const Dropdown = ({
           <div
             ref={dropdownRef}
             style={{
-              position: 'absolute',
+              position: 'fixed',
               top: `${position.top + 8}px`,
               left: `${position.left}px`,
               width: `${position.width}px`,

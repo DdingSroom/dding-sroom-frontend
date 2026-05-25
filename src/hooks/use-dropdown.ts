@@ -19,8 +19,8 @@ export const useDropdown = () => {
       if (triggerRef.current) {
         const ref = triggerRef.current.getBoundingClientRect();
         setPosition({
-          top: window.scrollY + ref?.bottom,
-          left: window.scrollX + ref?.left,
+          top: ref?.bottom,
+          left: ref?.left,
           width: ref.width,
         });
       }
@@ -36,11 +36,11 @@ export const useDropdown = () => {
     updatePosition(); // 처음 드롭다운 토글 시, 최초 계산
 
     window.addEventListener('resize', handleThrottle);
-    window.addEventListener('scroll', handleThrottle);
+    window.addEventListener('scroll', handleThrottle, true);
 
     return () => {
       window.removeEventListener('resize', handleThrottle);
-      window.removeEventListener('scroll', handleThrottle);
+      window.removeEventListener('scroll', handleThrottle, true);
       cancelAnimationFrame(rafId);
     };
   }, [isOpen]);
