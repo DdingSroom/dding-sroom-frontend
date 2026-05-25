@@ -50,8 +50,8 @@ const toKSTISOString = (utcMs) =>
 
 const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
   const [open, setOpen] = useState(false);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
   const [durationMinutes, setDurationMinutes] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
