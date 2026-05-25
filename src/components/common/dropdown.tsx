@@ -1,3 +1,5 @@
+'use-client';
+
 import { createPortal } from 'react-dom';
 
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
