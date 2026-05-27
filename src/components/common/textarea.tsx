@@ -25,7 +25,6 @@ interface TextareaProps extends Omit<
   draftKey?: string;
   resize?: Resize;
   size?: Size;
-  error?: boolean;
 }
 
 const sizeStyles: Record<Size, string> = {
@@ -48,7 +47,6 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
     disabled = false,
     resize = 'none',
     size = 'md',
-    error = false,
     className = '',
     ...rest
   },
@@ -65,7 +63,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
 
   const atLimit =
     !isComposing && maxLength != null && value.length >= maxLength;
-  const hasError = error || atLimit;
+  const hasError = atLimit;
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (
