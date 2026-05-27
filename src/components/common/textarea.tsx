@@ -44,8 +44,6 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
     value: externalValue = '',
     onChange: externalOnChange,
     draftKey,
-    placeholder,
-    rows = 4,
     maxLength,
     disabled = false,
     resize = 'none',
@@ -99,13 +97,12 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
   return (
     <div className="w-full">
       <textarea
+        rows={4}
         {...rest}
         value={value}
         onChange={handleChange}
         onCompositionStart={() => setIsComposing(true)}
         onCompositionEnd={handleCompositionEnd}
-        placeholder={placeholder}
-        rows={rows}
         maxLength={maxLength}
         disabled={disabled}
         className={[
