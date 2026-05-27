@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import Textarea from '@components/common/Textarea';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 

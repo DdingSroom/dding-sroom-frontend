@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import Textarea from '@components/common/Textarea';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 

@@ -7,7 +7,7 @@ import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import Textarea from '@components/common/Textarea';
+import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 
 import axiosInstance from '@api/instance';

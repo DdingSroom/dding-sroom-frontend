@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import Textarea from '@components/common/Textarea';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 
