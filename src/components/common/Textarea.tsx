@@ -110,12 +110,12 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
         disabled={disabled}
         className={[
           'w-full rounded-lg border bg-surface-subtle text-content leading-relaxed',
-          'focus:outline-none focus:ring-2 focus:ring-brand/15 transition-colors',
+          'focus:outline-none focus:ring-2 focus:ring-primary-500/15 transition-colors',
           sizeStyles[size],
           resizeStyles[resize],
           hasError
-            ? 'border-error focus:border-error'
-            : 'border-line focus:border-brand',
+            ? 'border-red-500 focus:border-red-500'
+            : 'border-line focus:border-primary-500',
           disabled ? 'opacity-50 cursor-not-allowed' : '',
           className,
         ]
