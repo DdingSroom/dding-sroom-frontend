@@ -8,7 +8,7 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { useDraft } from '@hooks/useDraft';
+import { useDraft } from '@hooks/use-draft';
 
 export interface TextareaHandle {
   clearDraft: () => void;
