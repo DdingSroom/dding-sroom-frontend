@@ -17,7 +17,7 @@ const PrivacyPolicyFooter = () => {
             Copyright © DdingsRoom. All Rights Reserved
           </p>
           <p className="text-xs text-[#73726e] leading-relaxed">
-            E-mail: ddingsroom2025@mju.ac.kr
+            E-mail: ddingsroom2025@gmail.com
           </p>
         </div>
       </div>
