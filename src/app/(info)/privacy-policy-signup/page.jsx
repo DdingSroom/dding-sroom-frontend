@@ -55,8 +55,8 @@ export default function PrivacyPolicyStep3ReturnPage() {
             ['#section-6', '개인정보 보호를 위한 기술적/관리적 방침'],
             ['#section-7', '개인정보처리방침의 변경'],
             ['#section-8', '개인정보 보호책임자 및 문의처'],
-          ['#section-9', '쿠키의 설치·운영 및 거부에 관한 사항'],
-          ['#section-10', '권익침해 구제방법'],
+            ['#section-9', '쿠키의 설치·운영 및 거부에 관한 사항'],
+            ['#section-10', '권익침해 구제방법'],
           ].map(([href, label]) => (
             <li key={href}>
               <a
@@ -208,8 +208,8 @@ export default function PrivacyPolicyStep3ReturnPage() {
 
         <Section id="section-8" title="8. 개인정보 보호책임자 및 문의처">
           <P>
-            본 서비스는 이용자의 개인정보를 보호하고 관련 불만을 처리하기
-            위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
+            본 서비스는 이용자의 개인정보를 보호하고 관련 불만을 처리하기 위하여
+            아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
           </P>
           <UL>
             <LI>
@@ -227,10 +227,7 @@ export default function PrivacyPolicyStep3ReturnPage() {
           </UL>
         </Section>
 
-        <Section
-          id="section-9"
-          title="9. 쿠키의 설치·운영 및 거부에 관한 사항"
-        >
+        <Section id="section-9" title="9. 쿠키의 설치·운영 및 거부에 관한 사항">
           <P>
             본 서비스는 이용자의 로그인 상태 유지 및 서비스 이용 편의를 위해
             세션(Session)을 사용하며, 일부 기능에서 쿠키(Cookie)를 사용할 수
@@ -238,14 +235,13 @@ export default function PrivacyPolicyStep3ReturnPage() {
           </P>
           <UL>
             <LI>
-              <b>쿠키·세션 사용 목적</b>: 회원의 로그인 상태 유지 및 서비스
-              이용 편의성 제공
+              <b>쿠키·세션 사용 목적</b>: 회원의 로그인 상태 유지 및 서비스 이용
+              편의성 제공
             </LI>
             <LI>
               <b>거부 방법</b>: 웹 브라우저 상단의 설정 &gt; 개인정보 보호
-              메뉴를 통해 쿠키 저장을 거부할 수 있습니다. 단, 쿠키 저장을
-              거부할 경우 로그인이 필요한 일부 서비스 이용에 어려움이 있을 수
-              있습니다.
+              메뉴를 통해 쿠키 저장을 거부할 수 있습니다. 단, 쿠키 저장을 거부할
+              경우 로그인이 필요한 일부 서비스 이용에 어려움이 있을 수 있습니다.
             </LI>
           </UL>
         </Section>
@@ -253,8 +249,8 @@ export default function PrivacyPolicyStep3ReturnPage() {
         <Section id="section-10" title="10. 권익침해 구제방법">
           <P>
             정보주체는 개인정보침해로 인한 구제를 받기 위하여
-            개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터
-            등에 분쟁해결이나 상담 등을 신청할 수 있습니다.
+            개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터 등에
+            분쟁해결이나 상담 등을 신청할 수 있습니다.
           </P>
           <UL>
             <LI>
