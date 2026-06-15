@@ -13,7 +13,7 @@ export const metadata = {
   },
 };
 
-const updatedAt = '2025-08-14 (KST)';
+const updatedAt = '2026-06-15 (KST)';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -53,7 +53,9 @@ export default function PrivacyPolicyPage() {
             ['#section-5', '이용자의 권리와 행사 방법'],
             ['#section-6', '개인정보 보호를 위한 기술적/관리적 방침'],
             ['#section-7', '개인정보처리방침의 변경'],
-            ['#section-8', '문의처'],
+            ['#section-8', '개인정보 보호책임자 및 문의처'],
+          ['#section-9', '쿠키의 설치·운영 및 거부에 관한 사항'],
+          ['#section-10', '권익침해 구제방법'],
           ].map(([href, label]) => (
             <li key={href}>
               <a
@@ -129,13 +131,13 @@ export default function PrivacyPolicyPage() {
           <UL>
             <LI>
               회원탈퇴 요청 시, 회원 식별정보 및 예약 관련 데이터(예약내역,
-              이용기록 등)는 관련 법령을 준수하여 <b>1개월 이내</b> 모두
-              삭제됩니다.
+              이용기록 등)는 <b>지체 없이(탈퇴 요청일로부터 5일 이내)</b>{' '}
+              파기됩니다.
             </LI>
             <LI>
               피드백 및 건의사항 기록은 서비스 개선 목적에 한해 일정 기간 보관할
-              수 있으나, 회원 정보와 직접 결합된 정보는 1개월 내 완전
-              삭제합니다.
+              수 있으나, 회원 정보와 직접 결합된 정보는{' '}
+              <b>지체 없이(5일 이내)</b> 완전 삭제합니다.
             </LI>
           </UL>
 
@@ -170,8 +172,8 @@ export default function PrivacyPolicyPage() {
               회원은 언제든지 자신의 개인정보를 조회/수정/삭제할 수 있습니다.
             </LI>
             <LI>
-              탈퇴 요청 시, 모든 개인정보와 예약 내역은 <b>1개월 이내</b> 완전
-              삭제됩니다.
+              탈퇴 요청 시, 모든 개인정보와 예약 내역은{' '}
+              <b>지체 없이(5일 이내)</b> 완전 삭제됩니다.
             </LI>
             <LI>
               개인정보 열람, 정정, 삭제, 처리정지 등 각종 권리는 서비스 내
@@ -203,21 +205,81 @@ export default function PrivacyPolicyPage() {
           </P>
         </Section>
 
-        <Section id="section-8" title="8. 문의처">
+        <Section id="section-8" title="8. 개인정보 보호책임자 및 문의처">
           <P>
-            개인정보 관련 문의사항 및 권리 행사 요청 시 아래로 연락해 주세요.
+            본 서비스는 이용자의 개인정보를 보호하고 관련 불만을 처리하기
+            위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
           </P>
           <UL>
             <LI>
-              <b>이메일</b>:{' '}
+              <b>개인정보 보호책임자 / 담당부서</b>: 띵스룸 운영팀
+            </LI>
+            <LI>
+              <b>연락처(이메일)</b>:{' '}
               <a
-                href="mailto:ddingsroom2025@mju.ac.kr"
+                href="mailto:ddingsroom2025@gmail.com"
                 className="text-[#788cff] underline underline-offset-4 hover:opacity-80"
               >
                 ddingsroom2025@gmail.com
               </a>
             </LI>
-            <LI>서비스 사이트 내 하단 정보 참고</LI>
+          </UL>
+        </Section>
+
+        <Section
+          id="section-9"
+          title="9. 쿠키의 설치·운영 및 거부에 관한 사항"
+        >
+          <P>
+            본 서비스는 이용자의 로그인 상태 유지 및 서비스 이용 편의를 위해
+            세션(Session)을 사용하며, 일부 기능에서 쿠키(Cookie)를 사용할 수
+            있습니다.
+          </P>
+          <UL>
+            <LI>
+              <b>쿠키·세션 사용 목적</b>: 회원의 로그인 상태 유지 및 서비스
+              이용 편의성 제공
+            </LI>
+            <LI>
+              <b>거부 방법</b>: 웹 브라우저 상단의 설정 &gt; 개인정보 보호
+              메뉴를 통해 쿠키 저장을 거부할 수 있습니다. 단, 쿠키 저장을
+              거부할 경우 로그인이 필요한 일부 서비스 이용에 어려움이 있을 수
+              있습니다.
+            </LI>
+          </UL>
+        </Section>
+
+        <Section id="section-10" title="10. 권익침해 구제방법">
+          <P>
+            정보주체는 개인정보침해로 인한 구제를 받기 위하여
+            개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터
+            등에 분쟁해결이나 상담 등을 신청할 수 있습니다.
+          </P>
+          <UL>
+            <LI>
+              <b>개인정보침해신고센터</b>: (국번없이) 118 (
+              <a
+                href="https://privacy.kisa.or.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#788cff] underline underline-offset-4 hover:opacity-80"
+              >
+                privacy.kisa.or.kr
+              </a>
+              )
+            </LI>
+            <LI>
+              <b>개인정보분쟁조정위원회</b>: (국번없이) 1833-6972 (
+              <a
+                href="https://www.kopico.go.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#788cff] underline underline-offset-4 hover:opacity-80"
+              >
+                kopico.go.kr
+              </a>
+              )
+            </LI>
           </UL>
         </Section>
       </article>
