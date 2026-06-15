@@ -21,7 +21,8 @@ export default function ManualContent() {
 
         <p className="mt-6 rounded-2xl border border-[#dbe5ff] bg-white/70 p-5 leading-[1.9] text-[15px] text-[#37352f]">
           일부 학우분들이 학교 이메일 인증 메일을 받지 못하는 경우가 있습니다.
-          이는 <b>개인 Google Workspace(Gmail) 계정이 아직 생성되지 않은 경우</b>에
+          이는{' '}
+          <b>개인 Google Workspace(Gmail) 계정이 아직 생성되지 않은 경우</b>에
           주로 발생합니다. 아래 안내를 참고해 Gmail 계정을 생성하신 후
           회원가입을 진행해 주시기 바랍니다.
         </p>
@@ -37,23 +38,23 @@ export default function ManualContent() {
             서비스로 운영하고 있습니다.
           </P>
           <P>
-            인증 메일이 도착하지 않는 경우, <b>개인 Gmail 계정이 아직 생성되지
-            않았거나 활성화되지 않은 상태</b>일 가능성이 높습니다. 아래 안내에
-            따라 계정을 생성하신 후 다시 시도해 주세요.
+            인증 메일이 도착하지 않는 경우,{' '}
+            <b>개인 Gmail 계정이 아직 생성되지 않았거나 활성화되지 않은 상태</b>
+            일 가능성이 높습니다. 아래 안내에 따라 계정을 생성하신 후 다시
+            시도해 주세요.
           </P>
         </Section>
 
         <Section id="section-2" title="2. 해결 방법">
           <UL>
             <LI>
-              아래 참고 링크를 통해 <b>학교 Gmail 계정 생성 안내</b>를 확인합니다.
+              아래 참고 링크를 통해 <b>학교 Gmail 계정 생성 안내</b>를
+              확인합니다.
             </LI>
             <LI>
               안내에 따라 <b>Google Workspace(Gmail) 계정을 생성</b>합니다.
             </LI>
-            <LI>
-              계정 생성 후, 본 서비스 회원가입을 다시 진행해 주세요.
-            </LI>
+            <LI>계정 생성 후, 본 서비스 회원가입을 다시 진행해 주세요.</LI>
           </UL>
         </Section>
 

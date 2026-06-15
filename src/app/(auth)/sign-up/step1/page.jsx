@@ -301,8 +301,8 @@ export default function SignUpStep1() {
                 <p className="text-xs text-[#73726e] leading-relaxed">
                   학교 계정으로 이메일이 발송되지 않는다면,{' '}
                   <b>개인 Gmail 계정이 아직 생성되지 않은 경우</b>일 수
-                  있습니다. 아래 <b>해결방법</b> 버튼을 클릭하여 Gmail 계정
-                  생성 안내를 확인하신 후 회원가입하시길 바랍니다.
+                  있습니다. 아래 <b>해결방법</b> 버튼을 클릭하여 Gmail 계정 생성
+                  안내를 확인하신 후 회원가입하시길 바랍니다.
                 </p>
 
                 <div className="pt-1">
