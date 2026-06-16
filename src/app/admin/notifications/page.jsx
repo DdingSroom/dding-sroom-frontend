@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import DraftTextarea from '@components/common/draft-textarea';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
@@ -13,6 +14,7 @@ export default function NotificationManagement() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const contentRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -58,6 +60,7 @@ export default function NotificationManagement() {
 
       alert('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
+      contentRef.current?.clearDraft();
       setShowCreateForm(false);
       fetchNotifications();
     } catch (error) {
@@ -210,7 +213,9 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <Textarea
+              <DraftTextarea
+                ref={contentRef}
+                draftKey="admin-notification-create"
                 value={formData.content}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
