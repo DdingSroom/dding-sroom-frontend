@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-import Textarea from '@components/common/textarea';
+import DraftTextarea from '@components/common/draft-textarea';
 
 import axiosInstance from '@api/instance';
 
@@ -25,6 +25,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [value, setValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const contentRef = useRef(null);
 
   const submit = async () => {
     setError('');
@@ -40,6 +41,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         answer_content: value.trim(),
       });
       setValue('');
+      contentRef.current?.clearDraft();
       if (typeof onUpdate === 'function') {
         onUpdate();
       }
@@ -54,7 +56,9 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
     <div className="mt-4">
       <h4 className="text-sm font-semibold mb-2">관리자 답변</h4>
 
-      <Textarea
+      <DraftTextarea
+        ref={contentRef}
+        draftKey={`admin-reply-${suggestion?.id}`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         rows={4}
