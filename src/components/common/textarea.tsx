@@ -4,15 +4,8 @@ import {
   type ChangeEvent,
   type CompositionEvent,
   TextareaHTMLAttributes,
-  forwardRef,
-  useImperativeHandle,
   useState,
 } from 'react';
-import { useDraft } from '@hooks/use-draft';
-
-export interface TextareaHandle {
-  clearDraft: () => void;
-}
 
 type TextareaSize = 'sm' | 'md';
 type Resize = 'none' | 'y' | 'both';
@@ -22,7 +15,6 @@ interface TextareaProps extends Omit<
   'value'
 > {
   value?: string;
-  draftKey?: string;
   resize?: Resize;
   textareaSize?: TextareaSize;
 }
@@ -38,28 +30,17 @@ const resizeStyles: Record<Resize, string> = {
   both: 'resize',
 };
 
-const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
-  {
-    value: externalValue = '',
-    onChange: externalOnChange,
-    draftKey,
-    maxLength,
-    disabled = false,
-    resize = 'none',
-    textareaSize = 'md',
-    className = '',
-    ...rest
-  },
-  ref,
-) {
+export default function Textarea({
+  value = '',
+  onChange,
+  maxLength,
+  disabled = false,
+  resize = 'none',
+  textareaSize = 'md',
+  className = '',
+  ...rest
+}: TextareaProps) {
   const [isComposing, setIsComposing] = useState(false);
-  const draft = useDraft(draftKey, externalValue);
-
-  useImperativeHandle(ref, () => ({
-    clearDraft: () => draft.clear(),
-  }));
-
-  const value = draftKey != null ? draft.value : externalValue;
 
   const atLimit =
     !isComposing && maxLength != null && value.length >= maxLength;
@@ -73,8 +54,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
     ) {
       return;
     }
-    if (draftKey != null) draft.set(e.target.value);
-    externalOnChange?.(e);
+    onChange?.(e);
   };
 
   const handleCompositionEnd = (e: CompositionEvent<HTMLTextAreaElement>) => {
@@ -83,8 +63,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
     const target = e.target as HTMLTextAreaElement;
     if (target.value.length > maxLength) {
       target.value = target.value.slice(0, maxLength);
-      if (draftKey != null) draft.set(target.value);
-      externalOnChange?.({
+      onChange?.({
         ...e,
         target,
         currentTarget: target,
@@ -126,6 +105,4 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
       )}
     </div>
   );
-});
-
-export default Textarea;
+}
