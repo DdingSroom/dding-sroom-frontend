@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import DraftTextarea from '@components/common/draft-textarea';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 
 import axiosInstance from '@api/instance';
@@ -162,7 +162,7 @@ export default function WritePostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
-              <Textarea
+              <DraftTextarea
                 ref={contentRef}
                 draftKey={`community-write-${userId ?? 'guest'}`}
                 value={content}
