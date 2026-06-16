@@ -3,9 +3,9 @@
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
+import DraftTextarea from '@components/common/draft-textarea';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 
@@ -469,7 +469,7 @@ export default function SuggestPage() {
               건의/신고 내용
             </label>
             <div className="px-4 pb-2">
-              <Textarea
+              <DraftTextarea
                 ref={contentRef}
                 draftKey={`suggest-content-${userId ?? 'guest'}`}
                 value={content}
