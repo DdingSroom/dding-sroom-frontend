@@ -14,20 +14,20 @@ export interface TextareaHandle {
   clearDraft: () => void;
 }
 
-type Size = 'sm' | 'md';
+type TextareaSize = 'sm' | 'md';
 type Resize = 'none' | 'y' | 'both';
 
 interface TextareaProps extends Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'size' | 'value'
+  'value'
 > {
   value?: string;
   draftKey?: string;
   resize?: Resize;
-  size?: Size;
+  textareaSize?: TextareaSize;
 }
 
-const sizeStyles: Record<Size, string> = {
+const sizeStyles: Record<TextareaSize, string> = {
   sm: 'px-3 py-2 text-sm',
   md: 'px-4 py-3 text-md',
 };
@@ -46,7 +46,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
     maxLength,
     disabled = false,
     resize = 'none',
-    size = 'md',
+    textareaSize = 'md',
     className = '',
     ...rest
   },
@@ -106,7 +106,7 @@ const Textarea = forwardRef<TextareaHandle, TextareaProps>(function Textarea(
         className={[
           'w-full rounded-lg border bg-surface-subtle text-content leading-relaxed',
           'focus:outline-none focus:ring-2 focus:ring-primary-500/15 transition-colors',
-          sizeStyles[size],
+          sizeStyles[textareaSize],
           resizeStyles[resize],
           hasError
             ? 'border-red-500 focus:border-red-500'
