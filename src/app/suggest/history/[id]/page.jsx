@@ -419,7 +419,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                       onChange={(e) => setEContent(e.target.value)}
                       rows={8}
                       placeholder="내용"
-                      size="sm"
+                      textareaSize="sm"
                     />
                   </div>
 

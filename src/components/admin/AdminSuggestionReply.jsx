@@ -59,7 +59,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         onChange={(e) => setValue(e.target.value)}
         rows={4}
         placeholder="관리자 답변을 입력해 주세요."
-        size="sm"
+        textareaSize="sm"
       />
 
       <div className="mt-2 flex items-center justify-between">

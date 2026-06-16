@@ -462,7 +462,7 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 rows={4}
-                size="sm"
+                textareaSize="sm"
               />
               <div className="flex justify-end gap-2">
                 <button

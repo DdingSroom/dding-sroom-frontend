@@ -217,7 +217,7 @@ export default function NotificationManagement() {
                 }
                 rows={15}
                 placeholder="공지사항 내용을 입력하세요"
-                size="sm"
+                textareaSize="sm"
                 resize="y"
               />
             </div>
@@ -290,7 +290,7 @@ export default function NotificationManagement() {
                 }
                 rows={15}
                 placeholder="공지사항 내용을 입력하세요"
-                size="sm"
+                textareaSize="sm"
                 resize="y"
               />
             </div>
