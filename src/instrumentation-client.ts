@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
-import { sentryCommonConfig } from './lib/sentry.common';
+
+import { sentryCommonConfig } from './libs/sentry.common';
 
 Sentry.init({
   ...sentryCommonConfig,

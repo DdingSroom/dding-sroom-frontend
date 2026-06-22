@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -182,11 +182,9 @@ export default function SignUpStep3() {
 
           {/* 회원가입 버튼 */}
           <div className="w-full pt-2">
-            <Button
-              onClick={handleSignup}
-              disabled={!isSignupAvailable()}
-              text="회원가입"
-            />
+            <Button onClick={handleSignup} disabled={!isSignupAvailable()}>
+              회원가입
+            </Button>
           </div>
         </div>
       </main>
