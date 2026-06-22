@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Maru } from 'public/static/icons';
 
 const Banner = () => (
   <div className="flex justify-between items-center p-8 bg-white rounded-2xl w-full max-w-content min-h-banner shadow-sm border border-gray-50">
@@ -38,12 +39,10 @@ const Banner = () => (
       </div>
     </div>
 
-    <Image
-      src="/static/icons/maru_icon.png"
+    <Maru
       alt="maru"
       width={128}
       height={128}
-      priority
       sizes="128px"
       className="w-32 h-32 object-contain"
     />

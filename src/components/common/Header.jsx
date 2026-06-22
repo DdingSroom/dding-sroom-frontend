@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import InfoModal from '@components/common/InfoModal';
 
 import axiosInstance from '@api/instance';
+import { Bell, Person } from 'public/static/icons';
 
 const Header = () => {
   const router = useRouter();
@@ -53,14 +54,11 @@ const Header = () => {
       />
       <div className="flex items-center gap-4">
         <button
+          aria-label="알림페이지로 이동"
           className="relative p-2 hover:bg-gray-50 rounded-xl transition-all duration-200 hover:scale-105"
           onClick={handleClickNotification}
         >
-          <img
-            src="/static/icons/bell_icon.png"
-            alt="notification"
-            className="h-6 w-6"
-          />
+          <Bell aria-hidden="true" />
           {recentNotificationCount > 0 && (
             <div className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center">
               <span className="relative flex items-center justify-center">
@@ -75,13 +73,13 @@ const Header = () => {
           )}
         </button>
         <button
-          className="w-9 h-9 bg-brand rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-brand-hover transition-colors shadow-sm"
+          aria-label="마이페이지로 이동"
+          className="w-[29px] h-[29px] bg-[#788DFF] relative rounded-full overflow-hidden cursor-pointer hover:bg-[#6a7dff] transition-colors shadow-sm"
           onClick={handleClickProfile}
         >
-          <img
-            src="/static/icons/person_icon.png"
-            alt="person_icon"
-            className="w-6 h-6 object-contain"
+          <Person
+            aria-hidden="true"
+            className="text-white absolute bottom-[-1px] left-1/2 -translate-x-1/2"
           />
         </button>
       </div>

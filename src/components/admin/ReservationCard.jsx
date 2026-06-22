@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+
 export default function ReservationCard({
   roomName,
   time,
@@ -11,7 +13,7 @@ export default function ReservationCard({
   return (
     <div className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl hover:border-gray-200 transition-colors bg-white shadow-sm">
       <img
-        src="/static/icons/studyroom_image.png"
+        src={STUDYROOM_IMAGE_SRC}
         className="w-12 h-12 object-cover rounded-lg"
         alt="스터디룸"
       />
