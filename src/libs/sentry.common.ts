@@ -1,4 +1,4 @@
-import { init } from '@sentry/nextjs';
+import { type init } from '@sentry/nextjs';
 import axios from 'axios';
 
 type SentryOptions = NonNullable<Parameters<typeof init>[0]>;
