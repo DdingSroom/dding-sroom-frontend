@@ -252,7 +252,6 @@ function LoginForm() {
 
           <Button
             disabled={!isLoginAvailable()}
-            text="로그인"
             type="submit"
             onClick={handleLogin}
           >
