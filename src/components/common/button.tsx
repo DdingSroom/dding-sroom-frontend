@@ -8,8 +8,9 @@ interface ButtonProps {
 
 const Button = ({ onClick, children, disabled, ...props }: ButtonProps) => (
   <button
-    {...props}
+    disabled={disabled}
     type="button"
+    {...props}
     className={`flex justify-center text-white w-full py-3 rounded-lg text-body-01 font-medium transition-all duration-200 ${
       disabled
         ? 'bg-gray-200 cursor-not-allowed'
