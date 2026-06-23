@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 
 import axiosInstance from '@api/instance';
 
+import { Input } from '@components/common/Input';
+
 export default function NotificationManagement() {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -193,11 +195,11 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, title: value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 placeholder="공지사항 제목을 입력하세요"
@@ -265,11 +267,11 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, title: value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 placeholder="공지사항 제목을 입력하세요"

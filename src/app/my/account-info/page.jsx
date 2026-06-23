@@ -8,6 +8,7 @@ import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
+import { Input } from '@components/common/Input';
 
 import axiosInstance from '@api/instance';
 
@@ -260,12 +261,11 @@ export default function AccountInfo() {
             <label className="block text-sm font-medium text-content">
               이름
             </label>
-            <input
+            <Input
               type="text"
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(value) => setNewName(value)}
               maxLength={20}
-              className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
             <p className="text-xs text-content-muted">

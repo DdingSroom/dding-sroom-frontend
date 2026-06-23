@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import MyPageHeader from '@components/my/MyPageHeader';
+import { Input } from '@components/common/Input';
 
 import axiosInstance from '@api/instance';
 
@@ -126,13 +127,13 @@ export default function CancelAccountStep1() {
                   <label className="block text-sm font-medium text-content">
                     계정 이메일
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <StyledInput
+                      <Input
                         type="email"
                         placeholder="이메일을 입력해주세요."
                         value={emailInput}
-                        onChange={(e) => setEmailInput(e.target.value)}
+                        onChange={(value) => setEmailInput(value)}
                         disabled={isSendingVerify || isVerified}
                         aria-label="계정 이메일 입력"
                       />
@@ -208,11 +209,3 @@ export default function CancelAccountStep1() {
     </>
   );
 }
-
-const StyledInput = ({ value, className = '', ...props }) => {
-  const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
-    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
-  return <input className={`${base} ${className}`} value={value} {...props} />;
-};

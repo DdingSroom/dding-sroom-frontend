@@ -9,6 +9,7 @@ import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
+import { Input } from '@components/common/Input';
 
 import axiosInstance from '@api/instance';
 import { anonymizeUsers } from '@utils/anonymizeUser';
@@ -312,20 +313,19 @@ export default function PostDetailPage() {
           )}
 
           <div className="px-5 py-4 border-t border-gray-200">
-            <div className="flex gap-2">
-              <input
+            <div className="flex items-center gap-2">
+              <Input
                 type="text"
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(value) => setNewComment(value)}
                 placeholder="댓글을 입력하세요…"
-                className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
                 disabled={isSubmittingComment}
                 maxLength={500}
               />
               <button
                 onClick={handleCommentSubmit}
                 disabled={!newComment.trim() || isSubmittingComment}
-                className="px-4 py-3 text-sm font-semibold text-white bg-brand rounded-lg hover:bg-brand-hover disabled:bg-gray-300"
+                className="px-4 py-3 text-sm font-semibold text-white bg-brand rounded-lg hover:bg-brand-hover disabled:bg-gray-300 whitespace-nowrap shrink-0"
               >
                 {isSubmittingComment ? '작성중…' : '등록'}
               </button>

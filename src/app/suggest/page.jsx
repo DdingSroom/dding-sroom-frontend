@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/Input';
 
 import axiosInstance from '@api/instance';
 
@@ -382,17 +383,18 @@ export default function SuggestPage() {
             </label>
             <div className="px-4 pb-2">
               <div className="relative">
-                <input
+                <Input
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(value) => setTitle(value)}
                   placeholder="제목을 입력해 주세요(20자 이내)"
-                  className="w-full rounded-lg border bg-surface-subtle px-4 py-3 text-md"
-                />
-                <span
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
+                  maxLength={20}
                 >
-                  {titleCount}/{MAX_TITLE}
-                </span>
+                  <span
+                    className={`text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
+                  >
+                    {titleCount}/{MAX_TITLE}
+                  </span>
+                </Input>
               </div>
             </div>
           </section>

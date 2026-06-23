@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/Input';
 
 import axiosInstance from '@api/instance';
 
@@ -388,10 +389,9 @@ export default function SuggestHistoryDetailPage({ params }) {
                     <label className="block text-sm font-medium mb-1">
                       제목
                     </label>
-                    <input
+                    <Input
                       value={eTitle}
-                      onChange={(e) => setETitle(e.target.value)}
-                      className="w-full rounded border px-3 py-2 text-sm"
+                      onChange={(value) => setETitle(value)}
                       placeholder="제목"
                     />
                   </div>

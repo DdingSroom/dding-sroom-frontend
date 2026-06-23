@@ -12,6 +12,7 @@ import axiosInstance, { setAccessToken } from '@api/instance';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -88,6 +89,8 @@ function LoginForm() {
     strictEmailRegex.test(email) && isValidPassword(password);
 
   const handleLogin = async () => {
+    console.log(email, password);
+
     try {
       const formData = new FormData();
       formData.append('email', email);
@@ -95,6 +98,7 @@ function LoginForm() {
 
       const response = await axiosInstance.post('/login', formData);
 
+      console.log(formData, response);
       const accessToken =
         response.headers['access'] ||
         response.headers['Access'] ||
@@ -120,7 +124,6 @@ function LoginForm() {
         if (extractedUserId) {
           setUserId(extractedUserId);
         }
-
         // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
         if (isLoginSave) {
           const loginData = {
@@ -177,22 +180,22 @@ function LoginForm() {
               <label className="block text-sm font-medium text-content">
                 이메일
               </label>
-              <StyledEmailInput
-                type="email"
+              <Input
                 id="email"
+                type="email"
                 value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
+                onChange={(value) => {
+                  setEmail(value);
+                  if (value !== '' && !strictEmailRegex.test(value)) {
                     setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                  } else {
+                    setEmailError('');
                   }
                 }}
                 placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
+              >
+                <Input.ClearButton />
+              </Input>
               {emailError && (
                 <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
               )}
@@ -202,13 +205,13 @@ function LoginForm() {
               <label className="block text-sm font-medium text-content">
                 비밀번호
               </label>
-              <StyledPasswordInput
+              <Input
                 id="password"
+                type="password"
                 value={password}
-                onChange={(e) => {
-                  const pw = e.target.value;
-                  setPassword(pw);
-                  if (!isValidPassword(pw)) {
+                onChange={(value) => {
+                  setPassword(value);
+                  if (!isValidPassword(value)) {
                     setPasswordError(
                       '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
                     );
@@ -217,9 +220,9 @@ function LoginForm() {
                   }
                 }}
                 placeholder="비밀번호를 입력해주세요."
-                isVisible={isPasswordVisible}
-                handlePasswordVisible={handlePasswordVisible}
-              />
+              >
+                <Input.VisibleButton />
+              </Input>
               {passwordError && (
                 <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
               )}
@@ -265,75 +268,6 @@ function LoginForm() {
     </div>
   );
 }
-
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
-
-const StyledEmailInput = ({ value, setEmail, ...props }) => {
-  const handleRemoveEmailValue = () => {
-    setEmail('');
-  };
-
-  return (
-    <div className="relative">
-      <StyledInput {...props} value={value} />
-      {value && (
-        <button
-          type="button"
-          onClick={handleRemoveEmailValue}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-        >
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Clear"
-            width={14}
-            height={14}
-            className="opacity-60 hover:opacity-80"
-          />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const StyledPasswordInput = ({
-  value,
-  isVisible = false,
-  handlePasswordVisible,
-  ...props
-}) => (
-  <div className="relative">
-    <StyledInput
-      {...props}
-      value={value}
-      type={isVisible ? 'text' : 'password'}
-    />
-    <button
-      type="button"
-      onClick={handlePasswordVisible}
-      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-    >
-      <img
-        src={
-          isVisible
-            ? '/static/icons/eye_on_icon.svg'
-            : '/static/icons/eye_off_icon.svg'
-        }
-        alt="Toggle Password Visibility"
-        width={18}
-        height={18}
-        className="opacity-60 hover:opacity-80"
-      />
-    </button>
-  </div>
-);
 
 const StyledCheckbox = ({ onChange, children, ...props }) => (
   <label className="inline-flex items-center cursor-pointer group">

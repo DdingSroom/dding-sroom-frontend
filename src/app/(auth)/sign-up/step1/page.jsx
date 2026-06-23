@@ -13,6 +13,8 @@ import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
 
+import { Input } from '@components/common/Input';
+
 function BottomSafeSpacer({ height = 64 }) {
   return (
     <div
@@ -212,28 +214,25 @@ export default function SignUpStep1() {
             <label className="block text-sm font-medium text-content">
               이메일
             </label>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <div className="flex-1">
-                <StyledEmailInput
-                  type="email"
+                <Input
                   id="email"
+                  type="email"
                   value={email}
-                  onChange={(e) => {
-                    const inputEmail = e.target.value;
-                    setEmail(inputEmail);
-                    if (
-                      inputEmail === '' ||
-                      strictEmailRegex.test(inputEmail)
-                    ) {
-                      setEmailError('');
-                    } else {
+                  onChange={(value) => {
+                    setEmail(value);
+                    if (value !== '' && !strictEmailRegex.test(value)) {
                       setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                    } else {
+                      setEmailError('');
                     }
                   }}
                   placeholder="학교 이메일을 입력해주세요."
-                  setEmail={setEmail}
                   disabled={isSending}
-                />
+                >
+                  <Input.ClearButton />
+                </Input>
               </div>
               <button
                 className={commonCodeButtonClass}
@@ -254,15 +253,14 @@ export default function SignUpStep1() {
             </label>
             <div className="flex items-center gap-2 flex-nowrap">
               <div className="relative flex-1 min-w-0">
-                <StyledNumberInput
-                  type="text"
+                <Input
                   id="number"
+                  type="text"
                   value={number}
-                  onChange={(e) => handleNumberChange(e.target.value)}
+                  onChange={(value) => handleNumberChange(value)}
                   placeholder="인증번호를 입력해주세요."
                   inputMode="numeric"
                   maxLength={6}
-                  className="pr-14"
                   disabled={isSending}
                 />
                 {codeSent && (
