@@ -49,18 +49,16 @@ const Input = ({
 
   return (
     <InputContext.Provider value={{ value, onChange, visible, setVisible }}>
-      <div className="relative">
+      <div className="flex items-center w-full px-4 rounded-xl bg-white border border-gray-200 focus-within:border-primary-400">
         <input
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-primary-400 placeholder:text-gray-200 text-caption-01"
+          className="flex-1 min-w-0 py-3 outline-none placeholder:text-gray-200 text-caption-01"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           type={type === 'password' ? (visible ? 'text' : 'password') : type}
           {...props}
         />
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          {children}
-        </div>
+        <div className="flex items-center gap-1 shrink-0 ml-2">{children}</div>
       </div>
     </InputContext.Provider>
   );
