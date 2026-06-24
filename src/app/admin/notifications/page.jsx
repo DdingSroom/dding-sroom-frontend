@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import ConfirmModal from '@components/common/ConfirmModal';
+
 import axiosInstance from '@api/instance';
 
 export default function NotificationManagement() {
@@ -15,6 +17,7 @@ export default function NotificationManagement() {
     title: '',
     content: '',
   });
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   useEffect(() => {
     fetchNotifications();
@@ -93,10 +96,13 @@ export default function NotificationManagement() {
     }
   };
 
-  const handleDeleteNotification = async (notificationId) => {
-    if (!confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeleteNotification = (notificationId) => {
+    setDeleteTargetId(notificationId);
+  };
+
+  const confirmDeleteNotification = async () => {
+    const notificationId = deleteTargetId;
+    setDeleteTargetId(null);
 
     try {
       const response = await axiosInstance.delete(
@@ -431,6 +437,16 @@ export default function NotificationManagement() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={confirmDeleteNotification}
+        title="공지사항 삭제"
+        message="정말로 이 공지사항을 삭제하시겠습니까?"
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   );
 }
