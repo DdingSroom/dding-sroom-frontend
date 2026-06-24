@@ -4,12 +4,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import ConfirmModal from '@components/common/ConfirmModal';
+
 import { updateRoomStatus } from '@api/admin';
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 import useTokenStore from '../../../stores/useTokenStore';
-
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
 
@@ -21,6 +22,12 @@ const BADGE_BY_STATUS = {
     className: 'bg-gray-100 text-gray-600',
     label: '예약 불가(점검 중)',
   },
+};
+
+const STATUS_LABELS = {
+  IDLE: '예약 가능',
+  OCCUPIED: '사용 중',
+  MAINTENANCE: '예약 불가(점검 중)',
 };
 
 const normalizeStatus = (v) => {
@@ -44,6 +51,7 @@ export default function RoomsManagePage() {
   );
   const [loading, setLoading] = useState(true);
   const [savingIds, setSavingIds] = useState(new Set());
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
 
   useEffect(() => {
     if (!accessToken) {
@@ -109,65 +117,60 @@ export default function RoomsManagePage() {
   }, [fetchAll]);
 
   const handleStatusChange = useCallback(
-    async (roomId, newStatus) => {
+    (roomId, newStatus) => {
       const current = rooms[roomId]?.status || 'IDLE';
       if (current === newStatus) {
         return;
       }
-
-      const statusLabels = {
-        IDLE: '예약 가능',
-        OCCUPIED: '사용 중',
-        MAINTENANCE: '예약 불가(점검 중)',
-      };
-
-      if (
-        !confirm(
-          `스터디룸 ${roomId}호를 ${statusLabels[newStatus]} 상태로 전환할까요?`,
-        )
-      ) {
-        return;
-      }
-
-      setSavingIds((s) => new Set(s).add(roomId));
-
-      // 즉시 UI 업데이트 (Optimistic update)
-      const previousRoom = rooms[roomId];
-      setRooms((prev) => ({
-        ...prev,
-        [roomId]: { ...prev[roomId], status: newStatus },
-      }));
-
-      try {
-        await updateRoomStatus(roomId, newStatus);
-        alert(
-          `스터디룸 ${roomId}호가 ${statusLabels[newStatus]} 상태로 변경되었습니다.`,
-        );
-      } catch (e) {
-        console.error('상태 변경 실패:', e);
-
-        // 실패 시 이전 상태로 롤백
-        setRooms((prev) => ({
-          ...prev,
-          [roomId]: previousRoom,
-        }));
-
-        const status = e?.response?.status;
-        const msg =
-          e?.response?.data?.message ||
-          e?.response?.data?.error ||
-          (status ? `요청 실패 (HTTP ${status})` : '상태 변경에 실패했습니다.');
-        alert(msg);
-      } finally {
-        setSavingIds((s) => {
-          const n = new Set(s);
-          n.delete(roomId);
-          return n;
-        });
-      }
+      setPendingStatusChange({ roomId, newStatus });
     },
     [rooms],
   );
+
+  const confirmStatusChange = useCallback(async () => {
+    const { roomId, newStatus } = pendingStatusChange || {};
+    setPendingStatusChange(null);
+    if (!roomId) {
+      return;
+    }
+
+    setSavingIds((s) => new Set(s).add(roomId));
+
+    // 즉시 UI 업데이트 (Optimistic update)
+    const previousRoom = rooms[roomId];
+    setRooms((prev) => ({
+      ...prev,
+      [roomId]: { ...prev[roomId], status: newStatus },
+    }));
+
+    try {
+      await updateRoomStatus(roomId, newStatus);
+      alert(
+        `스터디룸 ${roomId}호가 ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
+      );
+    } catch (e) {
+      console.error('상태 변경 실패:', e);
+
+      // 실패 시 이전 상태로 롤백
+      setRooms((prev) => ({
+        ...prev,
+        [roomId]: previousRoom,
+      }));
+
+      const status = e?.response?.status;
+      const msg =
+        e?.response?.data?.message ||
+        e?.response?.data?.error ||
+        (status ? `요청 실패 (HTTP ${status})` : '상태 변경에 실패했습니다.');
+      alert(msg);
+    } finally {
+      setSavingIds((s) => {
+        const n = new Set(s);
+        n.delete(roomId);
+        return n;
+      });
+    }
+  }, [pendingStatusChange, rooms]);
 
   if (loading) {
     return (
@@ -262,6 +265,18 @@ export default function RoomsManagePage() {
           })}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={pendingStatusChange !== null}
+        onClose={() => setPendingStatusChange(null)}
+        onConfirm={confirmStatusChange}
+        title="스터디룸 상태 변경"
+        message={
+          pendingStatusChange &&
+          `스터디룸 ${pendingStatusChange.roomId}호를 ${STATUS_LABELS[pendingStatusChange.newStatus]} 상태로 전환할까요?`
+        }
+        confirmText="전환"
+      />
     </div>
   );
 }
