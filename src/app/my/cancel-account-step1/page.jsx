@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import MyPageHeader from '@components/my/MyPageHeader';
 
 import axiosInstance from '@api/instance';
@@ -172,13 +172,13 @@ export default function CancelAccountStep1() {
                 </div>
               </div>
 
-              <Modal
+              <ConfirmModal
                 isOpen={open}
                 onClose={() => setOpen(false)}
-                onSubmit={handleDeleteAccount}
-                text={isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기'}
-                color="red"
-                disabled={isWithdrawing}
+                onConfirm={handleDeleteAccount}
+                confirmText={isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기'}
+                variant="danger"
+                confirmDisabled={isWithdrawing}
               >
                 <div className="p-4 flex flex-col h-full justify-center">
                   <p className="font-semibold text-2xl text-left mb-2">
@@ -191,7 +191,7 @@ export default function CancelAccountStep1() {
                     복구되지 않습니다.
                   </p>
                 </div>
-              </Modal>
+              </ConfirmModal>
             </div>
           )}
         </main>
