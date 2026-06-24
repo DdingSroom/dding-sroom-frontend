@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
+import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
@@ -34,6 +35,7 @@ export default function PostDetailPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { accessToken, userId, rehydrate } = useTokenStore();
   const { postId } = useParams();
@@ -132,10 +134,12 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDeletePost = async () => {
-    if (!window.confirm('게시글을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeletePost = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeletePost = async () => {
+    setShowDeleteConfirm(false);
     try {
       const res = await axiosInstance.delete('/api/community-posts', {
         data: { post_id: parseInt(postId, 10), user_id: userId },
@@ -337,12 +341,20 @@ export default function PostDetailPage() {
         </div>
       </main>
 
-      <Modal
+      <AlertModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+      />
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDeletePost}
+        title="게시글 삭제"
+        message="게시글을 삭제하시겠습니까?"
+        confirmText="삭제"
+        variant="danger"
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

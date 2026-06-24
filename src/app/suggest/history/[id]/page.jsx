@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
+import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -172,6 +173,7 @@ export default function SuggestHistoryDetailPage({ params }) {
   const [ackAnswerDone, setAckAnswerDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [opMsg, setOpMsg] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const fetchDetail = useCallback(async () => {
     const res = await axiosInstance.get('/api/suggestions', {
@@ -279,13 +281,15 @@ export default function SuggestHistoryDetailPage({ params }) {
     }
   };
 
-  const deleteItem = async () => {
+  const deleteItem = () => {
     if (!detail) {
       return;
     }
-    if (!confirm('정말로 삭제하시겠습니까?')) {
-      return;
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteItem = async () => {
+    setShowDeleteConfirm(false);
     try {
       setSaving(true);
       setOpMsg('');
@@ -508,6 +512,16 @@ export default function SuggestHistoryDetailPage({ params }) {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav active="suggest" />
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDeleteItem}
+        title="건의 삭제"
+        message="정말로 삭제하시겠습니까?"
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   );
 }

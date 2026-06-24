@@ -3,8 +3,8 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import TimeComponent from '@components/reservation/TimeComponent';
 
 import axiosInstance from '@api/instance';
@@ -293,11 +293,11 @@ const TomorrowReservationComponent = ({
         >
           예약
         </button>
-        <Modal
+        <ConfirmModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          onSubmit={handleSubmitReservation}
-          text="예약하기"
+          onConfirm={handleSubmitReservation}
+          confirmText="예약하기"
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">
@@ -363,20 +363,20 @@ const TomorrowReservationComponent = ({
               />
             </div>
           </div>
-        </Modal>
+        </ConfirmModal>
       </div>
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-brand"></div>
+          <div className="w-2 h-2 bg-brand" />
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-status-reserved"></div>
+          <div className="w-2 h-2 bg-status-reserved" />
           <span>예약됨</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-status-past"></div>
+          <div className="w-2 h-2 bg-status-past" />
           <span>지난 시간</span>
         </div>
       </div>

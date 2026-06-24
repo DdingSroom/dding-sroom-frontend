@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
@@ -250,12 +250,11 @@ export default function EditPostPage() {
         </div>
       </main>
 
-      <Modal
+      <AlertModal
         isOpen={showErrorModal}
         onClose={handleErrorModalClose}
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

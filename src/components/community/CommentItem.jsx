@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import ConfirmModal from '@components/common/ConfirmModal';
+
 import axiosInstance from '@api/instance';
 import { getAnonymousName } from '@utils/anonymizeUser';
 
@@ -18,6 +20,7 @@ const CommentItem = ({
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const { userId } = useTokenStore();
 
   const isPostAuthor = (uid) => uid === postAuthorId;
@@ -45,10 +48,13 @@ const CommentItem = ({
     return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('댓글을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeleteComment = (commentId) => {
+    setPendingDeleteId(commentId);
+  };
+
+  const confirmDeleteComment = async () => {
+    const commentId = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       const res = await axiosInstance.delete('/api/community-posts/comments', {
         data: { comment_id: commentId, user_id: userId },
@@ -185,6 +191,16 @@ const CommentItem = ({
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        onConfirm={confirmDeleteComment}
+        title="댓글 삭제"
+        message="댓글을 삭제하시겠습니까?"
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   );
 };

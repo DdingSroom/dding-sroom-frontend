@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import ConfirmModal from '@components/common/ConfirmModal';
+
 import axiosInstance from '@api/instance';
 
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
@@ -350,6 +352,7 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const normalizeComment = (c) => ({
     id: c?.id ?? c?.comment_id ?? c?.commentId,
@@ -422,10 +425,13 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
     }
   };
 
-  const remove = async (id) => {
-    if (!confirm('이 답변을 삭제하시겠습니까?')) {
-      return;
-    }
+  const remove = (id) => {
+    setDeleteTargetId(id);
+  };
+
+  const confirmRemove = async () => {
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
     try {
       setSaving(true);
       await axiosInstance.delete(`/api/suggestions/comments/${id}`);
@@ -507,6 +513,16 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
           )}
         </div>
       ))}
+
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={confirmRemove}
+        title="답변 삭제"
+        message="이 답변을 삭제하시겠습니까?"
+        confirmText="삭제"
+        variant="danger"
+      />
     </div>
   );
 }

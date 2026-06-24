@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
@@ -207,12 +207,11 @@ export default function MyCommentsPage() {
         )}
       </main>
 
-      <Modal
+      <AlertModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
       />
 
       <PrivacyPolicyFooter />

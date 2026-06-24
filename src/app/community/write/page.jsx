@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
@@ -190,12 +190,11 @@ export default function WritePostPage() {
         </div>
       </main>
 
-      <Modal
+      <AlertModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

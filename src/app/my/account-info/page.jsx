@@ -3,8 +3,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
+import AlertModal from '@components/common/AlertModal';
+import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
@@ -246,11 +247,12 @@ export default function AccountInfo() {
       </main>
 
       {/* 이름 변경 모달 */}
-      <Modal
+      <ConfirmModal
         isOpen={open}
         onClose={() => setOpen(false)}
-        onSubmit={handleUsernameChange}
-        text={submitting ? '수정 중…' : '수정'}
+        onConfirm={handleUsernameChange}
+        confirmText={submitting ? '수정 중…' : '수정'}
+        confirmDisabled={submitting}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
@@ -276,7 +278,7 @@ export default function AccountInfo() {
             )}
           </div>
         </div>
-      </Modal>
+      </ConfirmModal>
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
       <LoginRequiredModal
@@ -285,36 +287,12 @@ export default function AccountInfo() {
       />
 
       {/* 로그아웃 완료 모달 */}
-      <div
-        className={`fixed inset-0 bg-black/50 flex justify-center items-center z-modal ${
-          showLogoutModal ? '' : 'hidden'
-        }`}
-        style={{ backdropFilter: 'blur(4px)' }}
-        onClick={() => setShowLogoutModal(false)}
-      >
-        <div
-          className="bg-white rounded-2xl w-modal max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="overflow-y-auto max-h-modal p-6">
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">알림</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                로그아웃이 완료되었습니다.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex border-t border-gray-100">
-            <button
-              onClick={handleLogoutConfirm}
-              className="w-full py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      </div>
+      <AlertModal
+        isOpen={showLogoutModal}
+        onClose={handleLogoutConfirm}
+        title="알림"
+        message="로그아웃이 완료되었습니다."
+      />
 
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
