@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import ConfirmModal from '@components/common/ConfirmModal';
+
 import { updateUserStatus } from '@api/admin';
 
 export default function UserTableRow({ user, onUserUpdate }) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showStatusConfirm, setShowStatusConfirm] = useState(false);
+
+  const currentStatus = user.status || 'normal';
+  const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
+  const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
   const handleDetailClick = () => {
     router.push(`/admin/user-detail/${user.id}`);
   };
 
-  const handleStatusToggle = async () => {
-    const currentStatus = user.status || 'normal';
-    const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
-    const statusText = newStatus === 'blocked' ? '차단' : '정상';
+  const handleStatusToggle = () => {
+    setShowStatusConfirm(true);
+  };
 
-    if (
-      !confirm(`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`)
-    ) {
-      return;
-    }
-
+  const confirmStatusToggle = async () => {
+    setShowStatusConfirm(false);
     setIsUpdating(true);
 
     try {
@@ -42,7 +44,6 @@ export default function UserTableRow({ user, onUserUpdate }) {
     }
   };
 
-  const currentStatus = user.status || 'normal';
   const statusBadge =
     currentStatus === 'blocked'
       ? { className: 'bg-red-100 text-red-700', label: '차단됨' }
@@ -83,6 +84,15 @@ export default function UserTableRow({ user, onUserUpdate }) {
           </button>
         </div>
       </td>
+
+      <ConfirmModal
+        isOpen={showStatusConfirm}
+        onClose={() => setShowStatusConfirm(false)}
+        onConfirm={confirmStatusToggle}
+        title="사용자 상태 변경"
+        message={`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`}
+        confirmText="변경"
+      />
     </tr>
   );
 }
