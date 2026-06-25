@@ -2,11 +2,6 @@
 
 import Modal from './Modal';
 
-const CONFIRM_VARIANT_CLASSES = {
-  default: 'bg-brand hover:bg-brand-hover',
-  danger: 'bg-red-500 hover:bg-red-600',
-};
-
 const ConfirmModal = ({
   isOpen,
   onClose,
@@ -20,7 +15,7 @@ const ConfirmModal = ({
   variant = 'default',
 }) => (
   <Modal isOpen={isOpen} onClose={onClose} className="max-w-modal">
-    <div className="overflow-y-auto max-h-modal">
+    <Modal.Body>
       {children ?? (
         <div className="p-6 text-center">
           {title && (
@@ -31,28 +26,19 @@ const ConfirmModal = ({
           )}
         </div>
       )}
-    </div>
-
-    <div className="flex border-t border-gray-100">
-      <button
-        onClick={onClose}
-        className="flex-1 py-4 bg-white text-content-secondary text-sm font-medium hover:bg-gray-50 transition-colors"
-      >
+    </Modal.Body>
+    <Modal.Footer>
+      <Modal.Button variant="ghost" onClick={onClose}>
         {cancelText}
-      </button>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!confirmDisabled) {
-            onConfirm?.();
-          }
-        }}
+      </Modal.Button>
+      <Modal.Button
+        variant={variant}
+        onClick={onConfirm}
         disabled={confirmDisabled}
-        className={`flex-1 py-4 text-white text-sm font-medium transition-colors disabled:opacity-60 ${CONFIRM_VARIANT_CLASSES[variant]}`}
       >
         {confirmText}
-      </button>
-    </div>
+      </Modal.Button>
+    </Modal.Footer>
   </Modal>
 );
 
