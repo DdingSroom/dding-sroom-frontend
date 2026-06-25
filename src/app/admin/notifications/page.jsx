@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import DraftTextarea from '@components/common/draft-textarea';
 import Textarea from '@components/common/textarea';
+
+import { useDraft } from '@hooks/use-draft';
 
 import axiosInstance from '@api/instance';
 
@@ -14,7 +15,7 @@ export default function NotificationManagement() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
-  const contentRef = useRef(null);
+  const draft = useDraft('admin-notification-create');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -42,7 +43,7 @@ export default function NotificationManagement() {
   };
 
   const handleCreateNotification = async () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.title.trim() || !draft.value.trim()) {
       alert('제목과 내용을 모두 입력해주세요.');
       return;
     }
@@ -50,7 +51,7 @@ export default function NotificationManagement() {
     try {
       const response = await axiosInstance.post('/api/notification/create', {
         title: formData.title,
-        content: formData.content,
+        content: draft.value,
       });
 
       if (response.data.error) {
@@ -60,7 +61,7 @@ export default function NotificationManagement() {
 
       alert('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
-      contentRef.current?.clearDraft();
+      draft.clear();
       setShowCreateForm(false);
       fetchNotifications();
     } catch (error) {
@@ -213,13 +214,9 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <DraftTextarea
-                ref={contentRef}
-                draftKey="admin-notification-create"
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
-                }
+              <Textarea
+                value={draft.value}
+                onChange={draft.onChange}
                 rows={15}
                 placeholder="공지사항 내용을 입력하세요"
                 textareaSize="sm"
