@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
+import Textarea from '@components/common/textarea';
+
+import { useDraft } from '@hooks/use-draft';
+
 import axiosInstance from '@api/instance';
 
 export default function NotificationManagement() {
@@ -11,6 +15,7 @@ export default function NotificationManagement() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const draft = useDraft('admin-notification-create');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -38,7 +43,7 @@ export default function NotificationManagement() {
   };
 
   const handleCreateNotification = async () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
+    if (!formData.title.trim() || !draft.value.trim()) {
       alert('제목과 내용을 모두 입력해주세요.');
       return;
     }
@@ -46,7 +51,7 @@ export default function NotificationManagement() {
     try {
       const response = await axiosInstance.post('/api/notification/create', {
         title: formData.title,
-        content: formData.content,
+        content: draft.value,
       });
 
       if (response.data.error) {
@@ -56,6 +61,7 @@ export default function NotificationManagement() {
 
       alert('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
+      draft.clear();
       setShowCreateForm(false);
       fetchNotifications();
     } catch (error) {
@@ -208,14 +214,13 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <textarea
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
-                }
+              <Textarea
+                value={draft.value}
+                onChange={draft.onChange}
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand resize-y"
                 placeholder="공지사항 내용을 입력하세요"
+                textareaSize="sm"
+                resize="y"
               />
             </div>
 
@@ -280,14 +285,15 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 내용
               </label>
-              <textarea
+              <Textarea
                 value={formData.content}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, content: e.target.value }))
                 }
                 rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand resize-y"
                 placeholder="공지사항 내용을 입력하세요"
+                textareaSize="sm"
+                resize="y"
               />
             </div>
 

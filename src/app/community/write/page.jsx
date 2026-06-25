@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
+import Textarea from '@components/common/textarea';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -159,7 +160,7 @@ export default function WritePostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
-              <textarea
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder={`내용을 입력하세요...
@@ -168,13 +169,10 @@ export default function WritePostPage() {
 - 서로를 존중하는 언어를 사용해주세요
 - 개인정보나 연락처는 공유하지 마세요`}
                 rows={12}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-md leading-relaxed"
-                disabled={isSubmitting}
                 maxLength={1000}
+                disabled={isSubmitting}
+                className="bg-white"
               />
-              <div className="mt-1 text-right text-xs-plus text-gray-400">
-                {content.length}/1000
-              </div>
             </div>
 
             <div>

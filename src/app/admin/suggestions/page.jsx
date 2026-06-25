@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import Textarea from '@components/common/textarea';
+
 import axiosInstance from '@api/instance';
 
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
@@ -456,11 +458,11 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
         >
           {editingId === row.id ? (
             <>
-              <textarea
-                rows={4}
-                className="w-full rounded border px-3 py-2 text-sm"
+              <Textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                rows={4}
+                textareaSize="sm"
               />
               <div className="flex justify-end gap-2">
                 <button

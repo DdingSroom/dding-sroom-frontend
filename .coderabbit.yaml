@@ -53,6 +53,7 @@ reviews:
         프레젠테이셔널 성격의 컴포넌트에 도메인 로직이 과하게 들어가 있지 않은지도 함께 검토해주세요.
         UI와 비즈니스 로직이 과하게 섞여 있다면 분리 방향을 제안해주세요.
         성능 최적화는 실제로 필요한 경우에만 언급하고, useMemo/useCallback의 과도한 사용은 지양하는 방향으로 리뷰해주세요.
+        파일명은 kebab-case를 사용해야 합니다 (예: my-button.tsx). PascalCase(MyButton.tsx)나 camelCase(myButton.tsx)는 허용하지 않습니다.
 
     - path: 'src/hooks/**'
       instructions: |
@@ -60,6 +61,7 @@ reviews:
         현재는 JavaScript 코드베이스이므로 TypeScript 미도입 자체보다는 런타임 안정성, null/undefined 처리, 인터페이스 일관성을 중심으로 확인해주세요.
         향후 TypeScript 마이그레이션 시 경계가 모호해질 부분이 있다면 선택적으로 제안해주세요.
         도메인 로직이 훅 안에 과하게 들어가 있다면 분리 방향을 제안해주세요.
+        파일명은 kebab-case를 사용해야 합니다 (예: use-my-hook.ts). camelCase(useMyHook.ts)는 허용하지 않습니다.
 
     - path: 'src/utils/**'
       instructions: |

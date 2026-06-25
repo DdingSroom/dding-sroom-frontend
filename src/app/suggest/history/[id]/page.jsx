@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 
@@ -400,12 +401,12 @@ export default function SuggestHistoryDetailPage({ params }) {
                     <label className="block text-sm font-medium mb-1">
                       내용
                     </label>
-                    <textarea
-                      rows={8}
+                    <Textarea
                       value={eContent}
                       onChange={(e) => setEContent(e.target.value)}
-                      className="w-full rounded border px-3 py-2 text-sm"
+                      rows={8}
                       placeholder="내용"
+                      textareaSize="sm"
                     />
                   </div>
 

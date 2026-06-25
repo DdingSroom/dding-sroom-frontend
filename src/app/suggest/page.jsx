@@ -4,10 +4,12 @@ import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
+import Textarea from '@components/common/textarea';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
 
+import useTokenStore from '../../stores/useTokenStore';
 import Dropdown from '@components/common/dropdown';
 
 import { categories, places } from '@constants/select-options';
@@ -30,6 +32,7 @@ const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(1);
 export default function SuggestPage() {
   // const router = useRouter();
 
+  const { userId } = useTokenStore();
   const [category, setCategory] = useState(categories[0].value);
   const [place, setPlace] = useState(places[0].value);
   const [title, setTitle] = useState('');
@@ -43,7 +46,6 @@ export default function SuggestPage() {
   const [uploadProgress, setUploadProgress] = useState({});
 
   const titleCount = title.length;
-  const contentCount = content.length;
 
   const totalSize = useMemo(
     () => files.reduce((acc, f) => acc + f.size, 0),
@@ -52,10 +54,9 @@ export default function SuggestPage() {
   const totalSizeMB = `${bytesToMB(totalSize)}MB`;
 
   const overTitle = titleCount > MAX_TITLE;
-  const overContent = contentCount > MAX_CONTENT;
   const overFiles = files.length > MAX_FILES;
   const overTotal = totalSize > MAX_TOTAL_SIZE;
-  const hasError = overTitle || overContent || overFiles || overTotal;
+  const hasError = overTitle || overFiles || overTotal;
 
   const handleFileChange = (e) => {
     const selected = Array.from(e.target.files || []);
@@ -402,21 +403,15 @@ export default function SuggestPage() {
             <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 내용
             </label>
-            <div className="px-4">
-              <textarea
+            <div className="px-4 pb-2">
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
                 rows={10}
-                className="w-full resize-y rounded-lg border bg-surface-subtle px-4 py-3 text-md"
+                maxLength={MAX_CONTENT}
+                resize="y"
               />
-            </div>
-            <div className="px-4 py-2 text-right text-sm">
-              <span
-                className={overContent ? 'text-red-500' : 'text-content-muted'}
-              >
-                {contentCount}/{MAX_CONTENT}
-              </span>
             </div>
           </section>
 
@@ -548,7 +543,6 @@ export default function SuggestPage() {
             {hasError && !errorMsg && (
               <p className="mt-2 text-center text-sm text-red-500">
                 {overTitle && '제목은 20자 이내여야 합니다. '}
-                {overContent && '내용은 3000자 이내여야 합니다. '}
                 {overFiles && '파일은 최대 5개까지 등록 가능합니다. '}
                 {overTotal && '총 용량은 30MB를 초과할 수 없습니다.'}
               </p>
