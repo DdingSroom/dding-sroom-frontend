@@ -3,8 +3,8 @@
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import DraftTextarea from '@components/common/draft-textarea';
 import FooterNav from '@components/common/FooterNav';
+import Textarea from '@components/common/textarea';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
@@ -61,7 +61,6 @@ export default function SuggestPage() {
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null);
-  const contentRef = useRef(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -337,7 +336,6 @@ export default function SuggestPage() {
       setSuccessMsg('건의가 정상적으로 접수되었어요.');
       setTitle('');
       setContent('');
-      contentRef.current?.clearDraft();
       setFiles([]);
       setUploadProgress({});
     } catch (err) {
@@ -469,9 +467,7 @@ export default function SuggestPage() {
               건의/신고 내용
             </label>
             <div className="px-4 pb-2">
-              <DraftTextarea
-                ref={contentRef}
-                draftKey={`suggest-content-${userId ?? 'guest'}`}
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
