@@ -3,10 +3,12 @@
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
+import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
+import { useUnsavedChangesConfirm } from '@hooks/useUnsavedChangesConfirm';
 
 const MAX_TITLE = 20;
 const MAX_CONTENT = 3000;
@@ -61,6 +63,10 @@ export default function SuggestPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [uploadProgress, setUploadProgress] = useState({});
+
+  const isDirty = title !== '' || content !== '' || files.length > 0;
+  const { showConfirm, confirmLeave, cancelLeave } =
+    useUnsavedChangesConfirm(isDirty);
 
   const titleCount = title.length;
   const contentCount = content.length;
@@ -621,6 +627,16 @@ export default function SuggestPage() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav active="suggest" />
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        onClose={cancelLeave}
+        onConfirm={confirmLeave}
+        title="작성 중인 내용이 있습니다"
+        message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
+        cancelText="계속 작성하기"
+        confirmText="나가기"
+      />
     </div>
   );
 }
