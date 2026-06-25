@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import DraftTextarea from '@components/common/draft-textarea';
 import FooterNav from '@components/common/FooterNav';
+import Textarea from '@components/common/textarea';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -26,7 +26,6 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function WritePostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const contentRef = useRef(null);
   const [category, setCategory] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -72,7 +71,6 @@ export default function WritePostPage() {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
-        contentRef.current?.clearDraft();
         router.push('/community');
       }
     } catch (e) {
@@ -162,9 +160,7 @@ export default function WritePostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
-              <DraftTextarea
-                ref={contentRef}
-                draftKey={`community-write-${userId ?? 'guest'}`}
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder={`내용을 입력하세요...
