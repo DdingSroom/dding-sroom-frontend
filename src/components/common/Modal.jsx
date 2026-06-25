@@ -6,6 +6,12 @@ import { createPortal } from 'react-dom';
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
+const BUTTON_VARIANT_CLASSES = {
+  default: 'bg-brand hover:bg-brand-hover text-white',
+  danger: 'bg-red-500 hover:bg-red-600 text-white',
+  ghost: 'bg-white hover:bg-gray-50 text-content-secondary',
+};
+
 const Modal = ({
   isOpen,
   onClose,
@@ -81,6 +87,31 @@ const Modal = ({
       </div>
     </div>,
     document.body,
+  );
+};
+
+Modal.Body = function ModalBody({ children }) {
+  return <div className="overflow-y-auto max-h-modal">{children}</div>;
+};
+
+Modal.Footer = function ModalFooter({ children }) {
+  return <div className="flex border-t border-gray-100">{children}</div>;
+};
+
+Modal.Button = function ModalButton({
+  children,
+  onClick,
+  variant = 'default',
+  disabled = false,
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex-1 py-4 text-sm font-medium transition-colors disabled:opacity-60 ${BUTTON_VARIANT_CLASSES[variant]}`}
+    >
+      {children}
+    </button>
   );
 };
 
