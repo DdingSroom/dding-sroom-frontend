@@ -12,6 +12,8 @@ import axiosInstance from '@api/instance';
 import useReservationStore from '../../stores/useReservationStore';
 import useTokenStore from '../../stores/useTokenStore';
 
+import Dropdown from '@components/common/dropdown';
+
 //타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
 const TEN_MIN = 10 * 60 * 1000;
@@ -58,8 +60,8 @@ const TomorrowReservationComponent = ({
   notice,
 }) => {
   const [open, setOpen] = useState(false);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
   const [durationMinutes, setDurationMinutes] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -169,8 +171,8 @@ const TomorrowReservationComponent = ({
       ]);
 
       setOpen(false);
-      setStartTime('');
-      setEndTime('');
+      setStartTime(null);
+      setEndTime(null);
       setDurationMinutes(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
@@ -244,37 +246,28 @@ const TomorrowReservationComponent = ({
         }
         return !reserved10mKeys.has(slotKey10m(ms));
       })
-      .map((ms) => {
-        const iso = new Date(ms).toISOString();
-        return (
-          <option key={iso} value={iso}>
-            {formatTime(ms)}
-          </option>
-        );
-      });
+      .map((ms) => ({
+        label: formatTime(ms),
+        value: new Date(ms).toISOString(),
+      }));
 
   const renderEndTimeOptions = () => {
     if (!startTime) {
       return [];
     }
     const startMs = new Date(startTime).getTime();
-    const end1Ms = startMs + 60 * 60000;
-    const end2Ms = startMs + 120 * 60000;
     const startISO = new Date(startMs).toISOString();
 
-    const candidates = [end1Ms, end2Ms].filter((ms) =>
-      isRangeAvailable(startISO, new Date(ms).toISOString()),
-    );
-
-    return candidates.map((ms) => {
-      const iso = new Date(ms).toISOString();
-      return (
-        <option key={iso} value={iso}>
-          {formatTime(ms)}
-        </option>
-      );
-    });
+    return [startMs + 60 * 60000, startMs + 120 * 60000]
+      .filter((ms) => isRangeAvailable(startISO, new Date(ms).toISOString()))
+      .map((ms) => ({
+        label: formatTime(ms),
+        value: new Date(ms).toISOString(),
+      }));
   };
+
+  const startTimeOptions = renderStartTimeOptions();
+  const endTimeOptions = renderEndTimeOptions();
 
   return (
     <div className="flex flex-col justify-between p-4 sm:p-7 bg-white rounded-2xl w-full max-w-full mt-4">
@@ -316,11 +309,11 @@ const TomorrowReservationComponent = ({
             <div className="flex flex-col mt-4 mb-4">{renderTimeBlocks()}</div>
             <div className="mb-3">
               <div>예약 시간</div>
-              <select
-                className="border rounded-md p-2 w-full"
+              <Dropdown
+                options={startTimeOptions}
                 value={startTime}
-                onChange={(e) => {
-                  const newStart = e.target.value;
+                onChange={(value) => {
+                  const newStart = value;
                   setStartTime(newStart);
 
                   const tryAuto = (len) => {
@@ -329,7 +322,7 @@ const TomorrowReservationComponent = ({
                       setEndTime(candidateEnd);
                       setDurationMinutes(len);
                     } else {
-                      setEndTime('');
+                      setEndTime(null);
                     }
                   };
 
@@ -339,20 +332,17 @@ const TomorrowReservationComponent = ({
                     tryAuto(60);
                   }
                 }}
-              >
-                <option value="" disabled>
-                  시간 선택
-                </option>
-                {renderStartTimeOptions()}
-              </select>
+                placeholder="시간 선택"
+                variant="modal"
+              />
             </div>
             <div>
               <div>퇴실 시간</div>
-              <select
-                className="border rounded-md p-2 w-full"
+              <Dropdown
+                options={endTimeOptions}
                 value={endTime}
-                onChange={(e) => {
-                  const selectedEnd = e.target.value;
+                onChange={(value) => {
+                  const selectedEnd = value;
                   setEndTime(selectedEnd);
                   if (startTime) {
                     const dur =
@@ -363,13 +353,14 @@ const TomorrowReservationComponent = ({
                     }
                   }
                 }}
-                disabled={!startTime}
-              >
-                <option value="" disabled>
-                  {startTime === '' ? '예약 시간 먼저 선택' : '시간 선택'}
-                </option>
-                {renderEndTimeOptions()}
-              </select>
+                placeholder={
+                  endTimeOptions.length === 0 || !startTime
+                    ? '예약시간 먼저 선택'
+                    : '선택'
+                }
+                disabled={!startTime || endTimeOptions.length === 0}
+                variant="modal"
+              />
             </div>
           </div>
         </Modal>

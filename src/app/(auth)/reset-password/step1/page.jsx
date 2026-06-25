@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -291,11 +291,9 @@ export default function ResetPassWord1() {
               href={isCodeVerified ? '/reset-password/step2' : '#'}
               onClick={(e) => !isCodeVerified && e.preventDefault()}
             >
-              <Button
-                onClick={handleNext}
-                disabled={!isCodeVerified}
-                text="다음으로"
-              />
+              <Button onClick={handleNext} disabled={!isCodeVerified}>
+                다음으로
+              </Button>
             </Link>
           </div>
         </div>
