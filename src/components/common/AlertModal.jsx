@@ -17,7 +17,7 @@ const AlertModal = ({
     className="max-w-modal-sm"
     closeOnOverlayClick={closeOnOverlayClick}
   >
-    <div className="overflow-y-auto max-h-modal">
+    <Modal.Body>
       {children ?? (
         <div className="p-6 text-center">
           <h3 className="text-lg font-semibold text-content mb-4">{title}</h3>
@@ -26,16 +26,10 @@ const AlertModal = ({
           )}
         </div>
       )}
-    </div>
-
-    <div className="border-t border-gray-100">
-      <button
-        onClick={onClose}
-        className="w-full py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
-      >
-        {confirmText}
-      </button>
-    </div>
+    </Modal.Body>
+    <Modal.Footer>
+      <Modal.Button onClick={onClose}>{confirmText}</Modal.Button>
+    </Modal.Footer>
   </Modal>
 );
 
