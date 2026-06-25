@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import axiosInstance from '@api/instance';
 
@@ -23,6 +23,18 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [value, setValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!value.trim()) {
+      return;
+    }
+    const handler = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [value]);
 
   const submit = async () => {
     setError('');
