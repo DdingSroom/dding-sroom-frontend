@@ -42,11 +42,11 @@ export default function AccountInfo() {
   }, [rehydrate]);
 
   useEffect(() => {
-    if (!authReady) {
+    if (!authReady || showLogoutModal) {
       return;
     }
     setShowLoginModal(!accessToken);
-  }, [authReady, accessToken]);
+  }, [authReady, accessToken, showLogoutModal]);
 
   const getDecodedUserInfo = useCallback(() => {
     try {
