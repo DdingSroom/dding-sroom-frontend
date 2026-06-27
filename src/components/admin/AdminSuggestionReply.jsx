@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+
+import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
+import { useUnsavedChangesConfirm } from '@hooks/useUnsavedChangesConfirm';
 
 function parseError(err) {
   return (
@@ -24,17 +27,9 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!value.trim()) {
-      return;
-    }
-    const handler = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
-  }, [value]);
+  const isDirty = value.trim() !== '';
+  const { showConfirm, confirmLeave, cancelLeave, markClean } =
+    useUnsavedChangesConfirm(isDirty);
 
   const submit = async () => {
     setError('');
@@ -49,6 +44,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         suggest_post_id: Number(suggestion?.id),
         answer_content: value.trim(),
       });
+      markClean();
       setValue('');
       if (typeof onUpdate === 'function') {
         onUpdate();
@@ -89,6 +85,16 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
           {submitting ? '등록 중...' : '답변 등록'}
         </button>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        onClose={cancelLeave}
+        onConfirm={confirmLeave}
+        title="작성 중인 내용이 있습니다"
+        message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
+        cancelText="계속 작성하기"
+        confirmText="나가기"
+      />
     </div>
   );
 }
