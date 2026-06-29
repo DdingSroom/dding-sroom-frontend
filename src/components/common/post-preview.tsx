@@ -39,11 +39,11 @@ export default function PostPreview({
             </time>
           </header>
 
-          <h3 className="mb-1 text-md font-medium text-gray-900 leading-snug line-clamp-1">
+          <h3 className="mb-1 text-body-01 font-medium text-gray-900 leading-snug line-clamp-1">
             {title}
           </h3>
 
-          <p className="text-sm-minus text-gray-600 line-clamp-1">{content}</p>
+          <p className="text-caption text-gray-600 line-clamp-1">{content}</p>
         </Link>
       </article>
     </li>
