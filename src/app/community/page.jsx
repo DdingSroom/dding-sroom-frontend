@@ -207,11 +207,11 @@ export default function CommunityPage() {
                 개
               </h2>
             </div>
-            <div className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-200">
               {posts.map((post) => (
                 <PostPreview key={post.id} {...post} />
               ))}
-            </div>
+            </ul>
           </div>
         )}
 
