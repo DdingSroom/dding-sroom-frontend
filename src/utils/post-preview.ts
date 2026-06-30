@@ -19,7 +19,22 @@ const parseCommunityDate = (dateArray?: CommunityDateArray) => {
   }
 
   const [year, month, day, hour = 0, minute = 0, second = 0] = dateArray;
-  return new Date(year, month - 1, day, hour, minute, second);
+  const parts = [year, month, day, hour, minute, second];
+
+  if (parts.some((value) => !Number.isFinite(value))) {
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day, hour, minute, second);
+  const hasValidDateParts =
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day &&
+    date.getHours() === hour &&
+    date.getMinutes() === minute &&
+    date.getSeconds() === second;
+
+  return Number.isNaN(date.getTime()) || !hasValidDateParts ? null : date;
 };
 
 const formatCreatedAtText = (

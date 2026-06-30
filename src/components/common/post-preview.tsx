@@ -25,8 +25,11 @@ export default function PostPreview({
 
   return (
     <li className="list-none">
-      <article className="cursor-pointer px-4 py-3 border-gray-200 active:bg-gray-50">
-        <Link href={`/community/${id}`}>
+      <article className="border-gray-200">
+        <Link
+          href={`/community/${id}`}
+          className="block px-4 py-3 active:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
           <header className="mb-2 flex items-center justify-between">
             <span className="text-sm font-medium text-primary-500">
               {categoryName}
