@@ -1,18 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Maru } from 'public/static/icons';
 
+import AlertModal from '@components/common/AlertModal';
 import CancellationModal from '@components/reservation/CancellationModal';
 
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
-import { Maru } from 'public/static/icons';
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
-
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { userId, accessToken } = useTokenStore();
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
@@ -75,13 +77,15 @@ const AfterLoginBanner = () => {
         userId,
         reservationId,
       });
-      alert(res.data.message || '예약이 취소되었습니다.');
+      setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
       setOpenReservationId(null);
       await fetchAllUserReservations();
       await fetchAllReservedTimes();
     } catch (err) {
       console.error('예약 취소 실패:', err);
-      alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
+      setErrorMessage(
+        err.response?.data?.message || '예약 취소에 실패했습니다.',
+      );
     }
   };
 
@@ -178,6 +182,19 @@ const AfterLoginBanner = () => {
           scrollbar-width: none; /* Firefox */
         }
       `}</style>
+
+      <AlertModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        title="예약 취소"
+        message={successMessage}
+      />
+      <AlertModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        title="오류"
+        message={errorMessage}
+      />
     </div>
   );
 };
