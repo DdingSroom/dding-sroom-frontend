@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 
 import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
+import GuardedLink from '@components/common/GuardedLink';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
@@ -363,12 +363,12 @@ export default function SuggestPage() {
               <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-brand" />
             </span>
 
-            <Link
+            <GuardedLink
               href="/suggest/history"
               className="relative py-3 text-base text-content-muted hover:text-brand"
             >
               건의/신고내역
-            </Link>
+            </GuardedLink>
           </div>
         </nav>
       </header>
