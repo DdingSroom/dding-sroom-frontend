@@ -30,6 +30,7 @@ export default function AccountInfo() {
   const [submitting, setSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
 
@@ -76,11 +77,11 @@ export default function AccountInfo() {
     const trimmed = newName.trim();
 
     if (!trimmed) {
-      alert('이름을 입력해주세요.');
+      setAlertMessage('이름을 입력해주세요.');
       return;
     }
     if (trimmed === (userInfo.name || '')) {
-      alert('기존 이름과 동일합니다.');
+      setAlertMessage('기존 이름과 동일합니다.');
       return;
     }
     if (submitting) {
@@ -95,7 +96,7 @@ export default function AccountInfo() {
       });
 
       if (res.status === 200) {
-        alert('이름 변경이 완료되었습니다.');
+        setAlertMessage('이름 변경이 완료되었습니다.');
         setUserInfo((prev) => ({ ...prev, name: trimmed }));
         setOpen(false);
         setNewName('');
@@ -109,11 +110,11 @@ export default function AccountInfo() {
         (typeof err?.response?.data === 'string' ? err.response.data : null);
 
       if (err?.response?.status === 409) {
-        alert(serverMsg || '중복된 이름입니다.');
+        setAlertMessage(serverMsg || '중복된 이름입니다.');
       } else if (err?.response?.status === 400) {
-        alert(serverMsg || '요청이 올바르지 않습니다.');
+        setAlertMessage(serverMsg || '요청이 올바르지 않습니다.');
       } else {
-        alert(
+        setAlertMessage(
           serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
         );
       }
@@ -292,6 +293,12 @@ export default function AccountInfo() {
         onClose={handleLogoutConfirm}
         title="알림"
         message="로그아웃이 완료되었습니다."
+      />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
       />
 
       <PrivacyPolicyFooter />
