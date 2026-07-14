@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+import AlertModal from '@components/common/AlertModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
@@ -18,6 +19,7 @@ export default function NotificationManagement() {
     content: '',
   });
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     fetchNotifications();
@@ -28,13 +30,13 @@ export default function NotificationManagement() {
     try {
       const response = await axiosInstance.get('/api/notification/list');
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
       setNotifications(response.data.data || []);
     } catch (error) {
       console.error('공지사항 조회 실패:', error);
-      alert('공지사항을 불러오는데 실패했습니다.');
+      setAlertMessage('공지사항을 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +44,7 @@ export default function NotificationManagement() {
 
   const handleCreateNotification = async () => {
     if (!formData.title.trim() || !formData.content.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
+      setAlertMessage('제목과 내용을 모두 입력해주세요.');
       return;
     }
 
@@ -53,23 +55,23 @@ export default function NotificationManagement() {
       });
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 생성되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
       setShowCreateForm(false);
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 생성 실패:', error);
-      alert('공지사항 생성에 실패했습니다.');
+      setAlertMessage('공지사항 생성에 실패했습니다.');
     }
   };
 
   const handleUpdateNotification = async () => {
     if (!formData.title.trim() || !formData.content.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
+      setAlertMessage('제목과 내용을 모두 입력해주세요.');
       return;
     }
 
@@ -81,18 +83,18 @@ export default function NotificationManagement() {
       });
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 수정되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 수정되었습니다!');
       setFormData({ title: '', content: '' });
       setShowEditForm(false);
       setSelectedNotification(null);
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 수정 실패:', error);
-      alert('공지사항 수정에 실패했습니다.');
+      setAlertMessage('공지사항 수정에 실패했습니다.');
     }
   };
 
@@ -110,15 +112,15 @@ export default function NotificationManagement() {
       );
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 삭제되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 삭제되었습니다!');
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 삭제 실패:', error);
-      alert('공지사항 삭제에 실패했습니다.');
+      setAlertMessage('공지사항 삭제에 실패했습니다.');
     }
   };
 
@@ -446,6 +448,12 @@ export default function NotificationManagement() {
         message="정말로 이 공지사항을 삭제하시겠습니까?"
         confirmText="삭제"
         variant="danger"
+      />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
       />
     </div>
   );
