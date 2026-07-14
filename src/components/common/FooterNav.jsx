@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Community, Proposal, Reservation } from 'public/static/icons';
 
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 
+import { useGuardedNavigate } from '@hooks/useGuardedNavigate';
 import useTokenStore from '@stores/useTokenStore';
 
-import { Reservation, Community, Proposal } from 'public/static/icons';
-
 const FooterNav = () => {
-  const router = useRouter();
+  const { push } = useGuardedNavigate();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { accessToken } = useTokenStore();
 
@@ -19,24 +18,24 @@ const FooterNav = () => {
       setIsLoginModalOpen(true);
       return;
     }
-    router.push('/suggest');
+    push('/suggest');
   };
 
   const handleLoginConfirm = () => {
     setIsLoginModalOpen(false);
-    router.push('/login?redirect=' + encodeURIComponent('/suggest'));
+    push('/login?redirect=' + encodeURIComponent('/suggest'));
   };
 
   const navItems = [
     {
       Icon: Reservation,
       label: '예약하기',
-      onClick: () => router.push('/'),
+      onClick: () => push('/'),
     },
     {
       Icon: Community,
       label: '커뮤니티',
-      onClick: () => router.push('/community'),
+      onClick: () => push('/community'),
     },
     { Icon: Proposal, label: '건의/신고', onClick: handleSuggestClick },
   ];
