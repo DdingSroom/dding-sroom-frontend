@@ -207,7 +207,7 @@ const useCommunityStore = create((set, get) => ({
             '대댓글이 있는 댓글은 삭제할 수 없습니다',
           )
         ) {
-          alert('대댓글이 달린 댓글은 삭제할 수 없습니다.');
+          set({ error: '대댓글이 달린 댓글은 삭제할 수 없습니다.' });
           return false;
         } else {
           set({ error: response.data.error });
