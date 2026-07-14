@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
+import AlertModal from '@components/common/AlertModal';
 import Button from '@components/common/Button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -32,6 +33,7 @@ export default function ResetPassWord1() {
 
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [codeSent, setCodeSent] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const timerRef = useRef(null);
 
   const commonCodeButtonClass =
@@ -88,10 +90,10 @@ export default function ResetPassWord1() {
 
       setCodeSent(true);
       startTimer();
-      alert('인증번호가 이메일로 전송되었습니다.');
+      setAlertMessage('인증번호가 이메일로 전송되었습니다.');
     } catch (error) {
       console.error('인증번호 전송 실패:', error);
-      alert(
+      setAlertMessage(
         error?.response?.data?.message ||
           '인증번호 전송에 실패했습니다. 다시 시도해주세요.',
       );
@@ -304,6 +306,12 @@ export default function ResetPassWord1() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
+      />
     </div>
   );
 }

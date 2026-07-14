@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import Button from '@components/common/Button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -26,6 +27,9 @@ export default function ResetPassword2() {
   const [isnewPassword_2Visible, setIsnewPassword_2Visible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [resetSucceeded, setResetSucceeded] = useState(false);
+  const [emailLost, setEmailLost] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,10 +37,14 @@ export default function ResetPassword2() {
     if (storedEmail) {
       setEmail(storedEmail);
     } else {
-      alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
-      router.push('/reset-password/step1');
+      setEmailLost(true);
     }
-  }, [router]);
+  }, []);
+
+  const handleEmailLostConfirm = () => {
+    setEmailLost(false);
+    router.push('/reset-password/step1');
+  };
 
   const handlenewPasswordVisible = () => {
     setIsnewPasswordVisible(!isnewPasswordVisible);
@@ -55,11 +63,18 @@ export default function ResetPassword2() {
         email,
         password: newPassword,
       });
-      alert('비밀번호가 성공적으로 변경되었습니다.');
-      router.push('/login');
+      setResetSucceeded(true);
+      setAlertMessage('비밀번호가 성공적으로 변경되었습니다.');
     } catch (error) {
       console.error('비밀번호 재설정 실패:', error);
-      alert('비밀번호 재설정에 실패했습니다.');
+      setAlertMessage('비밀번호 재설정에 실패했습니다.');
+    }
+  };
+
+  const handleAlertClose = () => {
+    setAlertMessage('');
+    if (resetSucceeded) {
+      router.push('/login');
     }
   };
 
@@ -150,6 +165,19 @@ export default function ResetPassword2() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={handleAlertClose}
+        message={alertMessage}
+      />
+
+      <AlertModal
+        isOpen={emailLost}
+        onClose={handleEmailLostConfirm}
+        closeOnOverlayClick={false}
+        message="이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요."
+      />
     </div>
   );
 }
