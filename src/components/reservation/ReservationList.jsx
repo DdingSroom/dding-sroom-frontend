@@ -3,16 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
+import AlertModal from '@components/common/AlertModal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
 import CancellationModal from './CancellationModal';
 import ReservationHistory from './ReservationHistory';
-
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 const toDateFromRaw = (raw) => {
   if (!raw) {
@@ -69,6 +69,8 @@ export default function ReservationList() {
   const [loading, setLoading] = useState(true);
   const [cancelModalData, setCancelModalData] = useState(null);
   const [authReady, setAuthReady] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // 첫 마운트 시 세션 값을 스토어로 강제 동기화
   useEffect(() => {
@@ -178,7 +180,7 @@ export default function ReservationList() {
         userId: resolvedUserId,
         reservationId: cancelModalData.id,
       });
-      alert(res.data?.message || '예약이 취소되었습니다.');
+      setSuccessMessage(res.data?.message || '예약이 취소되었습니다.');
       setCancelModalData(null);
 
       const res2 = await axiosInstance.get(
@@ -191,7 +193,9 @@ export default function ReservationList() {
       }
     } catch (err) {
       console.error('예약 취소 실패:', err);
-      alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
+      setErrorMessage(
+        err.response?.data?.message || '예약 취소에 실패했습니다.',
+      );
     }
   };
 
@@ -264,6 +268,19 @@ export default function ReservationList() {
           </div>
         </CancellationModal>
       )}
+
+      <AlertModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        title="예약 취소"
+        message={successMessage}
+      />
+      <AlertModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        title="오류"
+        message={errorMessage}
+      />
     </div>
   );
 }
