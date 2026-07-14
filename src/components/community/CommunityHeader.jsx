@@ -1,15 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useGuardedNavigate } from '@hooks/useGuardedNavigate';
 
 const CommunityHeader = ({ title = '커뮤니티' }) => {
-  const router = useRouter();
+  const { push, back } = useGuardedNavigate();
 
   const handleBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
+      back();
     } else {
-      router.push('/community');
+      push('/community');
     }
   };
 
