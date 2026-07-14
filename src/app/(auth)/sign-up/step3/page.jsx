@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+import AlertModal from '@components/common/AlertModal';
 import Button from '@components/common/Button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -28,6 +29,7 @@ export default function SignUpStep3() {
 
   const [hasOpenedPolicy, setHasOpenedPolicy] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const { signupData, resetSignupData } = useSignupStore();
 
@@ -67,7 +69,9 @@ export default function SignUpStep3() {
 
   const handleSignup = async () => {
     if (!consentChecked) {
-      alert('개인정보처리방침에 동의해야 회원가입을 진행할 수 있습니다.');
+      setAlertMessage(
+        '개인정보처리방침에 동의해야 회원가입을 진행할 수 있습니다.',
+      );
       return;
     }
 
@@ -93,7 +97,7 @@ export default function SignUpStep3() {
       router.push(`/sign-up/step4?username=${encodeURIComponent(name)}`);
     } catch (error) {
       console.error('회원가입 실패:', error);
-      alert(
+      setAlertMessage(
         error?.response?.data?.message || '회원가입 중 오류가 발생했습니다.',
       );
     }
@@ -194,6 +198,12 @@ export default function SignUpStep3() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
+      />
     </div>
   );
 }
