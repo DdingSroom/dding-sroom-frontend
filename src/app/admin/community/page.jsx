@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import AlertModal from '@components/common/AlertModal';
+
 import axiosInstance from '@api/instance';
 
 import useTokenStore from '../../../stores/useTokenStore';
@@ -20,6 +22,7 @@ export default function AdminCommunityPage() {
   const [loadingComments, setLoadingComments] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [alertMessage, setAlertMessage] = useState('');
   const pageSize = 20;
 
   useEffect(() => {
@@ -148,7 +151,7 @@ export default function AdminCommunityPage() {
         setOpenPostIds((prev) => new Set([...prev, postId]));
       } catch (err) {
         console.error(`게시글 ${postId} 댓글 로드 실패:`, err);
-        alert('댓글을 불러오는 중 오류가 발생했습니다.');
+        setAlertMessage('댓글을 불러오는 중 오류가 발생했습니다.');
       } finally {
         setLoadingComments((prev) => {
           const newSet = new Set(prev);
@@ -308,6 +311,12 @@ export default function AdminCommunityPage() {
           </>
         )}
       </div>
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
+      />
     </div>
   );
 }

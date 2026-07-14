@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import { updateUserStatus } from '@api/admin';
@@ -9,6 +10,7 @@ export default function UserTableRow({ user, onUserUpdate }) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const currentStatus = user.status || 'normal';
   const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
@@ -34,11 +36,13 @@ export default function UserTableRow({ user, onUserUpdate }) {
         onUserUpdate(user.id, { ...user, status: newStatus });
       }
 
-      alert(`${user.username}님이 ${statusText} 상태로 변경되었습니다.`);
+      setAlertMessage(
+        `${user.username}님이 ${statusText} 상태로 변경되었습니다.`,
+      );
     } catch (error) {
       console.error('사용자 상태 변경 실패:', error);
       const msg = error?.response?.data?.message || '상태 변경에 실패했습니다.';
-      alert(msg);
+      setAlertMessage(msg);
     } finally {
       setIsUpdating(false);
     }
@@ -92,6 +96,12 @@ export default function UserTableRow({ user, onUserUpdate }) {
         title="사용자 상태 변경"
         message={`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`}
         confirmText="변경"
+      />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
       />
     </tr>
   );

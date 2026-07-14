@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import AlertModal from '../../components/common/AlertModal';
 import GuardedLink from '../../components/common/GuardedLink';
 import InfoModal from '../../components/common/InfoModal';
 
@@ -12,6 +13,17 @@ import InfoModal from '../../components/common/InfoModal';
 
 export default function AdminLayout({ children }) {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [isMobileBlocked, setIsMobileBlocked] = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsMobileBlocked(true);
+    }
+  }, []);
+
+  const handleMobileBlockedConfirm = () => {
+    window.location.href = '/';
+  };
 
   return (
     <>
@@ -79,15 +91,11 @@ export default function AdminLayout({ children }) {
       />
 
       {/* 모바일 접근 제한 */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-              if (window.innerWidth < 768) {
-                alert('관리자 페이지는 데스크탑에서만 접속 가능합니다.');
-                window.location.href = '/';
-              }
-            `,
-        }}
+      <AlertModal
+        isOpen={isMobileBlocked}
+        onClose={handleMobileBlockedConfirm}
+        closeOnOverlayClick={false}
+        message="관리자 페이지는 데스크탑에서만 접속 가능합니다."
       />
     </>
   );

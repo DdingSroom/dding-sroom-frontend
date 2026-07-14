@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
+import AlertModal from '@components/common/AlertModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
@@ -18,6 +19,7 @@ export default function ReservationListPage() {
   const [error, setError] = useState(null);
   const [cancelLoadingIds, setCancelLoadingIds] = useState(new Set());
   const [forceCancelTargetId, setForceCancelTargetId] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
   const router = useRouter();
   const { accessToken } = useTokenStore();
 
@@ -114,14 +116,14 @@ export default function ReservationListPage() {
 
       removeReservationFromState(reservationId);
 
-      alert('예약을 강제로 취소했습니다.');
+      setAlertMessage('예약을 강제로 취소했습니다.');
     } catch (err) {
       console.error('예약 강제 취소 실패:', err);
       const msg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
         '예약 강제 취소에 실패했습니다.';
-      alert(msg);
+      setAlertMessage(msg);
     } finally {
       // 버튼 로딩 off
       setCancelLoadingIds((s) => {
@@ -196,6 +198,12 @@ export default function ReservationListPage() {
         message="이 예약을 강제로 취소하시겠습니까?"
         confirmText="취소하기"
         variant="danger"
+      />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
       />
     </div>
   );

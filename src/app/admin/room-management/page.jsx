@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import AlertModal from '@components/common/AlertModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import { updateRoomStatus } from '@api/admin';
@@ -52,6 +53,7 @@ export default function RoomsManagePage() {
   const [loading, setLoading] = useState(true);
   const [savingIds, setSavingIds] = useState(new Set());
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     if (!accessToken) {
@@ -145,7 +147,7 @@ export default function RoomsManagePage() {
 
     try {
       await updateRoomStatus(roomId, newStatus);
-      alert(
+      setAlertMessage(
         `스터디룸 ${roomId}호가 ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
       );
     } catch (e) {
@@ -162,7 +164,7 @@ export default function RoomsManagePage() {
         e?.response?.data?.message ||
         e?.response?.data?.error ||
         (status ? `요청 실패 (HTTP ${status})` : '상태 변경에 실패했습니다.');
-      alert(msg);
+      setAlertMessage(msg);
     } finally {
       setSavingIds((s) => {
         const n = new Set(s);
@@ -276,6 +278,12 @@ export default function RoomsManagePage() {
           `스터디룸 ${pendingStatusChange.roomId}호를 ${STATUS_LABELS[pendingStatusChange.newStatus]} 상태로 전환할까요?`
         }
         confirmText="전환"
+      />
+
+      <AlertModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        message={alertMessage}
       />
     </div>
   );
