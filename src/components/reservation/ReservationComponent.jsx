@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import AlertModal from '@components/common/AlertModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import TimeComponent from '@components/reservation/TimeComponent';
@@ -52,6 +53,8 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
   const [endTime, setEndTime] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { userId, accessToken } = useTokenStore();
   const {
@@ -136,7 +139,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
   const handleSubmitReservation = async () => {
     if (!startTime || !endTime) {
-      alert('예약 시간과 퇴실 시간을 모두 선택해주세요.');
+      setErrorMessage('예약 시간과 퇴실 시간을 모두 선택해주세요.');
       return;
     }
 
@@ -145,7 +148,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
     const duration = durationMinutes ?? (endMs - startMs) / (1000 * 60);
 
     if (duration !== 60 && duration !== 120) {
-      alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
+      setErrorMessage('예약은 1시간 또는 2시간 단위로만 가능합니다.');
       return;
     }
 
@@ -157,7 +160,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
         reservationEndTime: toKSTISOString(endMs),
       });
 
-      alert(res.data.message || '예약이 완료되었습니다.');
+      setSuccessMessage(res.data.message || '예약이 완료되었습니다.');
 
       await Promise.all([
         fetchLatestReservation(),
@@ -171,7 +174,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
       setDurationMinutes(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
-      alert(err.response?.data?.message || '예약에 실패했습니다.');
+      setErrorMessage(err.response?.data?.message || '예약에 실패했습니다.');
     }
   };
 
@@ -414,6 +417,18 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
       <LoginRequiredModal
         isOpen={showLoginModal}
         onConfirm={handleModalConfirm}
+      />
+      <AlertModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        title="예약 완료"
+        message={successMessage}
+      />
+      <AlertModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        title="오류"
+        message={errorMessage}
       />
     </div>
   );
