@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import GuardedLink from '../../components/common/GuardedLink';
 import InfoModal from '../../components/common/InfoModal';
 
 // export const metadata = {
@@ -18,54 +19,54 @@ export default function AdminLayout({ children }) {
         <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col">
           <h1 className="text-xl font-bold mb-8">사이트 관리</h1>
           <nav className="flex flex-col gap-4 text-sm text-gray-700">
-            <a
+            <GuardedLink
               href="/admin/dashboard"
               className="text-gray-700 hover:text-login-btn font-semibold transition-colors"
             >
               대시보드
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/user-management"
               className="hover:text-brand transition-colors"
             >
               사용자 관리
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/reservations-by-date"
               className="hover:text-brand transition-colors"
             >
               날짜별 예약 현황
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/reservation-detail"
               className="hover:text-brand transition-colors"
             >
               예약 목록
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/community"
               className="hover:text-brand transition-colors"
             >
               커뮤니티 관리
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/suggestions"
               className="hover:text-brand transition-colors"
             >
               건의 내역
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/room-management"
               className="hover:text-brand transition-colors"
             >
               스터디룸 관리
-            </a>
-            <a
+            </GuardedLink>
+            <GuardedLink
               href="/admin/notifications"
               className="hover:text-brand transition-colors"
             >
               공지사항 관리
-            </a>
+            </GuardedLink>
           </nav>
         </aside>
 
