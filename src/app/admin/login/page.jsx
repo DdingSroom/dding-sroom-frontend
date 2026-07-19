@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
-import axiosInstance, { setAccessToken } from '@api/instance';
-import { getLoginErrorMessage } from '@utils/errorMessages';
-
-import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
-import useTokenStore from '../../../stores/useTokenStore';
 import Button from '@components/common/button';
+
+import { adminLogin } from '@api/auth';
+import { ADMIN_ROLE } from '@constants/auth';
+import { isValidPassword, strictEmailRegex } from '@constants/regex';
+import useTokenStore from '@stores/useTokenStore';
+import { getLoginErrorMessage } from '@utils/errorMessages';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -22,11 +22,7 @@ export default function AdminLogin() {
 
   const router = useRouter();
 
-  const {
-    setAccessToken: setGlobalAccessToken,
-    setRefreshToken,
-    clearTokens,
-  } = useTokenStore();
+  const { setAccessToken: setGlobalAccessToken, clearTokens } = useTokenStore();
 
   const handleLoginSave = () => {
     setIsLoginSave(!isLoginSave);
@@ -41,40 +37,23 @@ export default function AdminLogin() {
 
   const handleLogin = async () => {
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('password', password);
+      const { accessToken } = await adminLogin(email, password);
 
-      const response = await axiosInstance.post('/login', formData);
-
-      const accessToken =
-        response.headers['access'] ||
-        response.headers['Access'] ||
-        response.headers['authorization'] ||
-        response.headers['Authorization'];
-
-      const refreshToken =
-        response.headers['refresh'] || response.headers['Refresh'];
-
-      if (accessToken) {
-        setAccessToken(accessToken);
-        setGlobalAccessToken(accessToken);
-        setRefreshToken(refreshToken || '');
-        const decoded = jwtDecode(accessToken);
-
-        // 관리자 role 확인 후 적절한 페이지로 리다이렉트
-        if (decoded.role === 'ROLE_ADMIN') {
-          router.push('/admin/dashboard');
-        } else {
-          clearTokens();
-          setConfirmError('관리자 권한이 없습니다.');
-        }
-      } else {
-        console.warn(
-          '응답 헤더에서 access 토큰을 찾지 못했습니다:',
-          response.headers,
-        );
+      if (!accessToken) {
+        console.warn('로그인 응답에서 access 토큰을 찾지 못했습니다.');
         setConfirmError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+        return;
+      }
+
+      setGlobalAccessToken(accessToken);
+
+      // 관리자 role 확인 후 적절한 페이지로 리다이렉트
+      const { role } = useTokenStore.getState();
+      if (role === ADMIN_ROLE) {
+        router.push('/admin/dashboard');
+      } else {
+        clearTokens();
+        setConfirmError('관리자 권한이 없습니다.');
       }
     } catch (e) {
       console.error('로그인 실패:', e);
@@ -193,15 +172,13 @@ export default function AdminLogin() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, ...props }) => (
+  <input
+    className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
+    value={value}
+    {...props}
+  />
+);
 
 const StyledEmailInput = ({ value, setEmail, ...props }) => {
   const handleRemoveEmailValue = () => {

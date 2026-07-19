@@ -2,13 +2,12 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance, { setAccessToken } from '@api/instance';
+import { login } from '@api/auth';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
@@ -35,11 +34,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [redirectUrl, setRedirectUrl] = useState('/');
 
-  const {
-    setAccessToken: setGlobalAccessToken,
-    setRefreshToken,
-    setUserId,
-  } = useTokenStore();
+  const { setAccessToken: setGlobalAccessToken } = useTokenStore();
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -89,62 +84,32 @@ function LoginForm() {
 
   const handleLogin = async () => {
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('password', password);
+      const { accessToken } = await login(email, password);
 
-      const response = await axiosInstance.post('/login', formData);
-
-      const accessToken =
-        response.headers['access'] ||
-        response.headers['Access'] ||
-        response.headers['authorization'] ||
-        response.headers['Authorization'];
-
-      const refreshToken =
-        response.headers['refresh'] || response.headers['Refresh'];
-
-      if (accessToken) {
-        setAccessToken(accessToken);
-        setGlobalAccessToken(accessToken);
-        setRefreshToken(refreshToken || '');
-        const decoded = jwtDecode(accessToken);
-
-        // userId를 토큰에서 추출하여 설정
-        const extractedUserId =
-          decoded?.userId ??
-          decoded?.id ??
-          decoded?.uid ??
-          decoded?.sub ??
-          null;
-        if (extractedUserId) {
-          setUserId(extractedUserId);
-        }
-
-        // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
-        if (isLoginSave) {
-          const loginData = {
-            email,
-            password,
-            isLoginSave: true,
-          };
-          localStorage.setItem('savedLoginData', JSON.stringify(loginData));
-        } else {
-          localStorage.removeItem('savedLoginData');
-        }
-
-        // 토큰과 userId 설정이 완료된 후 리다이렉트
-        setTimeout(() => {
-          router.push(redirectUrl);
-        }, 50);
-      } else {
-        // 디버깅용 로그
-        console.warn(
-          '응답 헤더에서 access 토큰을 찾지 못했습니다:',
-          response.headers,
-        );
+      if (!accessToken) {
+        console.warn('로그인 응답에서 access 토큰을 찾지 못했습니다.');
         setConfirmError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+        return;
       }
+
+      setGlobalAccessToken(accessToken);
+
+      // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
+      if (isLoginSave) {
+        const loginData = {
+          email,
+          password,
+          isLoginSave: true,
+        };
+        localStorage.setItem('savedLoginData', JSON.stringify(loginData));
+      } else {
+        localStorage.removeItem('savedLoginData');
+      }
+
+      // 토큰 설정이 완료된 후 리다이렉트
+      setTimeout(() => {
+        router.push(redirectUrl);
+      }, 50);
     } catch (e) {
       console.error('로그인 실패:', e);
       setConfirmError(getLoginErrorMessage(e));

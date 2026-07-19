@@ -9,6 +9,7 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
 
+import { logout } from '@api/auth';
 import axiosInstance from '@api/instance';
 
 import FooterNav from '../../../components/common/FooterNav';
@@ -123,9 +124,7 @@ export default function AccountInfo() {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/logout', null, {
-        withCredentials: true,
-      });
+      await logout();
     } catch (error) {
       if (error?.response?.status === 403) {
         console.warn(
