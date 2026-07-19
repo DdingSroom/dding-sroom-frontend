@@ -7,8 +7,8 @@ import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import { login } from '@api/auth';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
+import { login } from '@shared/api/auth';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 
@@ -232,15 +232,13 @@ function LoginForm() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, ...props }) => (
+  <input
+    className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
+    value={value}
+    {...props}
+  />
+);
 
 const StyledEmailInput = ({ value, setEmail, ...props }) => {
   const handleRemoveEmailValue = () => {

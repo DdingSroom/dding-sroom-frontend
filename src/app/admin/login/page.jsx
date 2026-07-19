@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 
 import Button from '@components/common/button';
 
-import { adminLogin } from '@api/auth';
 import { ADMIN_ROLE } from '@constants/auth';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
+import { adminLogin } from '@shared/api/auth';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 

@@ -9,8 +9,8 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
 
-import { logout } from '@api/auth';
 import axiosInstance from '@api/instance';
+import { logout } from '@shared/api/auth';
 
 import FooterNav from '../../../components/common/FooterNav';
 import useTokenStore from '../../../stores/useTokenStore';

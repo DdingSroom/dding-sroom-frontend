@@ -6,7 +6,7 @@ import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import { signup } from '@api/auth';
+import { signup } from '@shared/api/auth';
 import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';

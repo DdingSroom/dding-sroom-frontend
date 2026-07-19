@@ -1,5 +1,5 @@
-import { api } from '@shared/api/api';
-import instance, { requestReissue } from '@shared/api/instance';
+import { api } from './api';
+import instance, { requestReissue } from './instance';
 
 export interface AuthTokens {
   accessToken: string | null;
