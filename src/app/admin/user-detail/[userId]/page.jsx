@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import ReservationItem from '@components/admin/ReservationItem';
 
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../../../stores/useTokenStore';
 
 const pad = (n) => String(n).padStart(2, '0');
 
@@ -53,28 +50,11 @@ function formatDateTimeRange(startArray, endArray) {
 export default function UserDetailPage() {
   const { userId } = useParams();
   const router = useRouter();
-  const { accessToken } = useTokenStore();
 
   const [user, setUser] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [loadingReservations, setLoadingReservations] = useState(true);
   // const [updatingStatus, setUpdatingStatus] = useState(false);
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-      }
-    } catch (e) {
-      console.error('토큰 디코드 오류:', e);
-      router.push('/admin/login');
-    }
-  }, [accessToken, router]);
 
   const fetchUserDetail = useCallback(async () => {
     if (!userId) {

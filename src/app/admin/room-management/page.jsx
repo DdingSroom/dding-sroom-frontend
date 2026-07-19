@@ -1,14 +1,9 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import { updateRoomStatus } from '@api/admin';
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../../stores/useTokenStore';
-
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
@@ -29,9 +24,6 @@ const normalizeStatus = (v) => {
 };
 
 export default function RoomsManagePage() {
-  const router = useRouter();
-  const { accessToken } = useTokenStore();
-
   const [rooms, setRooms] = useState(() =>
     ROOM_IDS.reduce((acc, id) => {
       acc[id] = {
@@ -44,21 +36,6 @@ export default function RoomsManagePage() {
   );
   const [loading, setLoading] = useState(true);
   const [savingIds, setSavingIds] = useState(new Set());
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded?.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-      }
-    } catch {
-      router.push('/admin/login');
-    }
-  }, [accessToken, router]);
 
   // 단일 방 조회
   const fetchRoom = useCallback(async (roomId) => {
