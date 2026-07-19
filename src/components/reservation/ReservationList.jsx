@@ -1,7 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { useCallback, useEffect, useState } from 'react';
 
 import MyPageDate from '@components/my/MyPageDate';
 
@@ -62,7 +61,7 @@ const groupByDate = (reservations) => {
 
 export default function ReservationList() {
   // rehydrate 추가로 세션→스토어 동기화
-  const { userId, accessToken, rehydrate } = useTokenStore();
+  const { accessToken, rehydrate } = useTokenStore();
   const { fetchAllReservedTimes } = useReservationStore();
 
   const [groupedReservations, setGroupedReservations] = useState({});
@@ -79,24 +78,6 @@ export default function ReservationList() {
     return () => clearTimeout(t);
   }, [rehydrate]);
 
-  // userId 미존재 시 토큰에서 보조 추출
-  const resolvedUserId = useMemo(() => {
-    if (userId) {
-      return userId;
-    }
-    if (!accessToken) {
-      return null;
-    }
-    try {
-      const d = jwtDecode(accessToken);
-      const extractedId = d?.userId ?? d?.id ?? d?.uid ?? d?.sub ?? null;
-      // 타입 일관성을 위해 숫자로 변환 (sessionStorage에서 가져온 userId와 동일한 타입으로)
-      return extractedId ? parseInt(extractedId) : null;
-    } catch {
-      return null;
-    }
-  }, [userId, accessToken]);
-
   const sortByStartDesc = (a, b) => {
     const aT =
       toDateFromRaw(a.startTime ?? a.reservationStartTime)?.getTime() ?? 0;
@@ -112,23 +93,20 @@ export default function ReservationList() {
     return groupByDate(visible);
   }, []);
 
-  const fetchReservations = useCallback(
-    async (uid) => {
-      try {
-        setLoading(true);
-        const res = await axiosInstance.get(
-          `/api/reservations/user/${uid}?t=${Date.now()}`,
-        );
-        setGroupedReservations(buildGrouped(res.data?.reservations));
-      } catch (err) {
-        console.error('예약 내역 불러오기 실패:', err);
-        setGroupedReservations({});
-      } finally {
-        setLoading(false);
-      }
-    },
-    [buildGrouped],
-  );
+  const fetchReservations = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.get(
+        `/api/reservations/me?t=${Date.now()}`,
+      );
+      setGroupedReservations(buildGrouped(res.data?.reservations));
+    } catch (err) {
+      console.error('예약 내역 불러오기 실패:', err);
+      setGroupedReservations({});
+    } finally {
+      setLoading(false);
+    }
+  }, [buildGrouped]);
 
   // authReady 이후에만 판단/요청 실행
   useEffect(() => {
@@ -136,7 +114,7 @@ export default function ReservationList() {
       return;
     }
 
-    if (!accessToken || !resolvedUserId) {
+    if (!accessToken) {
       setGroupedReservations({});
       setLoading(false);
       return;
@@ -152,8 +130,8 @@ export default function ReservationList() {
           typeof window !== 'undefined'
             ? sessionStorage.getItem('accessToken')
             : null;
-        if (retryToken && resolvedUserId) {
-          fetchReservations(resolvedUserId);
+        if (retryToken) {
+          fetchReservations();
         } else {
           setGroupedReservations({});
           setLoading(false);
@@ -162,27 +140,26 @@ export default function ReservationList() {
       return () => clearTimeout(retryTimeout);
     }
 
-    fetchReservations(resolvedUserId);
-  }, [authReady, resolvedUserId, accessToken, fetchReservations]);
+    fetchReservations();
+  }, [authReady, accessToken, fetchReservations]);
 
   const handleCancelReservation = (reservation) => {
     setCancelModalData(reservation);
   };
 
   const confirmCancelReservation = async () => {
-    if (!cancelModalData || !resolvedUserId) {
+    if (!cancelModalData) {
       return;
     }
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
-        userId: resolvedUserId,
         reservationId: cancelModalData.id,
       });
       alert(res.data?.message || '예약이 취소되었습니다.');
       setCancelModalData(null);
 
       const res2 = await axiosInstance.get(
-        `/api/reservations/user/${resolvedUserId}?t=${Date.now()}`,
+        `/api/reservations/me?t=${Date.now()}`,
       );
       setGroupedReservations(buildGrouped(res2.data?.reservations));
 
