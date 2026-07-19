@@ -11,8 +11,7 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import PostCard from '@components/community/PostCard';
 
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../stores/useTokenStore';
+import useRequireAuth from '@hooks/useRequireAuth';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -26,11 +25,10 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function CommunityPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
-  const { accessToken, rehydrate } = useTokenStore();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
   const router = useRouter();
 
   const categories = [
@@ -79,36 +77,20 @@ export default function CommunityPage() {
   }, [activeCategory]);
 
   useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (accessToken) {
+    if (isAuthenticated) {
       fetchPosts();
     }
-  }, [accessToken, fetchPosts]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
+  }, [isAuthenticated, fetchPosts]);
 
   const handleWritePost = () => {
     router.push('/community/write');
   };
 
-  if (showLoginModal) {
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader showSearch />
-        <LoginRequiredModal
-          isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
-        />
+        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
       </div>
     );
   }

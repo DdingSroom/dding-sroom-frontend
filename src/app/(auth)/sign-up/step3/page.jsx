@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
+import { signup } from '@shared/api/auth';
 import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
@@ -75,14 +75,9 @@ export default function SignUpStep3() {
       const dataToSend = {
         ...signupData,
         username: name,
-        privacyAgreed: true,
       };
 
-      await axios.post(
-        'https://ddingsroomserver.click:8443/user/sign-up',
-        dataToSend,
-        { headers: { Authorization: undefined } },
-      );
+      await signup(dataToSend);
 
       // 3) 성공 시 임시 이름 제거 + 스토어 초기화
       if (typeof window !== 'undefined') {

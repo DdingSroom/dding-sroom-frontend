@@ -6,8 +6,8 @@ import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
 import { isValidPassword } from '@constants/regex';
+import { resetPassword } from '@shared/api/auth';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -51,10 +51,7 @@ export default function ResetPassword2() {
 
   const handlePasswordReset = async () => {
     try {
-      await axiosInstance.post('/user/modify-password', {
-        email,
-        password: newPassword,
-      });
+      await resetPassword(email, newPassword);
       alert('비밀번호가 성공적으로 변경되었습니다.');
       router.push('/login');
     } catch (error) {
@@ -155,15 +152,13 @@ export default function ResetPassword2() {
   );
 }
 
-const StyledInput = ({ value, ...props }) => {
-  return (
-    <input
-      className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-      value={value}
-      {...props}
-    />
-  );
-};
+const StyledInput = ({ value, ...props }) => (
+  <input
+    className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
+    value={value}
+    {...props}
+  />
+);
 
 const NewPasswordField = ({
   value,

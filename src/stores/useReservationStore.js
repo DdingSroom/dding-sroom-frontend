@@ -27,13 +27,13 @@ const useReservationStore = create((set) => ({
     set({ userReservations: reservations }),
 
   fetchLatestReservation: async () => {
-    const { userId, accessToken } = useTokenStore.getState();
-    if (!userId || !accessToken) {
+    const { accessToken } = useTokenStore.getState();
+    if (!accessToken) {
       return;
     }
 
     try {
-      const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
+      const res = await axiosInstance.get('/api/reservations/me');
       const sorted = res.data.reservations.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       );
@@ -45,13 +45,13 @@ const useReservationStore = create((set) => ({
   },
 
   fetchAllUserReservations: async () => {
-    const { userId, accessToken } = useTokenStore.getState();
-    if (!userId || !accessToken) {
+    const { accessToken } = useTokenStore.getState();
+    if (!accessToken) {
       return;
     }
 
     try {
-      const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
+      const res = await axiosInstance.get('/api/reservations/me');
       const nowKST = new Date();
 
       const filtered = res.data.reservations.filter((r) => {

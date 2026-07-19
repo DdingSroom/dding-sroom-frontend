@@ -11,8 +11,7 @@ import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../../../stores/useTokenStore';
+import useRequireAuth from '@hooks/useRequireAuth';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -29,20 +28,13 @@ export default function EditPostPage() {
   const [category, setCategory] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
 
-  const { accessToken, userId, rehydrate } = useTokenStore();
+  const { isAuthenticated, userId, requireLogin, redirectToLogin } =
+    useRequireAuth();
   const { postId } = useParams();
   const router = useRouter();
-
-  useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -74,15 +66,10 @@ export default function EditPostPage() {
   }, [postId, userId]);
 
   useEffect(() => {
-    if (accessToken && postId) {
+    if (isAuthenticated && postId) {
       fetchPost();
     }
-  }, [accessToken, postId, fetchPost]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
+  }, [isAuthenticated, postId, fetchPost]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,14 +118,11 @@ export default function EditPostPage() {
     }
   };
 
-  if (showLoginModal) {
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal
-          isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
-        />
+        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
       </div>
     );
   }

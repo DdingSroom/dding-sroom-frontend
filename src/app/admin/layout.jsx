@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 
-import InfoModal from '../../components/common/InfoModal';
+import InfoModal from '@components/common/InfoModal';
+
+import useAdminGuard from '@hooks/useAdminGuard';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',
@@ -10,6 +12,7 @@ import InfoModal from '../../components/common/InfoModal';
 // };
 
 export default function AdminLayout({ children }) {
+  useAdminGuard();
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   return (

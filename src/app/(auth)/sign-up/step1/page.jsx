@@ -7,8 +7,8 @@ import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
 import { strictEmailRegex } from '@constants/regex';
+import { sendVerificationCode, verifyCode } from '@shared/api/auth';
 import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
@@ -92,7 +92,7 @@ export default function SignUpStep1() {
       setEmailError('');
       setIsSending(true);
 
-      await axiosInstance.post('/user/code-send', { email });
+      await sendVerificationCode(email);
 
       setCodeSent(true);
       startTimer();
@@ -143,13 +143,7 @@ export default function SignUpStep1() {
         return;
       }
 
-      const res = await axiosInstance.post('/user/code-verify', {
-        email,
-        code: number,
-      });
-      const ok =
-        (res?.data?.verified ?? res?.data?.success) === true ||
-        res?.status === 200;
+      const ok = await verifyCode(email, number);
 
       if (ok) {
         setIsCodeVerified(true);

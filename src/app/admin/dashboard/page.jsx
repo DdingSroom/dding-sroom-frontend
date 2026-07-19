@@ -2,16 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
 
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 import InfoModal from '../../../components/common/InfoModal';
-import useTokenStore from '../../../stores/useTokenStore';
-
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -21,23 +18,6 @@ export default function AdminDashboard() {
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [roomData, setRoomData] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const { accessToken } = useTokenStore();
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-      }
-    } catch (error) {
-      console.error('토큰 디코드 오류:', error);
-      router.push('/admin/login');
-    }
-  }, [accessToken, router]);
 
   const formatTimeRange = useCallback((start, end) => {
     const formatHM = (arr) => {
