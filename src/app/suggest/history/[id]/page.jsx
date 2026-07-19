@@ -3,17 +3,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
+import Dropdown from '@components/common/dropdown';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
+import { categories, places } from '@constants/select-options';
+import useRequireAuth from '@hooks/useRequireAuth';
 
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
-import useTokenStore from '../../../../stores/useTokenStore';
-
-import Dropdown from '@components/common/dropdown';
-import { categories, places } from '@constants/select-options';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -149,15 +148,15 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
-  const { accessToken, userId: myUserId } = useTokenStore();
+  const { userId: myUserId, requireLogin } = useRequireAuth();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
-    if (!accessToken) {
+    if (requireLogin) {
       router.push('/login');
     }
-  }, [accessToken, router]);
+  }, [requireLogin, router]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

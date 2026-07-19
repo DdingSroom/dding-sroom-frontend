@@ -8,9 +8,9 @@ import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/useRequireAuth';
 
 import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
-import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -23,7 +23,7 @@ function BottomSafeSpacer({ height = 64 }) {
 
 export default function SuggestHistoryPage() {
   const router = useRouter();
-  const { accessToken, userId } = useTokenStore();
+  const { userId, requireLogin } = useRequireAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,10 +31,10 @@ export default function SuggestHistoryPage() {
 
   // 로그인 체크
   useEffect(() => {
-    if (!accessToken) {
+    if (requireLogin) {
       router.push('/login');
     }
-  }, [accessToken, router]);
+  }, [requireLogin, router]);
 
   const toArray = (data) => {
     if (Array.isArray(data?.suggestions)) {

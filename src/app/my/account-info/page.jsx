@@ -10,6 +10,7 @@ import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/useRequireAuth';
 import { logout } from '@shared/api/auth';
 
 import FooterNav from '../../../components/common/FooterNav';
@@ -28,25 +29,11 @@ export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
-
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    rehydrate();
-    const t = setTimeout(() => setAuthReady(true), 0);
-    return () => clearTimeout(t);
-  }, [rehydrate]);
-
-  useEffect(() => {
-    if (!authReady) {
-      return;
-    }
-    setShowLoginModal(!accessToken);
-  }, [authReady, accessToken]);
+  const { clearTokens } = useTokenStore();
+  const { authReady, accessToken, userId, requireLogin, redirectToLogin } =
+    useRequireAuth();
 
   const getDecodedUserInfo = useCallback(() => {
     try {
@@ -66,11 +53,6 @@ export default function AccountInfo() {
     }
     setUserInfo(getDecodedUserInfo());
   }, [authReady, accessToken, getDecodedUserInfo]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
 
   const handleUsernameChange = async () => {
     const trimmed = newName.trim();
@@ -152,7 +134,7 @@ export default function AccountInfo() {
         {!authReady ? (
           <div className="px-6 py-6">로딩 중...</div>
         ) : (
-          !showLoginModal && (
+          !requireLogin && (
             <div className="px-6 py-6">
               {/* 내 정보 카드 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
@@ -278,10 +260,7 @@ export default function AccountInfo() {
       </Modal>
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
-      <LoginRequiredModal
-        isOpen={authReady && showLoginModal}
-        onConfirm={handleLoginConfirm}
-      />
+      <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
 
       {/* 로그아웃 완료 모달 */}
       <div
