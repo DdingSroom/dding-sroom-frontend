@@ -24,7 +24,7 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function SignUpStep2() {
   const router = useRouter();
   const [newPassword, setnewPassword] = useState('');
-  const [confirmPassword, setconfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
@@ -93,7 +93,7 @@ export default function SignUpStep2() {
                 type="password"
                 value={confirmPassword}
                 onChange={(value) => {
-                  setconfirmPassword(value);
+                  setConfirmPassword(value);
                   if (value !== newPassword) {
                     setConfirmError('비밀번호가 일치하지 않습니다.');
                   } else {
