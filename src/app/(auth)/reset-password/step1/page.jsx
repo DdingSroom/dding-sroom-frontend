@@ -209,7 +209,7 @@ export default function ResetPassWord1() {
                   onChange={(value) => {
                     setEmail(value);
                     if (value !== '' && !strictEmailRegex.test(value)) {
-                      setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr');
+                      setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
                     } else {
                       setEmailError('');
                     }

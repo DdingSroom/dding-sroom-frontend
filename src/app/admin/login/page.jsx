@@ -7,10 +7,10 @@ import { jwtDecode } from 'jwt-decode';
 import axiosInstance, { setAccessToken } from '@api/instance';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 
-import Button from '../../../components/common/Button';
 import { Input } from '@components/common/input';
 import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
 import useTokenStore from '../../../stores/useTokenStore';
+import Button from '@components/common/button';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
