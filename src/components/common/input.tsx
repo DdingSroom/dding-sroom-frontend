@@ -24,7 +24,7 @@ interface InputProps
   extends
     Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'>,
     InputContextProps {
-  children: ReactNode;
+  children?: ReactNode;
   placeholder?: string;
   type?: string;
 }
@@ -58,7 +58,11 @@ const Input = ({
           type={type === 'password' ? (visible ? 'text' : 'password') : type}
           {...props}
         />
-        <div className="flex items-center gap-1 shrink-0 ml-2">{children}</div>
+        {children && (
+          <div className="flex items-center gap-1 shrink-0 ml-2">
+            {children}
+          </div>
+        )}
       </div>
     </InputContext.Provider>
   );
