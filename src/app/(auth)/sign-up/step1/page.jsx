@@ -13,7 +13,7 @@ import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
 
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -262,12 +262,13 @@ export default function SignUpStep1() {
                   inputMode="numeric"
                   maxLength={6}
                   disabled={isSending}
-                />
-                {codeSent && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-content-tertiary">
-                    {secondsLeft > 0 ? mmss : '만료'}
-                  </span>
-                )}
+                >
+                  {codeSent && (
+                    <span className="text-xs text-content-tertiary">
+                      {secondsLeft > 0 ? mmss : '만료'}
+                    </span>
+                  )}
+                </Input>
               </div>
               <button
                 className={commonCodeButtonClass}
@@ -349,51 +350,3 @@ export default function SignUpStep1() {
     </div>
   );
 }
-
-const StyledInput = ({ value, className = '', ...props }) => {
-  const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
-    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
-  return <input className={`${base} ${className}`} value={value} {...props} />;
-};
-
-const StyledEmailInput = ({
-  value,
-  setEmail,
-  className = '',
-  disabled,
-  ...props
-}) => {
-  const handleRemoveEmailValue = () => setEmail('');
-  return (
-    <div className="relative">
-      <StyledInput
-        {...props}
-        value={value}
-        className={className}
-        disabled={disabled}
-      />
-      {value && !disabled && (
-        <button
-          type="button"
-          onClick={handleRemoveEmailValue}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-          aria-label="이메일 입력 내용 지우기"
-        >
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Clear"
-            width={14}
-            height={14}
-            className="opacity-60 hover:opacity-80"
-          />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const StyledNumberInput = ({ value, className = '', ...props }) => (
-  <StyledInput {...props} value={value} className={className} />
-);
