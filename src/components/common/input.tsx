@@ -56,9 +56,12 @@ const Input = ({
     <InputContext.Provider
       value={{ value, onChange, visible, setVisible, disabled }}
     >
-      <div className="flex items-center w-full px-4 rounded-xl bg-white border border-gray-200 focus-within:border-primary-400">
+      <div
+        className={`flex items-center w-full px-4 rounded-xl bg-white border border-gray-200 
+          ${disabled ? 'bg-gray-50' : 'bg-white focus-within:border-primary-400'}`}
+      >
         <input
-          className="flex-1 min-w-0 py-3 outline-none placeholder:text-gray-200 text-caption-01"
+          className="flex-1 min-w-0 py-3 outline-none placeholder:text-gray-200 text-caption-01 disabled:bg-transparent"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
