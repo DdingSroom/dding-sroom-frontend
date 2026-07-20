@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -252,10 +252,11 @@ function LoginForm() {
 
           <Button
             disabled={!isLoginAvailable()}
-            text="로그인"
             type="submit"
             onClick={handleLogin}
-          />
+          >
+            로그인
+          </Button>
         </div>
       </div>
 
