@@ -10,7 +10,7 @@ import { isValidPassword } from '@constants/regex';
 import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -24,14 +24,14 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function SignUpStep2() {
   const router = useRouter();
   const [newPassword, setnewPassword] = useState('');
-  const [newPassword_2, setnewPassword_2] = useState('');
+  const [confirmPassword, setconfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
   const { setSignupField } = useSignupStore();
 
   const isNextAvailable = () =>
-    isValidPassword(newPassword) && newPassword === newPassword_2;
+    isValidPassword(newPassword) && newPassword === confirmPassword;
 
   const handleNextStep = () => {
     setSignupField('password', newPassword);
@@ -69,7 +69,7 @@ export default function SignUpStep2() {
                   } else {
                     setPasswordError('');
                   }
-                  if (newPassword_2 && value !== newPassword_2) {
+                  if (confirmPassword && value !== confirmPassword) {
                     setConfirmError('비밀번호가 일치하지 않습니다.');
                   } else {
                     setConfirmError('');
@@ -89,11 +89,11 @@ export default function SignUpStep2() {
                 비밀번호 확인
               </label>
               <Input
-                id="newPassword_2"
+                id="confirmPassword"
                 type="password"
-                value={newPassword_2}
+                value={confirmPassword}
                 onChange={(value) => {
-                  setnewPassword_2(value);
+                  setconfirmPassword(value);
                   if (value !== newPassword) {
                     setConfirmError('비밀번호가 일치하지 않습니다.');
                   } else {
@@ -105,8 +105,8 @@ export default function SignUpStep2() {
                 <Input.Check
                   validation={() =>
                     newPassword &&
-                    newPassword_2 &&
-                    newPassword === newPassword_2
+                    confirmPassword &&
+                    newPassword === confirmPassword
                   }
                 />
                 <Input.VisibleButton />
