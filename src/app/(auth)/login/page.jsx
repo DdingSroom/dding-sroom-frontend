@@ -89,8 +89,6 @@ function LoginForm() {
     strictEmailRegex.test(email) && isValidPassword(password);
 
   const handleLogin = async () => {
-    console.log(email, password);
-
     try {
       const formData = new FormData();
       formData.append('email', email);
@@ -98,7 +96,6 @@ function LoginForm() {
 
       const response = await axiosInstance.post('/login', formData);
 
-      console.log(formData, response);
       const accessToken =
         response.headers['access'] ||
         response.headers['Access'] ||
