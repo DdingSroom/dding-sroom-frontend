@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import axiosInstance from '@api/instance';
 
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 export default function NotificationManagement() {
   const [notifications, setNotifications] = useState([]);

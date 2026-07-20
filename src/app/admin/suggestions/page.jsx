@@ -11,7 +11,7 @@ import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply
 import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
 import useTokenStore from '../../../stores/useTokenStore';
 
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 export default function AdminSuggestionsPage() {
   const router = useRouter();

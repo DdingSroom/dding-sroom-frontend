@@ -8,7 +8,7 @@ import axiosInstance, { setAccessToken } from '@api/instance';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 
 import Button from '../../../components/common/Button';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 import { isValidPassword, strictEmailRegex } from '../../../constants/regex';
 import useTokenStore from '../../../stores/useTokenStore';
 

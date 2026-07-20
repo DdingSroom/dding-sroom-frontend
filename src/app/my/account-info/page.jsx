@@ -8,7 +8,7 @@ import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 

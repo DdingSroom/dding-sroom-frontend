@@ -8,7 +8,7 @@ import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 

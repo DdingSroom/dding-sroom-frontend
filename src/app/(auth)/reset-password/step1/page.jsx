@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Button from '@components/common/Button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { strictEmailRegex } from '@constants/regex';

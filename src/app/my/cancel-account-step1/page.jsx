@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import Modal from '@components/common/Modal';
 import MyPageHeader from '@components/my/MyPageHeader';
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 

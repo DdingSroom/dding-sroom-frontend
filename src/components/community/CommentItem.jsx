@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { getAnonymousName } from '@utils/anonymizeUser';

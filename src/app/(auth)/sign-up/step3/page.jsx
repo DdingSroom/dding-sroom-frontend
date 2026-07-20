@@ -11,7 +11,7 @@ import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
 
-import { Input } from '@components/common/Input';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
