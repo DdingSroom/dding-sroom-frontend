@@ -9,6 +9,7 @@ import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 
@@ -201,12 +202,11 @@ export default function EditPostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(value) => setTitle(value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-md"
                 disabled={isSubmitting}
                 maxLength={100}
               />
