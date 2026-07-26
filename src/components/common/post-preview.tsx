@@ -34,12 +34,14 @@ export default function PostPreview({
             <span className="text-sm font-medium text-primary-500">
               {categoryName}
             </span>
-            <time
-              dateTime={createdAtDateTime}
-              className="text-sm text-gray-400"
-            >
-              {createdAtText}
-            </time>
+            {createdAtDateTime && createdAtText && (
+              <time
+                dateTime={createdAtDateTime}
+                className="text-sm text-gray-400"
+              >
+                {createdAtText}
+              </time>
+            )}
           </header>
 
           <h3 className="mb-1 text-body-01 font-medium text-gray-900 leading-snug line-clamp-1">
