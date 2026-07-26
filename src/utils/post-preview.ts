@@ -1,4 +1,11 @@
-type CommunityDateArray = number[];
+export type CommunityDateArray = [
+  year: number,
+  month: number,
+  day: number,
+  hour?: number,
+  minute?: number,
+  second?: number,
+];
 
 type GetPostPreviewViewModelParams = {
   category: number;

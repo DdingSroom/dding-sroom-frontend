@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import type { CommunityDateArray } from '@utils/post-preview';
 import { getPostPreviewViewModel } from '@utils/post-preview';
 
 interface PostPreviewProps {
@@ -7,7 +8,7 @@ interface PostPreviewProps {
   title: string;
   content: string;
   category: number;
-  created_at?: number[];
+  created_at?: CommunityDateArray;
 }
 
 export default function PostPreview({
