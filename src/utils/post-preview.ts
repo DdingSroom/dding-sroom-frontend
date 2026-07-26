@@ -5,7 +5,8 @@ type GetPostPreviewViewModelParams = {
   createdAt?: CommunityDateArray;
 };
 
-const HOUR_IN_MS = 1000 * 60 * 60;
+const MIN_IN_MS = 1000 * 60;
+const HOUR_IN_MS = MIN_IN_MS * 60;
 const DAY_IN_MS = HOUR_IN_MS * 24;
 
 const CATEGORY_NAME: Record<number, string> = {
@@ -51,7 +52,7 @@ const formatCreatedAtText = (
 
   if (diffInHours < 24) {
     if (diffInHours < 1) {
-      return `${Math.floor(diffInMs / (1000 * 60))}분 전`;
+      return `${Math.floor(diffInMs / MIN_IN_MS)}분 전`;
     }
 
     return `${Math.floor(diffInHours)}시간 전`;
