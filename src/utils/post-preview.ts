@@ -38,11 +38,8 @@ const parseCommunityDate = (dateArray?: CommunityDateArray) => {
   return Number.isNaN(date.getTime()) || !hasValidDateParts ? null : date;
 };
 
-const formatCreatedAtText = (
-  dateArray: CommunityDateArray | undefined,
-  date: Date | null,
-) => {
-  if (!date || !dateArray) {
+const formatCreatedAtText = (date: Date | null) => {
+  if (!date) {
     return '';
   }
 
@@ -62,7 +59,9 @@ const formatCreatedAtText = (
     return `${Math.floor(diffInDays)}일 전`;
   }
 
-  const [year, month, day] = dateArray;
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
   return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}`;
 };
 
@@ -75,6 +74,6 @@ export const getPostPreviewViewModel = ({
   return {
     categoryName: CATEGORY_NAME[category] ?? '알 수 없는 게시판',
     createdAtDateTime: parsedCreatedAt?.toISOString() ?? '',
-    createdAtText: formatCreatedAtText(createdAt, parsedCreatedAt),
+    createdAtText: formatCreatedAtText(parsedCreatedAt),
   };
 };
