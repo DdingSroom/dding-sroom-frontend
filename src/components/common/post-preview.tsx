@@ -25,7 +25,7 @@ export default function PostPreview({
 
   return (
     <li className="list-none">
-      <article className="border-gray-200">
+      <article>
         <Link
           href={`/community/${id}`}
           className="block px-4 py-3 active:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
