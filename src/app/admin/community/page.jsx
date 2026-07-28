@@ -70,29 +70,19 @@ export default function AdminCommunityPage() {
   );
 
   const fetchCommentsByPost = useCallback(async (postId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/community-posts/comments/post/${postId}`,
-      );
-      const comments = response?.data?.data || response?.data || [];
-      return Array.isArray(comments) ? comments.map(normalizeComment) : [];
-    } catch (err) {
-      console.error(`게시글 ${postId} 댓글 불러오기 실패:`, err);
-      return [];
-    }
+    const response = await axiosInstance.get(
+      `/api/community-posts/comments/post/${postId}`,
+    );
+    const comments = response?.data?.data || response?.data || [];
+    return Array.isArray(comments) ? comments.map(normalizeComment) : [];
   }, []);
 
   const fetchRepliesByComment = useCallback(async (commentId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/community-posts/comments/${commentId}/replies`,
-      );
-      const replies = response?.data?.data || response?.data || [];
-      return Array.isArray(replies) ? replies.map(normalizeComment) : [];
-    } catch (err) {
-      console.error(`댓글 ${commentId} 대댓글 불러오기 실패:`, err);
-      return [];
-    }
+    const response = await axiosInstance.get(
+      `/api/community-posts/comments/${commentId}/replies`,
+    );
+    const replies = response?.data?.data || response?.data || [];
+    return Array.isArray(replies) ? replies.map(normalizeComment) : [];
   }, []);
 
   const togglePostOpen = useCallback(
