@@ -246,6 +246,12 @@ export default function NotificationManagement() {
             </div>
           </div>
         </div>
+
+        <AlertModal
+          isOpen={!!alertMessage}
+          onClose={() => setAlertMessage('')}
+          message={alertMessage}
+        />
       </div>
     );
   }
@@ -319,6 +325,12 @@ export default function NotificationManagement() {
             </div>
           </div>
         </div>
+
+        <AlertModal
+          isOpen={!!alertMessage}
+          onClose={() => setAlertMessage('')}
+          message={alertMessage}
+        />
       </div>
     );
   }
