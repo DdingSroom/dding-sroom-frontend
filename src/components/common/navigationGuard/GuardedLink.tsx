@@ -24,6 +24,12 @@ export default function GuardedLink({
     if (e.defaultPrevented) {
       return;
     }
+    const isModifiedClick =
+      e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+    const opensInNewTab = rest.target && rest.target !== '_self';
+    if (isModifiedClick || opensInNewTab) {
+      return;
+    }
     if (!isDirty) {
       return;
     }
