@@ -59,21 +59,28 @@ export default function NavigationGuardProvider({
     [isDirty],
   );
 
-  const handleConfirm = useCallback(() => {
-    const action = pendingActionRef.current;
+  const resetPendingNavigation = useCallback(() => {
     pendingActionRef.current = null;
     pendingCancelRef.current = null;
     setIsConfirmOpen(false);
-    action?.();
   }, []);
 
-  const handleCancel = useCallback(() => {
-    const cancel = pendingCancelRef.current;
-    pendingActionRef.current = null;
-    pendingCancelRef.current = null;
-    setIsConfirmOpen(false);
-    cancel?.();
-  }, []);
+  const confirmLeave = useCallback(() => {
+    const runPendingAction = pendingActionRef.current;
+
+    resetPendingNavigation();
+    setIsDirty(false);
+
+    runPendingAction?.();
+  }, [resetPendingNavigation]);
+
+  const cancelLeave = useCallback(() => {
+    const runPendingCancel = pendingCancelRef.current;
+
+    resetPendingNavigation();
+
+    runPendingCancel?.();
+  }, [resetPendingNavigation]);
 
   // beforeunload: browser tab close / refresh
   useEffect(() => {
@@ -121,8 +128,8 @@ export default function NavigationGuardProvider({
       {children}
       <ConfirmModal
         isOpen={isConfirmOpen}
-        onClose={handleCancel}
-        onConfirm={handleConfirm}
+        onClose={cancelLeave}
+        onConfirm={confirmLeave}
         title="작성 중인 내용이 있습니다"
         message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
         cancelText="계속 작성하기"
