@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import AlertModal from '@components/common/AlertModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import { useUnsavedChangesConfirm } from '@components/common/navigation-guard/useUnsavedChangesConfirm';
+import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { useUnsavedChangesConfirm } from '@components/common/navigation-guard/useUnsavedChangesConfirm';
+import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
 
 import axiosInstance from '@api/instance';
 

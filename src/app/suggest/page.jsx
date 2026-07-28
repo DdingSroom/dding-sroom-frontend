@@ -3,8 +3,8 @@
 import React, { useMemo, useRef, useState } from 'react';
 
 import FooterNav from '@components/common/FooterNav';
-import GuardedLink from '@components/common/navigation-guard/GuardedLink';
-import { useUnsavedChangesConfirm } from '@components/common/navigation-guard/useUnsavedChangesConfirm';
+import GuardedLink from '@components/common/navigationGuard/GuardedLink';
+import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';

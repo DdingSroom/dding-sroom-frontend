@@ -2,7 +2,7 @@ import './globals.css';
 
 import Script from 'next/script';
 
-import NavigationGuardProvider from '@components/common/navigation-guard/NavigationGuardProvider';
+import NavigationGuardProvider from '@components/common/navigationGuard/NavigationGuardProvider';
 import LayoutWrapper from '@components/layout/LayoutWrapper';
 
 export const metadata = {
