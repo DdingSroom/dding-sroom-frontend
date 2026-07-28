@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import AlertModal from '../../components/common/AlertModal';
 import GuardedLink from '../../components/common/GuardedLink';
-import InfoModal from '../../components/common/InfoModal';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',
@@ -85,9 +84,10 @@ export default function AdminLayout({ children }) {
         <main className="flex-1 p-10 overflow-y-auto">{children}</main>
       </div>
       {/*  */}
-      <InfoModal
+      <AlertModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        message="시범 운영 단계에서 지원되지 않는 기능입니다"
       />
 
       {/* 모바일 접근 제한 */}

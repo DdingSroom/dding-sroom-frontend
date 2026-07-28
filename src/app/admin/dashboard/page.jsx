@@ -8,7 +8,7 @@ import ReservationCard from '@components/admin/ReservationCard';
 
 import axiosInstance from '@api/instance';
 
-import InfoModal from '../../../components/common/InfoModal';
+import AlertModal from '../../../components/common/AlertModal';
 import useTokenStore from '../../../stores/useTokenStore';
 
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
@@ -396,9 +396,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <InfoModal
+      <AlertModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        message="시범 운영 단계에서 지원되지 않는 기능입니다"
       />
     </div>
   );

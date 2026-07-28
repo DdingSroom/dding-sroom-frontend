@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Bell, Person } from 'public/static/icons';
 
-import InfoModal from '@components/common/InfoModal';
+import AlertModal from '@components/common/AlertModal';
 
 import axiosInstance from '@api/instance';
-import { Bell, Person } from 'public/static/icons';
 
 const Header = () => {
   const router = useRouter();
@@ -84,9 +84,10 @@ const Header = () => {
         </button>
       </div>
 
-      <InfoModal
+      <AlertModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        message="시범 운영 단계에서 지원되지 않는 기능입니다"
       />
     </header>
   );
