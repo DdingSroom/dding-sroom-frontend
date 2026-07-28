@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import AlertModal from '@components/common/AlertModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import { useUnsavedChangesConfirm } from '@components/common/navigation-guard/useUnsavedChangesConfirm';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
 import axiosInstance from '@api/instance';
-import { useUnsavedChangesConfirm } from '@hooks/useUnsavedChangesConfirm';
 
 import useTokenStore from '../../../stores/useTokenStore';
 
@@ -36,8 +35,7 @@ export default function WritePostPage() {
   const router = useRouter();
 
   const isDirty = title !== '' || content !== '';
-  const { showConfirm, confirmLeave, cancelLeave, markClean } =
-    useUnsavedChangesConfirm(isDirty);
+  const { markClean } = useUnsavedChangesConfirm(isDirty);
 
   useEffect(() => {
     rehydrate();
@@ -202,15 +200,6 @@ export default function WritePostPage() {
         onClose={() => setShowErrorModal(false)}
         title="오류"
         message={errorMessage}
-      />
-      <ConfirmModal
-        isOpen={showConfirm}
-        onClose={cancelLeave}
-        onConfirm={confirmLeave}
-        title="작성 중인 내용이 있습니다"
-        message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
-        cancelText="계속 작성하기"
-        confirmText="나가기"
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

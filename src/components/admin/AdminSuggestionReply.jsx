@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react';
 
-import ConfirmModal from '@components/common/ConfirmModal';
+import { useUnsavedChangesConfirm } from '@components/common/navigation-guard/useUnsavedChangesConfirm';
 
 import axiosInstance from '@api/instance';
-import { useUnsavedChangesConfirm } from '@hooks/useUnsavedChangesConfirm';
 
 function parseError(err) {
   return (
@@ -28,8 +27,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [error, setError] = useState('');
 
   const isDirty = value.trim() !== '';
-  const { showConfirm, confirmLeave, cancelLeave, markClean } =
-    useUnsavedChangesConfirm(isDirty);
+  const { markClean } = useUnsavedChangesConfirm(isDirty);
 
   const submit = async () => {
     setError('');
@@ -85,16 +83,6 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
           {submitting ? '등록 중...' : '답변 등록'}
         </button>
       </div>
-
-      <ConfirmModal
-        isOpen={showConfirm}
-        onClose={cancelLeave}
-        onConfirm={confirmLeave}
-        title="작성 중인 내용이 있습니다"
-        message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
-        cancelText="계속 작성하기"
-        confirmText="나가기"
-      />
     </div>
   );
 }
