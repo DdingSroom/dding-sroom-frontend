@@ -1,4 +1,4 @@
-import GuardedLink from '@components/common/GuardedLink';
+import GuardedLink from '@components/common/navigation-guard/GuardedLink';
 
 const PrivacyPolicyFooter = () => (
   <footer className="border-t border-gray-200 bg-gray-100">

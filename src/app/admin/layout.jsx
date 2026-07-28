@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import AlertModal from '../../components/common/AlertModal';
-import GuardedLink from '../../components/common/GuardedLink';
+import GuardedLink from '../../components/common/navigation-guard/GuardedLink';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',

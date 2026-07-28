@@ -1,6 +1,6 @@
 'use client';
 
-import { useGuardedNavigate } from '@hooks/useGuardedNavigate';
+import { useGuardedNavigate } from '@components/common/navigation-guard/useGuardedNavigate';
 
 const CommunityHeader = ({ title = '커뮤니티' }) => {
   const { push, back } = useGuardedNavigate();

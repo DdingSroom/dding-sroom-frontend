@@ -1,6 +1,8 @@
 import './globals.css';
 
 import Script from 'next/script';
+
+import NavigationGuardProvider from '@components/common/navigation-guard/NavigationGuardProvider';
 import LayoutWrapper from '@components/layout/LayoutWrapper';
 
 export const metadata = {
@@ -62,7 +64,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body>
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <NavigationGuardProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </NavigationGuardProvider>
 
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-NEXY3X7HZG"
