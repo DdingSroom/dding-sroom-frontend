@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import AlertModal from '../../components/common/AlertModal';
-import GuardedLink from '../../components/common/navigationGuard/GuardedLink';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',
@@ -30,54 +30,54 @@ export default function AdminLayout({ children }) {
         <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col">
           <h1 className="text-xl font-bold mb-8">사이트 관리</h1>
           <nav className="flex flex-col gap-4 text-sm text-gray-700">
-            <GuardedLink
+            <Link
               href="/admin/dashboard"
               className="text-gray-700 hover:text-login-btn font-semibold transition-colors"
             >
               대시보드
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/user-management"
               className="hover:text-brand transition-colors"
             >
               사용자 관리
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/reservations-by-date"
               className="hover:text-brand transition-colors"
             >
               날짜별 예약 현황
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/reservation-detail"
               className="hover:text-brand transition-colors"
             >
               예약 목록
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/community"
               className="hover:text-brand transition-colors"
             >
               커뮤니티 관리
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/suggestions"
               className="hover:text-brand transition-colors"
             >
               건의 내역
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/room-management"
               className="hover:text-brand transition-colors"
             >
               스터디룸 관리
-            </GuardedLink>
-            <GuardedLink
+            </Link>
+            <Link
               href="/admin/notifications"
               className="hover:text-brand transition-colors"
             >
               공지사항 관리
-            </GuardedLink>
+            </Link>
           </nav>
         </aside>
 
