@@ -103,7 +103,11 @@ export default function NavigationGuardProvider({
 
     const guardedHref = window.location.href;
     const armSentinel = () => {
-      window.history.pushState({ __unsavedGuard: true }, '', guardedHref);
+      window.history.pushState(
+        { ...window.history.state, __unsavedGuard: true },
+        '',
+        guardedHref,
+      );
     };
     armSentinel();
 
