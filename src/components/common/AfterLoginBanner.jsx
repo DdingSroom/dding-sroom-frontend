@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Maru } from 'public/static/icons';
 
 import AlertModal from '@components/common/AlertModal';
-import CancellationModal from '@components/reservation/CancellationModal';
+import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
@@ -142,31 +142,35 @@ const AfterLoginBanner = () => {
                   취소
                 </button>
 
-                <CancellationModal
+                <ConfirmModal
                   isOpen={openReservationId === r.id}
                   onClose={() => setOpenReservationId(null)}
                   onConfirm={() => cancelReservation(r.id)}
+                  cancelText="돌아가기"
+                  confirmText="예약 취소"
                 >
-                  <div className="text-lg font-semibold text-left mb-6 text-content">
-                    예약을 취소할까요?
-                  </div>
-                  <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
-                    <img
-                      src={STUDYROOM_IMAGE_SRC}
-                      alt="studyroom"
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
-                    <div className="flex flex-col gap-1 text-sm">
-                      <div className="font-semibold text-content">{`${r.roomName}`}</div>
-                      <div className="text-content-secondary">
-                        {formatDate(r.startTime)}
-                      </div>
-                      <div className="text-content-secondary">
-                        {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
+                  <div className="p-6 sm:p-8">
+                    <div className="text-lg font-semibold text-left mb-6 text-content">
+                      예약을 취소할까요?
+                    </div>
+                    <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
+                      <img
+                        src={STUDYROOM_IMAGE_SRC}
+                        alt="studyroom"
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex flex-col gap-1 text-sm">
+                        <div className="font-semibold text-content">{`${r.roomName}`}</div>
+                        <div className="text-content-secondary">
+                          {formatDate(r.startTime)}
+                        </div>
+                        <div className="text-content-secondary">
+                          {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </CancellationModal>
+                </ConfirmModal>
               </div>
             ))
           )}
