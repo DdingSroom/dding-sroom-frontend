@@ -8,7 +8,7 @@ const ConfirmModal = ({
   onConfirm,
   title,
   message,
-  children,
+  children = null,
   confirmText = '확인',
   cancelText = '취소',
   confirmDisabled = false,
