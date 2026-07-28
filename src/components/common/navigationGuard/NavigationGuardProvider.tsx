@@ -10,11 +10,11 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useRouter } from 'next/navigation';
 
 import ConfirmModal from '@components/common/ConfirmModal';
 
 interface NavigationGuardContextValue {
-  isDirty: boolean;
   setDirty: (isDirty: boolean) => void;
   guardedNavigate: (navigateFn: () => void, onCancel?: () => void) => void;
 }
@@ -22,7 +22,7 @@ interface NavigationGuardContextValue {
 const NavigationGuardContext =
   createContext<NavigationGuardContextValue | null>(null);
 
-export function useNavigationGuardContext(): NavigationGuardContextValue {
+function useNavigationGuardContext(): NavigationGuardContextValue {
   const context = useContext(NavigationGuardContext);
   if (!context) {
     throw new Error(
@@ -39,6 +39,7 @@ interface NavigationGuardProviderProps {
 export default function NavigationGuardProvider({
   children,
 }: NavigationGuardProviderProps) {
+  const router = useRouter();
   const [isDirty, setIsDirty] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const pendingActionRef = useRef<(() => void) | null>(null);
@@ -59,6 +60,8 @@ export default function NavigationGuardProvider({
     [isDirty],
   );
 
+  // pendingAction/pendingCancel/확인 모달 열림 상태를 한 번에 되돌린다.
+  // confirmLeave·cancelLeave가 공통으로 수행하던 초기화라 하나로 모았다.
   const resetPendingNavigation = useCallback(() => {
     pendingActionRef.current = null;
     pendingCancelRef.current = null;
@@ -95,7 +98,6 @@ export default function NavigationGuardProvider({
     return () => window.removeEventListener('beforeunload', handler);
   }, [isDirty]);
 
-  // popstate: browser back/forward, guarded via a re-armed history sentinel
   useEffect(() => {
     if (!isDirty) {
       return;
@@ -122,9 +124,56 @@ export default function NavigationGuardProvider({
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDirty, guardedNavigate]);
 
+  useEffect(() => {
+    if (!isDirty) {
+      return;
+    }
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (e.defaultPrevented) {
+        return;
+      }
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+
+      const targetEl = e.target instanceof Element ? e.target : null;
+      const anchor = targetEl?.closest('a');
+      if (!anchor || !anchor.href) {
+        return;
+      }
+
+      const anchorTarget = anchor.getAttribute('target');
+      if (anchorTarget && anchorTarget !== '_self') {
+        return;
+      }
+      if (anchor.hasAttribute('download')) {
+        return;
+      }
+
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin) {
+        return;
+      }
+      if (
+        url.pathname === window.location.pathname &&
+        url.search === window.location.search
+      ) {
+        return;
+      }
+
+      e.preventDefault();
+      guardedNavigate(() => router.push(url.pathname + url.search + url.hash));
+    };
+
+    document.addEventListener('click', handleDocumentClick, true);
+    return () =>
+      document.removeEventListener('click', handleDocumentClick, true);
+  }, [isDirty, guardedNavigate, router]);
+
   const value = useMemo<NavigationGuardContextValue>(
-    () => ({ isDirty, setDirty, guardedNavigate }),
-    [isDirty, setDirty, guardedNavigate],
+    () => ({ setDirty, guardedNavigate }),
+    [setDirty, guardedNavigate],
   );
 
   return (
@@ -140,5 +189,30 @@ export default function NavigationGuardProvider({
         confirmText="나가기"
       />
     </NavigationGuardContext.Provider>
+  );
+}
+
+export function useUnsavedChangesGuard(isDirty: boolean) {
+  const { setDirty } = useNavigationGuardContext();
+
+  useEffect(() => {
+    setDirty(isDirty);
+    return () => setDirty(false);
+  }, [isDirty, setDirty]);
+
+  const markClean = useCallback(() => {
+    setDirty(false);
+  }, [setDirty]);
+
+  return { markClean };
+}
+
+export function useGuardedPush(): (href: string) => void {
+  const router = useRouter();
+  const { guardedNavigate } = useNavigationGuardContext();
+
+  return useCallback(
+    (href: string) => guardedNavigate(() => router.push(href)),
+    [guardedNavigate, router],
   );
 }
