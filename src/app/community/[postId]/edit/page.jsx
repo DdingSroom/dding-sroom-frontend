@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import AlertModal from '@components/common/AlertModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
+import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
@@ -43,7 +43,7 @@ export default function EditPostPage() {
     (title !== initialValues.title ||
       content !== initialValues.content ||
       category !== initialValues.category);
-  const { markClean } = useUnsavedChangesConfirm(isDirty);
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   useEffect(() => {
     rehydrate();

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
+import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
 
 import axiosInstance from '@api/instance';
 
@@ -27,7 +27,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [error, setError] = useState('');
 
   const isDirty = value.trim() !== '';
-  const { markClean } = useUnsavedChangesConfirm(isDirty);
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   const submit = async () => {
     setError('');
