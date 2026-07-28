@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
-import GuardedLink from '@components/common/navigationGuard/GuardedLink';
-import { useUnsavedChangesConfirm } from '@components/common/navigationGuard/useUnsavedChangesConfirm';
+import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
@@ -64,7 +64,7 @@ export default function SuggestPage() {
   const [uploadProgress, setUploadProgress] = useState({});
 
   const isDirty = title !== '' || content !== '' || files.length > 0;
-  useUnsavedChangesConfirm(isDirty);
+  useUnsavedChangesGuard(isDirty);
 
   const titleCount = title.length;
   const contentCount = content.length;
@@ -361,12 +361,12 @@ export default function SuggestPage() {
               <span className="absolute left-0 bottom-tab-indicator h-tab-indicator w-full rounded-full bg-brand" />
             </span>
 
-            <GuardedLink
+            <Link
               href="/suggest/history"
               className="relative py-3 text-base text-content-muted hover:text-brand"
             >
               건의/신고내역
-            </GuardedLink>
+            </Link>
           </div>
         </nav>
       </header>
