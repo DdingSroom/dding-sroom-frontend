@@ -1,6 +1,6 @@
 'use client';
 
-import Modal from './Modal';
+import BasicModal from './BasicModal';
 
 const AlertModal = ({
   isOpen,
@@ -11,26 +11,17 @@ const AlertModal = ({
   confirmText = '확인',
   closeOnOverlayClick = true,
 }) => (
-  <Modal
+  <BasicModal
     isOpen={isOpen}
     onClose={onClose}
     className="max-w-modal-sm"
     closeOnOverlayClick={closeOnOverlayClick}
+    title={title}
+    message={message}
+    actions={[{ text: confirmText, onClick: onClose }]}
   >
-    <Modal.Body>
-      {children ?? (
-        <div className="p-6 text-center">
-          <h3 className="text-lg font-semibold text-content mb-4">{title}</h3>
-          {message && (
-            <p className="text-sm text-content-secondary">{message}</p>
-          )}
-        </div>
-      )}
-    </Modal.Body>
-    <Modal.Footer>
-      <Modal.Button onClick={onClose}>{confirmText}</Modal.Button>
-    </Modal.Footer>
-  </Modal>
+    {children}
+  </BasicModal>
 );
 
 export default AlertModal;

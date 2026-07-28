@@ -1,25 +1,49 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-const BUTTON_VARIANT_CLASSES = {
+export type ModalActionVariant = 'default' | 'danger' | 'ghost';
+
+const BUTTON_VARIANT_CLASSES: Record<ModalActionVariant, string> = {
   default: 'bg-brand hover:bg-brand-hover text-white',
   danger: 'bg-red-500 hover:bg-red-600 text-white',
   ghost: 'bg-white hover:bg-gray-50 text-content-secondary',
 };
 
-const Modal = ({
+export interface ModalAction {
+  text: string;
+  onClick: () => void;
+  variant?: ModalActionVariant;
+  disabled?: boolean;
+}
+
+interface BasicModalProps {
+  isOpen: boolean;
+  onClose?: () => void;
+  title?: string;
+  message?: string;
+  children?: ReactNode;
+  actions?: ModalAction[];
+  closeOnOverlayClick?: boolean;
+  className?: string;
+}
+
+const BasicModal = ({
   isOpen,
   onClose,
+  title,
+  message,
   children,
-  className = '',
+  actions,
   closeOnOverlayClick = true,
-}) => {
-  const dialogRef = useRef(null);
+  className = '',
+}: BasicModalProps) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -29,10 +53,10 @@ const Modal = ({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    const previouslyFocused = document.activeElement;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     dialogRef.current?.focus();
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose?.();
         return;
@@ -41,7 +65,8 @@ const Modal = ({
         return;
       }
 
-      const focusable = dialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR);
+      const focusable =
+        dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
       if (!focusable || focusable.length === 0) {
         return;
       }
@@ -83,36 +108,40 @@ const Modal = ({
         className={`bg-white rounded-2xl w-modal mx-4 shadow-2xl border border-gray-100 overflow-hidden outline-none ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {children}
+        <div className="overflow-y-auto max-h-modal">
+          {children ?? (
+            <div className="p-6 text-center">
+              {title && (
+                <h3 className="text-lg font-semibold text-content mb-4">
+                  {title}
+                </h3>
+              )}
+              {message && (
+                <p className="text-sm text-content-secondary">{message}</p>
+              )}
+            </div>
+          )}
+        </div>
+        {actions && actions.length > 0 && (
+          <div className="flex border-t border-gray-100">
+            {actions.map((action) => (
+              <button
+                key={action.text}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className={`flex-1 py-4 text-sm font-medium transition-colors disabled:opacity-60 ${
+                  BUTTON_VARIANT_CLASSES[action.variant ?? 'default']
+                }`}
+              >
+                {action.text}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>,
     document.body,
   );
 };
 
-Modal.Body = function ModalBody({ children }) {
-  return <div className="overflow-y-auto max-h-modal">{children}</div>;
-};
-
-Modal.Footer = function ModalFooter({ children }) {
-  return <div className="flex border-t border-gray-100">{children}</div>;
-};
-
-Modal.Button = function ModalButton({
-  children,
-  onClick,
-  variant = 'default',
-  disabled = false,
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex-1 py-4 text-sm font-medium transition-colors disabled:opacity-60 ${BUTTON_VARIANT_CLASSES[variant]}`}
-    >
-      {children}
-    </button>
-  );
-};
-
-export default Modal;
+export default BasicModal;

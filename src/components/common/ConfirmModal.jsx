@@ -1,6 +1,6 @@
 'use client';
 
-import Modal from './Modal';
+import BasicModal from './BasicModal';
 
 const ConfirmModal = ({
   isOpen,
@@ -14,32 +14,24 @@ const ConfirmModal = ({
   confirmDisabled = false,
   variant = 'default',
 }) => (
-  <Modal isOpen={isOpen} onClose={onClose} className="max-w-modal">
-    <Modal.Body>
-      {children ?? (
-        <div className="p-6 text-center">
-          {title && (
-            <h3 className="text-lg font-semibold text-content mb-4">{title}</h3>
-          )}
-          {message && (
-            <p className="text-sm text-content-secondary">{message}</p>
-          )}
-        </div>
-      )}
-    </Modal.Body>
-    <Modal.Footer>
-      <Modal.Button variant="ghost" onClick={onClose}>
-        {cancelText}
-      </Modal.Button>
-      <Modal.Button
-        variant={variant}
-        onClick={onConfirm}
-        disabled={confirmDisabled}
-      >
-        {confirmText}
-      </Modal.Button>
-    </Modal.Footer>
-  </Modal>
+  <BasicModal
+    isOpen={isOpen}
+    onClose={onClose}
+    className="max-w-modal"
+    title={title}
+    message={message}
+    actions={[
+      { text: cancelText, onClick: onClose, variant: 'ghost' },
+      {
+        text: confirmText,
+        onClick: onConfirm,
+        variant,
+        disabled: confirmDisabled,
+      },
+    ]}
+  >
+    {children}
+  </BasicModal>
 );
 
 export default ConfirmModal;
