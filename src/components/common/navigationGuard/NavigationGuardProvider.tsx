@@ -104,16 +104,23 @@ export default function NavigationGuardProvider({
     }
 
     const guardedHref = window.location.href;
+    // 뒤로가기를 한 번도 누르지 않은 채 isDirty가 꺼지면(예: 작성 후 지움),
+    // 이 effect가 만든 sentinel 엔트리가 정리되지 않고 히스토리에 그대로
+    // 남아 쌓일 수 있다. 현재 sentinel 위에 있는지를 추적해뒀다가
+    // cleanup에서 되돌려 남겨두지 않는다.
+    let sentinelArmed = false;
     const armSentinel = () => {
       window.history.pushState(
         { ...window.history.state, __unsavedGuard: true },
         '',
         guardedHref,
       );
+      sentinelArmed = true;
     };
     armSentinel();
 
     const handlePopState = () => {
+      sentinelArmed = false;
       guardedNavigate(
         () => window.history.go(-1),
         () => armSentinel(),
@@ -121,7 +128,12 @@ export default function NavigationGuardProvider({
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (sentinelArmed) {
+        window.history.back();
+      }
+    };
   }, [isDirty, guardedNavigate]);
 
   useEffect(() => {
