@@ -13,6 +13,7 @@ import useTokenStore from '@stores/useTokenStore';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const { userId, accessToken } = useTokenStore();
@@ -72,6 +73,11 @@ const AfterLoginBanner = () => {
   }, [userId, accessToken, fetchAllUserReservations]);
 
   const cancelReservation = async (reservationId) => {
+    if (isCancelling) {
+      return;
+    }
+
+    setIsCancelling(true);
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
         userId,
@@ -87,6 +93,8 @@ const AfterLoginBanner = () => {
       setErrorMessage(
         err.response?.data?.message || '예약 취소에 실패했습니다.',
       );
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -149,6 +157,7 @@ const AfterLoginBanner = () => {
                   onConfirm={() => cancelReservation(r.id)}
                   cancelText="돌아가기"
                   confirmText="예약 취소"
+                  confirmDisabled={isCancelling}
                 >
                   <div className="p-6 sm:p-8">
                     <div className="text-lg font-semibold text-left mb-6 text-content">
