@@ -31,6 +31,7 @@ export default function AccountInfo() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
 
@@ -77,11 +78,11 @@ export default function AccountInfo() {
     const trimmed = newName.trim();
 
     if (!trimmed) {
-      setAlertMessage('이름을 입력해주세요.');
+      setNameError('이름을 입력해주세요.');
       return;
     }
     if (trimmed === (userInfo.name || '')) {
-      setAlertMessage('기존 이름과 동일합니다.');
+      setNameError('기존 이름과 동일합니다.');
       return;
     }
     if (submitting) {
@@ -100,6 +101,7 @@ export default function AccountInfo() {
         setUserInfo((prev) => ({ ...prev, name: trimmed }));
         setOpen(false);
         setNewName('');
+        setNameError('');
       }
     } catch (err) {
       console.error('이름 변경 실패:', err);
@@ -110,11 +112,11 @@ export default function AccountInfo() {
         (typeof err?.response?.data === 'string' ? err.response.data : null);
 
       if (err?.response?.status === 409) {
-        setAlertMessage(serverMsg || '중복된 이름입니다.');
+        setNameError(serverMsg || '중복된 이름입니다.');
       } else if (err?.response?.status === 400) {
-        setAlertMessage(serverMsg || '요청이 올바르지 않습니다.');
+        setNameError(serverMsg || '요청이 올바르지 않습니다.');
       } else {
-        setAlertMessage(
+        setNameError(
           serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
         );
       }
@@ -178,7 +180,10 @@ export default function AccountInfo() {
 
                 <button
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    setNameError('');
+                    setOpen(true);
+                  }}
                 >
                   <div className="flex flex-col gap-1 text-left">
                     <label className="text-sm font-medium text-content">
@@ -250,7 +255,10 @@ export default function AccountInfo() {
       {/* 이름 변경 모달 */}
       <ConfirmModal
         isOpen={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setNameError('');
+          setOpen(false);
+        }}
         onConfirm={handleUsernameChange}
         confirmText={submitting ? '수정 중…' : '수정'}
         confirmDisabled={submitting}
@@ -266,14 +274,21 @@ export default function AccountInfo() {
             <input
               type="text"
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(e) => {
+                setNewName(e.target.value);
+                setNameError('');
+              }}
               maxLength={20}
               className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
               placeholder={userInfo.name || 'USER NAME'}
             />
-            <p className="text-xs text-content-muted">
-              기존 이름과 다른 이름으로 변경해주세요.
-            </p>
+            {nameError ? (
+              <p className="text-xs text-red-500">{nameError}</p>
+            ) : (
+              <p className="text-xs text-content-muted">
+                기존 이름과 다른 이름으로 변경해주세요.
+              </p>
+            )}
             {submitting && (
               <p className="text-xs text-content-secondary">이름 변경 중…</p>
             )}

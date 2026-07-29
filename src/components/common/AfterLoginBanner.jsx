@@ -83,6 +83,7 @@ const AfterLoginBanner = () => {
       await fetchAllReservedTimes();
     } catch (err) {
       console.error('예약 취소 실패:', err);
+      setOpenReservationId(null);
       setErrorMessage(
         err.response?.data?.message || '예약 취소에 실패했습니다.',
       );
