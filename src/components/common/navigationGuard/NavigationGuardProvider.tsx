@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -15,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 interface NavigationGuardContextValue {
-  setDirty: (isDirty: boolean) => void;
+  setDirty: (id: string, isDirty: boolean) => void;
   guardedNavigate: (navigateFn: () => void, onCancel?: () => void) => void;
 }
 
@@ -44,8 +45,16 @@ export default function NavigationGuardProvider({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const pendingActionRef = useRef<(() => void) | null>(null);
   const pendingCancelRef = useRef<(() => void) | null>(null);
+  const dirtyIdsRef = useRef<Set<string>>(new Set());
 
-  const setDirty = useCallback((dirty: boolean) => setIsDirty(dirty), []);
+  const setDirty = useCallback((id: string, dirty: boolean) => {
+    if (dirty) {
+      dirtyIdsRef.current.add(id);
+    } else {
+      dirtyIdsRef.current.delete(id);
+    }
+    setIsDirty(dirtyIdsRef.current.size > 0);
+  }, []);
 
   const guardedNavigate = useCallback(
     (navigateFn: () => void, onCancel?: () => void) => {
@@ -72,6 +81,7 @@ export default function NavigationGuardProvider({
     const runPendingAction = pendingActionRef.current;
 
     resetPendingNavigation();
+    dirtyIdsRef.current.clear();
     setIsDirty(false);
 
     runPendingAction?.();
@@ -205,16 +215,17 @@ export default function NavigationGuardProvider({
 }
 
 export function useUnsavedChangesGuard(isDirty: boolean) {
+  const id = useId();
   const { setDirty } = useNavigationGuardContext();
 
   useEffect(() => {
-    setDirty(isDirty);
-    return () => setDirty(false);
-  }, [isDirty, setDirty]);
+    setDirty(id, isDirty);
+    return () => setDirty(id, false);
+  }, [id, isDirty, setDirty]);
 
   const markClean = useCallback(() => {
-    setDirty(false);
-  }, [setDirty]);
+    setDirty(id, false);
+  }, [id, setDirty]);
 
   return { markClean };
 }
