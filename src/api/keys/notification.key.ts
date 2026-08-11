@@ -5,16 +5,16 @@ export const notification = createQueryKeys('notification', {
   // 전체 공지사항 조회
   getList: () => ({
     queryKey: ['all'],
-    queryFn: () => null,
+    // queryFn: () => null, (추후 추가 예정)
   }),
   // 특정 공지사항 상세 조회
   getById: (id: number) => ({
     queryKey: [id],
-    queryFn: () => null,
+    // queryFn: () => null,
   }),
   // 공지사항 개수 조회
   getCount: () => ({
     queryKey: ['count'],
-    queryFn: () => null,
+    // queryFn: () => null,
   }),
 });

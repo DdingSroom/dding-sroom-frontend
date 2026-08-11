@@ -11,21 +11,21 @@ export const community = createQueryKeys('community', {
   // 전체 커뮤니티 게시글 조회
   getList: () => ({
     queryKey: ['all'],
-    queryFn: null,
+    // queryFn: () => null, (추후 추가 예정)
   }),
   // 특정 커뮤니티 게시글 조회
   getSearchList: (params: CommunityParams) => ({
     queryKey: [params ?? {}],
-    queryFn: null,
+    // queryFn: () => null,
   }),
   // 내가 쓴 커뮤니티 게시글 조회
   getMyList: () => ({
     queryKey: ['me'],
-    queryFn: null,
+    // queryFn: () => null,
   }),
   // 상세 커뮤니티 게시글 조회
   getById: (id: number) => ({
     queryKey: [id],
-    queryFn: null,
+    // queryFn: () => null,
   }),
 });

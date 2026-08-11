@@ -5,16 +5,16 @@ export const comment = createQueryKeys('comment', {
   // 특정 게시글의 댓글 조회
   getComments: (postId: number) => ({
     queryKey: [postId],
-    queryFn: () => null,
+    // queryFn: () => null, (추후 추가 예정)
   }),
   // 댓글의 대댓글 조회
   getReplies: (commentId: number) => ({
     queryKey: [commentId],
-    queryFn: () => null,
+    // queryFn: () => null,
   }),
   // 내가 쓴 댓글 조회
   getMyComments: () => ({
     queryKey: ['me'],
-    queryFn: () => null,
+    // queryFn: () => null,
   }),
 });
