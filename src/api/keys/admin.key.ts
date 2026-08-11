@@ -1,16 +1,20 @@
 import { createQueryKeyStore } from '@lukemorales/query-key-factory';
 
+// admin key 추가 헬퍼 함수
+const adminKey = <T extends readonly unknown[]>(...keys: T) =>
+  ['admin', ...keys] as const;
+
 export const admin = createQueryKeyStore({
   /** ---------- (관리자) 유저 쿼리 ----------- */
   users: {
     // 전체 유저 조회
     getAll: () => ({
-      queryKey: ['all'],
+      queryKey: adminKey('all'),
       // queryFn: () => null, (추후 추가 예정)
     }),
     // 특정 유저 조회
     getById: (id: number) => ({
-      queryKey: [id],
+      queryKey: adminKey(id),
       // queryFn: () => null,
     }),
   },
@@ -18,28 +22,28 @@ export const admin = createQueryKeyStore({
   reservations: {
     // 전체 예약 조회
     getAll: () => ({
-      queryKey: ['all'],
+      queryKey: adminKey('all'),
       // queryFn: () => null,
     }),
     // 특정 예약 조회
     getById: (id: number) => ({
-      queryKey: [id],
+      queryKey: adminKey(id),
       // queryFn: () => null,
     }),
     // 특정 유저의 예약 조회
     getByUserId: (userId: number) => ({
-      queryKey: [userId],
+      queryKey: adminKey(userId),
       // queryFn: () => null,
     }),
   },
   /** ---------- (관리자) 스터디룸 관리 쿼리 ----------- */
   rooms: {
     getAll: () => ({
-      queryKey: ['all'],
+      queryKey: adminKey('all'),
       // queryFn: () => null,
     }),
     getById: (id: number) => ({
-      queryKey: [id],
+      queryKey: adminKey(id),
       // queryFn: () => null,
     }),
   },
