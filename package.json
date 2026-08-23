@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:api-types": "dotenv -- cross-var openapi-typescript \\$SWAGGER_URL -o src/types/generated/schema.d.ts",
+    "generate:api-types": "dotenv -- cross-var openapi-typescript \\$SWAGGER_URL -o src/types/schema.d.ts",
     "typecheck": "tsc --noEmit",
     "prepare": "lefthook install"
   },
