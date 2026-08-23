@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
@@ -195,11 +195,13 @@ export default function WritePostPage() {
         </div>
       </main>
 
-      <AlertModal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
         message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

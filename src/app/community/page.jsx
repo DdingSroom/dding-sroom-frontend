@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -268,11 +268,13 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <AlertModal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
         message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
 
       <PrivacyPolicyFooter />

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
@@ -341,11 +341,13 @@ export default function PostDetailPage() {
         </div>
       </main>
 
-      <AlertModal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
         message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
       <ConfirmModal
         isOpen={showDeleteConfirm}
