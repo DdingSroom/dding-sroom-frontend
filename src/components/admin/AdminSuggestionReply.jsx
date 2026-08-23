@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
 
 import axiosInstance from '@api/instance';
 

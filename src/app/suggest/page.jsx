@@ -4,7 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
-import { useUnsavedChangesGuard } from '@components/common/navigationGuard/NavigationGuardProvider';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';

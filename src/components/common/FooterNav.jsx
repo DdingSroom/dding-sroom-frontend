@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Community, Proposal, Reservation } from 'public/static/icons';
 
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import { useGuardedPush } from '@components/common/navigationGuard/NavigationGuardProvider';
+import { useGuardedPush } from '@components/common/navigation-guard/NavigationGuardProvider';
 
 import useTokenStore from '@stores/useTokenStore';
 
