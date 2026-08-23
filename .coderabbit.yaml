@@ -46,6 +46,8 @@ reviews:
         데이터 패칭 위치, 렌더링 전략, route segment 구성이 적절한지 확인해주세요.
         불필요하게 클라이언트 컴포넌트로 내려간 부분이 있다면 더 나은 분리 방향을 제안해주세요.
         성능 최적화는 실제로 필요한 경우에만 언급하고, useMemo/useCallback의 과도한 사용은 지양하는 방향으로 리뷰해주세요.
+        route 세그먼트 폴더명은 kebab-case(예: reset-password, cancel-account-step1)를 따르는지 확인해주세요.
+        page/layout/loading/error/not-found/route 등 Next.js 예약 파일명이 아닌 일반 컴포넌트 파일이 새로 추가된다면, src/components와 동일하게 PascalCase 파일명을 따르는지 확인해주세요.
 
     - path: 'src/components/**'
       instructions: |
@@ -53,6 +55,9 @@ reviews:
         프레젠테이셔널 성격의 컴포넌트에 도메인 로직이 과하게 들어가 있지 않은지도 함께 검토해주세요.
         UI와 비즈니스 로직이 과하게 섞여 있다면 분리 방향을 제안해주세요.
         성능 최적화는 실제로 필요한 경우에만 언급하고, useMemo/useCallback의 과도한 사용은 지양하는 방향으로 리뷰해주세요.
+        신규로 추가되는 컴포넌트 파일명이 export되는 컴포넌트 이름과 동일한 PascalCase(예: BasicModal.tsx → BasicModal)를 따르는지 확인해주세요.
+        kebab-case나 camelCase 파일명이 섞여 들어오면 지적해주세요.
+        하위 폴더명은 kebab-case(예: navigationGuard → navigation-guard)를 따르는지 확인해주세요. 폴더명은 kebab-case, 그 안의 컴포넌트 파일명은 PascalCase로 컨벤션이 다르니 혼동하지 마세요.
 
     - path: 'src/hooks/**'
       instructions: |
@@ -60,17 +65,30 @@ reviews:
         현재는 JavaScript 코드베이스이므로 TypeScript 미도입 자체보다는 런타임 안정성, null/undefined 처리, 인터페이스 일관성을 중심으로 확인해주세요.
         향후 TypeScript 마이그레이션 시 경계가 모호해질 부분이 있다면 선택적으로 제안해주세요.
         도메인 로직이 훅 안에 과하게 들어가 있다면 분리 방향을 제안해주세요.
+        신규로 추가되는 훅 파일명이 camelCase(use 접두사, 예: useModalBehavior.ts)를 따르는지 확인해주세요.
 
     - path: 'src/utils/**'
       instructions: |
         유틸 함수의 순수성, 사이드 이펙트 여부, 엣지케이스 처리, 네이밍 명확성을 중심으로 검토해주세요.
         현재는 JavaScript 코드베이스이므로 TypeScript 미도입 자체보다는 런타임 안정성, null/undefined 처리, 입력값 계약의 명확성을 함께 확인해주세요.
+        신규로 추가되는 유틸 파일명이 camelCase(예: formatDate.js)를 따르는지 확인해주세요.
 
     - path: 'src/api/**'
       instructions: |
         API 클라이언트 계층(axios/fetch)의 책임 분리, 에러 처리 일관성, 재시도/타임아웃 전략의 적절성을 검토해주세요.
         인증 토큰 주입/갱신 인터셉터 로직에서 동시성 이슈(race condition), 무한 재시도, 보안 리스크가 없는지 확인해주세요.
         응답 데이터 파싱과 타입 계약이 호출부와 일관되는지, 실패 케이스가 사용자 경험에 맞게 처리되는지 함께 검토해주세요.
+        신규로 추가되는 API 파일명이 camelCase 또는 소문자 단일 단어(예: getUserId.js, instance.js)를 따르는지 확인해주세요.
+
+    - path: 'src/stores/**'
+      instructions: |
+        zustand store의 상태 구조, selector 사용 패턴, 불필요하게 전역 상태로 끌어올려진 로컬 상태가 없는지 검토해주세요.
+        신규로 추가되는 store 파일명이 camelCase(use 접두사 + Store 접미사, 예: useTokenStore.js)를 따르는지 확인해주세요.
+
+    - path: 'src/constants/**'
+      instructions: |
+        상수 값의 하드코딩 여부, 매직 넘버/문자열이 상수로 잘 분리되어 있는지 검토해주세요.
+        신규로 추가되는 상수 파일명이 camelCase 또는 소문자 단일 단어(예: rooms.js, regex.js)를 따르는지 확인해주세요.
 
 chat:
   auto_reply: false # 멘션 없이도 자동 응답 여부
