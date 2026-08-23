@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, Person } from 'public/static/icons';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 
 import axiosInstance from '@api/instance';
 
@@ -84,10 +84,13 @@ const Header = () => {
         </button>
       </div>
 
-      <AlertModal
+      <BasicModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        className="max-w-modal-sm"
+        title="알림"
         message="시범 운영 단계에서 지원되지 않는 기능입니다"
+        actions={[{ text: '확인', onClick: () => setIsInfoModalOpen(false) }]}
       />
     </header>
   );
