@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
@@ -200,10 +200,13 @@ export default function ReservationListPage() {
         variant="danger"
       />
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
     </div>
   );

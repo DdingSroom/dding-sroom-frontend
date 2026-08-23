@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import AlertModal from '../../components/common/AlertModal';
+import BasicModal from '../../components/common/BasicModal';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',
@@ -84,18 +84,24 @@ export default function AdminLayout({ children }) {
         <main className="flex-1 p-10 overflow-y-auto">{children}</main>
       </div>
       {/*  */}
-      <AlertModal
+      <BasicModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        className="max-w-modal-sm"
+        title="알림"
         message="시범 운영 단계에서 지원되지 않는 기능입니다"
+        actions={[{ text: '확인', onClick: () => setIsInfoModalOpen(false) }]}
       />
 
       {/* 모바일 접근 제한 */}
-      <AlertModal
+      <BasicModal
         isOpen={isMobileBlocked}
         onClose={handleMobileBlockedConfirm}
         closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="알림"
         message="관리자 페이지는 데스크탑에서만 접속 가능합니다."
+        actions={[{ text: '확인', onClick: handleMobileBlockedConfirm }]}
       />
     </>
   );

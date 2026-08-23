@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import { updateUserStatus } from '@api/admin';
@@ -98,10 +98,13 @@ export default function UserTableRow({ user, onUserUpdate }) {
         confirmText="변경"
       />
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
     </tr>
   );

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 
 import axiosInstance from '@api/instance';
 
@@ -302,10 +302,13 @@ export default function AdminCommunityPage() {
         )}
       </div>
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
     </div>
   );
