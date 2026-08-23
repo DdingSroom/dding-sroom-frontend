@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:api-types": "openapi-typescript https://ddingsroomserver.click:8443/v3/api-docs -o src/types/generated/schema.d.ts",
+    "generate:api-types": "dotenv -- cross-var openapi-typescript \\$SWAGGER_URL -o src/types/generated/schema.d.ts",
     "typecheck": "tsc --noEmit",
     "prepare": "lefthook install"
   },
@@ -44,6 +44,8 @@
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.20",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "^15.2.3",
     "eslint-config-prettier": "^9.1.0",
