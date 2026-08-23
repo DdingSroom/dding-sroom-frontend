@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -172,10 +172,13 @@ export default function NotificationList() {
       <BottomSafeSpacer height={64} />
       <FooterNav />
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
 
       {showDetailModal && selectedNotification && (
