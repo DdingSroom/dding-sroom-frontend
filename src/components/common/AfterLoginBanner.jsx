@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Maru } from 'public/static/icons';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
@@ -197,17 +197,21 @@ const AfterLoginBanner = () => {
         }
       `}</style>
 
-      <AlertModal
+      <BasicModal
         isOpen={!!successMessage}
         onClose={() => setSuccessMessage('')}
+        className="max-w-modal-sm"
         title="예약 취소"
         message={successMessage}
+        actions={[{ text: '확인', onClick: () => setSuccessMessage('') }]}
       />
-      <AlertModal
+      <BasicModal
         isOpen={!!errorMessage}
         onClose={() => setErrorMessage('')}
+        className="max-w-modal-sm"
         title="오류"
         message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setErrorMessage('') }]}
       />
     </div>
   );

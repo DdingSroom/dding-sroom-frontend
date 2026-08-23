@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import TimeComponent from '@components/reservation/TimeComponent';
@@ -397,17 +397,21 @@ const TomorrowReservationComponent = ({
         isOpen={showLoginModal}
         onConfirm={handleModalConfirm}
       />
-      <AlertModal
+      <BasicModal
         isOpen={!!successMessage}
         onClose={() => setSuccessMessage('')}
+        className="max-w-modal-sm"
         title="예약 완료"
         message={successMessage}
+        actions={[{ text: '확인', onClick: () => setSuccessMessage('') }]}
       />
-      <AlertModal
+      <BasicModal
         isOpen={!!errorMessage}
         onClose={() => setErrorMessage('')}
+        className="max-w-modal-sm"
         title="오류"
         message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setErrorMessage('') }]}
       />
     </div>
   );
