@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import useModalBehavior from './useModalBehavior';
+import useModalBehavior from '@hooks/useModalBehavior';
 
 export type ModalActionVariant = 'default' | 'danger' | 'ghost';
 
