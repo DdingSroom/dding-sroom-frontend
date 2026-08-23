@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -303,17 +303,22 @@ export default function AccountInfo() {
       />
 
       {/* 로그아웃 완료 모달 */}
-      <AlertModal
+      <BasicModal
         isOpen={showLogoutModal}
         onClose={handleLogoutConfirm}
+        className="max-w-modal-sm"
         title="알림"
         message="로그아웃이 완료되었습니다."
+        actions={[{ text: '확인', onClick: handleLogoutConfirm }]}
       />
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
 
       <PrivacyPolicyFooter />

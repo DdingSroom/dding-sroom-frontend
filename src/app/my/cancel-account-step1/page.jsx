@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import AlertModal from '@components/common/AlertModal';
+import BasicModal from '@components/common/BasicModal';
 import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import MyPageHeader from '@components/my/MyPageHeader';
@@ -213,17 +213,23 @@ export default function CancelAccountStep1() {
         onConfirm={handleLoginConfirm}
       />
 
-      <AlertModal
+      <BasicModal
         isOpen={!!alertMessage}
         onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
         message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
       />
 
-      <AlertModal
+      <BasicModal
         isOpen={withdrawComplete}
         onClose={handleWithdrawCompleteConfirm}
         closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="알림"
         message="회원 탈퇴가 완료되었습니다."
+        actions={[{ text: '확인', onClick: handleWithdrawCompleteConfirm }]}
       />
     </>
   );
