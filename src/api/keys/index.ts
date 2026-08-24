@@ -10,3 +10,11 @@ export const queries = {
   admin,
   ...mergeQueryKeys(suggestion, community, comment, notification, reservation),
 };
+
+// [ queryKey 단일 호출 예시 ]
+// 1. admin query-key : queries.admin.admin.users.getAll().queryKey
+// 2. 그 외 query-key : queries.suggestion.getAll().queryKey
+
+// [ queryKey & queryFn 호출 예시 ]
+// 1. admin query-key : ...queries.admin.admin.users.getAll()
+// 2. 그 외 query-key : ...queries.suggestion.getAll()
