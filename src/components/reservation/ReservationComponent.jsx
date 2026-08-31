@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import TimeComponent from '@components/reservation/TimeComponent';
 
 import axiosInstance from '@api/instance';
@@ -405,9 +404,14 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
         </div>
       </div>
       <div className="bg-status-reserved h-0.5 w-full mt-3" />
-      <LoginRequiredModal
+      <BasicModal
         isOpen={showLoginModal}
-        onConfirm={handleModalConfirm}
+        onClose={handleModalConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleModalConfirm }]}
       />
       <BasicModal
         isOpen={!!successMessage}
