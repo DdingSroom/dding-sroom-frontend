@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
@@ -253,15 +252,28 @@ export default function AccountInfo() {
       </main>
 
       {/* 이름 변경 모달 */}
-      <ConfirmModal
+      <BasicModal
         isOpen={open}
         onClose={() => {
           setNameError('');
           setOpen(false);
         }}
-        onConfirm={handleUsernameChange}
-        confirmText={submitting ? '수정 중…' : '수정'}
-        confirmDisabled={submitting}
+        className="max-w-modal"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => {
+              setNameError('');
+              setOpen(false);
+            },
+            variant: 'ghost',
+          },
+          {
+            text: submitting ? '수정 중…' : '수정',
+            onClick: handleUsernameChange,
+            disabled: submitting,
+          },
+        ]}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
@@ -294,7 +306,7 @@ export default function AccountInfo() {
             )}
           </div>
         </div>
-      </ConfirmModal>
+      </BasicModal>
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
       <LoginRequiredModal

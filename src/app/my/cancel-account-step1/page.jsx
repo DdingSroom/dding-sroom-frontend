@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import MyPageHeader from '@components/my/MyPageHeader';
 
@@ -179,13 +178,23 @@ export default function CancelAccountStep1() {
                 </div>
               </div>
 
-              <ConfirmModal
+              <BasicModal
                 isOpen={open}
                 onClose={() => setOpen(false)}
-                onConfirm={handleDeleteAccount}
-                confirmText={isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기'}
-                variant="danger"
-                confirmDisabled={isWithdrawing}
+                className="max-w-modal"
+                actions={[
+                  {
+                    text: '취소',
+                    onClick: () => setOpen(false),
+                    variant: 'ghost',
+                  },
+                  {
+                    text: isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기',
+                    onClick: handleDeleteAccount,
+                    variant: 'danger',
+                    disabled: isWithdrawing,
+                  },
+                ]}
               >
                 <div className="p-4 flex flex-col h-full justify-center">
                   <p className="font-semibold text-2xl text-left mb-2">
@@ -198,7 +207,7 @@ export default function CancelAccountStep1() {
                     복구되지 않습니다.
                   </p>
                 </div>
-              </ConfirmModal>
+              </BasicModal>
             </div>
           )}
         </main>
