@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import ConfirmModal from '@components/common/ConfirmModal';
+import BasicModal from '@components/common/BasicModal';
 
 import axiosInstance from '@api/instance';
 import { getAnonymousName } from '@utils/anonymizeUser';
@@ -192,14 +192,20 @@ const CommentItem = ({
         </div>
       )}
 
-      <ConfirmModal
+      <BasicModal
         isOpen={pendingDeleteId !== null}
         onClose={() => setPendingDeleteId(null)}
-        onConfirm={confirmDeleteComment}
+        className="max-w-modal"
         title="댓글 삭제"
         message="댓글을 삭제하시겠습니까?"
-        confirmText="삭제"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setPendingDeleteId(null),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeleteComment, variant: 'danger' },
+        ]}
       />
     </div>
   );
