@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import ConfirmModal from '@components/common/ConfirmModal';
+import BasicModal from '@components/common/BasicModal';
 
 import axiosInstance from '@api/instance';
 
@@ -526,24 +526,36 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
         </div>
       ))}
 
-      <ConfirmModal
+      <BasicModal
         isOpen={deleteTargetId !== null}
         onClose={() => setDeleteTargetId(null)}
-        onConfirm={confirmRemove}
+        className="max-w-modal"
         title="답변 삭제"
         message="이 답변을 삭제하시겠습니까?"
-        confirmText="삭제"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setDeleteTargetId(null),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmRemove, variant: 'danger' },
+        ]}
       />
 
-      <ConfirmModal
+      <BasicModal
         isOpen={showCancelConfirm}
         onClose={() => setShowCancelConfirm(false)}
-        onConfirm={doCancel}
+        className="max-w-modal"
         title="작성 중인 내용이 있습니다"
         message="수정 중인 내용이 사라집니다. 정말 취소하시겠습니까?"
-        cancelText="계속 작성하기"
-        confirmText="취소하기"
+        actions={[
+          {
+            text: '계속 작성하기',
+            onClick: () => setShowCancelConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '취소하기', onClick: doCancel },
+        ]}
       />
     </div>
   );

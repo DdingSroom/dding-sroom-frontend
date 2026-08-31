@@ -6,7 +6,6 @@ import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
 
@@ -190,14 +189,20 @@ export default function ReservationListPage() {
           ))}
       </div>
 
-      <ConfirmModal
+      <BasicModal
         isOpen={forceCancelTargetId !== null}
         onClose={() => setForceCancelTargetId(null)}
-        onConfirm={confirmForceCancel}
+        className="max-w-modal"
         title="예약 강제 취소"
         message="이 예약을 강제로 취소하시겠습니까?"
-        confirmText="취소하기"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setForceCancelTargetId(null),
+            variant: 'ghost',
+          },
+          { text: '취소하기', onClick: confirmForceCancel, variant: 'danger' },
+        ]}
       />
 
       <BasicModal

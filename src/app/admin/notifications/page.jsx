@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
 
@@ -458,14 +457,24 @@ export default function NotificationManagement() {
         </div>
       )}
 
-      <ConfirmModal
+      <BasicModal
         isOpen={deleteTargetId !== null}
         onClose={() => setDeleteTargetId(null)}
-        onConfirm={confirmDeleteNotification}
+        className="max-w-modal"
         title="공지사항 삭제"
         message="정말로 이 공지사항을 삭제하시겠습니까?"
-        confirmText="삭제"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setDeleteTargetId(null),
+            variant: 'ghost',
+          },
+          {
+            text: '삭제',
+            onClick: confirmDeleteNotification,
+            variant: 'danger',
+          },
+        ]}
       />
 
       <BasicModal

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 
 import { updateRoomStatus } from '@api/admin';
 import axiosInstance from '@api/instance';
@@ -268,16 +267,23 @@ export default function RoomsManagePage() {
         </div>
       </div>
 
-      <ConfirmModal
+      <BasicModal
         isOpen={pendingStatusChange !== null}
         onClose={() => setPendingStatusChange(null)}
-        onConfirm={confirmStatusChange}
+        className="max-w-modal"
         title="스터디룸 상태 변경"
         message={
           pendingStatusChange &&
           `스터디룸 ${pendingStatusChange.roomId}호를 ${STATUS_LABELS[pendingStatusChange.newStatus]} 상태로 전환할까요?`
         }
-        confirmText="전환"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setPendingStatusChange(null),
+            variant: 'ghost',
+          },
+          { text: '전환', onClick: confirmStatusChange },
+        ]}
       />
 
       <BasicModal
