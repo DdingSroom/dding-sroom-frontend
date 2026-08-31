@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Community, Proposal, Reservation } from 'public/static/icons';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import BasicModal from '@components/common/BasicModal';
 import { useGuardedPush } from '@components/common/navigation-guard/NavigationGuardProvider';
 
 import useTokenStore from '@stores/useTokenStore';
@@ -62,9 +62,14 @@ const FooterNav = () => {
         ))}
       </footer>
 
-      <LoginRequiredModal
+      <BasicModal
         isOpen={isLoginModalOpen}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
     </>
   );
