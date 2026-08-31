@@ -13,7 +13,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 
-import ConfirmModal from '@components/common/ConfirmModal';
+import BasicModal from '@components/common/BasicModal';
 
 interface NavigationGuardContextValue {
   setDirty: (id: string, isDirty: boolean) => void;
@@ -201,14 +201,16 @@ export default function NavigationGuardProvider({
   return (
     <NavigationGuardContext.Provider value={value}>
       {children}
-      <ConfirmModal
+      <BasicModal
         isOpen={isConfirmOpen}
         onClose={cancelLeave}
-        onConfirm={confirmLeave}
+        className="max-w-modal"
         title="작성 중인 내용이 있습니다"
         message="페이지를 나가면 작성 중인 내용이 사라질 수 있습니다. 정말 나가시겠습니까?"
-        cancelText="계속 작성하기"
-        confirmText="나가기"
+        actions={[
+          { text: '계속 작성하기', onClick: cancelLeave, variant: 'ghost' },
+          { text: '나가기', onClick: confirmLeave },
+        ]}
       />
     </NavigationGuardContext.Provider>
   );

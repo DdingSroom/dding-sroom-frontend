@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Maru } from 'public/static/icons';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
@@ -151,13 +150,22 @@ const AfterLoginBanner = () => {
                   취소
                 </button>
 
-                <ConfirmModal
+                <BasicModal
                   isOpen={openReservationId === r.id}
                   onClose={() => setOpenReservationId(null)}
-                  onConfirm={() => cancelReservation(r.id)}
-                  cancelText="돌아가기"
-                  confirmText="예약 취소"
-                  confirmDisabled={isCancelling}
+                  className="max-w-modal"
+                  actions={[
+                    {
+                      text: '돌아가기',
+                      onClick: () => setOpenReservationId(null),
+                      variant: 'ghost',
+                    },
+                    {
+                      text: '예약 취소',
+                      onClick: () => cancelReservation(r.id),
+                      disabled: isCancelling,
+                    },
+                  ]}
                 >
                   <div className="p-6 sm:p-8">
                     <div className="text-lg font-semibold text-left mb-6 text-content">
@@ -180,7 +188,7 @@ const AfterLoginBanner = () => {
                       </div>
                     </div>
                   </div>
-                </ConfirmModal>
+                </BasicModal>
               </div>
             ))
           )}
