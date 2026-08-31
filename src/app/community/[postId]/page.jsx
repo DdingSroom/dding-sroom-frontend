@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
@@ -192,9 +191,14 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
