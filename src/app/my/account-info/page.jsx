@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
@@ -306,9 +305,14 @@ export default function AccountInfo() {
       </BasicModal>
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
-      <LoginRequiredModal
+      <BasicModal
         isOpen={authReady && showLoginModal}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
 
       {/* 로그아웃 완료 모달 */}

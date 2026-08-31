@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
@@ -219,9 +218,14 @@ export default function CancelAccountStep1() {
         <FooterNav />
       </div>
 
-      <LoginRequiredModal
+      <BasicModal
         isOpen={showLoginModal}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
 
       <BasicModal

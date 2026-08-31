@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
@@ -112,9 +111,14 @@ export default function MyCommentsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <MyPageHeader />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
