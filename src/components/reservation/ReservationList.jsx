@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import axiosInstance from '@api/instance';
@@ -241,12 +240,18 @@ export default function ReservationList() {
       )}
 
       {cancelModalData && (
-        <ConfirmModal
+        <BasicModal
           isOpen={true}
           onClose={() => setCancelModalData(null)}
-          onConfirm={confirmCancelReservation}
-          cancelText="돌아가기"
-          confirmText="예약 취소"
+          className="max-w-modal"
+          actions={[
+            {
+              text: '돌아가기',
+              onClick: () => setCancelModalData(null),
+              variant: 'ghost',
+            },
+            { text: '예약 취소', onClick: confirmCancelReservation },
+          ]}
         >
           <div className="p-6 sm:p-8">
             <div className="text-lg font-semibold text-left mb-6 text-content">
@@ -270,7 +275,7 @@ export default function ReservationList() {
               </div>
             </div>
           </div>
-        </ConfirmModal>
+        </BasicModal>
       )}
 
       <BasicModal

@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import TimeComponent from '@components/reservation/TimeComponent';
 
@@ -320,11 +319,14 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
         >
           예약
         </button>
-        <ConfirmModal
+        <BasicModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          onConfirm={handleSubmitReservation}
-          confirmText="예약하기"
+          className="max-w-modal"
+          actions={[
+            { text: '취소', onClick: () => setOpen(false), variant: 'ghost' },
+            { text: '예약하기', onClick: handleSubmitReservation },
+          ]}
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">
@@ -394,7 +396,7 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
               </select>
             </div>
           </div>
-        </ConfirmModal>
+        </BasicModal>
       </div>
 
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
