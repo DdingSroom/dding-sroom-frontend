@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -349,14 +348,20 @@ export default function PostDetailPage() {
         message={errorMessage}
         actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
-      <ConfirmModal
+      <BasicModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={confirmDeletePost}
+        className="max-w-modal"
         title="게시글 삭제"
         message="게시글을 삭제하시겠습니까?"
-        confirmText="삭제"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowDeleteConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeletePost, variant: 'danger' },
+        ]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
