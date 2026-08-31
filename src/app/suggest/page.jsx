@@ -5,38 +5,21 @@ import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
+import Textarea from '@components/common/textarea';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
+
+import useTokenStore from '../../stores/useTokenStore';
+import Dropdown from '@components/common/dropdown';
+
+import { categories, places } from '@constants/select-options';
 
 const MAX_TITLE = 20;
 const MAX_CONTENT = 3000;
 const MAX_FILES = 5;
 const MAX_TOTAL_SIZE = 30 * 1024 * 1024;
-
-const categories = [
-  '분실물',
-  '기물 파손',
-  '시설 고장',
-  '소음 공해',
-  '미예약 사용자 신고',
-  '기타',
-];
-const places = [
-  '스터디룸 1',
-  '스터디룸 2',
-  '스터디룸 3',
-  '스터디룸 4',
-  '스터디룸 5',
-];
-const ALLOWED_LOCATIONS = [
-  '스터디룸1',
-  '스터디룸2',
-  '스터디룸3',
-  '스터디룸4',
-  '스터디룸5',
-];
-const normalizeLocation = (label) => String(label).replace(/\s+/g, '');
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -51,8 +34,9 @@ const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(1);
 export default function SuggestPage() {
   // const router = useRouter();
 
-  const [category, setCategory] = useState(categories[0]);
-  const [place, setPlace] = useState(places[0]);
+  const { userId } = useTokenStore();
+  const [category, setCategory] = useState(categories[0].value);
+  const [place, setPlace] = useState(places[0].value);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
@@ -67,7 +51,6 @@ export default function SuggestPage() {
   useUnsavedChangesGuard(isDirty);
 
   const titleCount = title.length;
-  const contentCount = content.length;
 
   const totalSize = useMemo(
     () => files.reduce((acc, f) => acc + f.size, 0),
@@ -76,10 +59,9 @@ export default function SuggestPage() {
   const totalSizeMB = `${bytesToMB(totalSize)}MB`;
 
   const overTitle = titleCount > MAX_TITLE;
-  const overContent = contentCount > MAX_CONTENT;
   const overFiles = files.length > MAX_FILES;
   const overTotal = totalSize > MAX_TOTAL_SIZE;
-  const hasError = overTitle || overContent || overFiles || overTotal;
+  const hasError = overTitle || overFiles || overTotal;
 
   const handleFileChange = (e) => {
     const selected = Array.from(e.target.files || []);
@@ -120,19 +102,11 @@ export default function SuggestPage() {
     null;
 
   async function createSuggestion() {
-    const normalizedLocation = normalizeLocation(place);
-
-    if (!ALLOWED_LOCATIONS.includes(normalizedLocation)) {
-      throw new Error(
-        `유효하지 않은 위치 값입니다: '${place}'. 유효한 값: ${ALLOWED_LOCATIONS.join(', ')}`,
-      );
-    }
-
     const payload = {
       suggest_title: title.trim(),
       suggest_content: content.trim(),
       category: String(category).trim(),
-      location: normalizedLocation,
+      location: place,
     };
 
     try {
@@ -157,9 +131,8 @@ export default function SuggestPage() {
 
   async function fetchLatestSuggestionId() {
     try {
-      const normalizedLocation = normalizeLocation(place);
       const res = await axiosInstance.get('/api/suggestions', {
-        params: { category, location: normalizedLocation },
+        params: { category, location: place },
       });
       const list = Array.isArray(res?.data?.suggestions)
         ? res.data.suggestions
@@ -348,7 +321,7 @@ export default function SuggestPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-line">
+      <header className="sticky top-0 z-header bg-white/90 backdrop-blur border-b border-line">
         <div className="px-5 py-4">
           <h1 className="text-2xl font-semibold text-content">건의/신고</h1>
         </div>
@@ -381,28 +354,12 @@ export default function SuggestPage() {
             </label>
             <div className="px-4 pb-4">
               <div className="relative">
-                <select
+                <Dropdown
+                  options={categories}
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-md"
-                >
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M6 9l6 6 6-6"
-                      stroke="#9b9998"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
+                  onChange={(value) => setCategory(value)}
+                  placeholder="신고 카테고리"
+                />
               </div>
             </div>
           </section>
@@ -414,28 +371,12 @@ export default function SuggestPage() {
             </label>
             <div className="px-4 pb-4">
               <div className="relative">
-                <select
+                <Dropdown
+                  options={places}
                   value={place}
-                  onChange={(e) => setPlace(e.target.value)}
-                  className="w-full appearance-none rounded-lg border bg-surface-subtle px-4 py-3 pr-10 text-md"
-                >
-                  {places.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M6 9l6 6 6-6"
-                      stroke="#9b9998"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
+                  onChange={(value) => setPlace(value)}
+                  placeholder="건의/신고 장소를 선택해주세요"
+                />
               </div>
             </div>
           </section>
@@ -447,17 +388,18 @@ export default function SuggestPage() {
             </label>
             <div className="px-4 pb-2">
               <div className="relative">
-                <input
+                <Input
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(value) => setTitle(value)}
                   placeholder="제목을 입력해 주세요(20자 이내)"
-                  className="w-full rounded-lg border bg-surface-subtle px-4 py-3 text-md"
-                />
-                <span
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
+                  maxLength={20}
                 >
-                  {titleCount}/{MAX_TITLE}
-                </span>
+                  <span
+                    className={`text-sm ${overTitle ? 'text-red-500' : 'text-content-muted'}`}
+                  >
+                    {titleCount}/{MAX_TITLE}
+                  </span>
+                </Input>
               </div>
             </div>
           </section>
@@ -467,21 +409,15 @@ export default function SuggestPage() {
             <label className="block px-4 pt-4 pb-2 text-md font-semibold text-content">
               건의/신고 내용
             </label>
-            <div className="px-4">
-              <textarea
+            <div className="px-4 pb-2">
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="내용을 보내주시면 문의확인에 도움이 됩니다."
                 rows={10}
-                className="w-full resize-y rounded-lg border bg-surface-subtle px-4 py-3 text-md"
+                maxLength={MAX_CONTENT}
+                resize="y"
               />
-            </div>
-            <div className="px-4 py-2 text-right text-sm">
-              <span
-                className={overContent ? 'text-red-500' : 'text-content-muted'}
-              >
-                {contentCount}/{MAX_CONTENT}
-              </span>
             </div>
           </section>
 
@@ -613,7 +549,6 @@ export default function SuggestPage() {
             {hasError && !errorMsg && (
               <p className="mt-2 text-center text-sm text-red-500">
                 {overTitle && '제목은 20자 이내여야 합니다. '}
-                {overContent && '내용은 3000자 이내여야 합니다. '}
                 {overFiles && '파일은 최대 5개까지 등록 가능합니다. '}
                 {overTotal && '총 용량은 30MB를 초과할 수 없습니다.'}
               </p>

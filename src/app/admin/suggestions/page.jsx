@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/BasicModal';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 
@@ -12,6 +13,8 @@ import AdminSuggestionComments from '../../../components/admin/AdminSuggestionCo
 import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply';
 import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
 import useTokenStore from '../../../stores/useTokenStore';
+
+import { Input } from '@components/common/input';
 
 export default function AdminSuggestionsPage() {
   const router = useRouter();
@@ -154,30 +157,26 @@ export default function AdminSuggestionsPage() {
 }
 
 function Filters({ filters, setFilters, onSearch }) {
-  const onChange = (k) => (e) =>
-    setFilters((p) => ({ ...p, [k]: e.target.value }));
+  const onChange = (k) => (value) => setFilters((p) => ({ ...p, [k]: value }));
 
   return (
     <div className="mb-6 grid grid-cols-1 md:grid-cols-6 gap-2 items-stretch">
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="suggest_id"
         value={filters.suggest_id}
         onChange={onChange('suggest_id')}
       />
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="user_id"
         value={filters.user_id}
         onChange={onChange('user_id')}
       />
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="category"
         value={filters.category}
         onChange={onChange('category')}
       />
-      <input
+      <Input
         className="border rounded px-3 py-2 text-sm"
         placeholder="location"
         value={filters.location}
@@ -474,11 +473,11 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
         >
           {editingId === row.id ? (
             <>
-              <textarea
-                rows={4}
-                className="w-full rounded border px-3 py-2 text-sm"
+              <Textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                rows={4}
+                textareaSize="sm"
               />
               <div className="flex justify-end gap-2">
                 <button

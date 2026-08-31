@@ -6,27 +6,16 @@ import { usePathname, useRouter } from 'next/navigation';
 import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/input';
+import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 import useTokenStore from '../../../../stores/useTokenStore';
 
-const CATEGORIES = [
-  '분실물',
-  '기물 파손',
-  '시설 고장',
-  '소음 공해',
-  '미예약 사용자 신고',
-  '기타',
-];
-const PLACES = [
-  '스터디룸1',
-  '스터디룸2',
-  '스터디룸3',
-  '스터디룸4',
-  '스터디룸5',
-];
+import Dropdown from '@components/common/dropdown';
+import { categories, places } from '@constants/select-options';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -181,8 +170,8 @@ export default function SuggestHistoryDetailPage({ params }) {
   const [editing, setEditing] = useState(false);
   const [eTitle, setETitle] = useState('');
   const [eContent, setEContent] = useState('');
-  const [eCategory, setECategory] = useState(CATEGORIES[0]);
-  const [eLocation, setELocation] = useState(PLACES[0]);
+  const [eCategory, setECategory] = useState(categories[0].value);
+  const [eLocation, setELocation] = useState(places[0].value);
   const [ackAnswerDone, setAckAnswerDone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [opMsg, setOpMsg] = useState('');
@@ -246,8 +235,8 @@ export default function SuggestHistoryDetailPage({ params }) {
     }
     setETitle(detail.title || '');
     setEContent(detail.content || '');
-    setECategory(detail.category || CATEGORIES[0]);
-    setELocation(detail.location || PLACES[0]);
+    setECategory(detail.category || categories[0].value);
+    setELocation(detail.location || places[0].value);
     setAckAnswerDone(false);
     setEditing(true);
     setOpMsg('');
@@ -405,10 +394,9 @@ export default function SuggestHistoryDetailPage({ params }) {
                     <label className="block text-sm font-medium mb-1">
                       제목
                     </label>
-                    <input
+                    <Input
                       value={eTitle}
-                      onChange={(e) => setETitle(e.target.value)}
-                      className="w-full rounded border px-3 py-2 text-sm"
+                      onChange={(value) => setETitle(value)}
                       placeholder="제목"
                     />
                   </div>
@@ -417,12 +405,12 @@ export default function SuggestHistoryDetailPage({ params }) {
                     <label className="block text-sm font-medium mb-1">
                       내용
                     </label>
-                    <textarea
-                      rows={8}
+                    <Textarea
                       value={eContent}
                       onChange={(e) => setEContent(e.target.value)}
-                      className="w-full rounded border px-3 py-2 text-sm"
+                      rows={8}
                       placeholder="내용"
+                      textareaSize="sm"
                     />
                   </div>
 
@@ -431,33 +419,21 @@ export default function SuggestHistoryDetailPage({ params }) {
                       <label className="block text-sm font-medium mb-1">
                         분류
                       </label>
-                      <select
+                      <Dropdown
+                        options={categories}
                         value={eCategory}
-                        onChange={(e) => setECategory(e.target.value)}
-                        className="w-full rounded border px-3 py-2 text-sm bg-white"
-                      >
-                        {CATEGORIES.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(value) => setECategory(value)}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">
                         장소
                       </label>
-                      <select
+                      <Dropdown
+                        options={places}
                         value={eLocation}
-                        onChange={(e) => setELocation(e.target.value)}
-                        className="w-full rounded border px-3 py-2 text-sm bg-white"
-                      >
-                        {PLACES.map((p) => (
-                          <option key={p} value={p}>
-                            {p}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(value) => setELocation(value)}
+                      />
                     </div>
                   </div>
 

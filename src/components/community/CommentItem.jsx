@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import BasicModal from '@components/common/BasicModal';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { getAnonymousName } from '@utils/anonymizeUser';
@@ -139,12 +140,11 @@ const CommentItem = ({
       {showReplyInput && (
         <div className="mt-2 pl-3">
           <div className="flex gap-2">
-            <input
+            <Input
               type="text"
               value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
+              onChange={(value) => setReplyContent(value)}
               placeholder="대댓글을 입력하세요..."
-              className="flex-1 min-w-0 rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-brand focus:ring-brand/20"
               disabled={isSubmitting}
               maxLength={300}
             />

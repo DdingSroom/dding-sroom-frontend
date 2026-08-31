@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import Button from '@components/common/Button';
+import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -57,7 +57,7 @@ function SignUpStep4() {
           <div className="mt-4">
             <Link href="/login">
               <div className="max-w-xs mx-auto">
-                <Button text="확인" />
+                <Button>확인</Button>
               </div>
             </Link>
           </div>

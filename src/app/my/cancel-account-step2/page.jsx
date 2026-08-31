@@ -2,9 +2,9 @@
 import React from 'react';
 import Link from 'next/link';
 
-import Button from '../../../components/common/Button';
 import FooterNav from '../../../components/common/FooterNav';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
+import Button from '@components/common/button';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -35,7 +35,7 @@ export default function CancelAccountStep2() {
           </div>
 
           <Link href="/">
-            <Button text="확인" />
+            <Button>확인</Button>
           </Link>
         </div>
       </main>

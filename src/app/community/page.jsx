@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import Modal from '@components/common/Modal';
+import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
-import PostCard from '@components/community/PostCard';
 
 import axiosInstance from '@api/instance';
 
@@ -207,11 +208,11 @@ export default function CommunityPage() {
                 개
               </h2>
             </div>
-            <div className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-200">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostPreview key={post.id} {...post} />
               ))}
-            </div>
+            </ul>
           </div>
         )}
 

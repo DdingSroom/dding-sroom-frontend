@@ -12,6 +12,8 @@ import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
 
+import { Input } from '@components/common/input';
+
 function BottomSafeSpacer({ height = 64 }) {
   return (
     <div
@@ -127,12 +129,12 @@ export default function SignUpStep3() {
             >
               이름
             </label>
-            <StyledTextInput
+            <Input
               id="name"
               type="text"
               placeholder="USER 01"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(value) => setName(value)}
               autoComplete="name" // 브라우저 자동완성 힌트 (선택)
               inputMode="text"
             />
@@ -186,11 +188,9 @@ export default function SignUpStep3() {
 
           {/* 회원가입 버튼 */}
           <div className="w-full pt-2">
-            <Button
-              onClick={handleSignup}
-              disabled={!isSignupAvailable()}
-              text="회원가입"
-            />
+            <Button onClick={handleSignup} disabled={!isSignupAvailable()}>
+              회원가입
+            </Button>
           </div>
         </div>
       </main>
@@ -210,11 +210,3 @@ export default function SignUpStep3() {
     </div>
   );
 }
-
-const StyledTextInput = ({ value, className = '', ...props }) => {
-  const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
-    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
-  return <input className={`${base} ${className}`} value={value} {...props} />;
-};

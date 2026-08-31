@@ -6,6 +6,7 @@ import BasicModal from '@components/common/BasicModal';
 import Button from '@components/common/Button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { strictEmailRegex } from '@constants/regex';
@@ -201,28 +202,25 @@ export default function ResetPassWord1() {
             <label className="block text-sm font-medium text-content">
               이메일
             </label>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <div className="flex-1">
-                <StyledEmailInput
-                  type="email"
+                <Input
                   id="email"
+                  type="email"
                   value={email}
-                  onChange={(e) => {
-                    const inputEmail = e.target.value;
-                    setEmail(inputEmail);
-                    if (
-                      inputEmail === '' ||
-                      strictEmailRegex.test(inputEmail)
-                    ) {
-                      setEmailError('');
-                    } else {
+                  onChange={(value) => {
+                    setEmail(value);
+                    if (value !== '' && !strictEmailRegex.test(value)) {
                       setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                    } else {
+                      setEmailError('');
                     }
                   }}
                   placeholder="학교 이메일을 입력해주세요."
-                  setEmail={setEmail}
                   disabled={isSending}
-                />
+                >
+                  <Input.ClearButton />
+                </Input>
               </div>
               <button
                 className={commonCodeButtonClass}
@@ -243,15 +241,14 @@ export default function ResetPassWord1() {
             </label>
             <div className="flex items-center gap-2">
               <div className="relative flex-1 min-w-0">
-                <StyledNumberInput
-                  type="text"
+                <Input
                   id="number"
+                  type="text"
                   value={number}
-                  onChange={(e) => handleCodeInput(e.target.value)}
+                  onChange={(value) => handleCodeInput(value)}
                   placeholder="인증번호를 입력해주세요."
                   inputMode="numeric"
                   maxLength={6}
-                  className="pr-14"
                   disabled={isSending}
                 />
                 {codeSent && (
@@ -293,11 +290,9 @@ export default function ResetPassWord1() {
               href={isCodeVerified ? '/reset-password/step2' : '#'}
               onClick={(e) => !isCodeVerified && e.preventDefault()}
             >
-              <Button
-                onClick={handleNext}
-                disabled={!isCodeVerified}
-                text="다음으로"
-              />
+              <Button onClick={handleNext} disabled={!isCodeVerified}>
+                다음으로
+              </Button>
             </Link>
           </div>
         </div>
@@ -318,44 +313,3 @@ export default function ResetPassWord1() {
     </div>
   );
 }
-
-const StyledInput = ({ value, className = '', ...props }) => {
-  return (
-    <input
-      className={`w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200 ${className}`}
-      value={value}
-      {...props}
-    />
-  );
-};
-
-const StyledEmailInput = ({ value, setEmail, disabled, ...props }) => {
-  const handleRemoveEmailValue = () => {
-    setEmail('');
-  };
-
-  return (
-    <div className="relative">
-      <StyledInput {...props} value={value} disabled={disabled} />
-      {value && !disabled && (
-        <button
-          type="button"
-          onClick={handleRemoveEmailValue}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-        >
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Clear"
-            width={14}
-            height={14}
-            className="opacity-60 hover:opacity-80"
-          />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const StyledNumberInput = ({ value, className = '', ...props }) => (
-  <StyledInput {...props} value={value} className={className} />
-);

@@ -8,7 +8,9 @@ import FooterNav from '@components/common/FooterNav';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 
@@ -215,12 +217,11 @@ export default function EditPostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(value) => setTitle(value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-md"
                 disabled={isSubmitting}
                 maxLength={100}
               />
@@ -234,7 +235,7 @@ export default function EditPostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 내용
               </label>
-              <textarea
+              <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={12}
@@ -243,13 +244,10 @@ export default function EditPostPage() {
 참고사항:
 - 서로를 존중하는 언어를 사용해주세요
 - 개인정보나 연락처는 공유하지 마세요`}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-md leading-relaxed"
-                disabled={isSubmitting}
                 maxLength={1000}
+                disabled={isSubmitting}
+                className="bg-white"
               />
-              <div className="mt-1 text-right text-xs-plus text-gray-400">
-                {content.length}/1000
-              </div>
             </div>
 
             <div>

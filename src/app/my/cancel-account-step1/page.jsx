@@ -7,13 +7,14 @@ import { jwtDecode } from 'jwt-decode';
 import BasicModal from '@components/common/BasicModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
 import MyPageHeader from '@components/my/MyPageHeader';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 
-import Button from '../../../components/common/Button';
 import FooterNav from '../../../components/common/FooterNav';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
 import useTokenStore from '../../../stores/useTokenStore';
+import Button from '@components/common/button';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -132,13 +133,13 @@ export default function CancelAccountStep1() {
                   <label className="block text-sm font-medium text-content">
                     계정 이메일
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <StyledInput
+                      <Input
                         type="email"
                         placeholder="이메일을 입력해주세요."
                         value={emailInput}
-                        onChange={(e) => setEmailInput(e.target.value)}
+                        onChange={(value) => setEmailInput(value)}
                         disabled={isSendingVerify || isVerified}
                         aria-label="계정 이메일 입력"
                       />
@@ -173,8 +174,9 @@ export default function CancelAccountStep1() {
                   <Button
                     onClick={() => setOpen(true)}
                     disabled={!isVerified || isWithdrawing}
-                    text={isWithdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
-                  />
+                  >
+                    {isWithdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
+                  </Button>
                 </div>
               </div>
 
@@ -243,11 +245,3 @@ export default function CancelAccountStep1() {
     </>
   );
 }
-
-const StyledInput = ({ value, className = '', ...props }) => {
-  const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
-    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
-  return <input className={`${base} ${className}`} value={value} {...props} />;
-};
