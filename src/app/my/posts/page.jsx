@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
 import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
