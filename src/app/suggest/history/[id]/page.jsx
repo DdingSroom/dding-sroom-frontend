@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import ConfirmModal from '@components/common/ConfirmModal';
+import BasicModal from '@components/common/BasicModal';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
@@ -538,14 +538,20 @@ export default function SuggestHistoryDetailPage({ params }) {
       <BottomSafeSpacer height={64} />
       <FooterNav active="suggest" />
 
-      <ConfirmModal
+      <BasicModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={confirmDeleteItem}
+        className="max-w-modal"
         title="건의 삭제"
         message="정말로 삭제하시겠습니까?"
-        confirmText="삭제"
-        variant="danger"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowDeleteConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeleteItem, variant: 'danger' },
+        ]}
       />
     </div>
   );
