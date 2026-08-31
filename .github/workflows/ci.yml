@@ -33,6 +33,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check generated API types
+        env:
+          SWAGGER_URL: ${{ secrets.SWAGGER_URL }}
+        run: |
+          pnpm generate:api-types
+          git diff --exit-code -- src/types/schema.d.ts
+
       - name: Check project
         id: check_step
         run: pnpm run lint && pnpm run typecheck
