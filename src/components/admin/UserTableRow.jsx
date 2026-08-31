@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/BasicModal';
-import ConfirmModal from '@components/common/ConfirmModal';
 
 import { updateUserStatus } from '@api/admin';
 
@@ -89,13 +88,20 @@ export default function UserTableRow({ user, onUserUpdate }) {
         </div>
       </td>
 
-      <ConfirmModal
+      <BasicModal
         isOpen={showStatusConfirm}
         onClose={() => setShowStatusConfirm(false)}
-        onConfirm={confirmStatusToggle}
+        className="max-w-modal"
         title="사용자 상태 변경"
         message={`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`}
-        confirmText="변경"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowStatusConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '변경', onClick: confirmStatusToggle },
+        ]}
       />
 
       <BasicModal
