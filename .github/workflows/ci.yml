@@ -34,8 +34,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Check generated API types
+        if: github.event_name == 'push'
         env:
-          SWAGGER_URL: ${{ vars.SWAGGER_URL }}
+          SWAGGER_URL: ${{ secrets.SWAGGER_URL }}
         run: |
           pnpm generate:api-types
           git diff --exit-code -- src/types/schema.d.ts
