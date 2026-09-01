@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import BasicModal from '@components/common/basic-modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
@@ -112,9 +111,14 @@ export default function MyCommentsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <MyPageHeader />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
@@ -207,12 +211,13 @@ export default function MyCommentsPage() {
         )}
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
 
       <PrivacyPolicyFooter />

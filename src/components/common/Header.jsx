@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Bell, Person } from 'public/static/icons';
 
-import InfoModal from '@components/common/InfoModal';
+import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
-import { Bell, Person } from 'public/static/icons';
 
 const Header = () => {
   const router = useRouter();
@@ -84,9 +84,13 @@ const Header = () => {
         </button>
       </div>
 
-      <InfoModal
+      <BasicModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        className="max-w-modal-sm"
+        title="알림"
+        message="시범 운영 단계에서 지원되지 않는 기능입니다"
+        actions={[{ text: '확인', onClick: () => setIsInfoModalOpen(false) }]}
       />
     </header>
   );

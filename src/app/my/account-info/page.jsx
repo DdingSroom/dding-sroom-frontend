@@ -3,8 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import BasicModal from '@components/common/basic-modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
@@ -30,6 +29,8 @@ export default function AccountInfo() {
   const [submitting, setSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
 
@@ -42,11 +43,11 @@ export default function AccountInfo() {
   }, [rehydrate]);
 
   useEffect(() => {
-    if (!authReady) {
+    if (!authReady || showLogoutModal) {
       return;
     }
     setShowLoginModal(!accessToken);
-  }, [authReady, accessToken]);
+  }, [authReady, accessToken, showLogoutModal]);
 
   const getDecodedUserInfo = useCallback(() => {
     try {
@@ -76,11 +77,11 @@ export default function AccountInfo() {
     const trimmed = newName.trim();
 
     if (!trimmed) {
-      alert('이름을 입력해주세요.');
+      setNameError('이름을 입력해주세요.');
       return;
     }
     if (trimmed === (userInfo.name || '')) {
-      alert('기존 이름과 동일합니다.');
+      setNameError('기존 이름과 동일합니다.');
       return;
     }
     if (submitting) {
@@ -95,10 +96,11 @@ export default function AccountInfo() {
       });
 
       if (res.status === 200) {
-        alert('이름 변경이 완료되었습니다.');
+        setAlertMessage('이름 변경이 완료되었습니다.');
         setUserInfo((prev) => ({ ...prev, name: trimmed }));
         setOpen(false);
         setNewName('');
+        setNameError('');
       }
     } catch (err) {
       console.error('이름 변경 실패:', err);
@@ -109,11 +111,11 @@ export default function AccountInfo() {
         (typeof err?.response?.data === 'string' ? err.response.data : null);
 
       if (err?.response?.status === 409) {
-        alert(serverMsg || '중복된 이름입니다.');
+        setNameError(serverMsg || '중복된 이름입니다.');
       } else if (err?.response?.status === 400) {
-        alert(serverMsg || '요청이 올바르지 않습니다.');
+        setNameError(serverMsg || '요청이 올바르지 않습니다.');
       } else {
-        alert(
+        setNameError(
           serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
         );
       }
@@ -177,7 +179,10 @@ export default function AccountInfo() {
 
                 <button
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-                  onClick={() => setOpen(true)}
+                  onClick={() => {
+                    setNameError('');
+                    setOpen(true);
+                  }}
                 >
                   <div className="flex flex-col gap-1 text-left">
                     <label className="text-sm font-medium text-content">
@@ -247,11 +252,28 @@ export default function AccountInfo() {
       </main>
 
       {/* 이름 변경 모달 */}
-      <Modal
+      <BasicModal
         isOpen={open}
-        onClose={() => setOpen(false)}
-        onSubmit={handleUsernameChange}
-        text={submitting ? '수정 중…' : '수정'}
+        onClose={() => {
+          setNameError('');
+          setOpen(false);
+        }}
+        className="max-w-modal"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => {
+              setNameError('');
+              setOpen(false);
+            },
+            variant: 'ghost',
+          },
+          {
+            text: submitting ? '수정 중…' : '수정',
+            onClick: handleUsernameChange,
+            disabled: submitting,
+          },
+        ]}
       >
         <div className="p-6 space-y-6">
           <div className="text-center">
@@ -268,53 +290,49 @@ export default function AccountInfo() {
               maxLength={20}
               placeholder={userInfo.name || 'USER NAME'}
             />
-            <p className="text-xs text-content-muted">
-              기존 이름과 다른 이름으로 변경해주세요.
-            </p>
+            {nameError ? (
+              <p className="text-xs text-red-500">{nameError}</p>
+            ) : (
+              <p className="text-xs text-content-muted">
+                기존 이름과 다른 이름으로 변경해주세요.
+              </p>
+            )}
             {submitting && (
               <p className="text-xs text-content-secondary">이름 변경 중…</p>
             )}
           </div>
         </div>
-      </Modal>
+      </BasicModal>
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
-      <LoginRequiredModal
+      <BasicModal
         isOpen={authReady && showLoginModal}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
 
       {/* 로그아웃 완료 모달 */}
-      <div
-        className={`fixed inset-0 bg-black/50 flex justify-center items-center z-modal ${
-          showLogoutModal ? '' : 'hidden'
-        }`}
-        style={{ backdropFilter: 'blur(4px)' }}
-        onClick={() => setShowLogoutModal(false)}
-      >
-        <div
-          className="bg-white rounded-2xl w-modal max-w-md mx-4 shadow-2xl border border-gray-100 overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="overflow-y-auto max-h-modal p-6">
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">알림</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                로그아웃이 완료되었습니다.
-              </p>
-            </div>
-          </div>
+      <BasicModal
+        isOpen={showLogoutModal}
+        onClose={handleLogoutConfirm}
+        className="max-w-modal-sm"
+        title="알림"
+        message="로그아웃이 완료되었습니다."
+        actions={[{ text: '확인', onClick: handleLogoutConfirm }]}
+      />
 
-          <div className="flex border-t border-gray-100">
-            <button
-              onClick={handleLogoutConfirm}
-              className="w-full py-4 bg-brand text-white text-sm font-medium hover:bg-brand-hover transition-colors"
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      </div>
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
 
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

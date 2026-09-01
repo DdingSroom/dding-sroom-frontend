@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import BasicModal from '@components/common/basic-modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 import ReservationList from '@components/reservation/ReservationList';
@@ -48,9 +48,14 @@ export default function ReservationInfo() {
         )}
       </main>
 
-      <LoginRequiredModal
+      <BasicModal
         isOpen={showLoginModal}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
 
       <PrivacyPolicyFooter />

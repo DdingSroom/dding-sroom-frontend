@@ -3,16 +3,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
+import BasicModal from '@components/common/basic-modal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
-import CancellationModal from './CancellationModal';
 import ReservationHistory from './ReservationHistory';
-
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 const toDateFromRaw = (raw) => {
   if (!raw) {
@@ -69,6 +68,8 @@ export default function ReservationList() {
   const [loading, setLoading] = useState(true);
   const [cancelModalData, setCancelModalData] = useState(null);
   const [authReady, setAuthReady] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // 첫 마운트 시 세션 값을 스토어로 강제 동기화
   useEffect(() => {
@@ -178,7 +179,7 @@ export default function ReservationList() {
         userId: resolvedUserId,
         reservationId: cancelModalData.id,
       });
-      alert(res.data?.message || '예약이 취소되었습니다.');
+      setSuccessMessage(res.data?.message || '예약이 취소되었습니다.');
       setCancelModalData(null);
 
       const res2 = await axiosInstance.get(
@@ -191,7 +192,9 @@ export default function ReservationList() {
       }
     } catch (err) {
       console.error('예약 취소 실패:', err);
-      alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
+      setErrorMessage(
+        err.response?.data?.message || '예약 취소에 실패했습니다.',
+      );
     }
   };
 
@@ -237,33 +240,60 @@ export default function ReservationList() {
       )}
 
       {cancelModalData && (
-        <CancellationModal
+        <BasicModal
           isOpen={true}
           onClose={() => setCancelModalData(null)}
-          onConfirm={confirmCancelReservation}
+          className="max-w-modal"
+          actions={[
+            {
+              text: '돌아가기',
+              onClick: () => setCancelModalData(null),
+              variant: 'ghost',
+            },
+            { text: '예약 취소', onClick: confirmCancelReservation },
+          ]}
         >
-          <div className="text-lg font-semibold text-left mb-6 text-content">
-            예약을 취소할까요?
-          </div>
-          <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
-            <img
-              src={STUDYROOM_IMAGE_SRC}
-              alt="studyroom"
-              className="w-20 h-20 object-cover rounded-lg"
-            />
-            <div className="flex flex-col gap-1 text-sm">
-              <div className="font-semibold text-content">{`스터디룸 ${cancelModalData.roomName}`}</div>
-              <div className="text-content-secondary">
-                {formatDate(cancelModalData.startTime)}
-              </div>
-              <div className="text-content-secondary">
-                {formatTime(cancelModalData.startTime)} ~{' '}
-                {formatTime(cancelModalData.endTime)}
+          <div className="p-6 sm:p-8">
+            <div className="text-lg font-semibold text-left mb-6 text-content">
+              예약을 취소할까요?
+            </div>
+            <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
+              <img
+                src={STUDYROOM_IMAGE_SRC}
+                alt="studyroom"
+                className="w-20 h-20 object-cover rounded-lg"
+              />
+              <div className="flex flex-col gap-1 text-sm">
+                <div className="font-semibold text-content">{`스터디룸 ${cancelModalData.roomName}`}</div>
+                <div className="text-content-secondary">
+                  {formatDate(cancelModalData.startTime)}
+                </div>
+                <div className="text-content-secondary">
+                  {formatTime(cancelModalData.startTime)} ~{' '}
+                  {formatTime(cancelModalData.endTime)}
+                </div>
               </div>
             </div>
           </div>
-        </CancellationModal>
+        </BasicModal>
       )}
+
+      <BasicModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        className="max-w-modal-sm"
+        title="예약 취소"
+        message={successMessage}
+        actions={[{ text: '확인', onClick: () => setSuccessMessage('') }]}
+      />
+      <BasicModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        className="max-w-modal-sm"
+        title="오류"
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setErrorMessage('') }]}
+      />
     </div>
   );
 }

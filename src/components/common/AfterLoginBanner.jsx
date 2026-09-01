@@ -1,18 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Maru } from 'public/static/icons';
 
-import CancellationModal from '@components/reservation/CancellationModal';
+import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
+import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
-import { Maru } from 'public/static/icons';
-import { STUDYROOM_IMAGE_SRC } from '@constants/images';
-
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { userId, accessToken } = useTokenStore();
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
@@ -70,18 +72,28 @@ const AfterLoginBanner = () => {
   }, [userId, accessToken, fetchAllUserReservations]);
 
   const cancelReservation = async (reservationId) => {
+    if (isCancelling) {
+      return;
+    }
+
+    setIsCancelling(true);
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
         userId,
         reservationId,
       });
-      alert(res.data.message || '예약이 취소되었습니다.');
+      setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
       setOpenReservationId(null);
       await fetchAllUserReservations();
       await fetchAllReservedTimes();
     } catch (err) {
       console.error('예약 취소 실패:', err);
-      alert(err.response?.data?.message || '예약 취소에 실패했습니다.');
+      setOpenReservationId(null);
+      setErrorMessage(
+        err.response?.data?.message || '예약 취소에 실패했습니다.',
+      );
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -138,31 +150,45 @@ const AfterLoginBanner = () => {
                   취소
                 </button>
 
-                <CancellationModal
+                <BasicModal
                   isOpen={openReservationId === r.id}
                   onClose={() => setOpenReservationId(null)}
-                  onConfirm={() => cancelReservation(r.id)}
+                  className="max-w-modal"
+                  actions={[
+                    {
+                      text: '돌아가기',
+                      onClick: () => setOpenReservationId(null),
+                      variant: 'ghost',
+                    },
+                    {
+                      text: '예약 취소',
+                      onClick: () => cancelReservation(r.id),
+                      disabled: isCancelling,
+                    },
+                  ]}
                 >
-                  <div className="text-lg font-semibold text-left mb-6 text-content">
-                    예약을 취소할까요?
-                  </div>
-                  <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
-                    <img
-                      src={STUDYROOM_IMAGE_SRC}
-                      alt="studyroom"
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
-                    <div className="flex flex-col gap-1 text-sm">
-                      <div className="font-semibold text-content">{`${r.roomName}`}</div>
-                      <div className="text-content-secondary">
-                        {formatDate(r.startTime)}
-                      </div>
-                      <div className="text-content-secondary">
-                        {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
+                  <div className="p-6 sm:p-8">
+                    <div className="text-lg font-semibold text-left mb-6 text-content">
+                      예약을 취소할까요?
+                    </div>
+                    <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
+                      <img
+                        src={STUDYROOM_IMAGE_SRC}
+                        alt="studyroom"
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex flex-col gap-1 text-sm">
+                        <div className="font-semibold text-content">{`${r.roomName}`}</div>
+                        <div className="text-content-secondary">
+                          {formatDate(r.startTime)}
+                        </div>
+                        <div className="text-content-secondary">
+                          {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </CancellationModal>
+                </BasicModal>
               </div>
             ))
           )}
@@ -178,6 +204,23 @@ const AfterLoginBanner = () => {
           scrollbar-width: none; /* Firefox */
         }
       `}</style>
+
+      <BasicModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        className="max-w-modal-sm"
+        title="예약 취소"
+        message={successMessage}
+        actions={[{ text: '확인', onClick: () => setSuccessMessage('') }]}
+      />
+      <BasicModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        className="max-w-modal-sm"
+        title="오류"
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setErrorMessage('') }]}
+      />
     </div>
   );
 };

@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
@@ -28,6 +28,7 @@ export default function EditPostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(1);
+  const [initialValues, setInitialValues] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -37,6 +38,13 @@ export default function EditPostPage() {
   const { accessToken, userId, rehydrate } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
+
+  const isDirty =
+    initialValues !== null &&
+    (title !== initialValues.title ||
+      content !== initialValues.content ||
+      category !== initialValues.category);
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   useEffect(() => {
     rehydrate();
@@ -63,6 +71,11 @@ export default function EditPostPage() {
           setTitle(found.title);
           setContent(found.content);
           setCategory(found.category);
+          setInitialValues({
+            title: found.title,
+            content: found.content,
+            category: found.category,
+          });
         }
       }
     } catch (e) {
@@ -111,6 +124,7 @@ export default function EditPostPage() {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
+        markClean();
         router.push(`/community/${postId}`);
       }
     } catch (e) {
@@ -136,9 +150,14 @@ export default function EditPostPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
@@ -248,12 +267,13 @@ export default function EditPostPage() {
         </div>
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={handleErrorModalClose}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: handleErrorModalClose }]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

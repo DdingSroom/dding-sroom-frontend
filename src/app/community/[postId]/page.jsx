@@ -3,9 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
@@ -35,6 +34,7 @@ export default function PostDetailPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { accessToken, userId, rehydrate } = useTokenStore();
   const { postId } = useParams();
@@ -133,10 +133,12 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDeletePost = async () => {
-    if (!window.confirm('게시글을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeletePost = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeletePost = async () => {
+    setShowDeleteConfirm(false);
     try {
       const res = await axiosInstance.delete('/api/community-posts', {
         data: { post_id: parseInt(postId, 10), user_id: userId },
@@ -189,9 +191,14 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
@@ -337,12 +344,28 @@ export default function PostDetailPage() {
         </div>
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
+      />
+      <BasicModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        className="max-w-modal"
+        title="게시글 삭제"
+        message="게시글을 삭제하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowDeleteConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeletePost, variant: 'danger' },
+        ]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

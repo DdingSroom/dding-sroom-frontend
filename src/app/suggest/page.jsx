@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import FooterNav from '@components/common/FooterNav';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import Textarea from '@components/common/textarea';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import { Input } from '@components/common/input';
@@ -45,6 +46,9 @@ export default function SuggestPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [uploadProgress, setUploadProgress] = useState({});
+
+  const isDirty = title !== '' || content !== '' || files.length > 0;
+  useUnsavedChangesGuard(isDirty);
 
   const titleCount = title.length;
 

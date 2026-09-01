@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
@@ -26,6 +27,9 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const isDirty = value.trim() !== '';
+  const { markClean } = useUnsavedChangesGuard(isDirty);
+
   const submit = async () => {
     setError('');
     if (!value.trim()) {
@@ -39,6 +43,7 @@ export default function AdminSuggestionReply({ suggestion, onUpdate }) {
         suggest_post_id: Number(suggestion?.id),
         answer_content: value.trim(),
       });
+      markClean();
       setValue('');
       if (typeof onUpdate === 'function') {
         onUpdate();

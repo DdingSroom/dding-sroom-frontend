@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
+import BasicModal from '@components/common/basic-modal';
+
 import axiosInstance from '@api/instance';
 
 import useTokenStore from '../../../stores/useTokenStore';
@@ -20,6 +22,7 @@ export default function AdminCommunityPage() {
   const [loadingComments, setLoadingComments] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [alertMessage, setAlertMessage] = useState('');
   const pageSize = 20;
 
   useEffect(() => {
@@ -67,29 +70,19 @@ export default function AdminCommunityPage() {
   );
 
   const fetchCommentsByPost = useCallback(async (postId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/community-posts/comments/post/${postId}`,
-      );
-      const comments = response?.data?.data || response?.data || [];
-      return Array.isArray(comments) ? comments.map(normalizeComment) : [];
-    } catch (err) {
-      console.error(`게시글 ${postId} 댓글 불러오기 실패:`, err);
-      return [];
-    }
+    const response = await axiosInstance.get(
+      `/api/community-posts/comments/post/${postId}`,
+    );
+    const comments = response?.data?.data || response?.data || [];
+    return Array.isArray(comments) ? comments.map(normalizeComment) : [];
   }, []);
 
   const fetchRepliesByComment = useCallback(async (commentId) => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/community-posts/comments/${commentId}/replies`,
-      );
-      const replies = response?.data?.data || response?.data || [];
-      return Array.isArray(replies) ? replies.map(normalizeComment) : [];
-    } catch (err) {
-      console.error(`댓글 ${commentId} 대댓글 불러오기 실패:`, err);
-      return [];
-    }
+    const response = await axiosInstance.get(
+      `/api/community-posts/comments/${commentId}/replies`,
+    );
+    const replies = response?.data?.data || response?.data || [];
+    return Array.isArray(replies) ? replies.map(normalizeComment) : [];
   }, []);
 
   const togglePostOpen = useCallback(
@@ -148,7 +141,7 @@ export default function AdminCommunityPage() {
         setOpenPostIds((prev) => new Set([...prev, postId]));
       } catch (err) {
         console.error(`게시글 ${postId} 댓글 로드 실패:`, err);
-        alert('댓글을 불러오는 중 오류가 발생했습니다.');
+        setAlertMessage('댓글을 불러오는 중 오류가 발생했습니다.');
       } finally {
         setLoadingComments((prev) => {
           const newSet = new Set(prev);
@@ -308,6 +301,15 @@ export default function AdminCommunityPage() {
           </>
         )}
       </div>
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }

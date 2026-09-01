@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import BasicModal from '@components/common/basic-modal';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
@@ -20,6 +21,7 @@ const CommentItem = ({
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const { userId } = useTokenStore();
 
   const isPostAuthor = (uid) => uid === postAuthorId;
@@ -47,10 +49,13 @@ const CommentItem = ({
     return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('댓글을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeleteComment = (commentId) => {
+    setPendingDeleteId(commentId);
+  };
+
+  const confirmDeleteComment = async () => {
+    const commentId = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       const res = await axiosInstance.delete('/api/community-posts/comments', {
         data: { comment_id: commentId, user_id: userId },
@@ -186,6 +191,22 @@ const CommentItem = ({
           ))}
         </div>
       )}
+
+      <BasicModal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        className="max-w-modal"
+        title="댓글 삭제"
+        message="댓글을 삭제하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setPendingDeleteId(null),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeleteComment, variant: 'danger' },
+        ]}
+      />
     </div>
   );
 };

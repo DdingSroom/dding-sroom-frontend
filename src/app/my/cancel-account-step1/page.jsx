@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import BasicModal from '@components/common/basic-modal';
 import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
@@ -32,6 +31,8 @@ export default function CancelAccountStep1() {
   const [emailInput, setEmailInput] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [withdrawComplete, setWithdrawComplete] = useState(false);
 
   const { accessToken } = useTokenStore();
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function CancelAccountStep1() {
 
   const handleEmailVerify = async () => {
     if (!emailInput || !accessToken) {
-      alert('이메일을 입력해주세요.');
+      setAlertMessage('이메일을 입력해주세요.');
       return;
     }
 
@@ -64,7 +65,7 @@ export default function CancelAccountStep1() {
       const tokenEmail = decodedToken.email;
 
       if (emailInput !== tokenEmail) {
-        alert('입력하신 이메일이 계정 이메일과 일치하지 않습니다.');
+        setAlertMessage('입력하신 이메일이 계정 이메일과 일치하지 않습니다.');
         return;
       }
 
@@ -80,10 +81,10 @@ export default function CancelAccountStep1() {
       );
 
       setIsVerified(true);
-      alert('이메일 인증이 완료되었습니다.');
+      setAlertMessage('이메일 인증이 완료되었습니다.');
     } catch (error) {
       console.error('이메일 인증 실패:', error);
-      alert('이메일 인증 중 오류가 발생했습니다.');
+      setAlertMessage('이메일 인증 중 오류가 발생했습니다.');
     } finally {
       setIsSendingVerify(false);
     }
@@ -91,7 +92,7 @@ export default function CancelAccountStep1() {
 
   const handleDeleteAccount = async () => {
     if (!isVerified || !accessToken) {
-      alert('이메일 인증을 먼저 완료해주세요.');
+      setAlertMessage('이메일 인증을 먼저 완료해주세요.');
       return;
     }
 
@@ -103,15 +104,19 @@ export default function CancelAccountStep1() {
         },
       });
 
-      alert('회원 탈퇴가 완료되었습니다.');
-      router.push('/login');
+      setWithdrawComplete(true);
     } catch (error) {
       console.error('탈퇴 실패:', error);
-      alert('회원 탈퇴 중 오류가 발생했습니다.');
+      setAlertMessage('회원 탈퇴 중 오류가 발생했습니다.');
     } finally {
       setIsWithdrawing(false);
       setOpen(false);
     }
+  };
+
+  const handleWithdrawCompleteConfirm = () => {
+    setWithdrawComplete(false);
+    router.push('/login');
   };
 
   return (
@@ -174,13 +179,23 @@ export default function CancelAccountStep1() {
                 </div>
               </div>
 
-              <Modal
+              <BasicModal
                 isOpen={open}
                 onClose={() => setOpen(false)}
-                onSubmit={handleDeleteAccount}
-                text={isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기'}
-                color="red"
-                disabled={isWithdrawing}
+                className="max-w-modal"
+                actions={[
+                  {
+                    text: '취소',
+                    onClick: () => setOpen(false),
+                    variant: 'ghost',
+                  },
+                  {
+                    text: isWithdrawing ? '탈퇴 처리 중...' : '탈퇴하기',
+                    onClick: handleDeleteAccount,
+                    variant: 'danger',
+                    disabled: isWithdrawing,
+                  },
+                ]}
               >
                 <div className="p-4 flex flex-col h-full justify-center">
                   <p className="font-semibold text-2xl text-left mb-2">
@@ -193,7 +208,7 @@ export default function CancelAccountStep1() {
                     복구되지 않습니다.
                   </p>
                 </div>
-              </Modal>
+              </BasicModal>
             </div>
           )}
         </main>
@@ -203,9 +218,33 @@ export default function CancelAccountStep1() {
         <FooterNav />
       </div>
 
-      <LoginRequiredModal
+      <BasicModal
         isOpen={showLoginModal}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+      />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
+
+      <BasicModal
+        isOpen={withdrawComplete}
+        onClose={handleWithdrawCompleteConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="알림"
+        message="회원 탈퇴가 완료되었습니다."
+        actions={[{ text: '확인', onClick: handleWithdrawCompleteConfirm }]}
       />
     </>
   );

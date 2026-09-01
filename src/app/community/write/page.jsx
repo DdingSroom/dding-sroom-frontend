@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import Textarea from '@components/common/textarea';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
@@ -34,6 +34,9 @@ export default function WritePostPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { accessToken, userId, rehydrate } = useTokenStore();
   const router = useRouter();
+
+  const isDirty = title !== '' || content !== '';
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   useEffect(() => {
     rehydrate();
@@ -72,6 +75,7 @@ export default function WritePostPage() {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
+        markClean();
         router.push('/community');
       }
     } catch (e) {
@@ -87,9 +91,14 @@ export default function WritePostPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal
+        <BasicModal
           isOpen={showLoginModal}
-          onConfirm={handleLoginConfirm}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
         />
       </div>
     );
@@ -188,12 +197,13 @@ export default function WritePostPage() {
         </div>
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
