@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';

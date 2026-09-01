@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
 

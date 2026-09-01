@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import axiosInstance from '@api/instance';

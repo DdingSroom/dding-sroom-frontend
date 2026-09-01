@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import BasicModal from '../../components/common/BasicModal';
+import BasicModal from '../../components/common/basic-modal';
 
 // export const metadata = {
 //   title: 'DdingsRoom 관리자',

@@ -13,7 +13,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 
 interface NavigationGuardContextValue {
   setDirty: (id: string, isDirty: boolean) => void;

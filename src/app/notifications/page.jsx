@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';

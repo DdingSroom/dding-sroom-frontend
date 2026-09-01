@@ -9,7 +9,7 @@ import ReservationCard from '@components/admin/ReservationCard';
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
-import BasicModal from '../../../components/common/BasicModal';
+import BasicModal from '../../../components/common/basic-modal';
 import useTokenStore from '../../../stores/useTokenStore';
 
 export default function AdminDashboard() {

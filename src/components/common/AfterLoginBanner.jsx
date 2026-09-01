@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Maru } from 'public/static/icons';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';

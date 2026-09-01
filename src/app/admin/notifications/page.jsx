@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import Textarea from '@components/common/textarea';
 
 import { useDraft } from '@hooks/use-draft';

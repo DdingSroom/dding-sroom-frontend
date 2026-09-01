@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 import ReservationList from '@components/reservation/ReservationList';

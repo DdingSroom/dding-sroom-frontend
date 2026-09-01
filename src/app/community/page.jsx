@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';

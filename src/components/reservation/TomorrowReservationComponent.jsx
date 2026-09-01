@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import TimeComponent from '@components/reservation/TimeComponent';
 
 import axiosInstance from '@api/instance';

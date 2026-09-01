@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import BasicModal from '@components/common/BasicModal';
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import Textarea from '@components/common/textarea';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
