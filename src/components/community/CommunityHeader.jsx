@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-import { useGuardedPush } from '@components/common/navigation-guard/NavigationGuardProvider';
+import { useGuardedPush } from '@components/common/navigation-guard/navigation-guard-provider';
 
 const CommunityHeader = ({ title = '커뮤니티' }) => {
   const router = useRouter();

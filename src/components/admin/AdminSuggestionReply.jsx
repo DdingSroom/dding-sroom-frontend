@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { useUnsavedChangesGuard } from '@components/common/navigation-guard/NavigationGuardProvider';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
