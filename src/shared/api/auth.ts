@@ -1,4 +1,5 @@
 import { api } from './api';
+import { AUTH_API_ENDPOINTS } from './endpoints';
 import instance, { requestReissue } from './instance';
 
 export interface AuthTokens {
@@ -34,7 +35,7 @@ export const login = async (
   formData.append('email', email);
   formData.append('password', password);
 
-  const response = await instance.post('/login', formData);
+  const response = await instance.post(AUTH_API_ENDPOINTS.LOGIN, formData);
   return extractAuthTokens(
     response.headers as Record<string, string | undefined>,
   );
@@ -47,11 +48,11 @@ export const logout = async (): Promise<void> => {
 };
 
 export const signup = async (payload: SignupPayload): Promise<void> => {
-  await api.post<void>('/user/sign-up', payload);
+  await api.post<void>(AUTH_API_ENDPOINTS.SIGN_UP, payload);
 };
 
 export const sendVerificationCode = async (email: string): Promise<void> => {
-  await api.post<void>('/user/code-send', { email });
+  await api.post<void>(AUTH_API_ENDPOINTS.CODE_SEND, { email });
 };
 
 interface VerifyCodeResponseData {
@@ -64,7 +65,7 @@ export const verifyCode = async (
   code: string,
 ): Promise<boolean> => {
   const response = await instance.post<VerifyCodeResponseData>(
-    '/user/code-verify',
+    AUTH_API_ENDPOINTS.CODE_VERIFY,
     { email, code },
   );
 

@@ -3,6 +3,8 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 import useTokenStore from '@stores/useTokenStore';
 
+import { AUTH_API_ENDPOINTS } from './endpoints';
+
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
@@ -15,16 +17,16 @@ interface ReissueResponseData {
   accessToken?: string;
 }
 
-const PUBLIC_URLS = [
-  '/login',
-  '/user/sign-up',
-  '/user/code-send',
-  '/user/code-verify',
-  '/reissue',
+const PUBLIC_API_URLS = [
+  AUTH_API_ENDPOINTS.LOGIN,
+  AUTH_API_ENDPOINTS.SIGN_UP,
+  AUTH_API_ENDPOINTS.CODE_SEND,
+  AUTH_API_ENDPOINTS.CODE_VERIFY,
+  AUTH_API_ENDPOINTS.REISSUE,
 ];
 
 const isPublicUrl = (url: string) =>
-  PUBLIC_URLS.some((publicUrl) => url.includes(publicUrl));
+  PUBLIC_API_URLS.some((publicUrl) => url.includes(publicUrl));
 
 const normalizePathParams = (path: string) =>
   path.replace(/\/\d+(?=\/|$)/g, '/{id}');
@@ -54,7 +56,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 export const requestReissue = async (): Promise<ReissuedTokens> => {
   const response = await axios.post<ReissueResponseData>(
-    '/backend/reissue',
+    `/backend${AUTH_API_ENDPOINTS.REISSUE}`,
     null,
     { withCredentials: true },
   );
