@@ -51,23 +51,17 @@ interface TokenState {
   userId: number | null;
   role: string | null;
   setAccessToken: (token: string) => void;
-  setUserId: (id: number | null) => void;
   clearTokens: () => void;
   rehydrate: () => void;
 }
 
 const buildStateFromSession = () => {
   const accessToken = readSessionItem('accessToken');
-  const storedUserId =
-    typeof window !== 'undefined' ? sessionStorage.getItem('userId') : null;
   const decoded = decodeAccessToken(accessToken);
 
   return {
     accessToken,
-    userId:
-      storedUserId !== null
-        ? parseInt(storedUserId, 10)
-        : extractUserId(decoded),
+    userId: extractUserId(decoded),
     role: decoded?.role ?? null,
   };
 };
@@ -86,20 +80,11 @@ const useTokenStore = create<TokenState>()((set) => ({
     }));
 
     writeSessionItem('accessToken', token);
-    if (derivedUserId !== null) {
-      writeSessionItem('userId', derivedUserId.toString());
-    }
-  },
-
-  setUserId: (id) => {
-    set({ userId: id });
-    writeSessionItem('userId', id?.toString() ?? '');
   },
 
   clearTokens: () => {
     set({ accessToken: '', userId: null, role: null });
     removeSessionItem('accessToken');
-    removeSessionItem('userId');
     removeSessionItem('refreshToken');
   },
 
