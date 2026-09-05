@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -22,8 +21,7 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function SuggestHistoryPage() {
-  const router = useRouter();
-  const { userId, requireLogin } = useRequireAuth();
+  const { userId, requireLogin, redirectToLogin } = useRequireAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -32,9 +30,9 @@ export default function SuggestHistoryPage() {
   // 로그인 체크
   useEffect(() => {
     if (requireLogin) {
-      router.push('/login');
+      redirectToLogin();
     }
-  }, [requireLogin, router]);
+  }, [requireLogin, redirectToLogin]);
 
   const toArray = (data) => {
     if (Array.isArray(data?.suggestions)) {

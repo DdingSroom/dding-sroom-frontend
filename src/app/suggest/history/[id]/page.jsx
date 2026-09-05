@@ -148,15 +148,15 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
-  const { userId: myUserId, requireLogin } = useRequireAuth();
+  const { userId: myUserId, requireLogin, redirectToLogin } = useRequireAuth();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
     if (requireLogin) {
-      router.push('/login');
+      redirectToLogin();
     }
-  }, [requireLogin, router]);
+  }, [requireLogin, redirectToLogin]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
