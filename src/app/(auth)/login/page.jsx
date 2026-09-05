@@ -28,7 +28,7 @@ function LoginForm() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoginSave, setIsLoginSave] = useState(false);
   const [passwordError, setPasswordError] = useState('');
-  const [confirmError, setConfirmError] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -88,7 +88,7 @@ function LoginForm() {
 
       if (!accessToken) {
         console.warn('로그인 응답에서 access 토큰을 찾지 못했습니다.');
-        setConfirmError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+        setLoginError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
         return;
       }
 
@@ -112,7 +112,7 @@ function LoginForm() {
       }, 50);
     } catch (e) {
       console.error('로그인 실패:', e);
-      setConfirmError(getLoginErrorMessage(e));
+      setLoginError(getLoginErrorMessage(e));
     }
   };
 
@@ -188,8 +188,8 @@ function LoginForm() {
               {passwordError && (
                 <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
               )}
-              {confirmError && (
-                <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
+              {loginError && (
+                <p className="text-red-500 text-xs mt-1.5">{loginError}</p>
               )}
             </div>
           </form>
