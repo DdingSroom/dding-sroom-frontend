@@ -6,10 +6,8 @@ import InfoModal from '@components/common/InfoModal';
 
 import useAdminGuard from '@hooks/useAdminGuard';
 
-// export const metadata = {
-//   title: 'DdingsRoom 관리자',
-//   description: '명지대학교 스터디룸 관리자 페이지',
-// };
+// TODO: 이 layout은 'use client'라 Next.js 제약상 metadata export 불가
+// admin 전용 title/description이 필요해지면 layout을 Server/Client로 분리해야 함
 
 export default function AdminLayout({ children }) {
   useAdminGuard();
