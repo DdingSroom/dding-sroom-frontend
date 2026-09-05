@@ -26,7 +26,7 @@ function LoginForm() {
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isLoginSave, setIsLoginSave] = useState(false);
+  const [isLoginInfoRemembered, setIsLoginInfoRemembered] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
 
@@ -44,39 +44,14 @@ function LoginForm() {
         setRedirectUrl(decoded);
       }
     }
-
-    // 저장된 로그인 정보 불러오기
-    const savedLoginData = localStorage.getItem('savedLoginData');
-    if (savedLoginData) {
-      try {
-        const {
-          email: savedEmail,
-          password: savedPassword,
-          isLoginSave: savedIsLoginSave,
-        } = JSON.parse(savedLoginData);
-        if (savedIsLoginSave) {
-          setEmail(savedEmail || '');
-          setPassword(savedPassword || '');
-          setIsLoginSave(true);
-        }
-      } catch (error) {
-        console.error('저장된 로그인 정보를 불러오는 중 오류 발생:', error);
-      }
-    }
   }, [searchParams]);
-
-  const handleLoginSave = () => {
-    const newIsLoginSave = !isLoginSave;
-    setIsLoginSave(newIsLoginSave);
-
-    // 로그인 유지를 해제하면 저장된 정보 삭제
-    if (!newIsLoginSave) {
-      localStorage.removeItem('savedLoginData');
-    }
-  };
 
   const handlePasswordVisible = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const handleLoginInfoRemembered = () => {
+    setIsLoginInfoRemembered(!isLoginInfoRemembered);
   };
 
   const isLoginAvailable = () =>
@@ -93,18 +68,6 @@ function LoginForm() {
       }
 
       setGlobalAccessToken(accessToken);
-
-      // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
-      if (isLoginSave) {
-        const loginData = {
-          email,
-          password,
-          isLoginSave: true,
-        };
-        localStorage.setItem('savedLoginData', JSON.stringify(loginData));
-      } else {
-        localStorage.removeItem('savedLoginData');
-      }
 
       // 토큰 설정이 완료된 후 리다이렉트
       setTimeout(() => {
@@ -145,6 +108,8 @@ function LoginForm() {
               <StyledEmailInput
                 type="email"
                 id="email"
+                name="email"
+                autoComplete={isLoginInfoRemembered ? 'username' : 'off'}
                 value={email}
                 onChange={(e) => {
                   const inputEmail = e.target.value;
@@ -169,6 +134,10 @@ function LoginForm() {
               </label>
               <StyledPasswordInput
                 id="password"
+                name="password"
+                autoComplete={
+                  isLoginInfoRemembered ? 'current-password' : 'off'
+                }
                 value={password}
                 onChange={(e) => {
                   const pw = e.target.value;
@@ -195,8 +164,11 @@ function LoginForm() {
           </form>
 
           <div className="flex items-center justify-between">
-            <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
-              로그인 유지
+            <StyledCheckbox
+              checked={isLoginInfoRemembered}
+              onChange={handleLoginInfoRemembered}
+            >
+              로그인 정보 기억
             </StyledCheckbox>
 
             <div className="flex items-center gap-4 text-xs text-content-secondary">
