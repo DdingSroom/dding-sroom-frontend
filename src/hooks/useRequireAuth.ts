@@ -3,7 +3,7 @@
 import useAuthReady from './useAuthReady';
 
 export default function useRequireAuth() {
-  const { authReady, accessToken, userId, role } = useAuthReady();
+  const { authReady, accessToken, userId } = useAuthReady();
 
   const isAuthenticated = Boolean(accessToken);
   const requireLogin = authReady && !isAuthenticated;
@@ -19,7 +19,6 @@ export default function useRequireAuth() {
     requireLogin,
     accessToken,
     userId,
-    role,
     redirectToLogin,
   };
 }
