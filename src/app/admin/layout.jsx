@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import InfoModal from '@components/common/InfoModal';
 
-import useAdminGuard from '@hooks/useAdminGuard';
+import useAdminGuard from '@hooks/use-admin-guard';
 
 // TODO: 이 layout은 'use client'라 Next.js 제약상 metadata export 불가
 // admin 전용 title/description이 필요해지면 layout을 Server/Client로 분리해야 함
