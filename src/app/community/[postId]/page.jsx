@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import useRequireAuth from '@hooks/useRequireAuth';
@@ -32,6 +32,7 @@ export default function PostDetailPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { isAuthenticated, userId, requireLogin, redirectToLogin } =
     useRequireAuth();
@@ -119,10 +120,12 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDeletePost = async () => {
-    if (!window.confirm('게시글을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeletePost = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeletePost = async () => {
+    setShowDeleteConfirm(false);
     try {
       const res = await axiosInstance.delete('/api/community-posts', {
         data: { post_id: parseInt(postId, 10), user_id: userId },
@@ -175,7 +178,15 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
+        <BasicModal
+          isOpen={showLoginModal}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        />
       </div>
     );
   }
@@ -296,20 +307,19 @@ export default function PostDetailPage() {
           )}
 
           <div className="px-5 py-4 border-t border-gray-200">
-            <div className="flex gap-2">
-              <input
+            <div className="flex items-center gap-2">
+              <Input
                 type="text"
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(value) => setNewComment(value)}
                 placeholder="댓글을 입력하세요…"
-                className="flex-1 px-4 py-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
                 disabled={isSubmittingComment}
                 maxLength={500}
               />
               <button
                 onClick={handleCommentSubmit}
                 disabled={!newComment.trim() || isSubmittingComment}
-                className="px-4 py-3 text-sm font-semibold text-white bg-brand rounded-lg hover:bg-brand-hover disabled:bg-gray-300"
+                className="px-4 py-3 text-sm font-semibold text-white bg-brand rounded-lg hover:bg-brand-hover disabled:bg-gray-300 whitespace-nowrap shrink-0"
               >
                 {isSubmittingComment ? '작성중…' : '등록'}
               </button>
@@ -321,12 +331,28 @@ export default function PostDetailPage() {
         </div>
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
+      />
+      <BasicModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        className="max-w-modal"
+        title="게시글 삭제"
+        message="게시글을 삭제하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowDeleteConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmDeletePost, variant: 'danger' },
+        ]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

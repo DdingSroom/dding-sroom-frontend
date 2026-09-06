@@ -9,6 +9,8 @@ import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 import InfoModal from '../../../components/common/InfoModal';
+import BasicModal from '../../../components/common/basic-modal';
+import useTokenStore from '../../../stores/useTokenStore';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -376,9 +378,13 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <InfoModal
+      <BasicModal
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
+        className="max-w-modal-sm"
+        title="알림"
+        message="시범 운영 단계에서 지원되지 않는 기능입니다"
+        actions={[{ text: '확인', onClick: () => setIsInfoModalOpen(false) }]}
       />
     </div>
   );

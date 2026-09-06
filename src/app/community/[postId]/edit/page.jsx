@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
+import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import useRequireAuth from '@hooks/useRequireAuth';
@@ -26,6 +27,7 @@ export default function EditPostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(1);
+  const [initialValues, setInitialValues] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -54,6 +56,11 @@ export default function EditPostPage() {
           setTitle(found.title);
           setContent(found.content);
           setCategory(found.category);
+          setInitialValues({
+            title: found.title,
+            content: found.content,
+            category: found.category,
+          });
         }
       }
     } catch (e) {
@@ -97,6 +104,7 @@ export default function EditPostPage() {
         setErrorMessage(res.data.error);
         setShowErrorModal(true);
       } else {
+        markClean();
         router.push(`/community/${postId}`);
       }
     } catch (e) {
@@ -122,7 +130,15 @@ export default function EditPostPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
-        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
+        <BasicModal
+          isOpen={showLoginModal}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        />
       </div>
     );
   }
@@ -185,12 +201,11 @@ export default function EditPostPage() {
               <label className="block text-sm font-semibold text-gray-800 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(value) => setTitle(value)}
                 placeholder="제목을 입력하세요"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 text-md"
                 disabled={isSubmitting}
                 maxLength={100}
               />
@@ -232,12 +247,13 @@ export default function EditPostPage() {
         </div>
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={handleErrorModalClose}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: handleErrorModalClose }]}
       />
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />

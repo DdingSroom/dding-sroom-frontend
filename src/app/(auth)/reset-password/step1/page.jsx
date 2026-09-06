@@ -2,9 +2,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 
+import BasicModal from '@components/common/basic-modal';
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
+import { Input } from '@components/common/input';
 
 import { strictEmailRegex } from '@constants/regex';
 import { sendVerificationCode, verifyCode } from '@shared/api/auth';
@@ -32,6 +34,7 @@ export default function ResetPassWord1() {
 
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [codeSent, setCodeSent] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const timerRef = useRef(null);
 
   const commonCodeButtonClass =
@@ -88,10 +91,10 @@ export default function ResetPassWord1() {
 
       setCodeSent(true);
       startTimer();
-      alert('인증번호가 이메일로 전송되었습니다.');
+      setAlertMessage('인증번호가 이메일로 전송되었습니다.');
     } catch (error) {
       console.error('인증번호 전송 실패:', error);
-      alert(
+      setAlertMessage(
         error?.response?.data?.message ||
           '인증번호 전송에 실패했습니다. 다시 시도해주세요.',
       );
@@ -192,28 +195,25 @@ export default function ResetPassWord1() {
             <label className="block text-sm font-medium text-content">
               이메일
             </label>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <div className="flex-1">
-                <StyledEmailInput
-                  type="email"
+                <Input
                   id="email"
+                  type="email"
                   value={email}
-                  onChange={(e) => {
-                    const inputEmail = e.target.value;
-                    setEmail(inputEmail);
-                    if (
-                      inputEmail === '' ||
-                      strictEmailRegex.test(inputEmail)
-                    ) {
-                      setEmailError('');
-                    } else {
+                  onChange={(value) => {
+                    setEmail(value);
+                    if (value !== '' && !strictEmailRegex.test(value)) {
                       setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                    } else {
+                      setEmailError('');
                     }
                   }}
                   placeholder="학교 이메일을 입력해주세요."
-                  setEmail={setEmail}
                   disabled={isSending}
-                />
+                >
+                  <Input.ClearButton />
+                </Input>
               </div>
               <button
                 className={commonCodeButtonClass}
@@ -234,15 +234,14 @@ export default function ResetPassWord1() {
             </label>
             <div className="flex items-center gap-2">
               <div className="relative flex-1 min-w-0">
-                <StyledNumberInput
-                  type="text"
+                <Input
                   id="number"
+                  type="text"
                   value={number}
-                  onChange={(e) => handleCodeInput(e.target.value)}
+                  onChange={(value) => handleCodeInput(value)}
                   placeholder="인증번호를 입력해주세요."
                   inputMode="numeric"
                   maxLength={6}
-                  className="pr-14"
                   disabled={isSending}
                 />
                 {codeSent && (
@@ -295,45 +294,15 @@ export default function ResetPassWord1() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }
-
-const StyledInput = ({ value, className = '', ...props }) => (
-  <input
-    className={`w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200 ${className}`}
-    value={value}
-    {...props}
-  />
-);
-
-const StyledEmailInput = ({ value, setEmail, disabled, ...props }) => {
-  const handleRemoveEmailValue = () => {
-    setEmail('');
-  };
-
-  return (
-    <div className="relative">
-      <StyledInput {...props} value={value} disabled={disabled} />
-      {value && !disabled && (
-        <button
-          type="button"
-          onClick={handleRemoveEmailValue}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-        >
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Clear"
-            width={14}
-            height={14}
-            className="opacity-60 hover:opacity-80"
-          />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const StyledNumberInput = ({ value, className = '', ...props }) => (
-  <StyledInput {...props} value={value} className={className} />
-);

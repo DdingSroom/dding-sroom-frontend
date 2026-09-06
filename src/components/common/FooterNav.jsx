@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Community, Proposal, Reservation } from 'public/static/icons';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
+import BasicModal from '@components/common/basic-modal';
+import { useGuardedPush } from '@components/common/navigation-guard/navigation-guard-provider';
 
 import useTokenStore from '@stores/useTokenStore';
 
-import { Reservation, Community, Proposal } from 'public/static/icons';
-
 const FooterNav = () => {
-  const router = useRouter();
+  const push = useGuardedPush();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { accessToken } = useTokenStore();
 
@@ -19,24 +18,24 @@ const FooterNav = () => {
       setIsLoginModalOpen(true);
       return;
     }
-    router.push('/suggest');
+    push('/suggest');
   };
 
   const handleLoginConfirm = () => {
     setIsLoginModalOpen(false);
-    router.push('/login?redirect=' + encodeURIComponent('/suggest'));
+    push('/login?redirect=' + encodeURIComponent('/suggest'));
   };
 
   const navItems = [
     {
       Icon: Reservation,
       label: '예약하기',
-      onClick: () => router.push('/'),
+      onClick: () => push('/'),
     },
     {
       Icon: Community,
       label: '커뮤니티',
-      onClick: () => router.push('/community'),
+      onClick: () => push('/community'),
     },
     { Icon: Proposal, label: '건의/신고', onClick: handleSuggestClick },
   ];
@@ -63,9 +62,14 @@ const FooterNav = () => {
         ))}
       </footer>
 
-      <LoginRequiredModal
+      <BasicModal
         isOpen={isLoginModalOpen}
-        onConfirm={handleLoginConfirm}
+        onClose={handleLoginConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
       />
     </>
   );

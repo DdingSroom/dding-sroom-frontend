@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
+import BasicModal from '@components/common/basic-modal';
 import Textarea from '@components/common/textarea';
 
 import { useDraft } from '@hooks/use-draft';
 
 import axiosInstance from '@api/instance';
+
+import { Input } from '@components/common/input';
 
 export default function NotificationManagement() {
   const [notifications, setNotifications] = useState([]);
@@ -20,6 +23,8 @@ export default function NotificationManagement() {
     title: '',
     content: '',
   });
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
     fetchNotifications();
@@ -30,13 +35,13 @@ export default function NotificationManagement() {
     try {
       const response = await axiosInstance.get('/api/notification/list');
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
       setNotifications(response.data.data || []);
     } catch (error) {
       console.error('공지사항 조회 실패:', error);
-      alert('공지사항을 불러오는데 실패했습니다.');
+      setAlertMessage('공지사항을 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -55,24 +60,24 @@ export default function NotificationManagement() {
       });
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 생성되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
       draft.clear();
       setShowCreateForm(false);
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 생성 실패:', error);
-      alert('공지사항 생성에 실패했습니다.');
+      setAlertMessage('공지사항 생성에 실패했습니다.');
     }
   };
 
   const handleUpdateNotification = async () => {
     if (!formData.title.trim() || !formData.content.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
+      setAlertMessage('제목과 내용을 모두 입력해주세요.');
       return;
     }
 
@@ -84,25 +89,28 @@ export default function NotificationManagement() {
       });
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 수정되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 수정되었습니다!');
       setFormData({ title: '', content: '' });
       setShowEditForm(false);
       setSelectedNotification(null);
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 수정 실패:', error);
-      alert('공지사항 수정에 실패했습니다.');
+      setAlertMessage('공지사항 수정에 실패했습니다.');
     }
   };
 
-  const handleDeleteNotification = async (notificationId) => {
-    if (!confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
-      return;
-    }
+  const handleDeleteNotification = (notificationId) => {
+    setDeleteTargetId(notificationId);
+  };
+
+  const confirmDeleteNotification = async () => {
+    const notificationId = deleteTargetId;
+    setDeleteTargetId(null);
 
     try {
       const response = await axiosInstance.delete(
@@ -110,15 +118,15 @@ export default function NotificationManagement() {
       );
 
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
 
-      alert('공지사항이 성공적으로 삭제되었습니다!');
+      setAlertMessage('공지사항이 성공적으로 삭제되었습니다!');
       fetchNotifications();
     } catch (error) {
       console.error('공지사항 삭제 실패:', error);
-      alert('공지사항 삭제에 실패했습니다.');
+      setAlertMessage('공지사항 삭제에 실패했습니다.');
     }
   };
 
@@ -199,11 +207,11 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, title: value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 placeholder="공지사항 제목을 입력하세요"
@@ -243,6 +251,15 @@ export default function NotificationManagement() {
             </div>
           </div>
         </div>
+
+        <BasicModal
+          isOpen={!!alertMessage}
+          onClose={() => setAlertMessage('')}
+          className="max-w-modal-sm"
+          title="알림"
+          message={alertMessage}
+          actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+        />
       </div>
     );
   }
@@ -270,11 +287,11 @@ export default function NotificationManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 제목
               </label>
-              <input
+              <Input
                 type="text"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, title: value }))
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 placeholder="공지사항 제목을 입력하세요"
@@ -317,6 +334,15 @@ export default function NotificationManagement() {
             </div>
           </div>
         </div>
+
+        <BasicModal
+          isOpen={!!alertMessage}
+          onClose={() => setAlertMessage('')}
+          className="max-w-modal-sm"
+          title="알림"
+          message={alertMessage}
+          actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+        />
       </div>
     );
   }
@@ -437,6 +463,35 @@ export default function NotificationManagement() {
           </div>
         </div>
       )}
+
+      <BasicModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        className="max-w-modal"
+        title="공지사항 삭제"
+        message="정말로 이 공지사항을 삭제하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setDeleteTargetId(null),
+            variant: 'ghost',
+          },
+          {
+            text: '삭제',
+            onClick: confirmDeleteNotification,
+            variant: 'danger',
+          },
+        ]}
+      />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }

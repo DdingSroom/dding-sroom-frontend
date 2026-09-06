@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import { isValidPassword } from '@constants/regex';
 import { resetPassword } from '@shared/api/auth';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -21,11 +23,12 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function ResetPassword2() {
   const [email, setEmail] = useState('');
   const [newPassword, setnewPassword] = useState('');
-  const [newPassword_2, setnewPassword_2] = useState('');
-  const [isnewPasswordVisible, setIsnewPasswordVisible] = useState(false);
-  const [isnewPassword_2Visible, setIsnewPassword_2Visible] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmError, setConfirmError] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [resetSucceeded, setResetSucceeded] = useState(false);
+  const [emailLost, setEmailLost] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,30 +36,39 @@ export default function ResetPassword2() {
     if (storedEmail) {
       setEmail(storedEmail);
     } else {
-      alert('이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요.');
-      router.push('/reset-password/step1');
+      setEmailLost(true);
     }
-  }, [router]);
+  }, []);
 
-  const handlenewPasswordVisible = () => {
-    setIsnewPasswordVisible(!isnewPasswordVisible);
-  };
-
-  const handlenewPassword_2Visible = () => {
-    setIsnewPassword_2Visible(!isnewPassword_2Visible);
+  const handleEmailLostConfirm = () => {
+    setEmailLost(false);
+    router.push('/reset-password/step1');
   };
 
   const isLoginAvailable = () =>
-    isValidPassword(newPassword) && newPassword === newPassword_2;
+    isValidPassword(newPassword) && newPassword === confirmPassword;
 
   const handlePasswordReset = async () => {
     try {
       await resetPassword(email, newPassword);
       alert('비밀번호가 성공적으로 변경되었습니다.');
       router.push('/login');
+      await axiosInstance.post('/user/modify-password', {
+        email,
+        password: newPassword,
+      });
+      setResetSucceeded(true);
+      setAlertMessage('비밀번호가 성공적으로 변경되었습니다.');
     } catch (error) {
       console.error('비밀번호 재설정 실패:', error);
-      alert('비밀번호 재설정에 실패했습니다.');
+      setAlertMessage('비밀번호 재설정에 실패했습니다.');
+    }
+  };
+
+  const handleAlertClose = () => {
+    setAlertMessage('');
+    if (resetSucceeded) {
+      router.push('/login');
     }
   };
 
@@ -75,29 +87,29 @@ export default function ResetPassword2() {
               <label className="block text-sm font-medium text-content">
                 새 비밀번호
               </label>
-              <NewPasswordField
+              <Input
                 id="newPassword"
+                type="password"
                 value={newPassword}
-                onChange={(e) => {
-                  const pw = e.target.value;
-                  setnewPassword(pw);
-                  if (!isValidPassword(pw)) {
+                onChange={(value) => {
+                  setnewPassword(value);
+                  if (!isValidPassword(value)) {
                     setPasswordError(
                       '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
                     );
                   } else {
                     setPasswordError('');
                   }
-                  if (newPassword_2 && pw !== newPassword_2) {
+                  if (confirmPassword && value !== confirmPassword) {
                     setConfirmError('비밀번호가 일치하지 않습니다.');
                   } else {
                     setConfirmError('');
                   }
                 }}
                 placeholder="비밀번호를 입력해주세요."
-                isVisible={isnewPasswordVisible}
-                handlePasswordVisible={handlenewPasswordVisible}
-              />
+              >
+                <Input.VisibleButton />
+              </Input>
               {passwordError && (
                 <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
               )}
@@ -107,25 +119,29 @@ export default function ResetPassword2() {
               <label className="block text-sm font-medium text-content">
                 새 비밀번호 확인
               </label>
-              <ConfirmPasswordField
-                id="newPassword_2"
-                value={newPassword_2}
-                onChange={(e) => {
-                  const confirm = e.target.value;
-                  setnewPassword_2(confirm);
-                  if (confirm !== newPassword) {
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(value) => {
+                  setConfirmPassword(value);
+                  if (value !== newPassword) {
                     setConfirmError('비밀번호가 일치하지 않습니다.');
                   } else {
                     setConfirmError('');
                   }
                 }}
                 placeholder="비밀번호를 입력해주세요."
-                isVisible={isnewPassword_2Visible}
-                handlePasswordVisible={handlenewPassword_2Visible}
-                isMatch={
-                  newPassword && newPassword_2 && newPassword === newPassword_2
-                }
-              />
+              >
+                <Input.Check
+                  validation={() =>
+                    newPassword &&
+                    confirmPassword &&
+                    newPassword === confirmPassword
+                  }
+                />
+                <Input.VisibleButton />
+              </Input>
               {confirmError && (
                 <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
               )}
@@ -148,79 +164,25 @@ export default function ResetPassword2() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={handleAlertClose}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: handleAlertClose }]}
+      />
+
+      <BasicModal
+        isOpen={emailLost}
+        onClose={handleEmailLostConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="알림"
+        message="이메일 정보가 유실되었습니다. 처음부터 다시 시도해주세요."
+        actions={[{ text: '확인', onClick: handleEmailLostConfirm }]}
+      />
     </div>
   );
 }
-
-const StyledInput = ({ value, ...props }) => (
-  <input
-    className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-    value={value}
-    {...props}
-  />
-);
-
-const NewPasswordField = ({
-  value,
-  isVisible = false,
-  handlePasswordVisible,
-  ...props
-}) => (
-  <div className="relative">
-    <StyledInput
-      {...props}
-      value={value}
-      type={isVisible ? 'text' : 'password'}
-    />
-    <button
-      type="button"
-      onClick={handlePasswordVisible}
-      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-    >
-      <img
-        src={
-          isVisible
-            ? '/static/icons/eye_on_icon.svg'
-            : '/static/icons/eye_off_icon.svg'
-        }
-        alt="Toggle Password Visibility"
-        width={18}
-        height={18}
-        className="opacity-60 hover:opacity-80"
-      />
-    </button>
-  </div>
-);
-
-const ConfirmPasswordField = ({
-  value,
-  isVisible = false,
-  handlePasswordVisible,
-  isMatch,
-  ...props
-}) => (
-  <div className="relative">
-    <StyledInput
-      {...props}
-      value={value}
-      type={isVisible ? 'text' : 'password'}
-    />
-    <button
-      type="button"
-      onClick={handlePasswordVisible}
-      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-    >
-      <img
-        src={
-          isMatch
-            ? '/static/icons/check_off_icon.svg'
-            : '/static/icons/check_on_icon.svg'
-        }
-        alt="Password Match Indicator"
-        width={18}
-        height={18}
-        className="opacity-60 hover:opacity-80"
-      />
-    </button>
-  </div>
-);

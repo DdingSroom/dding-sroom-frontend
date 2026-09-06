@@ -2,14 +2,19 @@
 
 import { useRouter } from 'next/navigation';
 
+import { useGuardedPush } from '@components/common/navigation-guard/navigation-guard-provider';
+
 const CommunityHeader = ({ title = '커뮤니티' }) => {
   const router = useRouter();
+  const push = useGuardedPush();
 
   const handleBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
+      // router.back()은 내부적으로 window.history.back()을 호출하므로
+      // NavigationGuardProvider의 popstate 가드가 자동으로 보호한다.
       router.back();
     } else {
-      router.push('/community');
+      push('/community');
     }
   };
 

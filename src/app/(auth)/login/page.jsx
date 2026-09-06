@@ -11,6 +11,7 @@ import { isValidPassword, strictEmailRegex } from '@constants/regex';
 import { login } from '@shared/api/auth';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -105,24 +106,24 @@ function LoginForm() {
               <label className="block text-sm font-medium text-content">
                 이메일
               </label>
-              <StyledEmailInput
-                type="email"
+              <Input
                 id="email"
                 name="email"
                 autoComplete={isLoginInfoRemembered ? 'username' : 'off'}
+                type="email"
                 value={email}
-                onChange={(e) => {
-                  const inputEmail = e.target.value;
-                  setEmail(inputEmail);
-                  if (inputEmail === '' || strictEmailRegex.test(inputEmail)) {
-                    setEmailError('');
-                  } else {
+                onChange={(value) => {
+                  setEmail(value);
+                  if (value !== '' && !strictEmailRegex.test(value)) {
                     setEmailError('학교 이메일을 입력해주세요. (@mju.ac.kr)');
+                  } else {
+                    setEmailError('');
                   }
                 }}
                 placeholder="학교 이메일을 입력해주세요."
-                setEmail={setEmail}
-              />
+              >
+                <Input.ClearButton />
+              </Input>
               {emailError && (
                 <p className="text-red-500 text-xs mt-1.5">{emailError}</p>
               )}
@@ -132,17 +133,16 @@ function LoginForm() {
               <label className="block text-sm font-medium text-content">
                 비밀번호
               </label>
-              <StyledPasswordInput
+              <Input
                 id="password"
                 name="password"
                 autoComplete={
                   isLoginInfoRemembered ? 'current-password' : 'off'
                 }
                 value={password}
-                onChange={(e) => {
-                  const pw = e.target.value;
-                  setPassword(pw);
-                  if (!isValidPassword(pw)) {
+                onChange={(value) => {
+                  setPassword(value);
+                  if (!isValidPassword(value)) {
                     setPasswordError(
                       '비밀번호는 8자 이상, 영문과 숫자, 특수문자를 포함해야합니다.',
                     );
@@ -151,9 +151,9 @@ function LoginForm() {
                   }
                 }}
                 placeholder="비밀번호를 입력해주세요."
-                isVisible={isPasswordVisible}
-                handlePasswordVisible={handlePasswordVisible}
-              />
+              >
+                <Input.VisibleButton />
+              </Input>
               {passwordError && (
                 <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
               )}

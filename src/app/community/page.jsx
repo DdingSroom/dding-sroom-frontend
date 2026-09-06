@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
-import PostCard from '@components/community/PostCard';
 
 import axiosInstance from '@api/instance';
 import useRequireAuth from '@hooks/useRequireAuth';
@@ -90,7 +89,15 @@ export default function CommunityPage() {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader showSearch />
-        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
+        <BasicModal
+          isOpen={showLoginModal}
+          onClose={handleLoginConfirm}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        />
       </div>
     );
   }
@@ -189,11 +196,11 @@ export default function CommunityPage() {
                 개
               </h2>
             </div>
-            <div className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-200">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostPreview key={post.id} {...post} />
               ))}
-            </div>
+            </ul>
           </div>
         )}
 
@@ -250,12 +257,13 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
 
       <PrivacyPolicyFooter />

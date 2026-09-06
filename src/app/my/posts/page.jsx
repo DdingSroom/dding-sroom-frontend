@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import BasicModal from '@components/common/basic-modal';
+import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
@@ -169,46 +169,21 @@ export default function MyPostsPage() {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <ul className="bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-200">
             {posts.map((post) => (
-              <div
-                key={post.id}
-                onClick={() => handlePostClick(post.id)}
-                className="bg-white border border-gray-200 rounded-xl p-5 cursor-pointer hover:shadow-md hover:border-brand/20 transition-all duration-200 group"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="inline-block px-3 py-1 rounded-full text-xs font-bold text-brand bg-brand/10 group-hover:bg-brand/15 transition-colors">
-                    {getCategoryName(post.category)}
-                  </div>
-                  <div className="text-xs text-content-muted">
-                    {formatDate(
-                      isUpdated(post.created_at, post.updated_at)
-                        ? post.updated_at
-                        : post.created_at,
-                    )}
-                    {isUpdated(post.created_at, post.updated_at) && ' (수정됨)'}
-                  </div>
-                </div>
-
-                <h3 className="text-base font-bold text-content mb-2 leading-relaxed group-hover:text-brand transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-
-                <p className="text-sm text-content-secondary leading-relaxed line-clamp-2">
-                  {truncateContent(post.content, 80)}
-                </p>
-              </div>
+              <PostPreview key={post.id} {...post} />
             ))}
-          </div>
+          </ul>
         )}
       </main>
 
-      <Modal
+      <BasicModal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
+        className="max-w-modal-sm"
         title="오류"
-        content={errorMessage}
-        showCancel={false}
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setShowErrorModal(false) }]}
       />
 
       <PrivacyPolicyFooter />

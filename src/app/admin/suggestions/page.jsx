@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
+import BasicModal from '@components/common/basic-modal';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
@@ -9,6 +10,8 @@ import axiosInstance from '@api/instance';
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
 import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply';
 import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
+
+import { Input } from '@components/common/input';
 
 export default function AdminSuggestionsPage() {
   const [loading, setLoading] = useState(true);
@@ -131,30 +134,26 @@ export default function AdminSuggestionsPage() {
 }
 
 function Filters({ filters, setFilters, onSearch }) {
-  const onChange = (k) => (e) =>
-    setFilters((p) => ({ ...p, [k]: e.target.value }));
+  const onChange = (k) => (value) => setFilters((p) => ({ ...p, [k]: value }));
 
   return (
     <div className="mb-6 grid grid-cols-1 md:grid-cols-6 gap-2 items-stretch">
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="suggest_id"
         value={filters.suggest_id}
         onChange={onChange('suggest_id')}
       />
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="user_id"
         value={filters.user_id}
         onChange={onChange('user_id')}
       />
-      <input
-        className="border rounded px-3 py-2 text-sm"
+      <Input
         placeholder="category"
         value={filters.category}
         onChange={onChange('category')}
       />
-      <input
+      <Input
         className="border rounded px-3 py-2 text-sm"
         placeholder="location"
         value={filters.location}
@@ -329,6 +328,8 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const normalizeComment = (c) => ({
     id: c?.id ?? c?.comment_id ?? c?.commentId,
@@ -370,9 +371,20 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
     setEditingId(row.id);
     setDraft(row.text || '');
   };
-  const cancelEdit = () => {
+
+  const doCancel = () => {
     setEditingId(null);
     setDraft('');
+    setShowCancelConfirm(false);
+  };
+
+  const cancelEdit = () => {
+    const original = items.find((i) => i.id === editingId)?.text ?? '';
+    if (draft !== original) {
+      setShowCancelConfirm(true);
+    } else {
+      doCancel();
+    }
   };
 
   const saveEdit = async () => {
@@ -401,10 +413,13 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
     }
   };
 
-  const remove = async (id) => {
-    if (!confirm('이 답변을 삭제하시겠습니까?')) {
-      return;
-    }
+  const remove = (id) => {
+    setDeleteTargetId(id);
+  };
+
+  const confirmRemove = async () => {
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
     try {
       setSaving(true);
       await axiosInstance.delete(`/api/suggestions/comments/${id}`);
@@ -486,6 +501,38 @@ function AnswerManager({ suggestPostId, refreshKey = 0, onChanged }) {
           )}
         </div>
       ))}
+
+      <BasicModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        className="max-w-modal"
+        title="답변 삭제"
+        message="이 답변을 삭제하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setDeleteTargetId(null),
+            variant: 'ghost',
+          },
+          { text: '삭제', onClick: confirmRemove, variant: 'danger' },
+        ]}
+      />
+
+      <BasicModal
+        isOpen={showCancelConfirm}
+        onClose={() => setShowCancelConfirm(false)}
+        className="max-w-modal"
+        title="작성 중인 내용이 있습니다"
+        message="수정 중인 내용이 사라집니다. 정말 취소하시겠습니까?"
+        actions={[
+          {
+            text: '계속 작성하기',
+            onClick: () => setShowCancelConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '취소하기', onClick: doCancel },
+        ]}
+      />
     </div>
   );
 }

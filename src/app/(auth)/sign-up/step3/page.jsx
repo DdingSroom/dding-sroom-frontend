@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -10,6 +11,8 @@ import { signup } from '@shared/api/auth';
 import useSignupStore from '@stores/useSignupStore';
 
 import CustomizedStepper from './customizedStepper';
+
+import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -28,6 +31,7 @@ export default function SignUpStep3() {
 
   const [hasOpenedPolicy, setHasOpenedPolicy] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const { signupData, resetSignupData } = useSignupStore();
 
@@ -67,7 +71,9 @@ export default function SignUpStep3() {
 
   const handleSignup = async () => {
     if (!consentChecked) {
-      alert('개인정보처리방침에 동의해야 회원가입을 진행할 수 있습니다.');
+      setAlertMessage(
+        '개인정보처리방침에 동의해야 회원가입을 진행할 수 있습니다.',
+      );
       return;
     }
 
@@ -88,7 +94,7 @@ export default function SignUpStep3() {
       router.push(`/sign-up/step4?username=${encodeURIComponent(name)}`);
     } catch (error) {
       console.error('회원가입 실패:', error);
-      alert(
+      setAlertMessage(
         error?.response?.data?.message || '회원가입 중 오류가 발생했습니다.',
       );
     }
@@ -118,12 +124,12 @@ export default function SignUpStep3() {
             >
               이름
             </label>
-            <StyledTextInput
+            <Input
               id="name"
               type="text"
               placeholder="USER 01"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(value) => setName(value)}
               autoComplete="name" // 브라우저 자동완성 힌트 (선택)
               inputMode="text"
             />
@@ -187,14 +193,15 @@ export default function SignUpStep3() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }
-
-const StyledTextInput = ({ value, className = '', ...props }) => {
-  const base =
-    'w-full px-4 py-3 bg-white rounded-lg border border-line text-sm ' +
-    'placeholder:text-content-muted focus:outline-none focus:border-brand ' +
-    'focus:ring-2 focus:ring-brand/10 transition-all duration-200';
-  return <input className={`${base} ${className}`} value={value} {...props} />;
-};

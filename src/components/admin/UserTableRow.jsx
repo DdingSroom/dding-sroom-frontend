@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import BasicModal from '@components/common/basic-modal';
+
 import { updateUserStatus } from '@api/admin';
 
 export default function UserTableRow({ user, onUserUpdate }) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showStatusConfirm, setShowStatusConfirm] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const currentStatus = user.status || 'normal';
+  const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
+  const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
   const handleDetailClick = () => {
     router.push(`/admin/user-detail/${user.id}`);
   };
 
-  const handleStatusToggle = async () => {
-    const currentStatus = user.status || 'normal';
-    const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
-    const statusText = newStatus === 'blocked' ? '차단' : '정상';
+  const handleStatusToggle = () => {
+    setShowStatusConfirm(true);
+  };
 
-    if (
-      !confirm(`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`)
-    ) {
-      return;
-    }
-
+  const confirmStatusToggle = async () => {
+    setShowStatusConfirm(false);
     setIsUpdating(true);
 
     try {
@@ -32,17 +35,18 @@ export default function UserTableRow({ user, onUserUpdate }) {
         onUserUpdate(user.id, { ...user, status: newStatus });
       }
 
-      alert(`${user.username}님이 ${statusText} 상태로 변경되었습니다.`);
+      setAlertMessage(
+        `${user.username}님이 ${statusText} 상태로 변경되었습니다.`,
+      );
     } catch (error) {
       console.error('사용자 상태 변경 실패:', error);
       const msg = error?.response?.data?.message || '상태 변경에 실패했습니다.';
-      alert(msg);
+      setAlertMessage(msg);
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const currentStatus = user.status || 'normal';
   const statusBadge =
     currentStatus === 'blocked'
       ? { className: 'bg-red-100 text-red-700', label: '차단됨' }
@@ -83,6 +87,31 @@ export default function UserTableRow({ user, onUserUpdate }) {
           </button>
         </div>
       </td>
+
+      <BasicModal
+        isOpen={showStatusConfirm}
+        onClose={() => setShowStatusConfirm(false)}
+        className="max-w-modal"
+        title="사용자 상태 변경"
+        message={`${user.username}님을 ${statusText} 상태로 변경하시겠습니까?`}
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowStatusConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '변경', onClick: confirmStatusToggle },
+        ]}
+      />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </tr>
   );
 }

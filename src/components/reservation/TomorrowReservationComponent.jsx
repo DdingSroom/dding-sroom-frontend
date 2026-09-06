@@ -3,8 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import LoginRequiredModal from '@components/common/LoginRequiredModal';
-import Modal from '@components/common/Modal';
+import BasicModal from '@components/common/basic-modal';
 import TimeComponent from '@components/reservation/TimeComponent';
 
 import axiosInstance from '@api/instance';
@@ -64,6 +63,8 @@ const TomorrowReservationComponent = ({
   const [endTime, setEndTime] = useState(null);
   const [durationMinutes, setDurationMinutes] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { userId, accessToken } = useTokenStore();
   const {
@@ -141,7 +142,7 @@ const TomorrowReservationComponent = ({
 
   const handleSubmitReservation = async () => {
     if (!startTime || !endTime) {
-      alert('예약 시간과 퇴실 시간을 모두 선택해주세요.');
+      setErrorMessage('예약 시간과 퇴실 시간을 모두 선택해주세요.');
       return;
     }
 
@@ -150,7 +151,7 @@ const TomorrowReservationComponent = ({
     const duration = durationMinutes ?? (endMs - startMs) / (1000 * 60);
 
     if (duration !== 60 && duration !== 120) {
-      alert('예약은 1시간 또는 2시간 단위로만 가능합니다.');
+      setErrorMessage('예약은 1시간 또는 2시간 단위로만 가능합니다.');
       return;
     }
 
@@ -162,7 +163,7 @@ const TomorrowReservationComponent = ({
         reservationEndTime: toKSTISOString(endMs),
       });
 
-      alert(res.data.message || '예약이 완료되었습니다.');
+      setSuccessMessage(res.data.message || '예약이 완료되었습니다.');
 
       await Promise.all([
         fetchLatestReservation(),
@@ -176,7 +177,7 @@ const TomorrowReservationComponent = ({
       setDurationMinutes(null);
     } catch (err) {
       console.error('예약 실패:', err.response?.data || err.message);
-      alert(err.response?.data?.message || '예약에 실패했습니다.');
+      setErrorMessage(err.response?.data?.message || '예약에 실패했습니다.');
     }
   };
 
@@ -293,11 +294,14 @@ const TomorrowReservationComponent = ({
         >
           예약
         </button>
-        <Modal
+        <BasicModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          onSubmit={handleSubmitReservation}
-          text="예약하기"
+          className="max-w-modal"
+          actions={[
+            { text: '취소', onClick: () => setOpen(false), variant: 'ghost' },
+            { text: '예약하기', onClick: handleSubmitReservation },
+          ]}
         >
           <div className="p-4 flex flex-col h-full">
             <div className="font-semibold text-2xl">
@@ -363,27 +367,48 @@ const TomorrowReservationComponent = ({
               />
             </div>
           </div>
-        </Modal>
+        </BasicModal>
       </div>
       <div className="mt-4 flex flex-col w-full">{renderTimeBlocks()}</div>
       <div className="mt-3 flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-brand"></div>
+          <div className="w-2 h-2 bg-brand" />
           <span>예약 가능</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-status-reserved"></div>
+          <div className="w-2 h-2 bg-status-reserved" />
           <span>예약됨</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-status-past"></div>
+          <div className="w-2 h-2 bg-status-past" />
           <span>지난 시간</span>
         </div>
       </div>
       <div className="bg-status-reserved h-0.5 w-full mt-3" />
-      <LoginRequiredModal
+      <BasicModal
         isOpen={showLoginModal}
-        onConfirm={handleModalConfirm}
+        onClose={handleModalConfirm}
+        closeOnOverlayClick={false}
+        className="max-w-modal-sm"
+        title="로그인이 필요한 기능입니다"
+        message="이 페이지를 이용하려면 로그인이 필요합니다."
+        actions={[{ text: '확인', onClick: handleModalConfirm }]}
+      />
+      <BasicModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage('')}
+        className="max-w-modal-sm"
+        title="예약 완료"
+        message={successMessage}
+        actions={[{ text: '확인', onClick: () => setSuccessMessage('') }]}
+      />
+      <BasicModal
+        isOpen={!!errorMessage}
+        onClose={() => setErrorMessage('')}
+        className="max-w-modal-sm"
+        title="오류"
+        message={errorMessage}
+        actions={[{ text: '확인', onClick: () => setErrorMessage('') }]}
       />
     </div>
   );

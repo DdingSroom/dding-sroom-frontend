@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -13,6 +14,7 @@ export default function NotificationList() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   // const router = useRouter();
 
   useEffect(() => {
@@ -24,13 +26,13 @@ export default function NotificationList() {
     try {
       const response = await axiosInstance.get('/api/notification/list');
       if (response.data.error) {
-        alert(response.data.error);
+        setAlertMessage(response.data.error);
         return;
       }
       setNotifications(response.data.data || []);
     } catch (error) {
       console.error('공지사항 조회 실패:', error);
-      alert('공지사항을 불러오는데 실패했습니다.');
+      setAlertMessage('공지사항을 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -169,6 +171,15 @@ export default function NotificationList() {
       <PrivacyPolicyFooter />
       <BottomSafeSpacer height={64} />
       <FooterNav />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
 
       {showDetailModal && selectedNotification && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 animate-in fade-in duration-300">

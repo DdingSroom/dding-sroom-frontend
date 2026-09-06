@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import ReservationCard from '@components/admin/ReservationCard';
+import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
 
@@ -64,43 +65,46 @@ export default function ReservationListPage() {
     });
   }, []);
 
-  const handleForceCancel = useCallback(
-    async (reservationId) => {
-      if (!reservationId) {
-        return;
-      }
-      if (!confirm('이 예약을 강제로 취소하시겠습니까?')) {
-        return;
-      }
+  const handleForceCancel = useCallback((reservationId) => {
+    if (!reservationId) {
+      return;
+    }
+    setForceCancelTargetId(reservationId);
+  }, []);
 
-      setCancelLoadingIds((s) => new Set(s).add(reservationId));
+  const confirmForceCancel = useCallback(async () => {
+    const reservationId = forceCancelTargetId;
+    setForceCancelTargetId(null);
+    if (!reservationId) {
+      return;
+    }
 
-      try {
-        await axiosInstance.post(
-          `/admin/reservations/${reservationId}/force-cancel`,
-        );
+    setCancelLoadingIds((s) => new Set(s).add(reservationId));
 
-        removeReservationFromState(reservationId);
+    try {
+      await axiosInstance.post(
+        `/admin/reservations/${reservationId}/force-cancel`,
+      );
 
-        alert('예약을 강제로 취소했습니다.');
-      } catch (err) {
-        console.error('예약 강제 취소 실패:', err);
-        const msg =
-          err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          '예약 강제 취소에 실패했습니다.';
-        alert(msg);
-      } finally {
-        // 버튼 로딩 off
-        setCancelLoadingIds((s) => {
-          const n = new Set(s);
-          n.delete(reservationId);
-          return n;
-        });
-      }
-    },
-    [removeReservationFromState],
-  );
+      removeReservationFromState(reservationId);
+
+      setAlertMessage('예약을 강제로 취소했습니다.');
+    } catch (err) {
+      console.error('예약 강제 취소 실패:', err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        '예약 강제 취소에 실패했습니다.';
+      setAlertMessage(msg);
+    } finally {
+      // 버튼 로딩 off
+      setCancelLoadingIds((s) => {
+        const n = new Set(s);
+        n.delete(reservationId);
+        return n;
+      });
+    }
+  }, [forceCancelTargetId, removeReservationFromState]);
 
   return (
     <div className="bg-surface-admin p-6 min-h-screen">
@@ -157,6 +161,31 @@ export default function ReservationListPage() {
             </div>
           ))}
       </div>
+
+      <BasicModal
+        isOpen={forceCancelTargetId !== null}
+        onClose={() => setForceCancelTargetId(null)}
+        className="max-w-modal"
+        title="예약 강제 취소"
+        message="이 예약을 강제로 취소하시겠습니까?"
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setForceCancelTargetId(null),
+            variant: 'ghost',
+          },
+          { text: '취소하기', onClick: confirmForceCancel, variant: 'danger' },
+        ]}
+      />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }
