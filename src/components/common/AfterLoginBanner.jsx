@@ -16,7 +16,6 @@ const AfterLoginBanner = () => {
   const [isCancelling, setIsCancelling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const { userId, accessToken } = useTokenStore();
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
 
