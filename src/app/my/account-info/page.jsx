@@ -287,13 +287,13 @@ export default function AccountInfo() {
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
       <BasicModal
-        isOpen={authReady && showLoginModal}
-        onClose={handleLoginConfirm}
+        isOpen={authReady && requireLogin}
+        onClose={redirectToLogin}
         closeOnOverlayClick={false}
         className="max-w-modal-sm"
         title="로그인이 필요한 기능입니다"
         message="이 페이지를 이용하려면 로그인이 필요합니다."
-        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        actions={[{ text: '확인', onClick: redirectToLogin }]}
       />
 
       {/* 로그아웃 완료 모달 */}

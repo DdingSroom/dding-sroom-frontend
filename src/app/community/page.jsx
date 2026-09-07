@@ -90,13 +90,13 @@ export default function CommunityPage() {
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader showSearch />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );

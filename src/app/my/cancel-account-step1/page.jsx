@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
+import Button from '@components/common/button';
 import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
@@ -29,7 +30,6 @@ export default function CancelAccountStep1() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [isVerified, setIsVerified] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [withdrawComplete, setWithdrawComplete] = useState(false);
 
@@ -207,13 +207,13 @@ export default function CancelAccountStep1() {
       </div>
 
       <BasicModal
-        isOpen={showLoginModal}
-        onClose={handleLoginConfirm}
+        isOpen={requireLogin}
+        onClose={redirectToLogin}
         closeOnOverlayClick={false}
         className="max-w-modal-sm"
         title="로그인이 필요한 기능입니다"
         message="이 페이지를 이용하려면 로그인이 필요합니다."
-        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        actions={[{ text: '확인', onClick: redirectToLogin }]}
       />
 
       <BasicModal

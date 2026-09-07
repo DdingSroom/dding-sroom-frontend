@@ -117,7 +117,15 @@ export default function MyPostsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <MyPageHeader />
-        <LoginRequiredModal isOpen={requireLogin} onConfirm={redirectToLogin} />
+        <BasicModal
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
+          closeOnOverlayClick={false}
+          className="max-w-modal-sm"
+          title="로그인이 필요한 기능입니다"
+          message="이 페이지를 이용하려면 로그인이 필요합니다."
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
+        />
       </div>
     );
   }
