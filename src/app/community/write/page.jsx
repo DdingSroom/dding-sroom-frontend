@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
-import Textarea from '@components/common/textarea';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
@@ -33,6 +32,9 @@ export default function WritePostPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { userId, requireLogin, redirectToLogin } = useRequireAuth();
   const router = useRouter();
+
+  const isDirty = title !== '' || content !== '';
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,13 +78,13 @@ export default function WritePostPage() {
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );
