@@ -8,9 +8,7 @@ import ReservationCard from '@components/admin/ReservationCard';
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
-import InfoModal from '../../../components/common/InfoModal';
 import BasicModal from '../../../components/common/basic-modal';
-import useTokenStore from '../../../stores/useTokenStore';
 
 export default function AdminDashboard() {
   const router = useRouter();
