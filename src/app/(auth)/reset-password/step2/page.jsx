@@ -51,12 +51,7 @@ export default function ResetPassword2() {
   const handlePasswordReset = async () => {
     try {
       await resetPassword(email, newPassword);
-      alert('비밀번호가 성공적으로 변경되었습니다.');
-      router.push('/login');
-      await axiosInstance.post('/user/modify-password', {
-        email,
-        password: newPassword,
-      });
+
       setResetSucceeded(true);
       setAlertMessage('비밀번호가 성공적으로 변경되었습니다.');
     } catch (error) {
