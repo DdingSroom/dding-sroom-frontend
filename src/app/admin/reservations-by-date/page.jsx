@@ -13,6 +13,8 @@ export default function ReservationListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cancelLoadingIds, setCancelLoadingIds] = useState(new Set());
+  const [forceCancelTargetId, setForceCancelTargetId] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const fetchAllReservations = useCallback(async () => {
     try {
