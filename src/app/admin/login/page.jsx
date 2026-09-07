@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import Button from '@components/common/button';
+import { Input } from '@components/common/input';
 
 import { ADMIN_ROLE } from '@constants/auth';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
@@ -164,73 +165,6 @@ export default function AdminLogin() {
     </div>
   );
 }
-
-const StyledInput = ({ value, ...props }) => (
-  <input
-    className="w-full px-4 py-3 bg-white rounded-lg border border-line text-sm placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
-    value={value}
-    {...props}
-  />
-);
-
-const StyledEmailInput = ({ value, setEmail, ...props }) => {
-  const handleRemoveEmailValue = () => {
-    setEmail('');
-  };
-
-  return (
-    <div className="relative">
-      <StyledInput {...props} value={value} />
-      {value && (
-        <button
-          type="button"
-          onClick={handleRemoveEmailValue}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-        >
-          <img
-            src="/static/icons/x_icon.svg"
-            alt="Clear"
-            width={14}
-            height={14}
-            className="opacity-60 hover:opacity-80"
-          />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const StyledPasswordInput = ({
-  value,
-  isVisible = false,
-  handlePasswordVisible,
-  ...props
-}) => (
-  <div className="relative">
-    <StyledInput
-      {...props}
-      value={value}
-      type={isVisible ? 'text' : 'password'}
-    />
-    <button
-      type="button"
-      onClick={handlePasswordVisible}
-      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-md transition-colors"
-    >
-      <img
-        src={
-          isVisible
-            ? '/static/icons/eye_on_icon.svg'
-            : '/static/icons/eye_off_icon.svg'
-        }
-        alt="Toggle Password Visibility"
-        width={18}
-        height={18}
-        className="opacity-60 hover:opacity-80"
-      />
-    </button>
-  </div>
-);
 
 const StyledCheckbox = ({ onChange, children, ...props }) => (
   <label className="inline-flex items-center cursor-pointer group">
