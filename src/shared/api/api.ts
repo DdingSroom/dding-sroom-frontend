@@ -1,16 +1,38 @@
-import type { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import instance from './instance';
 
 export const api = {
-  get: <T>(url: string, config?: AxiosRequestConfig) =>
-    instance.get<T>(url, config).then((res) => res.data),
-  post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
-    instance.post<T>(url, data, config).then((res) => res.data),
-  put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
-    instance.put<T>(url, data, config).then((res) => res.data),
-  patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
-    instance.patch<T>(url, data, config).then((res) => res.data),
-  delete: <T>(url: string, config?: AxiosRequestConfig) =>
-    instance.delete<T>(url, config).then((res) => res.data),
+  get: <TResponse>(url: string, config?: AxiosRequestConfig) =>
+    instance.get<TResponse>(url, config).then((res) => res.data),
+
+  post: <TResponse, TRequest = unknown>(
+    url: string,
+    data?: TRequest,
+    config?: AxiosRequestConfig<TRequest>,
+  ) =>
+    instance
+      .post<TResponse, AxiosResponse<TResponse>, TRequest>(url, data, config)
+      .then((res) => res.data),
+
+  put: <TResponse, TRequest = unknown>(
+    url: string,
+    data?: TRequest,
+    config?: AxiosRequestConfig<TRequest>,
+  ) =>
+    instance
+      .put<TResponse, AxiosResponse<TResponse>, TRequest>(url, data, config)
+      .then((res) => res.data),
+
+  patch: <TResponse, TRequest = unknown>(
+    url: string,
+    data?: TRequest,
+    config?: AxiosRequestConfig<TRequest>,
+  ) =>
+    instance
+      .patch<TResponse, AxiosResponse<TResponse>, TRequest>(url, data, config)
+      .then((res) => res.data),
+
+  delete: <TResponse>(url: string, config?: AxiosRequestConfig) =>
+    instance.delete<TResponse>(url, config).then((res) => res.data),
 };
