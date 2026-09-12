@@ -26,7 +26,6 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoginInfoRemembered, setIsLoginInfoRemembered] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -46,10 +45,6 @@ function LoginForm() {
       }
     }
   }, [searchParams]);
-
-  const handlePasswordVisible = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
 
   const handleLoginInfoRemembered = () => {
     setIsLoginInfoRemembered(!isLoginInfoRemembered);
