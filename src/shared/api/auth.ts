@@ -48,7 +48,7 @@ export const logout = async (): Promise<void> => {
 };
 
 export const signup = async (payload: SignupPayload): Promise<void> => {
-  await api.post<void>(AUTH_API_ENDPOINTS.SIGN_UP, payload);
+  await api.post<void, SignupPayload>(AUTH_API_ENDPOINTS.SIGN_UP, payload);
 };
 
 export const sendVerificationCode = async (email: string): Promise<void> => {
