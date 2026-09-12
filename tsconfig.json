@@ -32,7 +32,9 @@
       "@libs": ["./src/libs"],
       "@libs/*": ["./src/libs/*"],
       "@providers": ["./src/providers"],
-      "@providers/*": ["./src/providers/*"]
+      "@providers/*": ["./src/providers/*"],
+      "@shared": ["./src/shared"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": [

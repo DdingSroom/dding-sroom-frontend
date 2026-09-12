@@ -2,14 +2,13 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance, { setAccessToken } from '@api/instance';
 import { isValidPassword, strictEmailRegex } from '@constants/regex';
+import { login } from '@shared/api/auth';
 import useTokenStore from '@stores/useTokenStore';
 import { getLoginErrorMessage } from '@utils/errorMessages';
 import { Input } from '@components/common/input';
@@ -27,20 +26,15 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isLoginSave, setIsLoginSave] = useState(false);
+  const [isLoginInfoRemembered, setIsLoginInfoRemembered] = useState(false);
   const [passwordError, setPasswordError] = useState('');
-  const [confirmError, setConfirmError] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const [redirectUrl, setRedirectUrl] = useState('/');
 
-  const {
-    setAccessToken: setGlobalAccessToken,
-    setRefreshToken,
-    setUserId,
-  } = useTokenStore();
+  const { setAccessToken: setGlobalAccessToken } = useTokenStore();
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -50,39 +44,10 @@ function LoginForm() {
         setRedirectUrl(decoded);
       }
     }
-
-    // 저장된 로그인 정보 불러오기
-    const savedLoginData = localStorage.getItem('savedLoginData');
-    if (savedLoginData) {
-      try {
-        const {
-          email: savedEmail,
-          password: savedPassword,
-          isLoginSave: savedIsLoginSave,
-        } = JSON.parse(savedLoginData);
-        if (savedIsLoginSave) {
-          setEmail(savedEmail || '');
-          setPassword(savedPassword || '');
-          setIsLoginSave(true);
-        }
-      } catch (error) {
-        console.error('저장된 로그인 정보를 불러오는 중 오류 발생:', error);
-      }
-    }
   }, [searchParams]);
 
-  const handleLoginSave = () => {
-    const newIsLoginSave = !isLoginSave;
-    setIsLoginSave(newIsLoginSave);
-
-    // 로그인 유지를 해제하면 저장된 정보 삭제
-    if (!newIsLoginSave) {
-      localStorage.removeItem('savedLoginData');
-    }
-  };
-
-  const handlePasswordVisible = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+  const handleLoginInfoRemembered = () => {
+    setIsLoginInfoRemembered(!isLoginInfoRemembered);
   };
 
   const isLoginAvailable = () =>
@@ -90,64 +55,23 @@ function LoginForm() {
 
   const handleLogin = async () => {
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('password', password);
+      const { accessToken } = await login(email, password);
 
-      const response = await axiosInstance.post('/login', formData);
-
-      const accessToken =
-        response.headers['access'] ||
-        response.headers['Access'] ||
-        response.headers['authorization'] ||
-        response.headers['Authorization'];
-
-      const refreshToken =
-        response.headers['refresh'] || response.headers['Refresh'];
-
-      if (accessToken) {
-        setAccessToken(accessToken);
-        setGlobalAccessToken(accessToken);
-        setRefreshToken(refreshToken || '');
-        const decoded = jwtDecode(accessToken);
-
-        // userId를 토큰에서 추출하여 설정
-        const extractedUserId =
-          decoded?.userId ??
-          decoded?.id ??
-          decoded?.uid ??
-          decoded?.sub ??
-          null;
-        if (extractedUserId) {
-          setUserId(extractedUserId);
-        }
-        // 로그인 성공 시 로그인 유지 옵션에 따라 정보 저장/삭제
-        if (isLoginSave) {
-          const loginData = {
-            email,
-            password,
-            isLoginSave: true,
-          };
-          localStorage.setItem('savedLoginData', JSON.stringify(loginData));
-        } else {
-          localStorage.removeItem('savedLoginData');
-        }
-
-        // 토큰과 userId 설정이 완료된 후 리다이렉트
-        setTimeout(() => {
-          router.push(redirectUrl);
-        }, 50);
-      } else {
-        // 디버깅용 로그
-        console.warn(
-          '응답 헤더에서 access 토큰을 찾지 못했습니다:',
-          response.headers,
-        );
-        setConfirmError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+      if (!accessToken) {
+        console.warn('로그인 응답에서 access 토큰을 찾지 못했습니다.');
+        setLoginError('로그인에 실패했습니다. 토큰이 누락되었습니다.');
+        return;
       }
+
+      setGlobalAccessToken(accessToken);
+
+      // 토큰 설정이 완료된 후 리다이렉트
+      setTimeout(() => {
+        router.push(redirectUrl);
+      }, 50);
     } catch (e) {
       console.error('로그인 실패:', e);
-      setConfirmError(getLoginErrorMessage(e));
+      setLoginError(getLoginErrorMessage(e));
     }
   };
 
@@ -179,6 +103,8 @@ function LoginForm() {
               </label>
               <Input
                 id="email"
+                name="email"
+                autoComplete={isLoginInfoRemembered ? 'username' : 'off'}
                 type="email"
                 value={email}
                 onChange={(value) => {
@@ -204,7 +130,11 @@ function LoginForm() {
               </label>
               <Input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete={
+                  isLoginInfoRemembered ? 'current-password' : 'off'
+                }
                 value={password}
                 onChange={(value) => {
                   setPassword(value);
@@ -223,15 +153,18 @@ function LoginForm() {
               {passwordError && (
                 <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>
               )}
-              {confirmError && (
-                <p className="text-red-500 text-xs mt-1.5">{confirmError}</p>
+              {loginError && (
+                <p className="text-red-500 text-xs mt-1.5">{loginError}</p>
               )}
             </div>
           </form>
 
           <div className="flex items-center justify-between">
-            <StyledCheckbox checked={isLoginSave} onChange={handleLoginSave}>
-              로그인 유지
+            <StyledCheckbox
+              checked={isLoginInfoRemembered}
+              onChange={handleLoginInfoRemembered}
+            >
+              로그인 정보 기억
             </StyledCheckbox>
 
             <div className="flex items-center gap-4 text-xs text-content-secondary">

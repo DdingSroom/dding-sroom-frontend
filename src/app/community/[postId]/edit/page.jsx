@@ -12,8 +12,8 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../../../stores/useTokenStore';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -31,11 +31,11 @@ export default function EditPostPage() {
   const [initialValues, setInitialValues] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
 
-  const { accessToken, userId, rehydrate } = useTokenStore();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
 
@@ -44,14 +44,8 @@ export default function EditPostPage() {
     (title !== initialValues.title ||
       content !== initialValues.content ||
       category !== initialValues.category);
-  const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
+  const { markClean } = useUnsavedChangesGuard(isDirty);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -88,15 +82,10 @@ export default function EditPostPage() {
   }, [postId, userId]);
 
   useEffect(() => {
-    if (accessToken && postId) {
+    if (isAuthenticated && postId) {
       fetchPost();
     }
-  }, [accessToken, postId, fetchPost]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
+  }, [isAuthenticated, postId, fetchPost]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -146,18 +135,18 @@ export default function EditPostPage() {
     }
   };
 
-  if (showLoginModal) {
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );

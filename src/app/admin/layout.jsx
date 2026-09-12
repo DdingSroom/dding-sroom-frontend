@@ -5,12 +5,13 @@ import Link from 'next/link';
 
 import BasicModal from '../../components/common/basic-modal';
 
-// export const metadata = {
-//   title: 'DdingsRoom 관리자',
-//   description: '명지대학교 스터디룸 관리자 페이지',
-// };
+import useAdminGuard from '@hooks/use-admin-guard';
+
+// TODO: 이 layout은 'use client'라 Next.js 제약상 metadata export 불가
+// admin 전용 title/description이 필요해지면 layout을 Server/Client로 분리해야 함
 
 export default function AdminLayout({ children }) {
+  useAdminGuard();
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isMobileBlocked, setIsMobileBlocked] = useState(false);
 

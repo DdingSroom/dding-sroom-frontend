@@ -8,9 +8,10 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
-import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -24,26 +25,18 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function MyCommentsPage() {
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const { accessToken, userId, rehydrate } = useTokenStore();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const router = useRouter();
 
   useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (accessToken && userId) {
+    if (isAuthenticated && userId) {
       fetchMyComments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, userId]);
+  }, [isAuthenticated, userId]);
 
   const fetchMyComments = async () => {
     try {
@@ -64,11 +57,6 @@ export default function MyCommentsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
   };
 
   const handleCommentClick = (postId) => {
@@ -107,18 +95,18 @@ export default function MyCommentsPage() {
     return content.substring(0, maxLength) + '...';
   };
 
-  if (showLoginModal) {
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <MyPageHeader />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );

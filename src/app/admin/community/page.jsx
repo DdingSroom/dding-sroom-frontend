@@ -1,19 +1,12 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
 
-import useTokenStore from '../../../stores/useTokenStore';
-
 export default function AdminCommunityPage() {
-  const router = useRouter();
-  const { accessToken } = useTokenStore();
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [posts, setPosts] = useState([]);
@@ -24,23 +17,6 @@ export default function AdminCommunityPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [alertMessage, setAlertMessage] = useState('');
   const pageSize = 20;
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-        return;
-      }
-    } catch (e) {
-      console.error('토큰 디코드 오류:', e);
-      router.push('/admin/login');
-    }
-  }, [accessToken, router]);
 
   const fetchPosts = useCallback(
     async (page = 0, size = pageSize) => {

@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
 import Textarea from '@components/common/textarea';
@@ -12,14 +10,10 @@ import axiosInstance from '@api/instance';
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
 import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply';
 import SuggestionImagesByUrl from '../../../components/admin/SuggestionImagesByUrl';
-import useTokenStore from '../../../stores/useTokenStore';
 
 import { Input } from '@components/common/input';
 
 export default function AdminSuggestionsPage() {
-  const router = useRouter();
-  const { accessToken } = useTokenStore();
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [grouped, setGrouped] = useState({});
@@ -31,23 +25,6 @@ export default function AdminSuggestionsPage() {
     user_id: '',
     suggest_id: '',
   });
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-        return;
-      }
-    } catch (e) {
-      console.error('토큰 디코드 오류:', e);
-      router.push('/admin/login');
-    }
-  }, [accessToken, router]);
 
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();

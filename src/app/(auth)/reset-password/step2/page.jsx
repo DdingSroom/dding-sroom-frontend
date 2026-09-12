@@ -7,8 +7,8 @@ import Button from '@components/common/button';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
 import { isValidPassword } from '@constants/regex';
+import { resetPassword } from '@shared/api/auth';
 import { Input } from '@components/common/input';
 
 function BottomSafeSpacer({ height = 64 }) {
@@ -50,10 +50,8 @@ export default function ResetPassword2() {
 
   const handlePasswordReset = async () => {
     try {
-      await axiosInstance.post('/user/modify-password', {
-        email,
-        password: newPassword,
-      });
+      await resetPassword(email, newPassword);
+
       setResetSucceeded(true);
       setAlertMessage('비밀번호가 성공적으로 변경되었습니다.');
     } catch (error) {

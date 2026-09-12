@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
     removeConsole: isProd,
   },
 
+  async rewrites() {
+    return [
+      {
+        source: '/backend/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/:path*`,
+      },
+    ];
+  },
+
   // 프로덕션에서 소스맵 노출 방지
   productionBrowserSourceMaps: false,
 
