@@ -11,7 +11,8 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 import { anonymizeUsers } from '@utils/anonymizeUser';
 
 function BottomSafeSpacer({ height = 64 }) {
@@ -34,8 +35,8 @@ export default function PostDetailPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { isAuthenticated, userId, requireLogin, redirectToLogin } =
-    useRequireAuth();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
 

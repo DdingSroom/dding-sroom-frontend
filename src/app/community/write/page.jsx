@@ -12,7 +12,8 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -30,7 +31,8 @@ export default function WritePostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const { userId, requireLogin, redirectToLogin } = useRequireAuth();
+  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const router = useRouter();
 
   const isDirty = title !== '' || content !== '';

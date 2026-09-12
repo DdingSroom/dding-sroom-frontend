@@ -12,7 +12,8 @@ import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
 import { categories, places } from '@constants/select-options';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
 
@@ -150,7 +151,8 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
-  const { userId: myUserId, requireLogin, redirectToLogin } = useRequireAuth();
+  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId: myUserId } = useTokenStore();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크

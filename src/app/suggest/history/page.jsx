@@ -7,7 +7,8 @@ import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import axiosInstance from '@api/instance';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import ThumbByUrl from '../../../components/suggest/ThumbByUrl';
 
@@ -21,7 +22,8 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function SuggestHistoryPage() {
-  const { userId, requireLogin, redirectToLogin } = useRequireAuth();
+  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

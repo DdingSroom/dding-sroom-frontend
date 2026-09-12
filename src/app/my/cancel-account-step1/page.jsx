@@ -10,7 +10,8 @@ import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
@@ -33,7 +34,8 @@ export default function CancelAccountStep1() {
   const [alertMessage, setAlertMessage] = useState('');
   const [withdrawComplete, setWithdrawComplete] = useState(false);
 
-  const { accessToken, requireLogin, redirectToLogin } = useRequireAuth();
+  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { accessToken } = useTokenStore();
   const router = useRouter();
 
   const commonCodeButtonClass =

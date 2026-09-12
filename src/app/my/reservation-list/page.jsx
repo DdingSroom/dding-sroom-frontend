@@ -7,7 +7,7 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 import ReservationList from '@components/reservation/ReservationList';
 
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
 
 import FooterNav from '../../../components/common/FooterNav';
 

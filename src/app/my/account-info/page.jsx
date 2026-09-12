@@ -10,7 +10,7 @@ import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@hooks/use-require-auth';
 import { logout } from '@shared/api/auth';
 
 import FooterNav from '../../../components/common/FooterNav';
@@ -33,9 +33,8 @@ export default function AccountInfo() {
   const [alertMessage, setAlertMessage] = useState('');
   const [nameError, setNameError] = useState('');
 
-  const { clearTokens } = useTokenStore();
-  const { authReady, accessToken, userId, requireLogin, redirectToLogin } =
-    useRequireAuth();
+  const { clearTokens, accessToken, userId } = useTokenStore();
+  const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
 
   const getDecodedUserInfo = useCallback(() => {
     try {
