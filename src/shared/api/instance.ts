@@ -106,7 +106,7 @@ instance.interceptors.response.use(
     const requestUrl = originalRequest?.url || '';
 
     if (
-      (error.response?.status === 401 || error.response?.status === 403) &&
+      error.response?.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
       !isPublicUrl(requestUrl)
