@@ -51,8 +51,8 @@ const config = [
             ['^node:', '^react', '^next', '^@?\\w'],
             // 3. 컴포넌트 (@components)
             ['^@components(/|$)'],
-            // 4. 나머지 내부 alias (@api, @constants, @hooks, @stores, @utils)
-            ['^@(api|constants|hooks|stores|utils)(/|$)'],
+            // 4. 나머지 내부 alias (@api, @constants, @hooks, @shared, @stores, @utils)
+            ['^@(api|constants|hooks|shared|stores|utils)(/|$)'],
             // 5. 상위 디렉토리 (../)
             ['^\\.\\.(?!/?$)', '^\\.\\./'],
             // 6. 같은/하위 디렉토리 (./)

@@ -11,9 +11,9 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 import { anonymizeUsers } from '@utils/anonymizeUser';
-
-import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -31,21 +31,14 @@ export default function PostDetailPage() {
   const [userMap, setUserMap] = useState(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { accessToken, userId, rehydrate } = useTokenStore();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
-
-  useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
 
   const fetchPostDetail = useCallback(async () => {
     try {
@@ -95,16 +88,11 @@ export default function PostDetailPage() {
   }, [postId]);
 
   useEffect(() => {
-    if (accessToken && postId) {
+    if (isAuthenticated && postId) {
       fetchPostDetail();
       fetchComments();
     }
-  }, [accessToken, postId, fetchPostDetail, fetchComments]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
+  }, [isAuthenticated, postId, fetchPostDetail, fetchComments]);
 
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
@@ -187,18 +175,18 @@ export default function PostDetailPage() {
     return Math.abs(ts(updatedAt) - ts(createdAt)) > 1000;
   };
 
-  if (showLoginModal) {
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );

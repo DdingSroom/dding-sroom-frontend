@@ -12,10 +12,10 @@ import useTokenStore from '@stores/useTokenStore';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
+  const { accessToken } = useTokenStore();
   const [isCancelling, setIsCancelling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const { userId, accessToken } = useTokenStore();
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
 
@@ -46,11 +46,11 @@ const AfterLoginBanner = () => {
   };
 
   const fetchAllUserReservations = useCallback(async () => {
-    if (!userId || !accessToken) {
+    if (!accessToken) {
       return;
     }
     try {
-      const res = await axiosInstance.get(`/api/reservations/user/${userId}`);
+      const res = await axiosInstance.get('/api/reservations/me');
       const nowKST = new Date();
 
       const upcoming = res.data.reservations.filter((r) => {
@@ -65,11 +65,11 @@ const AfterLoginBanner = () => {
     } catch (err) {
       console.error('예약 정보 조회 실패:', err);
     }
-  }, [userId, accessToken, setUserReservations]);
+  }, [accessToken, setUserReservations]);
 
   useEffect(() => {
     fetchAllUserReservations();
-  }, [userId, accessToken, fetchAllUserReservations]);
+  }, [accessToken, fetchAllUserReservations]);
 
   const cancelReservation = async (reservationId) => {
     if (isCancelling) {
@@ -79,7 +79,6 @@ const AfterLoginBanner = () => {
     setIsCancelling(true);
     try {
       const res = await axiosInstance.post('/api/reservations/cancel', {
-        userId,
         reservationId,
       });
       setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
@@ -135,7 +134,7 @@ const AfterLoginBanner = () => {
               >
                 <div className="flex flex-col gap-1 flex-1 min-w-0 mr-2 sm:mr-3 overflow-x-auto sm:overflow-x-visible xScrollHide">
                   <div className="text-xs text-content-secondary whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
-                    {r.roomName}
+                    {`스터디룸 ${r.roomName}`}
                   </div>
                   <div className="text-xs sm:text-sm font-medium text-content whitespace-nowrap sm:overflow-hidden sm:text-ellipsis">
                     {formatDate(r.startTime)} {formatTime(r.startTime)} ~{' '}
@@ -167,24 +166,22 @@ const AfterLoginBanner = () => {
                     },
                   ]}
                 >
-                  <div className="p-6 sm:p-8">
-                    <div className="text-lg font-semibold text-left mb-6 text-content">
-                      예약을 취소할까요?
-                    </div>
-                    <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
-                      <img
-                        src={STUDYROOM_IMAGE_SRC}
-                        alt="studyroom"
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
-                      <div className="flex flex-col gap-1 text-sm">
-                        <div className="font-semibold text-content">{`${r.roomName}`}</div>
-                        <div className="text-content-secondary">
-                          {formatDate(r.startTime)}
-                        </div>
-                        <div className="text-content-secondary">
-                          {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
-                        </div>
+                  <div className="text-lg font-semibold text-left mb-6 text-content">
+                    예약을 취소할까요?
+                  </div>
+                  <div className="flex items-center gap-4 bg-surface-card p-4 rounded-xl border border-gray-100">
+                    <img
+                      src={STUDYROOM_IMAGE_SRC}
+                      alt="studyroom"
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <div className="flex flex-col gap-1 text-sm">
+                      <div className="font-semibold text-content">{`스터디룸 ${r.roomName}`}</div>
+                      <div className="text-content-secondary">
+                        {formatDate(r.startTime)}
+                      </div>
+                      <div className="text-content-secondary">
+                        {formatTime(r.startTime)} ~ {formatTime(r.endTime)}
                       </div>
                     </div>
                   </div>

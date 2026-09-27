@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
+import Dropdown from '@components/common/dropdown';
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
@@ -10,12 +11,11 @@ import { Input } from '@components/common/input';
 import Textarea from '@components/common/textarea';
 
 import axiosInstance from '@api/instance';
+import { categories, places } from '@constants/select-options';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import SuggestionImagesByUrl from '../../../../components/admin/SuggestionImagesByUrl';
-import useTokenStore from '../../../../stores/useTokenStore';
-
-import Dropdown from '@components/common/dropdown';
-import { categories, places } from '@constants/select-options';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -151,15 +151,16 @@ function pickLatestAnswerText(list) {
 
 export default function SuggestHistoryDetailPage({ params }) {
   const router = useRouter();
-  const { accessToken, userId: myUserId } = useTokenStore();
+  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId: myUserId } = useTokenStore();
   const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
-    if (!accessToken) {
-      router.push('/login');
+    if (requireLogin) {
+      redirectToLogin();
     }
-  }, [accessToken, router]);
+  }, [requireLogin, redirectToLogin]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

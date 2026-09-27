@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { jwtDecode } from 'jwt-decode';
 
 import Banner from '@components/common/Banner';
 import FooterNav from '@components/common/FooterNav';
@@ -22,7 +21,7 @@ const AfterLoginBanner = dynamic(
 );
 
 export default function Home() {
-  const { accessToken, setUserId } = useTokenStore();
+  const { accessToken, rehydrate } = useTokenStore();
 
   const [clientReady, setClientReady] = useState(false);
 
@@ -31,19 +30,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!accessToken) {
-      return;
-    }
-
-    try {
-      const decoded = jwtDecode(accessToken);
-      const { id } = decoded;
-
-      setUserId(id);
-    } catch (e) {
-      console.error('토큰 디코딩 실패:', e);
-    }
-  }, [accessToken, setUserId]);
+    rehydrate();
+  }, [rehydrate]);
 
   return (
     <>

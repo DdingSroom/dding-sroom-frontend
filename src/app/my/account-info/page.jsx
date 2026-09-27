@@ -10,6 +10,8 @@ import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/use-require-auth';
+import { logout } from '@shared/api/auth';
 
 import FooterNav from '../../../components/common/FooterNav';
 import useTokenStore from '../../../stores/useTokenStore';
@@ -27,27 +29,12 @@ export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [nameError, setNameError] = useState('');
 
-  const { accessToken, userId, clearTokens, rehydrate } = useTokenStore();
-
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    rehydrate();
-    const t = setTimeout(() => setAuthReady(true), 0);
-    return () => clearTimeout(t);
-  }, [rehydrate]);
-
-  useEffect(() => {
-    if (!authReady || showLogoutModal) {
-      return;
-    }
-    setShowLoginModal(!accessToken);
-  }, [authReady, accessToken, showLogoutModal]);
+  const { clearTokens, accessToken, userId } = useTokenStore();
+  const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
 
   const getDecodedUserInfo = useCallback(() => {
     try {
@@ -67,11 +54,6 @@ export default function AccountInfo() {
     }
     setUserInfo(getDecodedUserInfo());
   }, [authReady, accessToken, getDecodedUserInfo]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
 
   const handleUsernameChange = async () => {
     const trimmed = newName.trim();
@@ -126,9 +108,7 @@ export default function AccountInfo() {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/logout', null, {
-        withCredentials: true,
-      });
+      await logout();
     } catch (error) {
       if (error?.response?.status === 403) {
         console.warn(
@@ -156,7 +136,7 @@ export default function AccountInfo() {
         {!authReady ? (
           <div className="px-6 py-6">로딩 중...</div>
         ) : (
-          !showLoginModal && (
+          !requireLogin && (
             <div className="px-6 py-6">
               {/* 내 정보 카드 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
@@ -306,13 +286,13 @@ export default function AccountInfo() {
 
       {/* 로그인 요구 모달: authReady 이후에만 표시 */}
       <BasicModal
-        isOpen={authReady && showLoginModal}
-        onClose={handleLoginConfirm}
+        isOpen={authReady && requireLogin}
+        onClose={redirectToLogin}
         closeOnOverlayClick={false}
         className="max-w-modal-sm"
         title="로그인이 필요한 기능입니다"
         message="이 페이지를 이용하려면 로그인이 필요합니다."
-        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        actions={[{ text: '확인', onClick: redirectToLogin }]}
       />
 
       {/* 로그아웃 완료 모달 */}

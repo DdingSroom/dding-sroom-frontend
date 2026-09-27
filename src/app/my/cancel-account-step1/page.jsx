@@ -1,19 +1,20 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
+import Button from '@components/common/button';
 import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
 import PrivacyPolicyFooter from '../../../components/common/PrivacyPolicyFooter';
-import useTokenStore from '../../../stores/useTokenStore';
-import Button from '@components/common/button';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -30,10 +31,10 @@ export default function CancelAccountStep1() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [isVerified, setIsVerified] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [withdrawComplete, setWithdrawComplete] = useState(false);
 
+  const { requireLogin, redirectToLogin } = useRequireAuth();
   const { accessToken } = useTokenStore();
   const router = useRouter();
 
@@ -42,17 +43,6 @@ export default function CancelAccountStep1() {
     'border border-brand bg-white text-brand ' +
     'hover:bg-brand hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
-
-  useEffect(() => {
-    if (!accessToken) {
-      setShowLoginModal(true);
-    }
-  }, [accessToken]);
-
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-  };
 
   const handleEmailVerify = async () => {
     if (!emailInput || !accessToken) {
@@ -125,7 +115,7 @@ export default function CancelAccountStep1() {
         <main className="flex-1">
           <MyPageHeader />
 
-          {!showLoginModal && (
+          {!requireLogin && (
             <div className="px-6 py-8">
               <div className="max-w-md mx-auto w-full space-y-6">
                 <div className="space-y-2">
@@ -219,13 +209,13 @@ export default function CancelAccountStep1() {
       </div>
 
       <BasicModal
-        isOpen={showLoginModal}
-        onClose={handleLoginConfirm}
+        isOpen={requireLogin}
+        onClose={redirectToLogin}
         closeOnOverlayClick={false}
         className="max-w-modal-sm"
         title="로그인이 필요한 기능입니다"
         message="이 페이지를 이용하려면 로그인이 필요합니다."
-        actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+        actions={[{ text: '확인', onClick: redirectToLogin }]}
       />
 
       <BasicModal

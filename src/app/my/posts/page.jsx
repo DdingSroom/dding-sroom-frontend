@@ -9,9 +9,10 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
 import axiosInstance from '@api/instance';
+import useRequireAuth from '@hooks/use-require-auth';
+import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
-import useTokenStore from '../../../stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -25,26 +26,18 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function MyPostsPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const { accessToken, userId, rehydrate } = useTokenStore();
+  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { userId } = useTokenStore();
   const router = useRouter();
 
   useEffect(() => {
-    rehydrate();
-  }, [rehydrate]);
-
-  useEffect(() => {
-    setShowLoginModal(!accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (accessToken && userId) {
+    if (isAuthenticated && userId) {
       fetchMyPosts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, userId]);
+  }, [isAuthenticated, userId]);
 
   const fetchMyPosts = async () => {
     try {
@@ -67,23 +60,72 @@ export default function MyPostsPage() {
     }
   };
 
-  const handleLoginConfirm = () => {
-    const currentPath = window.location.pathname;
-    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+  const handlePostClick = (postId) => {
+    router.push(`/community/${postId}`);
   };
 
-  if (showLoginModal) {
+  const formatDate = (dateArray) => {
+    if (!Array.isArray(dateArray)) {
+      return '';
+    }
+    const [year, month, day, hour, minute] = dateArray;
+    const date = new Date(year, month - 1, day, hour || 0, minute || 0);
+
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if (diffInHours < 24) {
+      if (diffInHours < 1) {
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        return `${diffInMinutes}분 전`;
+      }
+      return `${Math.floor(diffInHours)}시간 전`;
+    } else if (diffInDays < 30) {
+      return `${Math.floor(diffInDays)}일 전`;
+    } else {
+      return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}`;
+    }
+  };
+
+  const getCategoryName = (category) =>
+    category === 1 ? '일반게시판' : '분실물게시판';
+
+  const truncateContent = (content, maxLength = 80) => {
+    if (content.length <= maxLength) {
+      return content;
+    }
+    return content.substring(0, maxLength) + '...';
+  };
+
+  const isUpdated = (createdAt, updatedAt) => {
+    if (!Array.isArray(createdAt) || !Array.isArray(updatedAt)) {
+      return false;
+    }
+
+    const createdTime = new Date(
+      ...createdAt.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
+    ).getTime();
+    const updatedTime = new Date(
+      ...updatedAt.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
+    ).getTime();
+
+    return Math.abs(updatedTime - createdTime) > 1000;
+  };
+
+  if (requireLogin) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <MyPageHeader />
         <BasicModal
-          isOpen={showLoginModal}
-          onClose={handleLoginConfirm}
+          isOpen={requireLogin}
+          onClose={redirectToLogin}
           closeOnOverlayClick={false}
           className="max-w-modal-sm"
           title="로그인이 필요한 기능입니다"
           message="이 페이지를 이용하려면 로그인이 필요합니다."
-          actions={[{ text: '확인', onClick: handleLoginConfirm }]}
+          actions={[{ text: '확인', onClick: redirectToLogin }]}
         />
       </div>
     );

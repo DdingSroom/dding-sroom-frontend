@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 import ReservationCard from '@components/admin/ReservationCard';
 import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
-
-import useTokenStore from '../../../stores/useTokenStore';
 
 export default function ReservationListPage() {
   const [groupedReservations, setGroupedReservations] = useState({});
@@ -19,27 +15,6 @@ export default function ReservationListPage() {
   const [cancelLoadingIds, setCancelLoadingIds] = useState(new Set());
   const [forceCancelTargetId, setForceCancelTargetId] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
-  const router = useRouter();
-  const { accessToken } = useTokenStore();
-
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/admin/login');
-      return;
-    }
-
-    try {
-      const decoded = jwtDecode(accessToken);
-      if (decoded.role !== 'ROLE_ADMIN') {
-        router.push('/admin/login');
-        return;
-      }
-    } catch (error) {
-      console.error('토큰 디코드 오류:', error);
-      router.push('/admin/login');
-      return;
-    }
-  }, [accessToken, router]);
 
   const fetchAllReservations = useCallback(async () => {
     try {
