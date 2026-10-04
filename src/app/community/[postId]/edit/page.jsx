@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
@@ -11,7 +12,8 @@ import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { updateCommunityPost } from '@api/use-community';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -29,7 +31,6 @@ export default function EditPostPage() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(1);
   const [initialValues, setInitialValues] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -47,47 +48,73 @@ export default function EditPostPage() {
 
   const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  const fetchPost = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get('/api/community-posts');
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        const found = res.data.data.find((p) => p.id === parseInt(postId));
-        if (!found) {
-          setErrorMessage('존재하지 않는 게시글입니다.');
-          setShowErrorModal(true);
-        } else if (found.user_id !== userId) {
-          setErrorMessage('게시글 수정 권한이 없습니다.');
-          setShowErrorModal(true);
-        } else {
-          setTitle(found.title);
-          setContent(found.content);
-          setCategory(found.category);
-          setInitialValues({
-            title: found.title,
-            content: found.content,
-            category: found.category,
-          });
-        }
-      }
-    } catch (e) {
-      console.error('게시글 불러오기 실패:', e);
-      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [postId, userId]);
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
+    ...community.getById(Number(postId)),
+    enabled: isAuthenticated && !!postId,
+    retry: false,
+    staleTime: 0,
+  });
 
   useEffect(() => {
-    if (isAuthenticated && postId) {
-      fetchPost();
+    if (isLoading) return;
+    if (error) {
+      console.error('게시글 불러오기 실패:', error);
+      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    } else if (data?.error) {
+      setErrorMessage(data.error);
+      setShowErrorModal(true);
+    } else if (data) {
+      const found = data.data;
+      if (!found) {
+        setErrorMessage('존재하지 않는 게시글입니다.');
+        setShowErrorModal(true);
+      } else if (found.user_id !== userId) {
+        setErrorMessage('게시글 수정 권한이 없습니다.');
+        setShowErrorModal(true);
+      } else {
+        setTitle(found.title);
+        setContent(found.content);
+        setCategory(found.category);
+        setInitialValues({
+          title: found.title,
+          content: found.content,
+          category: found.category,
+        });
+      }
     }
-  }, [isAuthenticated, postId, fetchPost]);
+  }, [data, error, isLoading, userId]);
 
-  const handleSubmit = async (e) => {
+  const queryClient = useQueryClient();
+  const { mutate: updatePost } = useMutation({
+    mutationFn: updateCommunityPost,
+    retry: false,
+    onSuccess: async (response) => {
+      if (response.error) {
+        setErrorMessage(response.error);
+        setShowErrorModal(true);
+        return;
+      }
+      await queryClient.invalidateQueries({
+        queryKey: community._def,
+        refetchType: 'none',
+      });
+      markClean();
+      router.push(`/community/${postId}`);
+    },
+    onError: (e) => {
+      console.error('게시글 수정 실패:', e);
+      setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    },
+    onSettled: () => setIsSubmitting(false),
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
@@ -101,28 +128,13 @@ export default function EditPostPage() {
     }
 
     setIsSubmitting(true);
-    try {
-      const res = await axiosInstance.put('/api/community-posts', {
-        post_id: parseInt(postId),
-        user_id: userId,
-        title: title.trim(),
-        content: content.trim(),
-        category,
-      });
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        markClean();
-        router.push(`/community/${postId}`);
-      }
-    } catch (e) {
-      console.error('게시글 수정 실패:', e);
-      setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+    updatePost({
+      post_id: parseInt(postId),
+      user_id: userId,
+      title: title.trim(),
+      content: content.trim(),
+      category,
+    });
   };
 
   const handleErrorModalClose = () => {

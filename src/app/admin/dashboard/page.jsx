@@ -2,10 +2,12 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import ReservationCard from '@components/admin/ReservationCard';
 
 import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 
 import BasicModal from '../../../components/common/basic-modal';
@@ -14,7 +16,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [todayReservations, setTodayReservations] = useState([]);
   const [tomorrowReservations, setTomorrowReservations] = useState([]);
-  const [communityData, setCommunityData] = useState([]);
   const [suggestionsData, setSuggestionsData] = useState([]);
   const [roomData, setRoomData] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -95,18 +96,22 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  const fetchCommunityData = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/api/community-posts', {
-        params: { page: 0, size: 3 },
-      });
-      const data = response?.data?.data || response?.data || [];
+  const { data: communityData = [], error: communityError } = useQuery({
+    ...community.getList({ page: 0, size: 3 }),
+    retry: false,
+    staleTime: 0,
+    select: (response) => {
+      const data = response?.data || response || [];
       const postsArray = data.posts || data.content || data || [];
-      setCommunityData(postsArray.slice(0, 3).map(normalizePost));
-    } catch (err) {
-      console.error('커뮤니티 데이터 불러오기 실패:', err);
+      return postsArray.slice(0, 3).map(normalizePost);
+    },
+  });
+
+  useEffect(() => {
+    if (communityError) {
+      console.error('커뮤니티 데이터 불러오기 실패:', communityError);
     }
-  }, [normalizePost]);
+  }, [communityError]);
 
   const fetchSuggestionsData = useCallback(async () => {
     try {
@@ -151,7 +156,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     // 최초 로드
     fetchReservations();
-    fetchCommunityData();
     fetchSuggestionsData();
     fetchRoomData();
 
@@ -172,12 +176,7 @@ export default function AdminDashboard() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', fetchRoomData);
     };
-  }, [
-    fetchReservations,
-    fetchCommunityData,
-    fetchSuggestionsData,
-    fetchRoomData,
-  ]);
+  }, [fetchReservations, fetchSuggestionsData, fetchRoomData]);
 
   return (
     <div className="w-full min-h-screen bg-gray-50 px-8 py-6">
