@@ -1,19 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import Textarea from '@components/common/textarea';
 
 import { useDraft } from '@hooks/use-draft';
 
-import axiosInstance from '@api/instance';
+import { notification } from '@api/keys/notification.key';
+import {
+  createNotification,
+  deleteNotification,
+  updateNotification,
+} from '@api/use-notification';
 
 import { Input } from '@components/common/input';
 
 export default function NotificationManagement() {
-  const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
+    ...notification.getList(),
+    retry: false,
+  });
+  const notifications = data?.error ? [] : (data?.data ?? []);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -27,107 +41,102 @@ export default function NotificationManagement() {
   const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.get('/api/notification/list');
-      if (response.data.error) {
-        setAlertMessage(response.data.error);
-        return;
-      }
-      setNotifications(response.data.data || []);
-    } catch (error) {
+    if (error) {
       console.error('공지사항 조회 실패:', error);
       setAlertMessage('공지사항을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
+    } else if (data?.error) {
+      setAlertMessage(data.error);
     }
-  };
+  }, [data, error]);
 
-  const handleCreateNotification = async () => {
-    if (!formData.title.trim() || !draft.value.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.post('/api/notification/create', {
-        title: formData.title,
-        content: draft.value,
-      });
-
-      if (response.data.error) {
-        setAlertMessage(response.data.error);
+  const { mutate: createNotificationMutation } = useMutation({
+    mutationFn: createNotification,
+    retry: false,
+    onSuccess: async (response) => {
+      if (response.error) {
+        setAlertMessage(response.error);
         return;
       }
-
       setAlertMessage('공지사항이 성공적으로 생성되었습니다!');
       setFormData({ title: '', content: '' });
       draft.clear();
       setShowCreateForm(false);
-      fetchNotifications();
-    } catch (error) {
+      await queryClient.invalidateQueries({ queryKey: notification._def });
+    },
+    onError: (error) => {
       console.error('공지사항 생성 실패:', error);
       setAlertMessage('공지사항 생성에 실패했습니다.');
-    }
-  };
+    },
+  });
 
-  const handleUpdateNotification = async () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setAlertMessage('제목과 내용을 모두 입력해주세요.');
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.put('/api/notification/update', {
-        notificationId: selectedNotification.id,
-        title: formData.title,
-        content: formData.content,
-      });
-
-      if (response.data.error) {
-        setAlertMessage(response.data.error);
+  const { mutate: updateNotificationMutation } = useMutation({
+    mutationFn: updateNotification,
+    retry: false,
+    onSuccess: async (response) => {
+      if (response.error) {
+        setAlertMessage(response.error);
         return;
       }
-
       setAlertMessage('공지사항이 성공적으로 수정되었습니다!');
       setFormData({ title: '', content: '' });
       setShowEditForm(false);
       setSelectedNotification(null);
-      fetchNotifications();
-    } catch (error) {
+      await queryClient.invalidateQueries({ queryKey: notification._def });
+    },
+    onError: (error) => {
       console.error('공지사항 수정 실패:', error);
       setAlertMessage('공지사항 수정에 실패했습니다.');
+    },
+  });
+
+  const { mutate: deleteNotificationMutation } = useMutation({
+    mutationFn: deleteNotification,
+    retry: false,
+    onSuccess: async (response) => {
+      if (response.error) {
+        setAlertMessage(response.error);
+        return;
+      }
+      setAlertMessage('공지사항이 성공적으로 삭제되었습니다!');
+      await queryClient.invalidateQueries({ queryKey: notification._def });
+    },
+    onError: (error) => {
+      console.error('공지사항 삭제 실패:', error);
+      setAlertMessage('공지사항 삭제에 실패했습니다.');
+    },
+  });
+
+  const handleCreateNotification = () => {
+    if (!formData.title.trim() || !draft.value.trim()) {
+      alert('제목과 내용을 모두 입력해주세요.');
+      return;
     }
+    createNotificationMutation({
+      title: formData.title,
+      content: draft.value,
+    });
+  };
+
+  const handleUpdateNotification = () => {
+    if (!formData.title.trim() || !formData.content.trim()) {
+      setAlertMessage('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
+    updateNotificationMutation({
+      notificationId: selectedNotification.id,
+      title: formData.title,
+      content: formData.content,
+    });
   };
 
   const handleDeleteNotification = (notificationId) => {
     setDeleteTargetId(notificationId);
   };
 
-  const confirmDeleteNotification = async () => {
+  const confirmDeleteNotification = () => {
     const notificationId = deleteTargetId;
     setDeleteTargetId(null);
-
-    try {
-      const response = await axiosInstance.delete(
-        `/api/notification/delete/${notificationId}`,
-      );
-
-      if (response.data.error) {
-        setAlertMessage(response.data.error);
-        return;
-      }
-
-      setAlertMessage('공지사항이 성공적으로 삭제되었습니다!');
-      fetchNotifications();
-    } catch (error) {
-      console.error('공지사항 삭제 실패:', error);
-      setAlertMessage('공지사항 삭제에 실패했습니다.');
-    }
+    deleteNotificationMutation(notificationId);
   };
 
   const formatDate = (dateArray) => {
