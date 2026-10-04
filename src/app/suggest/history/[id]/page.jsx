@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import Dropdown from '@components/common/dropdown';
 import BasicModal from '@components/common/basic-modal';
@@ -10,7 +11,8 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import { Input } from '@components/common/input';
 import Textarea from '@components/common/textarea';
 
-import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
+import { deleteSuggestion, updateSuggestion } from '@api/use-suggestion';
 import { categories, places } from '@constants/select-options';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
@@ -162,11 +164,79 @@ export default function SuggestHistoryDetailPage({ params }) {
     }
   }, [requireLogin, redirectToLogin]);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [detail, setDetail] = useState(null);
-  const [, setComments] = useState([]);
-  const [answerText, setAnswerText] = useState('');
+  const queryClient = useQueryClient();
+  const enabled = Number.isFinite(suggestId) && !requireLogin;
+  const {
+    data: detailData,
+    isFetching: detailFetching,
+    error: detailError,
+    refetch: refetchDetail,
+  } = useQuery({
+    ...suggestion.getList({ suggestId: String(suggestId) }),
+    enabled,
+    retry: false,
+  });
+  const {
+    data: commentsData,
+    isFetching: commentsFetching,
+    error: commentsError,
+    refetch: refetchComments,
+  } = useQuery({
+    ...suggestion.getComments(suggestId),
+    enabled,
+    retry: false,
+  });
+  const { mutate: updateSuggestionMutation } = useMutation({
+    mutationFn: updateSuggestion,
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: suggestion.getList._def,
+        refetchType: 'none',
+      });
+      await Promise.all([
+        refetchDetail({ throwOnError: true }),
+        refetchComments({ throwOnError: true }),
+      ]);
+      setEditing(false);
+      setOpMsg('수정이 완료되었습니다.');
+    },
+    onError: (e) => setOpMsg(parseError(e)),
+    onSettled: () => setSaving(false),
+  });
+  const { mutate: deleteSuggestionMutation } = useMutation({
+    mutationFn: deleteSuggestion,
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: suggestion.getList._def,
+        refetchType: 'none',
+      });
+      setOpMsg('삭제되었습니다.');
+      router.push('/suggest/history');
+    },
+    onError: (e) => setOpMsg(parseError(e)),
+    onSettled: () => setSaving(false),
+  });
+
+  const loading = detailFetching || commentsFetching;
+  const queryError = detailError || commentsError;
+  const error = queryError ? parseError(queryError) : '';
+  const detail = useMemo(() => {
+    const payload =
+      detailData?.suggestions ??
+      detailData?.data ??
+      detailData?.suggestion ??
+      detailData;
+    const raw = Array.isArray(payload) ? payload[0] : payload;
+    return safeNormalizeSuggestion(raw);
+  }, [detailData]);
+  const answerText = useMemo(() => {
+    const comments = Array.isArray(commentsData?.comments)
+      ? commentsData.comments
+      : (commentsData ?? []);
+    return pickLatestAnswerText(comments);
+  }, [commentsData]);
 
   const [editing, setEditing] = useState(false);
   const [eTitle, setETitle] = useState('');
@@ -178,57 +248,18 @@ export default function SuggestHistoryDetailPage({ params }) {
   const [opMsg, setOpMsg] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const fetchDetail = useCallback(async () => {
-    const res = await axiosInstance.get('/api/suggestions', {
-      params: { suggest_id: suggestId },
-    });
-
-    const payload =
-      res?.data?.suggestions ??
-      res?.data?.data ??
-      res?.data?.suggestion ??
-      res?.data;
-
-    const raw = Array.isArray(payload) ? payload[0] : payload;
-    return safeNormalizeSuggestion(raw);
-  }, [suggestId]);
-
-  const fetchComments = useCallback(async () => {
-    const res = await axiosInstance.get('/api/suggestions/comments', {
-      params: { suggest_post_id: suggestId },
-    });
-    return Array.isArray(res?.data?.comments)
-      ? res.data.comments
-      : (res?.data ?? []);
-  }, [suggestId]);
-
-  const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const [d, cmts] = await Promise.all([fetchDetail(), fetchComments()]);
-
-      // 본인 건의가 아니면 접근 차단
-      if (d && myUserId && d.userId && String(d.userId) !== String(myUserId)) {
-        router.replace('/suggest/history');
-        return;
-      }
-
-      setDetail(d);
-      setComments(cmts);
-      setAnswerText(pickLatestAnswerText(cmts));
-    } catch (e) {
-      setError(parseError(e));
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchDetail, fetchComments, myUserId, router]);
-
+  // 본인 건의가 아니면 접근 차단
+  const isOtherUser = Boolean(
+    detail &&
+    myUserId &&
+    detail.userId &&
+    String(detail.userId) !== String(myUserId),
+  );
   useEffect(() => {
-    if (Number.isFinite(suggestId)) {
-      reload();
+    if (isOtherUser) {
+      router.replace('/suggest/history');
     }
-  }, [suggestId, reload]);
+  }, [isOtherUser, router]);
 
   const beginEdit = () => {
     if (!detail) {
@@ -249,7 +280,7 @@ export default function SuggestHistoryDetailPage({ params }) {
 
   const isDone = Boolean(detail?.isAnswered) || !!answerText;
 
-  const saveEdit = async () => {
+  const saveEdit = () => {
     if (!detail) {
       return;
     }
@@ -263,25 +294,16 @@ export default function SuggestHistoryDetailPage({ params }) {
       return setOpMsg('답변 완료 건의는 체크 확인 후에만 수정할 수 있습니다.');
     }
 
-    try {
-      setSaving(true);
-      setOpMsg('');
-      await axiosInstance.put('/api/suggestions', {
-        suggest_id: detail.id,
-        suggest_title: eTitle.trim(),
-        suggest_content: eContent.trim(),
-        category: eCategory,
-        location: eLocation,
-        is_answered: isDone,
-      });
-      await reload();
-      setEditing(false);
-      setOpMsg('수정이 완료되었습니다.');
-    } catch (e) {
-      setOpMsg(parseError(e));
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    setOpMsg('');
+    updateSuggestionMutation({
+      suggest_id: detail.id,
+      suggest_title: eTitle.trim(),
+      suggest_content: eContent.trim(),
+      category: eCategory,
+      location: eLocation,
+      is_answered: isDone,
+    });
   };
 
   const deleteItem = () => {
@@ -291,19 +313,11 @@ export default function SuggestHistoryDetailPage({ params }) {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDeleteItem = async () => {
+  const confirmDeleteItem = () => {
     setShowDeleteConfirm(false);
-    try {
-      setSaving(true);
-      setOpMsg('');
-      await axiosInstance.delete(`/api/suggestions/${detail.id}`);
-      setOpMsg('삭제되었습니다.');
-      router.push('/suggest/history'); // 목록으로 이동
-    } catch (e) {
-      setOpMsg(parseError(e));
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    setOpMsg('');
+    deleteSuggestionMutation(detail.id);
   };
 
   const meta = useMemo(
@@ -327,7 +341,7 @@ export default function SuggestHistoryDetailPage({ params }) {
             <div className="px-5 py-5 text-sm text-red-500">{error}</div>
           )}
 
-          {!loading && !error && detail && (
+          {!loading && !error && !isOtherUser && detail && (
             <>
               {/* 상단 타이틀 / 상태 / 액션버튼 */}
               <div className="px-5 pt-5">

@@ -4,6 +4,7 @@ import Script from 'next/script';
 
 import NavigationGuardProvider from '@components/common/navigation-guard/navigation-guard-provider';
 import LayoutWrapper from '@components/layout/LayoutWrapper';
+import QueryProvider from '@providers/query-provider';
 
 export const metadata = {
   metadataBase: new URL('https://ddingsroom.com'),
@@ -65,7 +66,9 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body>
         <NavigationGuardProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <QueryProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </QueryProvider>
         </NavigationGuardProvider>
 
         <Script
