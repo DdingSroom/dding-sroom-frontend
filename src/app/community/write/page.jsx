@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
@@ -11,7 +12,8 @@ import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
+import { createCommunityPost } from '@api/use-community';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -38,7 +40,32 @@ export default function WritePostPage() {
   const isDirty = title !== '' || content !== '';
   const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  const handleSubmit = async (e) => {
+  const queryClient = useQueryClient();
+  const { mutate: createPost } = useMutation({
+    mutationFn: createCommunityPost,
+    retry: false,
+    onSuccess: async (response) => {
+      if (response.error) {
+        setErrorMessage(response.error);
+        setShowErrorModal(true);
+        return;
+      }
+      await queryClient.invalidateQueries({
+        queryKey: community._def,
+        refetchType: 'none',
+      });
+      markClean();
+      router.push('/community');
+    },
+    onError: (e) => {
+      console.error('게시글 작성 실패:', e);
+      setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    },
+    onSettled: () => setIsSubmitting(false),
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
@@ -52,27 +79,12 @@ export default function WritePostPage() {
     }
 
     setIsSubmitting(true);
-    try {
-      const res = await axiosInstance.post('/api/community-posts', {
-        user_id: userId,
-        title: title.trim(),
-        content: content.trim(),
-        category,
-      });
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        markClean();
-        router.push('/community');
-      }
-    } catch (e) {
-      console.error('게시글 작성 실패:', e);
-      setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+    createPost({
+      user_id: userId,
+      title: title.trim(),
+      content: content.trim(),
+      category,
+    });
   };
 
   if (requireLogin) {

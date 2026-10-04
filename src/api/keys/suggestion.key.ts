@@ -1,5 +1,11 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
+import {
+  getSuggestionComments,
+  getSuggestionImages,
+  getSuggestions,
+} from '../use-suggestion';
+
 export interface SuggestionParams {
   suggestId?: string;
   userId?: number;
@@ -13,16 +19,16 @@ export const suggestion = createQueryKeys('suggestion', {
   // 건의사항 조회
   getList: (params: SuggestionParams) => ({
     queryKey: [params ?? {}],
-    // queryFn: () => null, (추후 추가 예정)
+    queryFn: () => getSuggestions(params),
   }),
   // 건의사항 코멘트 조회
   getComments: (id: number) => ({
     queryKey: [id],
-    // queryFn: () => null,
+    queryFn: () => getSuggestionComments(id),
   }),
   // 건의사항 이미지 조회
   getImages: (id: number) => ({
     queryKey: [id],
-    // queryFn: () => null,
+    queryFn: () => getSuggestionImages(id),
   }),
 });

@@ -2,6 +2,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import FooterNav from '@components/common/FooterNav';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
@@ -10,6 +11,8 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
+import { createSuggestion as createSuggestionApi } from '@api/use-suggestion';
 
 import useTokenStore from '../../stores/useTokenStore';
 import Dropdown from '@components/common/dropdown';
@@ -37,6 +40,36 @@ export default function SuggestPage() {
   const { userId } = useTokenStore();
   const [category, setCategory] = useState(categories[0].value);
   const [place, setPlace] = useState(places[0].value);
+  const { mutate: createSuggestionMutation } = useMutation({
+    mutationFn: createSuggestionApi,
+    retry: false,
+    onSuccess: async (data) => {
+      console.log('응답 데이터: ', data); // (서버 수정 필요) 응답 데이터에 suggestionID가 없는채로 전송.
+      const suggestionId = extractSuggestionId(data);
+      if (files.length > 0) {
+        await uploadAllImages(suggestionId);
+      }
+      setSuccessMsg('건의가 정상적으로 접수되었어요.');
+      setTitle('');
+      setContent('');
+      setFiles([]);
+      setUploadProgress({});
+    },
+    onError: (err, payload) => {
+      console.error('[POST /api/suggestions] failed', {
+        status: err?.response?.status,
+        data: err?.response?.data,
+        payload,
+      });
+      setErrorMsg(parseError(err));
+    },
+    onSettled: () => setSubmitting(false),
+  });
+  const { refetch: refetchSuggestions } = useQuery({
+    ...suggestion.getList({ category, location: place }),
+    enabled: false,
+    retry: false,
+  });
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
@@ -94,46 +127,17 @@ export default function SuggestPage() {
     err?.message ||
     '요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
 
-  const extractSuggestionId = (res) =>
-    res?.data?.suggest_post_id ??
-    res?.data?.suggest_id ??
-    res?.data?.id ??
-    res?.data?.data?.id ??
+  const extractSuggestionId = (data) =>
+    data?.suggest_post_id ??
+    data?.suggest_id ??
+    data?.id ??
+    data?.data?.id ??
     null;
-
-  async function createSuggestion() {
-    const payload = {
-      suggest_title: title.trim(),
-      suggest_content: content.trim(),
-      category: String(category).trim(),
-      location: place,
-    };
-
-    try {
-      const res = await axiosInstance.post('/api/suggestions', payload);
-      const suggestionId = extractSuggestionId(res);
-      if (!suggestionId) {
-        console.warn(
-          '[SuggestPage] 서버 응답에서 ID를 찾지 못했습니다.',
-          res?.data,
-        );
-      }
-      return suggestionId;
-    } catch (err) {
-      console.error('[POST /api/suggestions] failed', {
-        status: err?.response?.status,
-        data: err?.response?.data,
-        payload,
-      });
-      throw err;
-    }
-  }
 
   async function fetchLatestSuggestionId() {
     try {
-      const res = await axiosInstance.get('/api/suggestions', {
-        params: { category, location: place },
-      });
+      const res = await refetchSuggestions({ throwOnError: true });
+      console.log(res);
       const list = Array.isArray(res?.data?.suggestions)
         ? res.data.suggestions
         : Array.isArray(res?.data)
@@ -263,11 +267,11 @@ export default function SuggestPage() {
     throw lastErr;
   }
 
-  async function uploadAllImages(suggestionIdMaybeNull) {
-    let suggestionId = suggestionIdMaybeNull;
-    if (!suggestionId) {
-      suggestionId = await fetchLatestSuggestionId();
-      if (!suggestionId) {
+  async function uploadAllImages(suggestionId) {
+    let suggestion_id = suggestionId;
+    if (!suggestion_id) {
+      suggestion_id = await fetchLatestSuggestionId();
+      if (!suggestion_id) {
         console.info(
           '[SuggestPage] suggestionId를 끝내 찾지 못했습니다. ID 없이 업로드를 시도합니다.',
         );
@@ -277,13 +281,13 @@ export default function SuggestPage() {
     const targets = files.slice(0, MAX_FILES);
     const results = [];
     for (const f of targets) {
-      const data = await uploadSingleImage(suggestionId, f);
+      const data = await uploadSingleImage(suggestion_id, f);
       results.push({ file: f.name, data });
     }
     return results;
   }
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -298,25 +302,13 @@ export default function SuggestPage() {
       return setErrorMsg('내용을 입력해 주세요.');
     }
 
-    try {
-      setSubmitting(true);
-
-      const suggestionId = await createSuggestion();
-
-      if (files.length > 0) {
-        await uploadAllImages(suggestionId);
-      }
-
-      setSuccessMsg('건의가 정상적으로 접수되었어요.');
-      setTitle('');
-      setContent('');
-      setFiles([]);
-      setUploadProgress({});
-    } catch (err) {
-      setErrorMsg(parseError(err));
-    } finally {
-      setSubmitting(false);
-    }
+    setSubmitting(true);
+    createSuggestionMutation({
+      suggest_title: title.trim(),
+      suggest_content: content.trim(),
+      category: String(category).trim(),
+      location: place,
+    });
   };
 
   return (
