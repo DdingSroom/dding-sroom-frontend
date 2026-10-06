@@ -11,7 +11,7 @@ import { Input } from '@components/common/input';
 import MyPageHeader from '@components/my/MyPageHeader';
 
 import useRequireAuth from '@hooks/use-require-auth';
-import { verifyEmail, withdrawUser } from '@shared/api/user';
+import { verifyEmail, withdrawUser } from '@api/use-user';
 import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';

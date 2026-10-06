@@ -12,7 +12,7 @@ import MyPageHeader from '@components/my/MyPageHeader';
 
 import useRequireAuth from '@hooks/use-require-auth';
 import { logout } from '@shared/api/auth';
-import { changeUsername } from '@shared/api/user';
+import { changeUsername } from '@api/use-user';
 
 import FooterNav from '../../../components/common/FooterNav';
 import useTokenStore from '../../../stores/useTokenStore';
