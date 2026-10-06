@@ -1,6 +1,7 @@
 import './globals.css';
 
 import Script from 'next/script';
+import QueryProvider from '@providers/query-provider';
 
 import NavigationGuardProvider from '@components/common/navigation-guard/navigation-guard-provider';
 import LayoutWrapper from '@components/layout/LayoutWrapper';
@@ -65,7 +66,9 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body>
         <NavigationGuardProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <QueryProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </QueryProvider>
         </NavigationGuardProvider>
 
         <Script

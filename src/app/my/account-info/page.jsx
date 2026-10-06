@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
+import { Input } from '@components/common/input';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
-import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
 import useRequireAuth from '@hooks/use-require-auth';
 import { logout } from '@shared/api/auth';
+import { changeUsername } from '@api/use-user';
 
 import FooterNav from '../../../components/common/FooterNav';
 import useTokenStore from '../../../stores/useTokenStore';
@@ -28,7 +29,6 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [nameError, setNameError] = useState('');
@@ -55,36 +55,16 @@ export default function AccountInfo() {
     setUserInfo(getDecodedUserInfo());
   }, [authReady, accessToken, getDecodedUserInfo]);
 
-  const handleUsernameChange = async () => {
-    const trimmed = newName.trim();
-
-    if (!trimmed) {
-      setNameError('이름을 입력해주세요.');
-      return;
-    }
-    if (trimmed === (userInfo.name || '')) {
-      setNameError('기존 이름과 동일합니다.');
-      return;
-    }
-    if (submitting) {
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      const res = await axiosInstance.put('/user/change-username', {
-        userId,
-        newUsername: trimmed,
-      });
-
-      if (res.status === 200) {
-        setAlertMessage('이름 변경이 완료되었습니다.');
-        setUserInfo((prev) => ({ ...prev, name: trimmed }));
-        setOpen(false);
-        setNewName('');
-        setNameError('');
-      }
-    } catch (err) {
+  const { mutate: changeName, isPending: submitting } = useMutation({
+    mutationFn: (newUsername) => changeUsername(userId, newUsername),
+    onSuccess: (_data, newUsername) => {
+      setAlertMessage('이름 변경이 완료되었습니다.');
+      setUserInfo((prev) => ({ ...prev, name: newUsername }));
+      setOpen(false);
+      setNewName('');
+      setNameError('');
+    },
+    onError: (err) => {
       console.error('이름 변경 실패:', err);
 
       const serverMsg =
@@ -101,9 +81,25 @@ export default function AccountInfo() {
           serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
         );
       }
-    } finally {
-      setSubmitting(false);
+    },
+  });
+
+  const handleUsernameChange = () => {
+    const trimmed = newName.trim();
+
+    if (!trimmed) {
+      setNameError('이름을 입력해주세요.');
+      return;
     }
+    if (trimmed === (userInfo.name || '')) {
+      setNameError('기존 이름과 동일합니다.');
+      return;
+    }
+    if (submitting) {
+      return;
+    }
+
+    changeName(trimmed);
   };
 
   const handleLogout = async () => {

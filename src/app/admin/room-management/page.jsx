@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 
-import { updateRoomStatus } from '@api/admin';
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+import useAuthReady from '@hooks/useAuthReady';
+import { updateRoomStatus } from '@api/use-admin';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
 
@@ -26,74 +29,75 @@ const STATUS_LABELS = {
   MAINTENANCE: '예약 불가(점검 중)',
 };
 
+// 지원하는 정상 상태값만 정규화하고, 그 외(누락/미지원)는 null을 반환한다.
 const normalizeStatus = (v) => {
   const s = String(v ?? '').toUpperCase();
-  return ['IDLE', 'OCCUPIED', 'MAINTENANCE'].includes(s) ? s : 'MAINTENANCE';
+  return ['IDLE', 'OCCUPIED', 'MAINTENANCE'].includes(s) ? s : null;
 };
 
 export default function RoomsManagePage() {
-  const [rooms, setRooms] = useState(() =>
-    ROOM_IDS.reduce((acc, id) => {
-      acc[id] = {
-        status: 'IDLE',
-        imageUrl: STUDYROOM_IMAGE_SRC,
-        name: `스터디룸 ${id}`,
-      };
-      return acc;
-    }, {}),
-  );
-  const [loading, setLoading] = useState(true);
-  const [savingIds, setSavingIds] = useState(new Set());
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
+  const queryClient = useQueryClient();
+
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
 
-  // 단일 방 조회
-  const fetchRoom = useCallback(async (roomId) => {
-    const res = await axiosInstance.get(`/admin/rooms/${roomId}`);
-    const data = res?.data?.data || {};
-    return {
-      status: normalizeStatus(data.status ?? 'IDLE'),
-      imageUrl: STUDYROOM_IMAGE_SRC,
-      name: data.name || `스터디룸 ${roomId}`,
-    };
-  }, []);
-
-  // 전체 조회
-  const fetchAll = useCallback(async () => {
-    try {
-      const results = await Promise.all(
-        ROOM_IDS.map(async (id) => {
-          try {
-            const info = await fetchRoom(id);
-            return [id, info];
-          } catch (e) {
-            console.error(`룸 ${id} 상태 조회 실패:`, e);
-            return [
-              id,
-              {
-                status: 'IDLE',
-                imageUrl: STUDYROOM_IMAGE_SRC,
-                name: `스터디룸 ${id}`,
-              },
-            ];
-          }
-        }),
-      );
-      setRooms((prev) => {
-        const next = { ...prev };
-        for (const [id, info] of results) {
-          next[id] = info;
+  const roomQueries = useQueries({
+    queries: ROOM_IDS.map((id) => ({
+      ...admin.admin.rooms.getById(id),
+      enabled: adminEnabled,
+      select: (res) => {
+        const data = res?.data;
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+          throw new Error('스터디룸 응답 형식이 올바르지 않습니다.');
         }
-        return next;
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchRoom]);
+        return {
+          status: normalizeStatus(data.status),
+          name: data.name || `스터디룸 ${id}`,
+        };
+      },
+    })),
+  });
 
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+  const loading = !adminEnabled || roomQueries.some((q) => q.isLoading);
+
+  const rooms = ROOM_IDS.reduce((acc, id, index) => {
+    const q = roomQueries[index];
+    acc[id] = q.isError
+      ? { failed: true, imageUrl: STUDYROOM_IMAGE_SRC, name: `스터디룸 ${id}` }
+      : {
+          status: q.data?.status ?? null,
+          imageUrl: STUDYROOM_IMAGE_SRC,
+          name: q.data?.name ?? `스터디룸 ${id}`,
+        };
+    return acc;
+  }, {});
+
+  const {
+    mutate: changeRoomStatus,
+    isPending: isStatusPending,
+    variables: savingVars,
+  } = useMutation({
+    mutationFn: ({ roomId, newStatus }) => updateRoomStatus(roomId, newStatus),
+    onSuccess: (_data, { roomId, newStatus }) => {
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.rooms.getById(roomId).queryKey,
+      });
+      setAlertMessage(
+        `스터디룸 ${roomId}호가 ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
+      );
+    },
+    onError: (e) => {
+      console.error('상태 변경 실패:', e);
+      const status = e?.response?.status;
+      setAlertMessage(
+        e?.response?.data?.message ||
+          e?.response?.data?.error ||
+          (status ? `요청 실패 (HTTP ${status})` : '상태 변경에 실패했습니다.'),
+      );
+    },
+  });
 
   const handleStatusChange = useCallback(
     (roomId, newStatus) => {
@@ -106,50 +110,14 @@ export default function RoomsManagePage() {
     [rooms],
   );
 
-  const confirmStatusChange = useCallback(async () => {
+  const confirmStatusChange = () => {
     const { roomId, newStatus } = pendingStatusChange || {};
     setPendingStatusChange(null);
     if (!roomId) {
       return;
     }
-
-    setSavingIds((s) => new Set(s).add(roomId));
-
-    // 즉시 UI 업데이트 (Optimistic update)
-    const previousRoom = rooms[roomId];
-    setRooms((prev) => ({
-      ...prev,
-      [roomId]: { ...prev[roomId], status: newStatus },
-    }));
-
-    try {
-      await updateRoomStatus(roomId, newStatus);
-      setAlertMessage(
-        `스터디룸 ${roomId}호가 ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
-      );
-    } catch (e) {
-      console.error('상태 변경 실패:', e);
-
-      // 실패 시 이전 상태로 롤백
-      setRooms((prev) => ({
-        ...prev,
-        [roomId]: previousRoom,
-      }));
-
-      const status = e?.response?.status;
-      const msg =
-        e?.response?.data?.message ||
-        e?.response?.data?.error ||
-        (status ? `요청 실패 (HTTP ${status})` : '상태 변경에 실패했습니다.');
-      setAlertMessage(msg);
-    } finally {
-      setSavingIds((s) => {
-        const n = new Set(s);
-        n.delete(roomId);
-        return n;
-      });
-    }
-  }, [pendingStatusChange, rooms]);
+    changeRoomStatus({ roomId, newStatus });
+  };
 
   if (loading) {
     return (
@@ -167,8 +135,18 @@ export default function RoomsManagePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {ROOM_IDS.map((id) => {
             const info = rooms[id];
-            const isSaving = savingIds.has(id);
-            const badge = BADGE_BY_STATUS[info.status] || BADGE_BY_STATUS.IDLE;
+            const failed = info.failed;
+            const unknownStatus = !failed && info.status == null;
+            const disabledRoom = failed || unknownStatus;
+            const isSaving = isStatusPending && savingVars?.roomId === id;
+            const badge = failed
+              ? { className: 'bg-red-100 text-red-700', label: '조회 실패' }
+              : unknownStatus
+                ? {
+                    className: 'bg-red-100 text-red-700',
+                    label: '상태 확인 불가',
+                  }
+                : BADGE_BY_STATUS[info.status] || BADGE_BY_STATUS.IDLE;
 
             return (
               <div
@@ -203,7 +181,9 @@ export default function RoomsManagePage() {
                   <div className="flex gap-2 flex-wrap">
                     <button
                       onClick={() => handleStatusChange(id, 'IDLE')}
-                      disabled={isSaving || info.status === 'IDLE'}
+                      disabled={
+                        isSaving || disabledRoom || info.status === 'IDLE'
+                      }
                       className={`px-3 py-1.5 text-xs rounded-md transition ${
                         info.status === 'IDLE'
                           ? 'bg-green-100 text-green-700 cursor-not-allowed'
@@ -214,7 +194,9 @@ export default function RoomsManagePage() {
                     </button>
                     <button
                       onClick={() => handleStatusChange(id, 'OCCUPIED')}
-                      disabled={isSaving || info.status === 'OCCUPIED'}
+                      disabled={
+                        isSaving || disabledRoom || info.status === 'OCCUPIED'
+                      }
                       className={`px-3 py-1.5 text-xs rounded-md transition ${
                         info.status === 'OCCUPIED'
                           ? 'bg-amber-100 text-amber-700 cursor-not-allowed'
@@ -225,7 +207,11 @@ export default function RoomsManagePage() {
                     </button>
                     <button
                       onClick={() => handleStatusChange(id, 'MAINTENANCE')}
-                      disabled={isSaving || info.status === 'MAINTENANCE'}
+                      disabled={
+                        isSaving ||
+                        disabledRoom ||
+                        info.status === 'MAINTENANCE'
+                      }
                       className={`px-3 py-1.5 text-xs rounded-md transition ${
                         info.status === 'MAINTENANCE'
                           ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
