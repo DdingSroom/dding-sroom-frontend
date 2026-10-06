@@ -2,15 +2,16 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
 import Button from '@components/common/button';
-import MyPageHeader from '@components/my/MyPageHeader';
 import { Input } from '@components/common/input';
+import MyPageHeader from '@components/my/MyPageHeader';
 
-import axiosInstance from '@api/instance';
 import useRequireAuth from '@hooks/use-require-auth';
+import { verifyEmail, withdrawUser } from '@shared/api/user';
 import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
@@ -27,8 +28,6 @@ function BottomSafeSpacer({ height = 64 }) {
 
 export default function CancelAccountStep1() {
   const [open, setOpen] = useState(false);
-  const [isSendingVerify, setIsSendingVerify] = useState(false);
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -44,64 +43,61 @@ export default function CancelAccountStep1() {
     'hover:bg-brand hover:text-white text-sm font-medium rounded-lg ' +
     'transition-all duration-200 whitespace-nowrap disabled:opacity-50';
 
-  const handleEmailVerify = async () => {
+  const { mutate: sendEmailVerify, isPending: isSendingVerify } = useMutation({
+    mutationFn: (email) => verifyEmail(email),
+    onSuccess: () => {
+      setIsVerified(true);
+      setAlertMessage('이메일 인증이 완료되었습니다.');
+    },
+    onError: (error) => {
+      console.error('이메일 인증 실패:', error);
+      setAlertMessage('이메일 인증 중 오류가 발생했습니다.');
+    },
+  });
+
+  const { mutate: withdraw, isPending: isWithdrawing } = useMutation({
+    mutationFn: () => withdrawUser(),
+    onSuccess: () => {
+      setWithdrawComplete(true);
+    },
+    onError: (error) => {
+      console.error('탈퇴 실패:', error);
+      setAlertMessage('회원 탈퇴 중 오류가 발생했습니다.');
+    },
+    onSettled: () => {
+      setOpen(false);
+    },
+  });
+
+  const handleEmailVerify = () => {
     if (!emailInput || !accessToken) {
       setAlertMessage('이메일을 입력해주세요.');
       return;
     }
 
+    let tokenEmail;
     try {
-      const decodedToken = jwtDecode(accessToken);
-      const tokenEmail = decodedToken.email;
-
-      if (emailInput !== tokenEmail) {
-        setAlertMessage('입력하신 이메일이 계정 이메일과 일치하지 않습니다.');
-        return;
-      }
-
-      setIsSendingVerify(true);
-      await axiosInstance.post(
-        '/user/verify-email',
-        { email: emailInput },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-
-      setIsVerified(true);
-      setAlertMessage('이메일 인증이 완료되었습니다.');
-    } catch (error) {
-      console.error('이메일 인증 실패:', error);
+      tokenEmail = jwtDecode(accessToken)?.email;
+    } catch {
       setAlertMessage('이메일 인증 중 오류가 발생했습니다.');
-    } finally {
-      setIsSendingVerify(false);
+      return;
     }
+
+    if (emailInput !== tokenEmail) {
+      setAlertMessage('입력하신 이메일이 계정 이메일과 일치하지 않습니다.');
+      return;
+    }
+
+    sendEmailVerify(emailInput);
   };
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = () => {
     if (!isVerified || !accessToken) {
       setAlertMessage('이메일 인증을 먼저 완료해주세요.');
       return;
     }
 
-    try {
-      setIsWithdrawing(true);
-      await axiosInstance.delete('/user/withdraw', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      setWithdrawComplete(true);
-    } catch (error) {
-      console.error('탈퇴 실패:', error);
-      setAlertMessage('회원 탈퇴 중 오류가 발생했습니다.');
-    } finally {
-      setIsWithdrawing(false);
-      setOpen(false);
-    }
+    withdraw();
   };
 
   const handleWithdrawCompleteConfirm = () => {
