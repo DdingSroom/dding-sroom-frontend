@@ -1,6 +1,6 @@
-import type { ApiSchemas } from '../../types/api';
+import { api } from '@shared/api/api';
 
-import { api } from './api';
+import type { ApiSchemas } from '../types/api';
 
 type AdminResponseDTO = ApiSchemas['AdminResponseDTO'];
 

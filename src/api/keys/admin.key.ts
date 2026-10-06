@@ -6,7 +6,7 @@ import {
   getReservationsByUserId,
   getRoomById,
   getUserById,
-} from '@shared/api/admin';
+} from '@api/use-admin';
 
 /** ---------- (관리자) 유저 쿼리 ----------- */
 const usersStore = createQueryKeyStore({

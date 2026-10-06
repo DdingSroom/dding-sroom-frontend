@@ -9,7 +9,7 @@ import BasicModal from '@components/common/basic-modal';
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import useAuthReady from '@hooks/useAuthReady';
-import { forceCancelReservation } from '@shared/api/admin';
+import { forceCancelReservation } from '@api/use-admin';
 
 export default function ReservationListPage() {
   const { authReady, accessToken, role } = useAuthReady();
