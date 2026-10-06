@@ -1,36 +1,44 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
+import useAuthReady from '@hooks/useAuthReady';
 
 export default function ReservationDetailPage() {
-  const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
 
-  const fetchReservations = async () => {
-    try {
-      const response = await axiosInstance.get('/admin/reservations');
+  const {
+    data: reservationList = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    ...admin.admin.reservations.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.reservations;
+      if (!Array.isArray(list)) {
+        throw new Error('예약 목록 응답 형식이 올바르지 않습니다.');
+      }
+      return list;
+    },
+  });
 
-      setReservations(
-        (response.data.reservations || []).sort((a, b) => {
-          const dateA = new Date(...a.createdAt);
-          const dateB = new Date(...b.createdAt);
-          return dateB - dateA;
-        }),
-      );
-    } catch (err) {
-      console.error('예약 불러오기 실패:', err);
-      setError('예약 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = !adminEnabled || isLoading;
+  const error = isError ? '예약 정보를 불러오는 데 실패했습니다.' : null;
 
-  useEffect(() => {
-    fetchReservations();
-  }, []);
+  const reservations = useMemo(
+    () =>
+      [...reservationList].sort((a, b) => {
+        const dateA = new Date(...a.createdAt);
+        const dateB = new Date(...b.createdAt);
+        return dateB - dateA;
+      }),
+    [reservationList],
+  );
 
   return (
     <div className="bg-surface-admin p-6 min-h-screen">
