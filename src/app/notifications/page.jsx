@@ -9,7 +9,7 @@ import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
 import { notification } from '@api/keys/notification.key';
-import { incrementNotificationViewCount } from '@api/use-notification';
+import { incrementNotificationViewCount } from '@api/notification.api';
 
 export default function NotificationList() {
   const {

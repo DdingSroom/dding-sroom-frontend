@@ -4,7 +4,7 @@ import {
   getSuggestionComments,
   getSuggestionImages,
   getSuggestions,
-} from '../use-suggestion';
+} from '../suggestion.api';
 
 export interface SuggestionParams {
   suggestId?: string;

@@ -5,7 +5,7 @@ import {
   getCommunityPosts,
   getMyCommunityPosts,
   searchCommunityPosts,
-} from '../use-community';
+} from '../community.api';
 
 export interface CommunityListParams {
   page?: number;

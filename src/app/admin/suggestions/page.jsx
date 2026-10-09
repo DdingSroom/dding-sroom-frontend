@@ -16,7 +16,7 @@ import { suggestion } from '@api/keys/suggestion.key';
 import {
   deleteSuggestionComment,
   updateSuggestionComment,
-} from '@api/use-suggestion';
+} from '@api/suggestion.api';
 
 import AdminSuggestionComments from '../../../components/admin/AdminSuggestionComments';
 import AdminSuggestionReply from '../../../components/admin/AdminSuggestionReply';

@@ -13,7 +13,7 @@ import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
 import { community } from '@api/keys/community.key';
-import { createCommunityPost } from '@api/use-community';
+import { createCommunityPost } from '@api/community.api';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 

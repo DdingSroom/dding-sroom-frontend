@@ -12,7 +12,7 @@ import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
 import { Input } from '@components/common/input';
 
-import { updateCommunityPost } from '@api/use-community';
+import { updateCommunityPost } from '@api/community.api';
 import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';

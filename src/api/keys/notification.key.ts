@@ -4,7 +4,7 @@ import {
   getNotification,
   getNotifications,
   getRecentNotificationsCount,
-} from '../use-notification';
+} from '../notification.api';
 
 /** ---------- (공통) 공지사항 쿼리 ----------- */
 export const notification = createQueryKeys('notification', {

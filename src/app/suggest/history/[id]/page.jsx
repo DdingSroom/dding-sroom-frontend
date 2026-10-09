@@ -12,7 +12,7 @@ import { Input } from '@components/common/input';
 import Textarea from '@components/common/textarea';
 
 import { suggestion } from '@api/keys/suggestion.key';
-import { deleteSuggestion, updateSuggestion } from '@api/use-suggestion';
+import { deleteSuggestion, updateSuggestion } from '@api/suggestion.api';
 import { categories, places } from '@constants/select-options';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';

@@ -13,7 +13,7 @@ import {
   createNotification,
   deleteNotification,
   updateNotification,
-} from '@api/use-notification';
+} from '@api/notification.api';
 
 import { Input } from '@components/common/input';
 

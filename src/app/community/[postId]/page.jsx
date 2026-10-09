@@ -13,7 +13,7 @@ import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { community } from '@api/keys/community.key';
-import { deleteCommunityPost } from '@api/use-community';
+import { deleteCommunityPost } from '@api/community.api';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 import { anonymizeUsers } from '@utils/anonymizeUser';

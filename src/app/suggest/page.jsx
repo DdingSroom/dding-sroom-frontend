@@ -12,7 +12,7 @@ import { Input } from '@components/common/input';
 
 import axiosInstance from '@api/instance';
 import { suggestion } from '@api/keys/suggestion.key';
-import { createSuggestion as createSuggestionApi } from '@api/use-suggestion';
+import { createSuggestion as createSuggestionApi } from '@api/suggestion.api';
 
 import useTokenStore from '../../stores/useTokenStore';
 import Dropdown from '@components/common/dropdown';
