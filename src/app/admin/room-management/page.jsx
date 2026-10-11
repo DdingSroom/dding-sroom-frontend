@@ -9,7 +9,7 @@ import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useAuthReady from '@hooks/useAuthReady';
-import { updateRoomStatus } from '@api/use-admin';
+import { updateRoomStatus } from '@api/admin.api';
 
 const ROOM_IDS = [1, 2, 3, 4, 5];
 
