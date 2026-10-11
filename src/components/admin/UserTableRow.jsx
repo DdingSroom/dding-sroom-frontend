@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 
 import { admin } from '@api/keys/admin.key';
 import { updateUserStatus } from '@api/use-admin';
+import useAppNavigation from '@hooks/use-app-navigation';
 
 export default function UserTableRow({ user }) {
-  const router = useRouter();
+  const { goToUserDetail } = useAppNavigation();
   const queryClient = useQueryClient();
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -39,7 +39,7 @@ export default function UserTableRow({ user }) {
   });
 
   const handleDetailClick = () => {
-    router.push(`/admin/user-detail/${user.id}`);
+    goToUserDetail(user.id);
   };
 
   const handleStatusToggle = () => {
