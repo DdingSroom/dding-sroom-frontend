@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import BasicModal from '@components/common/basic-modal';
 
 import { admin } from '@api/keys/admin.key';
-import { updateUserStatus } from '@api/use-admin';
+import { updateUserStatus } from '@api/admin.api';
 import useAppNavigation from '@hooks/use-app-navigation';
 
 export default function UserTableRow({ user }) {
