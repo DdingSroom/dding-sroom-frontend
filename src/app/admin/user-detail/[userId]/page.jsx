@@ -1,12 +1,13 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
 import ReservationItem from '@components/admin/ReservationItem';
 
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
+import useAppNavigation from '@hooks/use-app-navigation';
 import useAuthReady from '@hooks/useAuthReady';
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -30,7 +31,7 @@ function formatDateTimeRange(startArray, endArray) {
 
 export default function UserDetailPage() {
   const { userId } = useParams();
-  const router = useRouter();
+  const { goBack } = useAppNavigation();
 
   const { authReady, accessToken, role } = useAuthReady();
   const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
@@ -77,10 +78,7 @@ export default function UserDetailPage() {
     <div className="p-6 bg-surface-admin min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <button
-            onClick={() => router.back()}
-            className="text-sm text-gray-600 mb-1"
-          >
+          <button onClick={goBack} className="text-sm text-gray-600 mb-1">
             ← 사용자 관리
           </button>
           <h1 className="text-xl font-semibold">{user.username}</h1>
