@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
 import ReservationCard from '@components/admin/ReservationCard';
@@ -10,6 +9,7 @@ import axiosInstance from '@api/instance';
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+import useAppNavigation from '@hooks/use-app-navigation';
 import useAuthReady from '@hooks/useAuthReady';
 
 import BasicModal from '../../../components/common/basic-modal';
@@ -18,7 +18,13 @@ const ROOM_IDS = [1, 2, 3, 4, 5];
 const KNOWN_ROOM_STATUS = ['IDLE', 'OCCUPIED', 'MAINTENANCE'];
 
 export default function AdminDashboard() {
-  const router = useRouter();
+  const {
+    goHome,
+    goToReservationsByDate,
+    goToAdminCommunity,
+    goToRoomManagement,
+    goToSuggestions,
+  } = useAppNavigation();
   const { authReady, accessToken, role } = useAuthReady();
   const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
   const [communityData, setCommunityData] = useState([]);
@@ -178,7 +184,7 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-content">관리자 대시보드</h1>
         <button
           className="bg-brand hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
-          onClick={() => router.push('/')}
+          onClick={goHome}
         >
           예약 서비스 화면으로 가기
         </button>
@@ -193,7 +199,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/reservations-by-date')}
+              onClick={goToReservationsByDate}
             >
               더보기 →
             </button>
@@ -241,7 +247,7 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-content">커뮤니티</h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/community')}
+              onClick={goToAdminCommunity}
             >
               더보기 →
             </button>
@@ -279,7 +285,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/room-management')}
+              onClick={goToRoomManagement}
             >
               더보기 →
             </button>
@@ -343,7 +349,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/suggestions')}
+              onClick={goToSuggestions}
             >
               더보기 →
             </button>
