@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 
@@ -10,8 +9,9 @@ import Button from '@components/common/button';
 import { Input } from '@components/common/input';
 import MyPageHeader from '@components/my/MyPageHeader';
 
-import useRequireAuth from '@hooks/use-require-auth';
 import { verifyEmail, withdrawUser } from '@api/use-user';
+import useAppNavigation from '@hooks/use-app-navigation';
+import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
@@ -35,7 +35,7 @@ export default function CancelAccountStep1() {
 
   const { requireLogin, redirectToLogin } = useRequireAuth();
   const { accessToken } = useTokenStore();
-  const router = useRouter();
+  const { goToLogin } = useAppNavigation();
 
   const commonCodeButtonClass =
     'inline-flex items-center justify-center w-btn-action h-10 ' +
@@ -102,7 +102,7 @@ export default function CancelAccountStep1() {
 
   const handleWithdrawCompleteConfirm = () => {
     setWithdrawComplete(false);
-    router.push('/login');
+    goToLogin();
   };
 
   return (
