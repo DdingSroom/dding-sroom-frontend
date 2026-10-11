@@ -1,3 +1,4 @@
+import { USER_API_ENDPOINTS } from '@api/endpoints';
 import { api } from '@shared/api/api';
 
 import type { ApiSchemas } from '../types/api';
@@ -5,12 +6,6 @@ import type { ApiSchemas } from '../types/api';
 type ResponseDTO = ApiSchemas['ResponseDTO'];
 type ChangeUsernameDTO = ApiSchemas['ChangeUsernameDTO'];
 type EmailVerificationDTO = ApiSchemas['EmailVerificationDTO'];
-
-const USER_API_ENDPOINTS = {
-  CHANGE_USERNAME: '/user/change-username',
-  VERIFY_EMAIL: '/user/verify-email',
-  WITHDRAW: '/user/withdraw',
-} as const;
 
 export const changeUsername = (
   userId: number,
