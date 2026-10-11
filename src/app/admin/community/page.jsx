@@ -1,49 +1,43 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 
 export default function AdminCommunityPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [posts, setPosts] = useState([]);
   const [openPostIds, setOpenPostIds] = useState(new Set());
   const [commentsData, setCommentsData] = useState({});
   const [loadingComments, setLoadingComments] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [alertMessage, setAlertMessage] = useState('');
   const pageSize = 20;
 
-  const fetchPosts = useCallback(
-    async (page = 0, size = pageSize) => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await axiosInstance.get('/api/community-posts', {
-          params: { page, size },
-        });
-
-        const data = response?.data?.data || response?.data || [];
-        const postsArray = data.posts || data.content || data || [];
-
-        setPosts(postsArray.map(normalizePost));
-        setTotalPages(
+  const {
+    data: listData,
+    isFetching: loading,
+    error: queryError,
+  } = useQuery({
+    ...community.getList({ page: currentPage, size: pageSize }),
+    retry: false,
+    staleTime: 0,
+    select: (response) => {
+      const data = response?.data || response || [];
+      const postsArray = data.posts || data.content || data || [];
+      return {
+        posts: postsArray.map(normalizePost),
+        totalPages:
           data.totalPages ||
-            Math.ceil((data.totalElements || postsArray.length) / size),
-        );
-      } catch (err) {
-        console.error('게시글 목록 불러오기 실패:', err);
-        setError(parseError(err));
-      } finally {
-        setLoading(false);
-      }
+          Math.ceil((data.totalElements || postsArray.length) / pageSize),
+      };
     },
-    [pageSize],
-  );
+  });
+  const posts = listData?.posts ?? [];
+  const totalPages = listData?.totalPages ?? 0;
+  const error = queryError ? parseError(queryError) : '';
 
   const fetchCommentsByPost = useCallback(async (postId) => {
     const response = await axiosInstance.get(
@@ -128,10 +122,6 @@ export default function AdminCommunityPage() {
     },
     [openPostIds, commentsData, fetchCommentsByPost, fetchRepliesByComment],
   );
-
-  useEffect(() => {
-    fetchPosts(currentPage);
-  }, [fetchPosts, currentPage]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < totalPages) {

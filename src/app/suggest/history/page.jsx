@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -21,13 +22,42 @@ function BottomSafeSpacer({ height = 64 }) {
   );
 }
 
+const toArray = (data) => {
+  if (Array.isArray(data?.suggestions)) {
+    return data.suggestions;
+  }
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+  if (Array.isArray(data)) {
+    return data;
+  }
+  return [];
+};
+
 export default function SuggestHistoryPage() {
   const { requireLogin, redirectToLogin } = useRequireAuth();
   const { userId } = useTokenStore();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [items, setItems] = useState([]);
+  const {
+    data,
+    isPending,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    ...suggestion.getList({ userId }),
+    enabled: !!userId && !requireLogin,
+    retry: false,
+  });
+
+  const status = queryError?.response?.status;
+  const error =
+    userId && !requireLogin && queryError && status !== 403 && status !== 404
+      ? queryError.response?.data?.message ||
+        queryError.response?.data?.error ||
+        queryError.message ||
+        '내역을 불러오지 못했습니다.'
+      : '';
 
   // 로그인 체크
   useEffect(() => {
@@ -36,60 +66,16 @@ export default function SuggestHistoryPage() {
     }
   }, [requireLogin, redirectToLogin]);
 
-  const toArray = (data) => {
-    if (Array.isArray(data?.suggestions)) {
-      return data.suggestions;
+  const items = useMemo(() => {
+    if (!userId || requireLogin || queryError) {
+      return [];
     }
-    if (Array.isArray(data?.data)) {
-      return data.data;
-    }
-    if (Array.isArray(data)) {
-      return data;
-    }
-    return [];
-  };
+    return toArray(data)
+      .map(normalizeSuggest)
+      .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
+  }, [data, userId, requireLogin, queryError]);
 
-  const fetchMine = useCallback(async () => {
-    if (!userId) {
-      setItems([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const url = `/api/suggestions?user_id=${encodeURIComponent(userId)}`;
-      const res = await axiosInstance.get(url);
-
-      const raw = toArray(res?.data);
-      const list = raw
-        .map(normalizeSuggest)
-        .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
-
-      setItems(list);
-    } catch (e) {
-      const status = e?.response?.status;
-
-      if (status === 403 || status === 404) {
-        setItems([]);
-        setError('');
-      } else {
-        setError(
-          e?.response?.data?.message ||
-            e?.response?.data?.error ||
-            e?.message ||
-            '내역을 불러오지 못했습니다.',
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    fetchMine();
-  }, [fetchMine]);
-
+  // (클라 수정 필요) 날짜 그룹 포매팅
   // 날짜별 그룹
   const grouped = useMemo(() => {
     const b = {};
@@ -136,7 +122,9 @@ export default function SuggestHistoryPage() {
       </header>
 
       <main className="flex-1 pb-8">
-        {loading && <div className="px-6 py-8 text-content-muted">로딩중…</div>}
+        {isPending && loading && (
+          <div className="px-6 py-8 text-content-muted">로딩중…</div>
+        )}
 
         {/* 에러는 진짜 실패 때만 표시. 403/404는 빈 상태로 처리 */}
         {error && <div className="px-6 py-8 text-red-500">{error}</div>}

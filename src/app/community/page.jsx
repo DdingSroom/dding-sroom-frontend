@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
@@ -9,7 +10,7 @@ import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
-import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 
 function BottomSafeSpacer({ height = 64 }) {
@@ -22,8 +23,6 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function CommunityPage() {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -36,50 +35,39 @@ export default function CommunityPage() {
     { id: 'lost', name: '분실물 게시판' },
   ];
 
-  const fetchPosts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      let response;
+  const {
+    data,
+    isPending: isLoading,
+    error,
+  } = useQuery({
+    ...(activeCategory === 'all'
+      ? community.getList()
+      : community.getSearchList({
+          category: activeCategory === 'general' ? '1' : '2',
+        })),
+    enabled: isAuthenticated,
+    retry: false,
+    staleTime: 0,
+  });
+  const posts = useMemo(() => {
+    const postsData = activeCategory === 'all' ? data?.data : data?.posts;
+    return (Array.isArray(postsData) ? postsData : []).slice().sort((a, b) => {
+      const toDate = (arr) =>
+        new Date(...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)));
+      return toDate(b.created_at) - toDate(a.created_at);
+    });
+  }, [data, activeCategory]);
 
-      if (activeCategory === 'all') {
-        response = await axiosInstance.get('/api/community-posts');
-      } else {
-        const categoryNum = activeCategory === 'general' ? 1 : 2;
-        response = await axiosInstance.get(
-          `/api/community-posts/search?category=${categoryNum}`,
-        );
-      }
-
-      if (response?.data?.error) {
-        setErrorMessage(response.data.error);
-        setShowErrorModal(true);
-        return;
-      }
-
-      const postsData =
-        activeCategory === 'all' ? response?.data?.data : response?.data?.posts;
-
-      const sortedPosts = (postsData ?? []).slice().sort((a, b) => {
-        const toDate = (arr) =>
-          new Date(...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)));
-        return toDate(b.created_at) - toDate(a.created_at);
-      });
-
-      setPosts(sortedPosts);
-    } catch (error) {
+  useEffect(() => {
+    if (error) {
       console.error('게시글 목록 불러오기 실패:', error);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
       setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
+    } else if (data?.error) {
+      setErrorMessage(data.error);
+      setShowErrorModal(true);
     }
-  }, [activeCategory]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchPosts();
-    }
-  }, [isAuthenticated, fetchPosts]);
+  }, [data, error]);
 
   const handleWritePost = () => {
     router.push('/community/write');
