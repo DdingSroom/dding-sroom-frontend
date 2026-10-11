@@ -1,38 +1,36 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import UserTableRow from '@components/admin/UserTableRow';
 
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
+import useAuthReady from '@hooks/useAuthReady';
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axiosInstance.get('/admin/users');
+  const {
+    data: users = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    ...admin.admin.users.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.users;
+      if (!Array.isArray(list)) {
+        throw new Error('사용자 목록 응답 형식이 올바르지 않습니다.');
+      }
+      return list;
+    },
+  });
 
-      setUsers(response.data.users || []);
-    } catch (err) {
-      console.error('사용자 불러오기 실패:', err);
-      setError('사용자 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUserUpdate = (userId, updatedUser) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => (user.id === userId ? updatedUser : user)),
-    );
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const loading = !adminEnabled || isLoading;
+  const error = isError ? '사용자 정보를 불러오는 데 실패했습니다.' : null;
 
   return (
     <div className="bg-surface-admin p-6 min-h-screen">
@@ -63,13 +61,7 @@ export default function UserManagement() {
             </thead>
             <tbody className="bg-white">
               {Array.isArray(users) ? (
-                users.map((user) => (
-                  <UserTableRow
-                    key={user.id}
-                    user={user}
-                    onUserUpdate={handleUserUpdate}
-                  />
-                ))
+                users.map((user) => <UserTableRow key={user.id} user={user} />)
               ) : (
                 <tr>
                   <td colSpan="4" className="text-center py-4 text-gray-500">

@@ -1,3 +1,4 @@
+import { getQueryClient } from '@libs/query-client';
 import { jwtDecode } from 'jwt-decode';
 import { create } from 'zustand';
 
@@ -66,12 +67,23 @@ const buildStateFromSession = () => {
   };
 };
 
-const useTokenStore = create<TokenState>()((set) => ({
+const useTokenStore = create<TokenState>()((set, get) => ({
   ...buildStateFromSession(),
 
   setAccessToken: (token) => {
     const decoded = decodeAccessToken(token);
     const derivedUserId = extractUserId(decoded);
+
+    // 로그아웃 거치지 않고 다른 계정으로 전환되는 경우에도
+    // 이전 계정의 서버 캐시가 남지 않도록 정리 (동일 사용자 토큰 재발급은 제외)
+    const prevUserId = get().userId;
+    if (
+      prevUserId !== null &&
+      derivedUserId !== null &&
+      prevUserId !== derivedUserId
+    ) {
+      getQueryClient().clear();
+    }
 
     set((state) => ({
       accessToken: token,
@@ -86,6 +98,8 @@ const useTokenStore = create<TokenState>()((set) => ({
     set({ accessToken: '', userId: null, role: null });
     removeSessionItem('accessToken');
     removeSessionItem('refreshToken');
+    // 계정 전환/세션 종료 시 이전 계정의 서버 캐시가 남지 않도록 정리
+    getQueryClient().clear();
   },
 
   rehydrate: () => {

@@ -1,11 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import ReservationItem from '@components/admin/ReservationItem';
 
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
+import useAppNavigation from '@hooks/use-app-navigation';
+import useAuthReady from '@hooks/useAuthReady';
 
 const pad = (n) => String(n).padStart(2, '0');
 
@@ -28,49 +31,45 @@ function formatDateTimeRange(startArray, endArray) {
 
 export default function UserDetailPage() {
   const { userId } = useParams();
-  const router = useRouter();
+  const { goBack } = useAppNavigation();
 
-  const [user, setUser] = useState(null);
-  const [reservations, setReservations] = useState([]);
-  const [loadingReservations, setLoadingReservations] = useState(true);
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
 
-  const fetchUserDetail = useCallback(async () => {
-    if (!userId) {
-      return null;
-    }
-    try {
-      const res = await axiosInstance.get(`/admin/users/${userId}`);
-      const data = res?.data?.data;
-      setUser(data);
+  const numericUserId = Number(userId);
+  const hasValidUserId = userId != null && !Number.isNaN(numericUserId);
+  const queryEnabled = adminEnabled && hasValidUserId;
+
+  const { data: user = null, isError: isUserError } = useQuery({
+    ...admin.admin.users.getById(numericUserId),
+    enabled: queryEnabled,
+    select: (res) => {
+      const data = res?.data;
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('사용자 상세 응답 형식이 올바르지 않습니다.');
+      }
       return data;
-    } catch (error) {
-      console.error('사용자 상세 조회 실패:', error);
-      return null;
-    }
-  }, [userId]);
+    },
+  });
 
-  const fetchUserReservations = useCallback(async () => {
-    if (!userId) {
-      return;
-    }
-    try {
-      const res = await axiosInstance.get(`/admin/reservations/user/${userId}`);
-      setReservations(res.data.reservations || []);
-    } catch (error) {
-      console.error('사용자 예약 조회 실패:', error);
-    } finally {
-      setLoadingReservations(false);
-    }
-  }, [userId]);
+  const { data: reservations = [], isLoading } = useQuery({
+    ...admin.admin.reservations.getByUserId(numericUserId),
+    enabled: queryEnabled,
+    select: (res) => {
+      const list = res?.reservations;
+      if (!Array.isArray(list)) {
+        throw new Error('사용자 예약 응답 형식이 올바르지 않습니다.');
+      }
+      return list;
+    },
+  });
 
-  useEffect(() => {
-    if (userId) {
-      fetchUserDetail();
-      fetchUserReservations();
-    }
-  }, [userId, fetchUserDetail, fetchUserReservations]);
+  const loadingReservations = !queryEnabled || isLoading;
 
   /* Loading */
+  if (isUserError) {
+    return <p className="p-6">사용자 정보를 불러오지 못했습니다.</p>;
+  }
   if (!user) {
     return <p className="p-6">로딩 중...</p>;
   }
@@ -79,10 +78,7 @@ export default function UserDetailPage() {
     <div className="p-6 bg-surface-admin min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <button
-            onClick={() => router.back()}
-            className="text-sm text-gray-600 mb-1"
-          >
+          <button onClick={goBack} className="text-sm text-gray-600 mb-1">
             ← 사용자 관리
           </button>
           <h1 className="text-xl font-semibold">{user.username}</h1>

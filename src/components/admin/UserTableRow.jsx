@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 
-import { updateUserStatus } from '@api/admin';
+import { admin } from '@api/keys/admin.key';
+import { updateUserStatus } from '@api/admin.api';
+import useAppNavigation from '@hooks/use-app-navigation';
 
-export default function UserTableRow({ user, onUserUpdate }) {
-  const router = useRouter();
-  const [isUpdating, setIsUpdating] = useState(false);
+export default function UserTableRow({ user }) {
+  const { goToUserDetail } = useAppNavigation();
+  const queryClient = useQueryClient();
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -15,36 +17,38 @@ export default function UserTableRow({ user, onUserUpdate }) {
   const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
   const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
+  const { mutate: changeStatus, isPending: isUpdating } = useMutation({
+    mutationFn: () => updateUserStatus(user.id, newStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.users.getAll().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.users.getById(user.id).queryKey,
+      });
+      setAlertMessage(
+        `${user.username}님이 ${statusText} 상태로 변경되었습니다.`,
+      );
+    },
+    onError: (error) => {
+      console.error('사용자 상태 변경 실패:', error);
+      setAlertMessage(
+        error?.response?.data?.message || '상태 변경에 실패했습니다.',
+      );
+    },
+  });
+
   const handleDetailClick = () => {
-    router.push(`/admin/user-detail/${user.id}`);
+    goToUserDetail(user.id);
   };
 
   const handleStatusToggle = () => {
     setShowStatusConfirm(true);
   };
 
-  const confirmStatusToggle = async () => {
+  const confirmStatusToggle = () => {
     setShowStatusConfirm(false);
-    setIsUpdating(true);
-
-    try {
-      await updateUserStatus(user.id, newStatus);
-
-      // 부모 컴포넌트에 사용자 상태 업데이트 알림
-      if (onUserUpdate) {
-        onUserUpdate(user.id, { ...user, status: newStatus });
-      }
-
-      setAlertMessage(
-        `${user.username}님이 ${statusText} 상태로 변경되었습니다.`,
-      );
-    } catch (error) {
-      console.error('사용자 상태 변경 실패:', error);
-      const msg = error?.response?.data?.message || '상태 변경에 실패했습니다.';
-      setAlertMessage(msg);
-    } finally {
-      setIsUpdating(false);
-    }
+    changeStatus();
   };
 
   const statusBadge =
