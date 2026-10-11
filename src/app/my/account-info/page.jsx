@@ -10,7 +10,7 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
 
-import { changeUsername } from '@api/use-user';
+import { changeUsername } from '@api/user.api';
 import { ROUTES } from '@constants/routes';
 import useAppNavigation from '@hooks/use-app-navigation';
 import useRequireAuth from '@hooks/use-require-auth';
