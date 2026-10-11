@@ -10,9 +10,11 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
 
+import { changeUsername } from '@api/use-user';
+import { ROUTES } from '@constants/routes';
+import useAppNavigation from '@hooks/use-app-navigation';
 import useRequireAuth from '@hooks/use-require-auth';
 import { logout } from '@shared/api/auth';
-import { changeUsername } from '@api/use-user';
 
 import FooterNav from '../../../components/common/FooterNav';
 import useTokenStore from '../../../stores/useTokenStore';
@@ -35,6 +37,7 @@ export default function AccountInfo() {
 
   const { clearTokens, accessToken, userId } = useTokenStore();
   const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
+  const { redirectToLoginHard } = useAppNavigation();
 
   const getDecodedUserInfo = useCallback(() => {
     try {
@@ -120,7 +123,7 @@ export default function AccountInfo() {
 
   const handleLogoutConfirm = () => {
     setShowLogoutModal(false);
-    window.location.href = '/login';
+    redirectToLoginHard();
   };
 
   return (
@@ -178,7 +181,10 @@ export default function AccountInfo() {
 
               {/* 예약 내역 진입 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+                <MyPageBlock
+                  name="예약 내역"
+                  linkPath={ROUTES.MY_RESERVATION_LIST}
+                />
               </div>
 
               {/* 내 커뮤니티 관리 섹션 */}
@@ -188,8 +194,11 @@ export default function AccountInfo() {
                     내 커뮤니티 관리
                   </h2>
                 </div>
-                <MyPageBlock name="내가 작성한 글" linkPath="/my/posts" />
-                <MyPageBlock name="내가 작성한 댓글" linkPath="/my/comments" />
+                <MyPageBlock name="내가 작성한 글" linkPath={ROUTES.MY_POSTS} />
+                <MyPageBlock
+                  name="내가 작성한 댓글"
+                  linkPath={ROUTES.MY_COMMENTS}
+                />
               </div>
 
               {/* 개인정보 보호 섹션 */}
@@ -202,11 +211,11 @@ export default function AccountInfo() {
 
                 <MyPageBlock
                   name="비밀번호 재설정"
-                  linkPath="/reset-password/step1"
+                  linkPath={ROUTES.RESET_PASSWORD_STEP1}
                 />
                 <MyPageBlock
                   name="회원 탈퇴"
-                  linkPath="/my/cancel-account-step1"
+                  linkPath={ROUTES.MY_CANCEL_ACCOUNT_STEP1}
                 />
                 <button
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
