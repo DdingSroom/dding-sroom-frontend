@@ -9,7 +9,7 @@ import Button from '@components/common/button';
 import { Input } from '@components/common/input';
 import MyPageHeader from '@components/my/MyPageHeader';
 
-import { verifyEmail, withdrawUser } from '@api/use-user';
+import { verifyEmail, withdrawUser } from '@api/user.api';
 import useAppNavigation from '@hooks/use-app-navigation';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
