@@ -1,12 +1,18 @@
 import { api } from '@shared/api/api';
 import { COMMENT_API_ENDPOINTS } from '@shared/api/endpoints';
 
-import type { ApiSchemas } from '../types/api';
+import type { ApiPaths, ApiSchemas } from '../types/api';
 
 export type CommunityCommentRequest =
   ApiSchemas['CommunityPostCommentRequestDTO'];
 
 type CommentResponse = ApiSchemas['BaseResponseDTO'];
+type MyCommentsResponse =
+  ApiPaths[typeof COMMENT_API_ENDPOINTS.MY_COMMENTS]['get']['responses'][200]['content']['*/*'];
+
+// 내가 작성한 댓글 조회
+export const getMyComments = () =>
+  api.get<MyCommentsResponse>(COMMENT_API_ENDPOINTS.MY_COMMENTS);
 
 // 특정 게시글의 댓글 조회
 export const getPostComments = (postId: number) =>

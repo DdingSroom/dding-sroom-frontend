@@ -15,6 +15,7 @@ export const COMMUNITY_API_ENDPOINTS = {
 
 export const COMMENT_API_ENDPOINTS = {
   COMMENTS: '/api/community-posts/comments',
+  MY_COMMENTS: '/api/community-posts/comments/me',
   REPLIES_BY_COMMENT: (commentId: number) =>
     `/api/community-posts/comments/${commentId}/replies`,
   COMMENTS_BY_POST: (postId: number) =>
