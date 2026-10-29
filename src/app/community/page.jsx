@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
@@ -9,8 +10,15 @@ import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommunityHeader from '@components/community/CommunityHeader';
 
-import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
+import { parseCommunityDate } from '@utils/post-preview';
+
+const CATEGORIES = [
+  { id: 'all', name: '전체글', value: undefined },
+  { id: 'general', name: '일반 게시판', value: 1 },
+  { id: 'lost', name: '분실물 게시판', value: 2 },
+];
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -22,64 +30,49 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function CommunityPage() {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
   const router = useRouter();
 
-  const categories = [
-    { id: 'all', name: '전체글' },
-    { id: 'general', name: '일반 게시판' },
-    { id: 'lost', name: '분실물 게시판' },
-  ];
+  const selectedCategory = CATEGORIES.find(
+    (category) => category.id === activeCategory,
+  );
 
-  const fetchPosts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      let response;
+  const {
+    data,
+    isPending: isLoading,
+    error,
+  } = useQuery({
+    ...(activeCategory === 'all'
+      ? community.getList()
+      : community.getSearchList({
+          category: selectedCategory?.value,
+        })),
+    enabled: isAuthenticated,
+  });
 
-      if (activeCategory === 'all') {
-        response = await axiosInstance.get('/api/community-posts');
-      } else {
-        const categoryNum = activeCategory === 'general' ? 1 : 2;
-        response = await axiosInstance.get(
-          `/api/community-posts/search?category=${categoryNum}`,
-        );
-      }
+  const posts = useMemo(() => {
+    const postsData = activeCategory === 'all' ? data?.data : data?.posts;
 
-      if (response?.data?.error) {
-        setErrorMessage(response.data.error);
-        setShowErrorModal(true);
-        return;
-      }
+    return (Array.isArray(postsData) ? postsData : []).toSorted(
+      (a, b) =>
+        (parseCommunityDate(b.created_at)?.getTime() ?? 0) -
+        (parseCommunityDate(a.created_at)?.getTime() ?? 0),
+    );
+  }, [data, activeCategory]);
 
-      const postsData =
-        activeCategory === 'all' ? response?.data?.data : response?.data?.posts;
-
-      const sortedPosts = (postsData ?? []).slice().sort((a, b) => {
-        const toDate = (arr) =>
-          new Date(...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)));
-        return toDate(b.created_at) - toDate(a.created_at);
-      });
-
-      setPosts(sortedPosts);
-    } catch (error) {
+  useEffect(() => {
+    if (error) {
       console.error('게시글 목록 불러오기 실패:', error);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
       setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
+    } else if (data?.error) {
+      setErrorMessage(data.error);
+      setShowErrorModal(true);
     }
-  }, [activeCategory]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchPosts();
-    }
-  }, [isAuthenticated, fetchPosts]);
+  }, [data, error]);
 
   const handleWritePost = () => {
     router.push('/community/write');
@@ -110,7 +103,7 @@ export default function CommunityPage() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex">
-            {categories.map((category) => {
+            {CATEGORIES.map((category) => {
               const active = activeCategory === category.id;
               return (
                 <button

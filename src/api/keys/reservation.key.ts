@@ -7,11 +7,11 @@ export const reservation = createQueryKeys('reservation', {
   // 모든 예약 조회
   getAll: () => ({
     queryKey: ['all'],
-    queryFn: () => getAllReservations,
+    queryFn: getAllReservations,
   }),
   // 나의 예약 조회
   getMyReservations: () => ({
     queryKey: ['me'],
-    queryFn: () => getMyReservations,
+    queryFn: getMyReservations,
   }),
 });

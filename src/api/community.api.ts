@@ -8,7 +8,7 @@ export type CommunityPostRequest = ApiSchemas['CommunityPostRequestDTO'];
 export interface CommunitySearchParams {
   postId?: number;
   userId?: number;
-  category?: string;
+  category?: number;
 }
 
 type CommunityResponse = ApiSchemas['BaseResponseDTO'];
@@ -25,8 +25,7 @@ export const searchCommunityPosts = (params: CommunitySearchParams = {}) =>
     params: {
       post_id: params.postId,
       user_id: params.userId,
-      category:
-        params.category === undefined ? undefined : Number(params.category),
+      category: params.category,
     },
   });
 
