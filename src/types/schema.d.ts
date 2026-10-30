@@ -4,6 +4,46 @@
  */
 
 export interface paths {
+  '/login': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 로그인
+     * @description JSON이 아닌 form 데이터로 `email`, `password`를 보냅니다. 응답 본문은 없고 헤더 `access`(액세스 토큰, 1시간)와 `refresh` HttpOnly 쿠키(24시간)가 내려옵니다.
+     */
+    post: operations['login'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/logout': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 로그아웃
+     * @description `refresh` 쿠키의 리프레시 토큰을 폐기하고 쿠키를 만료시킵니다. 응답 본문은 없습니다.
+     */
+    post: operations['logout'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/user/change-username': {
     parameters: {
       query?: never;
@@ -12,6 +52,10 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
+    /**
+     * 닉네임 변경
+     * @description 로그인한 사용자의 닉네임을 바꿉니다. 토큰에 들어 있는 username 값은 다시 로그인해야 갱신됩니다.
+     */
     put: operations['changeUsername'];
     post?: never;
     delete?: never;
@@ -27,9 +71,21 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['retrieveSuggestPosts'];
-    put: operations['updateSuggestPost'];
-    post: operations['createSuggestPost'];
+    /**
+     * 건의 목록
+     * @description 조건을 조합해 조회합니다(모두 선택). 조건이 없으면 전체를 반환합니다.
+     */
+    get: operations['getSuggestions'];
+    /**
+     * 건의 수정
+     * @description 작성자만 수정할 수 있습니다. 모든 필드를 함께 보냅니다.
+     */
+    put: operations['updateSuggestion'];
+    /**
+     * 건의 작성
+     * @description 카테고리·위치는 한글 이름으로 보냅니다. 이미지는 작성 후 `/api/suggestions/images`로 따로 올립니다.
+     */
+    post: operations['createSuggestion'];
     delete?: never;
     options?: never;
     head?: never;
@@ -43,9 +99,18 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['retrieveSuggestComments'];
-    put: operations['updateSuggestComment'];
-    post: operations['createSuggestComment'];
+    /** 건의 답변 조회 */
+    get: operations['getSuggestionAnswers'];
+    /**
+     * 건의 답변 수정 (관리자)
+     * @description 답변을 작성한 관리자 본인만 수정할 수 있습니다.
+     */
+    put: operations['updateSuggestionAnswer'];
+    /**
+     * 건의 답변 작성 (관리자)
+     * @description 건의당 답변은 1개이며, 작성하면 건의의 `is_answered`가 true가 됩니다.
+     */
+    post: operations['createSuggestionAnswer'];
     delete?: never;
     options?: never;
     head?: never;
@@ -60,6 +125,10 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
+    /**
+     * 공지 수정 (관리자)
+     * @description 관리자 토큰이 필요합니다. 실패해도 HTTP 200이며 `error`에 사유가 담깁니다.
+     */
     put: operations['updateNotification'];
     post?: never;
     delete?: never;
@@ -75,9 +144,25 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getAllCommunityPosts'];
+    /**
+     * 게시글 전체 목록
+     * @description 모든 게시글을 조회합니다. (정렬 없음)
+     */
+    get: operations['getCommunityPosts'];
+    /**
+     * 게시글 수정
+     * @description `post_id`와 수정할 `title`, `content`, `category`를 보냅니다. 작성자만 수정할 수 있습니다.
+     */
     put: operations['updateCommunityPost'];
+    /**
+     * 게시글 작성
+     * @description `title`, `content`, `category`를 보냅니다. 실패해도 HTTP 200이며 `error`에 사유가 담깁니다.
+     */
     post: operations['createCommunityPost'];
+    /**
+     * 게시글 삭제
+     * @description DELETE 요청 본문에 `post_id`를 보냅니다. 작성자만 삭제할 수 있고 달린 댓글도 함께 삭제됩니다.
+     */
     delete: operations['deleteCommunityPost'];
     options?: never;
     head?: never;
@@ -92,8 +177,20 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
+    /**
+     * 댓글 수정
+     * @description `comment_id`, `comment_content`를 보냅니다. 작성자만 수정할 수 있습니다.
+     */
     put: operations['updateComment'];
+    /**
+     * 댓글·대댓글 작성
+     * @description `post_id`, `comment_content`를 보냅니다. 대댓글은 `parent_comment_id`를 함께 보내며 대댓글에는 다시 대댓글을 달 수 없습니다. 실패해도 HTTP 200이며 `error`에 사유가 담깁니다.
+     */
     post: operations['createComment'];
+    /**
+     * 댓글 삭제
+     * @description DELETE 요청 본문에 `comment_id`를 보냅니다. 대댓글이 달린 댓글은 삭제할 수 없습니다.
+     */
     delete: operations['deleteComment'];
     options?: never;
     head?: never;
@@ -110,9 +207,9 @@ export interface paths {
     get?: never;
     /**
      * 사용자 상태 변경
-     * @description 특정 사용자의 상태를 변경합니다 (normal/blocked)
+     * @description 계정 상태 값을 normal 또는 blocked로 바꿉니다. blocked로 바꾸면 해당 사용자의 refresh 토큰이 삭제되어 재발급이 막힙니다. 로그인 자체는 막지 않으므로 다시 로그인하면 이용할 수 있습니다.
      */
-    put: operations['updateUserStatus'];
+    put: operations['adminUpdateUserStatus'];
     post?: never;
     delete?: never;
     options?: never;
@@ -130,9 +227,9 @@ export interface paths {
     get?: never;
     /**
      * 사용자 권한 변경
-     * @description 특정 사용자의 권한을 변경합니다 (ROLE_USER/ROLE_ADMIN)
+     * @description 권한이 바뀌면 해당 사용자의 refresh 토큰이 삭제되어, 다시 로그인한 뒤 새 권한이 토큰에 반영됩니다. 이미 발급된 access 토큰은 만료될 때까지(최대 1시간) 이전 권한으로 동작합니다.
      */
-    put: operations['updateUserRole'];
+    put: operations['adminUpdateUserRole'];
     post?: never;
     delete?: never;
     options?: never;
@@ -147,22 +244,16 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 특정 스터디룸 조회
-     * @description 룸 ID로 특정 스터디룸의 상세 정보를 조회합니다.
-     */
-    get: operations['getRoomById'];
-    /**
-     * 스터디룸 정보 수정
-     * @description 기존 스터디룸의 정보를 수정합니다.
-     */
-    put: operations['updateRoom'];
+    /** 스터디룸 상세 */
+    get: operations['adminGetRoom'];
+    /** 스터디룸 수정 */
+    put: operations['adminUpdateRoom'];
     post?: never;
     /**
      * 스터디룸 삭제
-     * @description 스터디룸을 시스템에서 삭제합니다.
+     * @description 예약(RESERVED)이 있거나 취소된 예약 이력이 남아 있는 방은 삭제할 수 없습니다. 사용을 멈추려면 상태를 MAINTENANCE로 바꿉니다.
      */
-    delete: operations['deleteRoom'];
+    delete: operations['adminDeleteRoom'];
     options?: never;
     head?: never;
     patch?: never;
@@ -178,9 +269,9 @@ export interface paths {
     get?: never;
     /**
      * 스터디룸 상태 변경
-     * @description 스터디룸의 상태를 변경합니다 (IDLE/OCCUPIED/MAINTENANCE)
+     * @description IDLE이 아닌 방은 예약할 수 없습니다.
      */
-    put: operations['updateRoomStatus'];
+    put: operations['adminUpdateRoomStatus'];
     post?: never;
     delete?: never;
     options?: never;
@@ -197,6 +288,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 본인 이메일 확인
+     * @description 입력한 이메일이 로그인한 계정의 이메일과 같은지 확인합니다. (탈퇴 전 본인 확인 등)
+     */
     post: operations['verifyEmail'];
     delete?: never;
     options?: never;
@@ -213,6 +308,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 회원가입
+     * @description 일반 사용자(ROLE_USER)로 가입합니다.
+     */
     post: operations['signUp'];
     delete?: never;
     options?: never;
@@ -229,23 +328,11 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 비밀번호 재설정
+     * @description 가입한 이메일의 비밀번호를 변경합니다. 프론트에서 이메일 인증(`/user/code-send` → `/user/code-verify`)을 마친 뒤 호출하며, 서버는 인증 완료 여부를 따로 확인하지 않습니다.
+     */
     post: operations['modifyPassword'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/user/join': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post: operations['joinProcess'];
     delete?: never;
     options?: never;
     head?: never;
@@ -261,7 +348,11 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['codeVerify'];
+    /**
+     * 이메일 인증 코드 확인
+     * @description 발송된 코드를 확인합니다. 성공하면 코드는 즉시 폐기됩니다.
+     */
+    post: operations['verifyCode'];
     delete?: never;
     options?: never;
     head?: never;
@@ -277,7 +368,11 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['codeSend'];
+    /**
+     * 이메일 인증 코드 발송
+     * @description 6자리 인증 코드를 메일로 보냅니다. 코드는 5분간 유효하며 다시 요청하면 이전 코드는 폐기됩니다.
+     */
+    post: operations['sendVerificationCode'];
     delete?: never;
     options?: never;
     head?: never;
@@ -293,7 +388,11 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['reissue'];
+    /**
+     * 토큰 재발급
+     * @description `refresh` 쿠키로 액세스·리프레시 토큰을 모두 새로 발급합니다. 기존 리프레시 토큰은 폐기됩니다. 응답 본문은 없고 헤더 `access`와 새 `refresh` 쿠키가 내려옵니다. 로그아웃했거나 관리자가 권한 변경·차단·회원 삭제를 한 사용자는 refresh 토큰이 폐기되어 `400`이 오므로 다시 로그인해야 합니다.
+     */
+    post: operations['reissueToken'];
     delete?: never;
     options?: never;
     head?: never;
@@ -307,9 +406,14 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['retrieveSuggestImages'];
+    /** 건의 이미지 목록 */
+    get: operations['getSuggestionImages'];
     put?: never;
-    post: operations['uploadSuggestImage'];
+    /**
+     * 건의 이미지 업로드
+     * @description multipart/form-data로 `request` 파트(JSON: `{"suggest_post_id": 10}`)와 `image_file` 파트(이미지, 10MB 이하)를 보냅니다. 건의 작성자만 올릴 수 있습니다.
+     */
+    post: operations['uploadSuggestionImage'];
     delete?: never;
     options?: never;
     head?: never;
@@ -325,6 +429,18 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 예약 생성
+     * @description 로그인한 사용자로 스터디룸을 예약합니다.
+     *     - 1시간 또는 2시간 단위, 과거 시간 불가, 사용자별 하루(시작일 기준) 합계 2시간 이하
+     *     - 같은 시간대에 다른 방 중복 예약 불가, 같은 방 연속 예약 불가
+     *     - 성공 메시지는 `예약이 성공적으로 완료되었습니다.`
+     *
+     *     `현재 다음 실패도 **HTTP 201**로 응답하므로 `message`가 성공 메시지와 다르면 실패로 처리해야 합니다:
+     *     `예약은 1시간 또는 2시간 단위로만 가능합니다.`, `과거 시간으로 예약할 수 없습니다.`,
+     *     `사용자별 예약은 하루 2시간으로 제한됩니다.(…)`, `해당 스터디룸이 존재하지 않습니다.`, `해당 사용자가 존재하지 않습니다.`,
+     *     `예약 시스템 오류가 발생했습니다. 나중에 다시 시도해주세요.`, `예약 처리 중 오류가 발생했습니다. 나중에 다시 시도해주세요.`
+     */
     post: operations['createReservation'];
     delete?: never;
     options?: never;
@@ -341,6 +457,14 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 예약 취소
+     * @description 본인 예약을 취소합니다. 성공 메시지는 `예약취소가 잘 되었습니다.`
+     *
+     *     `다음 실패도 **HTTP 200**으로 응답하므로 `message`가 성공 메시지와 다르면 실패로 처리해야 합니다:
+     *     `이용 중인 예약은 취소할 수 없습니다.`, `이용이 완료된 예약은 취소할 수 없습니다.`,
+     *     `예약 취소 중 오류가 발생했습니다. 나중에 다시 시도해주세요.`
+     */
     post: operations['cancelReservation'];
     delete?: never;
     options?: never;
@@ -357,7 +481,31 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    post: operations['incrementViewCount'];
+    /**
+     * 공지 조회수 증가
+     * @description 호출할 때마다 조회수가 1 증가합니다. 읽음 처리와는 별개입니다.
+     */
+    post: operations['increaseNotificationViewCount'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notification/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * 공지 읽음 처리
+     * @description 로그인한 사용자 기준으로 공지를 읽음 처리합니다. 여러 번 호출해도 결과가 같고 `readAt`은 처음 읽은 시각으로 유지됩니다. 이 API는 결과를 HTTP 상태코드로 구분합니다.
+     */
+    post: operations['markNotificationAsRead'];
     delete?: never;
     options?: never;
     head?: never;
@@ -373,6 +521,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
+    /**
+     * 공지 작성 (관리자)
+     * @description 관리자 토큰이 필요합니다. 권한이 없거나 실패해도 HTTP 200이며 `error`에 사유가 담깁니다.
+     */
     post: operations['createNotification'];
     delete?: never;
     options?: never;
@@ -387,17 +539,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 모든 스터디룸 조회
-     * @description 시스템의 모든 스터디룸 목록을 조회합니다.
-     */
-    get: operations['getAllRooms'];
+    /** 전체 스터디룸 목록 */
+    get: operations['adminGetRooms'];
     put?: never;
-    /**
-     * 스터디룸 생성
-     * @description 새로운 스터디룸을 생성합니다.
-     */
-    post: operations['createRoom'];
+    /** 스터디룸 생성 */
+    post: operations['adminCreateRoom'];
     delete?: never;
     options?: never;
     head?: never;
@@ -415,71 +561,27 @@ export interface paths {
     put?: never;
     /**
      * 예약 강제 취소
-     * @description 관리자 권한으로 특정 예약을 강제 취소합니다.
+     * @description 이용 중·종료된 예약도 취소할 수 있습니다.
      */
-    post: operations['forceCancelReservation'];
+    post: operations['adminForceCancelReservation'];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  '/user/test': {
+  '/api/reservations/me': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    get: operations['test'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/user/mypage/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getMyPage'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/get-info-test': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['mainP'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/reservations/user/{userId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getUserReservations'];
+    /**
+     * 내 예약 목록
+     * @description 로그인한 사용자의 예약을 생성일 최신순으로 최대 20건 조회합니다. 취소된 예약도 포함됩니다.
+     */
+    get: operations['getMyReservations'];
     put?: never;
     post?: never;
     delete?: never;
@@ -495,7 +597,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getCurrentCrowdingLevel'];
+    /**
+     * 실시간 혼잡도
+     * @description 지금 이용 중인 스터디룸 수를 `message`에 숫자 문자열로 반환합니다. 조회 중 오류가 나도 HTTP 200이며 이때 `message`는 숫자가 아닌 `혼잡도 조회 중 오류가 발생했습니다.`입니다.
+     */
+    get: operations['getCrowdingLevel'];
     put?: never;
     post?: never;
     delete?: never;
@@ -511,6 +617,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /**
+     * 전체 예약 목록
+     * @description 모든 사용자의 예약을 조회합니다(취소 포함, 페이징 없음). 예약 가능 시간 계산에 사용합니다.
+     */
     get: operations['getAllReservations'];
     put?: never;
     post?: never;
@@ -527,6 +637,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /**
+     * 공지 상세
+     * @description 로그인 토큰을 보내면 `isRead`에 본인 읽음 여부가 들어갑니다. 상세 조회만으로는 읽음 처리되지 않습니다.
+     */
     get: operations['getNotification'];
     put?: never;
     post?: never;
@@ -543,7 +657,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getRecentNotificationsCount'];
+    /**
+     * 최근 3일 공지 수
+     * @description 최근 3일 안에 작성된 공지 수를 data에 담아 반환합니다. (읽음 여부와 무관)
+     */
+    get: operations['getRecentNotificationCount'];
     put?: never;
     post?: never;
     delete?: never;
@@ -559,7 +677,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getAllNotifications'];
+    /**
+     * 공지 목록
+     * @description 최신순으로 전체 공지를 조회합니다. 로그인 토큰을 보내면 각 공지의 `isRead`에 본인 읽음 여부가 들어가고, 토큰이 없으면 모두 false입니다. 안 읽은 공지 수는 `isRead=false` 항목을 세면 됩니다.
+     */
+    get: operations['getNotifications'];
     put?: never;
     post?: never;
     delete?: never;
@@ -575,6 +697,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
+    /** 게시글 상세 */
     get: operations['getCommunityPost'];
     put?: never;
     post?: never;
@@ -591,39 +714,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getPostsByUserId'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/community-posts/user/{userId}/posts': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getPostsByUserIdWithFilter'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/community-posts/user/{userId}/category/{category}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getPostsByUserIdAndCategory'];
+    /** 특정 사용자의 게시글 목록 */
+    get: operations['getCommunityPostsByUser'];
     put?: never;
     post?: never;
     delete?: never;
@@ -639,7 +731,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['retrieveCommunityPost'];
+    /**
+     * 게시글 조건 조회
+     * @description `post_id` > (`user_id` + `category`) > `user_id` > `category` 순으로 하나의 조건만 적용됩니다. 조건이 없으면 전체를 반환합니다.
+     */
+    get: operations['searchCommunityPosts'];
     put?: never;
     post?: never;
     delete?: never;
@@ -648,14 +744,18 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/community-posts/comments/{commentId}': {
+  '/api/community-posts/me': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    get: operations['getComment'];
+    /**
+     * 내 게시글 목록
+     * @description 토큰의 사용자 기준으로 조회합니다. `category`를 주면 해당 분류만 조회합니다.
+     */
+    get: operations['getMyCommunityPosts'];
     put?: never;
     post?: never;
     delete?: never;
@@ -671,7 +771,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getRepliesByCommentId'];
+    /** 댓글의 대댓글 목록 */
+    get: operations['getReplies'];
     put?: never;
     post?: never;
     delete?: never;
@@ -687,55 +788,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getCommentsByUserId'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/community-posts/comments/user/{userId}/replies': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getOnlyRepliesByUserId'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/community-posts/comments/user/{userId}/post/{postId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getCommentsByUserIdAndPostId'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/community-posts/comments/user/{userId}/comments': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: operations['getOnlyCommentsByUserId'];
+    /**
+     * 특정 사용자의 댓글 목록
+     * @description `type`으로 일반 댓글/대댓글만, `postId`로 특정 게시글만 걸러낼 수 있습니다.
+     */
+    get: operations['getCommentsByUser'];
     put?: never;
     post?: never;
     delete?: never;
@@ -751,7 +808,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get: operations['getCommentsByPostId'];
+    /**
+     * 게시글의 댓글 목록 (계층형)
+     * @description 일반 댓글 목록을 반환하고, 각 댓글의 `replies`에 대댓글이 들어 있습니다.
+     */
+    get: operations['getCommentsByPost'];
     put?: never;
     post?: never;
     delete?: never;
@@ -767,11 +828,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 모든 사용자 조회
-     * @description 시스템에 등록된 모든 사용자 목록을 조회합니다.
-     */
-    get: operations['getAllUsers'];
+    /** 전체 사용자 목록 */
+    get: operations['adminGetUsers'];
     put?: never;
     post?: never;
     delete?: never;
@@ -787,18 +845,15 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 특정 사용자 조회
-     * @description 사용자 ID로 특정 사용자의 상세 정보를 조회합니다.
-     */
-    get: operations['getUserById'];
+    /** 사용자 상세 */
+    get: operations['adminGetUser'];
     put?: never;
     post?: never;
     /**
      * 사용자 삭제
-     * @description 특정 사용자를 시스템에서 삭제합니다.
+     * @description 사용자와 관련 데이터(예약·게시글·댓글·건의·답변·공지·읽음 기록·refresh 토큰·첨부 이미지 파일)를 함께 삭제합니다.
      */
-    delete: operations['deleteUser'];
+    delete: operations['adminDeleteUser'];
     options?: never;
     head?: never;
     patch?: never;
@@ -811,11 +866,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 사용자 통계
-     * @description 사용자 관련 통계 정보를 조회합니다.
-     */
-    get: operations['getUserStatistics'];
+    /** 사용자 통계 */
+    get: operations['adminGetUserStatistics'];
     put?: never;
     post?: never;
     delete?: never;
@@ -831,11 +883,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 전체 시스템 통계
-     * @description 사용자, 예약, 스터디룸 등 전체 시스템 통계를 조회합니다.
-     */
-    get: operations['getSystemStatistics'];
+    /** 전체 시스템 통계 */
+    get: operations['adminGetSystemStatistics'];
     put?: never;
     post?: never;
     delete?: never;
@@ -851,11 +900,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 시스템 상태 확인
-     * @description 시스템의 전반적인 상태를 확인합니다.
-     */
-    get: operations['getSystemHealth'];
+    /** 시스템 상태 */
+    get: operations['adminGetSystemHealth'];
     put?: never;
     post?: never;
     delete?: never;
@@ -871,11 +917,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 관리자 대시보드
-     * @description 전체 시스템 현황을 한눈에 볼 수 있는 대시보드 정보를 제공합니다.
-     */
-    get: operations['getAdminDashboard'];
+    /** 대시보드 */
+    get: operations['adminGetDashboard'];
     put?: never;
     post?: never;
     delete?: never;
@@ -891,11 +934,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 스터디룸별 예약 현황
-     * @description 특정 스터디룸의 예약 현황을 조회합니다.
-     */
-    get: operations['getRoomReservations'];
+    /** 스터디룸별 예약 목록 */
+    get: operations['adminGetRoomReservations'];
     put?: never;
     post?: never;
     delete?: never;
@@ -911,11 +951,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 스터디룸 통계
-     * @description 스터디룸 관련 통계 정보를 조회합니다.
-     */
-    get: operations['getRoomStatistics'];
+    /** 스터디룸 통계 */
+    get: operations['adminGetRoomStatistics'];
     put?: never;
     post?: never;
     delete?: never;
@@ -932,10 +969,10 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * 모든 예약 조회
-     * @description 시스템의 모든 예약 목록을 조회합니다.
+     * 전체 예약 목록
+     * @description 취소된 예약을 포함한 모든 예약을 조회합니다.
      */
-    get: operations['getAllReservations_1'];
+    get: operations['adminGetReservations'];
     put?: never;
     post?: never;
     delete?: never;
@@ -951,11 +988,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 특정 예약 조회
-     * @description 예약 ID로 특정 예약의 상세 정보를 조회합니다.
-     */
-    get: operations['getReservationById'];
+    /** 예약 상세 */
+    get: operations['adminGetReservation'];
     put?: never;
     post?: never;
     delete?: never;
@@ -971,11 +1005,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 특정 사용자 예약 조회
-     * @description 특정 사용자의 모든 예약을 조회합니다.
-     */
-    get: operations['getReservationsByUserId'];
+    /** 특정 사용자의 예약 목록 */
+    get: operations['adminGetReservationsByUser'];
     put?: never;
     post?: never;
     delete?: never;
@@ -991,11 +1022,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * 예약 통계
-     * @description 예약 관련 통계 정보를 조회합니다.
-     */
-    get: operations['getReservationStatistics'];
+    /** 예약 통계 */
+    get: operations['adminGetReservationStatistics'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1013,9 +1041,9 @@ export interface paths {
     };
     /**
      * 일별 예약 통계
-     * @description 일별 예약 현황 통계를 조회합니다.
+     * @description 날짜를 생략하면 오늘 기준입니다.
      */
-    get: operations['getDailyReservationStatistics'];
+    get: operations['adminGetDailyReservationStatistics'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1032,10 +1060,10 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * 날짜별 예약 조회
-     * @description 특정 날짜의 모든 예약을 조회합니다.
+     * 날짜별 예약
+     * @description 시작 일시가 해당 날짜인 예약을 조회합니다.
      */
-    get: operations['getReservationsByDate'];
+    get: operations['adminGetReservationsByDate'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1052,10 +1080,10 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * 기간별 예약 조회
-     * @description 특정 기간의 모든 예약을 조회합니다.
+     * 기간별 예약
+     * @description 시작 일시가 기간 안에 있는 예약을 조회합니다.
      */
-    get: operations['getReservationsByDateRange'];
+    get: operations['adminGetReservationsByDateRange'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1074,23 +1102,11 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    delete: operations['withdrawUser'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/user/delete/{email}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete: operations['deleteUser_1'];
+    /**
+     * 회원 탈퇴
+     * @description 로그인한 사용자를 삭제합니다. 예약·게시글·댓글·건의(첨부 이미지 파일 포함)·공지 읽음 기록 등 관련 데이터도 함께 삭제됩니다.
+     */
+    delete: operations['withdraw'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1106,7 +1122,11 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    delete: operations['deleteSuggestPost'];
+    /**
+     * 건의 삭제
+     * @description 작성자만 삭제할 수 있습니다. 답변과 첨부 이미지(S3 파일 포함)도 함께 삭제됩니다.
+     */
+    delete: operations['deleteSuggestion'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1122,7 +1142,11 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    delete: operations['deleteSuggestImage'];
+    /**
+     * 건의 이미지 삭제
+     * @description 건의 작성자만 삭제할 수 있습니다.
+     */
+    delete: operations['deleteSuggestionImage'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1138,7 +1162,11 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    delete: operations['deleteSuggestComment'];
+    /**
+     * 건의 답변 삭제 (관리자)
+     * @description 답변을 작성한 관리자 본인만 삭제할 수 있고, 삭제하면 건의의 `is_answered`가 false가 됩니다.
+     */
+    delete: operations['deleteSuggestionAnswer'];
     options?: never;
     head?: never;
     patch?: never;
@@ -1154,6 +1182,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
+    /**
+     * 공지 삭제 (관리자)
+     * @description 관리자 토큰이 필요합니다. 공지의 읽음 기록도 함께 삭제됩니다. 실패해도 HTTP 200이며 `error`에 사유가 담깁니다.
+     */
     delete: operations['deleteNotification'];
     options?: never;
     head?: never;
@@ -1165,156 +1197,1594 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     ChangeUsernameDTO: {
-      /** Format: int64 */
-      userId?: number;
-      newUsername?: string;
+      /**
+       * @description 새 닉네임 (중복 불가)
+       * @example 띵스룸
+       */
+      newUsername: string;
     };
+    /** @description 회원·인증 API 공통 응답 */
     ResponseDTO: {
-      message?: string;
+      /**
+       * @description 처리 결과 메시지 (성공·실패 모두 이 필드로 전달)
+       * @example 회원가입이 성공적으로 완료되었습니다.
+       */
+      message: string;
     };
     SuggestPostUpdateRequestDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 수정할 건의 ID
+       * @example 10
+       */
       suggest_id: number;
+      /**
+       * @description 건의 제목
+       * @example 보드마카가 다 떨어졌어요
+       */
       suggest_title: string;
+      /**
+       * @description 건의 내용
+       * @example 3번 방 보드마카를 채워주세요.
+       */
       suggest_content: string;
-      category: string;
-      location: string;
+      /**
+       * @description 카테고리 이름
+       * @example 기물 파손
+       * @enum {string}
+       */
+      category:
+        | '미예약 사용자 신고'
+        | '분실물'
+        | '기물 파손'
+        | '시설 고장'
+        | '소음 공해'
+        | '기타';
+      /**
+       * @description 위치 이름
+       * @example 스터디룸3
+       * @enum {string}
+       */
+      location:
+        | '스터디룸1'
+        | '스터디룸2'
+        | '스터디룸3'
+        | '스터디룸4'
+        | '스터디룸5';
+      /**
+       * @description 답변 완료 여부 (기존 값을 그대로 보내면 유지)
+       * @example false
+       */
       is_answered: boolean;
     };
+    /** @description 건의 API 성공 응답 */
+    SuggestionMessageResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 건의가 성공적으로 생성되었습니다!
+       */
+      message: string;
+    };
+    /** @description 건의 API 실패 응답 */
+    SuggestionErrorResponse: {
+      /**
+       * @description 실패 사유
+       * @example 건의 게시물을 찾을 수 없습니다. ID: 99
+       */
+      error: string;
+    };
+    /**
+     * @description 입력값 검증 실패. 키는 서버 필드명(camelCase, 예: answerContent), 값은 오류 메시지
+     * @example {
+     *       "answerContent": "댓글 내용은 비워둘 수 없습니다."
+     *     }
+     */
+    ValidationErrorResponse: {
+      [key: string]: string;
+    };
     SuggestPostCommentUpdateRequestDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 수정할 답변 ID
+       * @example 1
+       */
       comment_id: number;
+      /**
+       * @description 답변 내용
+       * @example 채워두었습니다. 감사합니다.
+       */
       answer_content: string;
     };
     NotificationUpdateRequestDTO: {
-      /** Format: int64 */
-      notificationId?: number;
-      title?: string;
-      content?: string;
+      /**
+       * Format: int64
+       * @description 수정할 공지 ID
+       * @example 3
+       */
+      notificationId: number;
+      /**
+       * @description 공지 제목 (255자 이하)
+       * @example 10월 스터디룸 운영 안내
+       */
+      title: string;
+      /**
+       * @description 공지 내용
+       * @example 10월 25일은 시설 점검으로 이용할 수 없습니다.
+       */
+      content: string;
     };
-    BaseResponseDTO: {
-      message?: string;
-      error?: string;
-      data?: unknown;
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTONotificationResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      data: components['schemas']['NotificationResponseDTO'] | null;
     };
+    /** @description 공지사항 */
+    NotificationResponseDTO: {
+      /**
+       * Format: int64
+       * @description 공지 ID
+       * @example 3
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 작성한 관리자 ID
+       * @example 14
+       */
+      userId: number;
+      /**
+       * @description 제목
+       * @example 10월 스터디룸 운영 안내
+       */
+      title: string;
+      /**
+       * @description 내용
+       * @example 10월 25일은 시설 점검으로 이용할 수 없습니다.
+       */
+      content: string;
+      /**
+       * Format: date-time
+       * @description 작성 일시
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @description 수정 일시
+       */
+      updatedAt: string;
+      /**
+       * Format: int32
+       * @description 조회수
+       * @example 3
+       */
+      viewCount: number;
+      /**
+       * @description 항상 "성공"
+       * @example 성공
+       */
+      message: string;
+      /**
+       * @description 로그인한 사용자의 읽음 여부. 목록·상세 조회에만 포함되며 비로그인 요청은 항상 false
+       * @example false
+       */
+      isRead?: boolean;
+    };
+    /** @description 게시글 작성·수정·삭제 요청 (API마다 필요한 필드가 다름) */
     CommunityPostRequestDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 게시글 ID (수정·삭제 시 필수)
+       * @example 15
+       */
       post_id?: number;
-      /** Format: int64 */
-      user_id?: number;
+      /**
+       * @description 제목 (작성·수정 시, 255자 이하)
+       * @example 스터디룸 이용 후기
+       */
       title?: string;
+      /**
+       * @description 본문 (작성·수정 시, 255자 이하)
+       * @example 조용하고 좋았어요.
+       */
       content?: string;
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @description 게시판 분류 번호 (작성·수정 시)
+       * @example 1
+       */
       category?: number;
     };
-    CommunityPostCommentRequestDTO: {
-      /** Format: int64 */
-      comment_id?: number;
-      /** Format: int64 */
-      post_id?: number;
-      /** Format: int64 */
-      user_id?: number;
-      comment_content?: string;
-      /** Format: int64 */
-      parent_comment_id?: number;
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOCommunityPostResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      data: components['schemas']['CommunityPostResponseDTO'] | null;
     };
+    /** @description 커뮤니티 게시글 */
+    CommunityPostResponseDTO: {
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       * @example 15
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 작성자 ID
+       * @example 10
+       */
+      user_id: number;
+      /**
+       * @description 제목
+       * @example 스터디룸 이용 후기
+       */
+      title: string | null;
+      /**
+       * @description 본문
+       * @example 조용하고 좋았어요.
+       */
+      content: string | null;
+      /**
+       * Format: int32
+       * @description 게시판 분류 번호
+       * @example 1
+       */
+      category: number | null;
+      /**
+       * Format: date-time
+       * @description 작성 일시
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description 수정 일시 (수정 전에는 작성 일시와 같음)
+       */
+      updated_at: string;
+      /**
+       * @description 항상 "성공"
+       * @example 성공
+       */
+      message: string;
+    };
+    /** @description 댓글 작성·수정·삭제 요청 (API마다 필요한 필드가 다름) */
+    CommunityPostCommentRequestDTO: {
+      /**
+       * Format: int64
+       * @description 댓글 ID (수정·삭제 시 필수)
+       * @example 8
+       */
+      comment_id?: number;
+      /**
+       * Format: int64
+       * @description 게시글 ID (작성 시 필수)
+       * @example 15
+       */
+      post_id?: number;
+      /**
+       * @description 댓글 내용 (작성·수정 시, 255자 이하)
+       * @example 저도 그렇게 생각해요.
+       */
+      comment_content?: string;
+      /**
+       * Format: int64
+       * @description 대댓글 작성 시 부모 댓글 ID (대댓글에는 다시 대댓글 불가)
+       * @example 8
+       */
+      parent_comment_id?: number | null;
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOCommunityPostCommentResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      data: components['schemas']['CommunityPostCommentResponseDTO'] | null;
+    };
+    /** @description 커뮤니티 댓글 (대댓글 포함) */
+    CommunityPostCommentResponseDTO: {
+      /**
+       * Format: int64
+       * @description 댓글 ID
+       * @example 8
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 게시글 ID
+       * @example 15
+       */
+      post_id: number;
+      /**
+       * Format: int64
+       * @description 작성자 ID
+       * @example 10
+       */
+      user_id: number;
+      /**
+       * @description 댓글 내용
+       * @example 저도 그렇게 생각해요.
+       */
+      comment_content: string | null;
+      /**
+       * Format: int64
+       * @description 부모 댓글 ID (일반 댓글이면 null)
+       * @example 8
+       */
+      parent_comment_id: number | null;
+      /**
+       * Format: date-time
+       * @description 작성 일시
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description 수정 일시
+       */
+      updated_at: string;
+      /**
+       * @description 항상 "성공"
+       * @example 성공
+       */
+      message: string;
+      /** @description 대댓글 목록 (게시글별 댓글 조회에서만 채워지고 그 외에는 null) */
+      replies:
+        | components['schemas']['CommunityPostCommentResponseDTO'][]
+        | null;
+      /**
+       * @description 댓글 종류
+       * @example COMMENT
+       * @enum {string}
+       */
+      comment_type: 'COMMENT' | 'REPLY';
+      /**
+       * Format: int64
+       * @description 대댓글 수 (대댓글 자신은 0)
+       * @example 1
+       */
+      reply_count: number;
+    };
+    /** @description 관리자 API 공통 응답 */
     AdminResponseDTO: {
-      message?: string;
-      success?: boolean;
-      data?: unknown;
+      /**
+       * @description 처리 결과 메시지
+       * @example 사용자 'kim'가 활성화되었습니다.
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      /**
+       * @description 메시지 전용 응답이라 null (데이터가 담긴 응답은 API별 스키마 참고)
+       * @enum {unknown|null}
+       */
+      data: null;
     };
     AdminRoomRequestDTO: {
-      roomName?: string;
-      roomStatus?: string;
+      /**
+       * @description 스터디룸 이름 (중복 불가)
+       * @example 6
+       */
+      roomName: string;
+      /**
+       * @description 스터디룸 상태 (생략 시 IDLE)
+       * @default IDLE
+       * @example IDLE
+       * @enum {string}
+       */
+      roomStatus: 'IDLE' | 'OCCUPIED' | 'MAINTENANCE';
     };
     EmailVerificationDTO: {
-      email?: string;
+      /**
+       * @description 확인할 이메일 (로그인한 계정의 이메일과 비교)
+       * @example student@mju.ac.kr
+       */
+      email: string;
     };
     SignUpDTO: {
-      email?: string;
-      username?: string;
-      password?: string;
-      age?: string;
-      studentNumber?: string;
+      /**
+       * @description 이메일 (중복 불가, 서버는 형식만 검사하고 도메인은 제한하지 않음)
+       * @example student@mju.ac.kr
+       */
+      email: string;
+      /**
+       * @description 닉네임 (중복 불가)
+       * @example 띵스룸
+       */
+      username: string;
+      /**
+       * @description 비밀번호 (6자 이상)
+       * @example password123
+       */
+      password: string;
+      /**
+       * @description 나이 (선택)
+       * @example 22
+       */
+      age?: string | null;
+      /**
+       * @description 학번 (선택)
+       * @example 60201234
+       */
+      studentNumber?: string | null;
     };
     ModifyPasswordDTO: {
-      email?: string;
-      password?: string;
-    };
-    JoinDTO: {
-      email?: string;
-      username?: string;
-      password?: string;
-      age?: string;
-      studentNumber?: string;
+      /**
+       * @description 가입한 이메일
+       * @example student@mju.ac.kr
+       */
+      email: string;
+      /**
+       * @description 새 비밀번호 (6자 이상)
+       * @example newPassword123
+       */
+      password: string;
     };
     CodeVerifyDTO: {
-      email?: string;
-      code?: string;
+      /**
+       * @description 인증 코드를 받은 이메일
+       * @example student@mju.ac.kr
+       */
+      email: string;
+      /**
+       * @description 메일로 받은 6자리 코드 (발송 후 5분 유효)
+       * @example 123456
+       */
+      code: string;
     };
     CodeSendDTO: {
-      email?: string;
+      /**
+       * @description 인증 코드를 받을 이메일
+       * @example student@mju.ac.kr
+       */
+      email: string;
     };
     SuggestPostCreateRequestDTO: {
+      /**
+       * @description 건의 제목
+       * @example 보드마카가 다 떨어졌어요
+       */
       suggest_title: string;
+      /**
+       * @description 건의 내용
+       * @example 3번 방 보드마카를 채워주세요.
+       */
       suggest_content: string;
-      category: string;
-      location: string;
+      /**
+       * @description 카테고리 이름
+       * @example 기물 파손
+       * @enum {string}
+       */
+      category:
+        | '미예약 사용자 신고'
+        | '분실물'
+        | '기물 파손'
+        | '시설 고장'
+        | '소음 공해'
+        | '기타';
+      /**
+       * @description 위치 이름
+       * @example 스터디룸3
+       * @enum {string}
+       */
+      location:
+        | '스터디룸1'
+        | '스터디룸2'
+        | '스터디룸3'
+        | '스터디룸4'
+        | '스터디룸5';
     };
     SuggestPostImageUploadRequestDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 이미지를 첨부할 건의 ID (본인 건의만 가능)
+       * @example 10
+       */
       suggest_post_id: number;
     };
+    /** @description 이미지 업로드 결과 */
+    SuggestionImageUploadResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 건의 이미지가 성공적으로 업로드되었습니다!
+       */
+      message: string;
+      /**
+       * Format: int64
+       * @description 생성된 이미지 ID
+       * @example 2
+       */
+      image_id: number;
+      /**
+       * @description 이미지 URL (S3)
+       * @example https://ddingsroom-bucket.s3.ap-northeast-2.amazonaws.com/suggest-images/3f2b...-board.png
+       */
+      image_url: string;
+    };
     SuggestPostCommentCreateRequestDTO: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description 답변할 건의 ID
+       * @example 10
+       */
       suggest_post_id: number;
+      /**
+       * @description 답변 내용
+       * @example 채워두었습니다. 감사합니다.
+       */
       answer_content: string;
     };
     ReservationRequestDTO: {
-      /** Format: int64 */
-      userId?: number;
-      /** Format: int64 */
-      roomId?: number;
-      /** Format: date-time */
-      reservationStartTime?: string;
-      /** Format: date-time */
-      reservationEndTime?: string;
+      /**
+       * Format: int64
+       * @description 스터디룸 ID
+       * @example 1
+       */
+      roomId: number;
+      /**
+       * Format: date-time
+       * @description 시작 일시 (KST)
+       */
+      reservationStartTime: string;
+      /**
+       * Format: date-time
+       * @description 종료 일시 (KST, 시작 후 1시간 또는 2시간)
+       */
+      reservationEndTime: string;
+    };
+    /** @description 예약 API 처리 결과 */
+    ReservationMessageResponse: {
+      /**
+       * @description 처리 결과 메시지 (성공·실패 모두 이 필드로 전달)
+       * @example 예약이 성공적으로 완료되었습니다.
+       */
+      message: string;
     };
     ReservationCancelRequestDTO: {
-      /** Format: int64 */
-      userId?: number;
-      /** Format: int64 */
-      reservationId?: number;
+      /**
+       * Format: int64
+       * @description 취소할 예약 ID
+       * @example 26
+       */
+      reservationId: number;
     };
     NotificationViewCountRequestDTO: {
-      /** Format: int64 */
-      notificationId?: number;
+      /**
+       * Format: int64
+       * @description 조회수를 올릴 공지 ID
+       * @example 3
+       */
+      notificationId: number;
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOVoid: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      /**
+       * @description 응답 데이터 (실패했거나 데이터가 없으면 null)
+       * @enum {unknown|null}
+       */
+      data: null;
+    };
+    NotificationReadRequestDTO: {
+      /**
+       * Format: int64
+       * @description 읽음 처리할 공지 ID
+       * @example 3
+       */
+      notificationId: number;
+    };
+    /** @description 공지 읽음 처리 실패 응답 */
+    NotificationErrorResponse: {
+      /** @description 항상 null */
+      message: string | null;
+      /**
+       * @description 실패 사유
+       * @example 공지사항을 찾을 수 없습니다.
+       */
+      error: string;
+      /**
+       * @description 항상 null
+       * @enum {unknown|null}
+       */
+      data: null;
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTONotificationReadResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      data: components['schemas']['NotificationReadResponseDTO'] | null;
+    };
+    /** @description 공지 읽음 처리 결과 */
+    NotificationReadResponseDTO: {
+      /**
+       * Format: int64
+       * @description 공지 ID
+       * @example 3
+       */
+      notificationId: number;
+      /**
+       * Format: date-time
+       * @description 처음 읽은 일시 (다시 호출해도 바뀌지 않음)
+       */
+      readAt: string;
+      /**
+       * @description 항상 true
+       * @example true
+       */
+      isRead: boolean;
     };
     NotificationCreateRequestDTO: {
-      title?: string;
-      content?: string;
+      /**
+       * @description 공지 제목 (255자 이하)
+       * @example 10월 스터디룸 운영 안내
+       */
+      title: string;
+      /**
+       * @description 공지 내용
+       * @example 10월 25일은 시설 점검으로 이용할 수 없습니다.
+       */
+      content: string;
     };
+    /** @description 건의 */
+    SuggestPostResponseDTO: {
+      /**
+       * Format: int64
+       * @description 건의 ID
+       * @example 10
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 작성자 ID
+       * @example 15
+       */
+      user_id: number;
+      /**
+       * @description 건의 제목
+       * @example 보드마카가 다 떨어졌어요
+       */
+      suggest_title: string;
+      /**
+       * @description 건의 내용
+       * @example 3번 방 보드마카를 채워주세요.
+       */
+      suggest_content: string;
+      /**
+       * Format: date-time
+       * @description 작성 일시
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description 수정 일시
+       */
+      updated_at: string;
+      /**
+       * @description 카테고리 이름
+       * @example 기물 파손
+       * @enum {string}
+       */
+      category:
+        | '미예약 사용자 신고'
+        | '분실물'
+        | '기물 파손'
+        | '시설 고장'
+        | '소음 공해'
+        | '기타';
+      /**
+       * @description 위치 이름
+       * @example 스터디룸3
+       * @enum {string}
+       */
+      location:
+        | '스터디룸1'
+        | '스터디룸2'
+        | '스터디룸3'
+        | '스터디룸4'
+        | '스터디룸5';
+      /**
+       * @description 관리자 답변 완료 여부
+       * @example false
+       */
+      is_answered: boolean;
+    };
+    /** @description 건의 목록. 결과가 없으면 suggestions 없이 message만 온다 */
+    SuggestionListResponse: {
+      /**
+       * @description "성공" 또는 결과 없음 안내 (`등록된 건의가 없습니다.`, `검색 조건에 해당하는 건의를 찾을 수 없습니다.`)
+       * @example 성공
+       */
+      message: string;
+      /** @description 건의 목록 (결과가 없으면 필드 자체가 없음) */
+      suggestions?: components['schemas']['SuggestPostResponseDTO'][];
+    };
+    /** @description 건의 첨부 이미지 */
+    SuggestPostImageResponseDTO: {
+      /**
+       * Format: int64
+       * @description 이미지 ID
+       * @example 1
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 건의 ID
+       * @example 10
+       */
+      suggest_post_id: number;
+      /**
+       * @description 저장된 파일 이름
+       * @example 3f2b...-board.png
+       */
+      file_name: string;
+      /**
+       * @description 이미지 URL (S3)
+       * @example https://ddingsroom-bucket.s3.ap-northeast-2.amazonaws.com/suggest-images/3f2b...-board.png
+       */
+      file_url: string;
+      /**
+       * @description MIME 타입
+       * @example image/png
+       */
+      file_type: string;
+      /**
+       * Format: date-time
+       * @description 업로드 일시
+       */
+      uploaded_date: string;
+    };
+    /** @description 건의 첨부 이미지 목록 */
+    SuggestionImageListResponse: {
+      /**
+       * @description "성공" 또는 `해당 건의에 첨부된 이미지가 없습니다.`
+       * @example 성공
+       */
+      message: string;
+      /** @description 이미지 목록 (없으면 빈 배열) */
+      images: components['schemas']['SuggestPostImageResponseDTO'][];
+    };
+    /** @description 건의에 대한 관리자 답변 */
+    SuggestPostCommentResponseDTO: {
+      /**
+       * Format: int64
+       * @description 답변 ID
+       * @example 1
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 건의 ID
+       * @example 10
+       */
+      suggest_post_id: number;
+      /**
+       * Format: int64
+       * @description 답변한 관리자 ID
+       * @example 14
+       */
+      user_id: number;
+      /**
+       * @description 답변 내용
+       * @example 채워두었습니다. 감사합니다.
+       */
+      answer_content: string;
+      /**
+       * Format: date-time
+       * @description 작성 일시
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description 수정 일시
+       */
+      updated_at: string;
+    };
+    /** @description 건의 답변 목록 (건의당 최대 1개) */
+    SuggestionAnswerListResponse: {
+      /**
+       * @description "성공" 또는 `해당 건의에 댓글이 존재하지 않습니다.`
+       * @example 성공
+       */
+      message: string;
+      /** @description 답변 목록 (없으면 빈 배열) */
+      comments: components['schemas']['SuggestPostCommentResponseDTO'][];
+    };
+    /** @description 예약 정보 */
     ReservationDTO: {
-      /** Format: int64 */
-      id?: number;
-      /** Format: int64 */
-      userId?: number;
-      /** Format: int64 */
-      roomId?: number;
-      roomName?: string;
-      /** Format: date-time */
-      startTime?: string;
-      /** Format: date-time */
-      endTime?: string;
-      status?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      /**
+       * Format: int64
+       * @description 예약 ID
+       * @example 26
+       */
+      id: number;
+      /**
+       * Format: int64
+       * @description 예약한 사용자 ID
+       * @example 10
+       */
+      userId: number;
+      /**
+       * Format: int64
+       * @description 스터디룸 ID
+       * @example 1
+       */
+      roomId: number;
+      /**
+       * @description 스터디룸 이름
+       * @example 1
+       */
+      roomName: string;
+      /**
+       * Format: date-time
+       * @description 시작 일시 (KST)
+       */
+      startTime: string;
+      /**
+       * Format: date-time
+       * @description 종료 일시 (KST)
+       */
+      endTime: string;
+      /**
+       * @description 예약 상태
+       * @example RESERVED
+       * @enum {string}
+       */
+      status: 'RESERVED' | 'CANCELLED';
+      /**
+       * Format: date-time
+       * @description 예약 생성 일시
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @description 마지막 수정 일시 (취소 시각 포함)
+       */
+      updatedAt: string;
     };
+    /** @description 예약 목록 응답 */
     ReservationResponseDTO: {
-      message?: string;
-      reservations?: components['schemas']['ReservationDTO'][];
+      /**
+       * @description 처리 결과 메시지
+       * @example 데이터 조회가 성공적으로 진행되었습니다.
+       */
+      message: string;
+      /** @description 예약 목록 (오류 시 빈 배열) */
+      reservations: components['schemas']['ReservationDTO'][];
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOLong: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      /**
+       * Format: int64
+       * @description 응답 데이터 (실패했거나 데이터가 없으면 null)
+       */
+      data: number | null;
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOListNotificationResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      /** @description 응답 데이터 (실패했거나 데이터가 없으면 null) */
+      data: components['schemas']['NotificationResponseDTO'][] | null;
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOListCommunityPostResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      /** @description 응답 데이터 (실패했거나 데이터가 없으면 null) */
+      data: components['schemas']['CommunityPostResponseDTO'][] | null;
+    };
+    /** @description 조건부 게시글 조회 결과 */
+    CommunityPostSearchResponse: {
+      /** @description 게시글 목록 (없거나 오류면 빈 배열) */
+      posts: components['schemas']['CommunityPostResponseDTO'][];
+    };
+    /** @description 공통 응답. 성공 시 message·data, 실패 시 error가 채워짐 */
+    BaseResponseDTOListCommunityPostCommentResponseDTO: {
+      /** @description 성공 메시지 (실패 시 null) */
+      message: string | null;
+      /** @description 실패 사유 (성공 시 null) */
+      error: string | null;
+      /** @description 응답 데이터 (실패했거나 데이터가 없으면 null) */
+      data: components['schemas']['CommunityPostCommentResponseDTO'][] | null;
+    };
+    /** @description 사용자 정보 (관리자용) */
+    AdminUserDTO: {
+      /**
+       * Format: int64
+       * @description 사용자 ID
+       * @example 10
+       */
+      id: number;
+      /**
+       * @description 이메일
+       * @example student@mju.ac.kr
+       */
+      email: string | null;
+      /**
+       * @description 닉네임
+       * @example 띵스룸
+       */
+      username: string;
+      /**
+       * @description 나이
+       * @example 22
+       */
+      age: string | null;
+      /**
+       * @description 학번
+       * @example 60201234
+       */
+      studentNumber: string | null;
+      /**
+       * @description 권한
+       * @example ROLE_USER
+       * @enum {string}
+       */
+      role: 'ROLE_USER' | 'ROLE_ADMIN';
+      /**
+       * @description 계정 상태
+       * @example normal
+       * @enum {string|null}
+       */
+      state: 'normal' | 'blocked' | null;
+      /**
+       * Format: date-time
+       * @description 가입 일시
+       */
+      registrationDate: string;
+    };
+    /** @description 전체 사용자 목록 */
+    AdminUserListResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 사용자 목록 조회 성공
+       */
+      message: string;
+      users: components['schemas']['AdminUserDTO'][];
+      /**
+       * Format: int32
+       * @description 사용자 수
+       * @example 12
+       */
+      totalCount: number;
+    };
+    /** @description 사용자 상세 */
+    AdminUserDetailResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminUserDTO'];
+    };
+    /** @description 사용자 통계 */
+    AdminUserStatistics: {
+      /**
+       * Format: int64
+       * @description 전체 사용자 수
+       * @example 12
+       */
+      totalUsers: number;
+      /**
+       * Format: int64
+       * @description 관리자 수
+       * @example 8
+       */
+      adminCount: number;
+      /**
+       * Format: int64
+       * @description 일반 사용자 수
+       * @example 4
+       */
+      normalUserCount: number;
+      /**
+       * Format: int64
+       * @description 상태 normal 수
+       * @example 12
+       */
+      activeUsers: number;
+      /**
+       * Format: int64
+       * @description 상태 blocked 수
+       * @example 0
+       */
+      blockedUsers: number;
+      /**
+       * Format: int64
+       * @description 최근 7일 가입자 수
+       * @example 1
+       */
+      recentUsers: number;
+    };
+    /** @description 사용자 통계 응답 */
+    AdminUserStatisticsResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminUserStatistics'];
+    };
+    /** @description 예약 집계 */
+    AdminSystemReservationStats: {
+      /**
+       * Format: int64
+       * @example 21
+       */
+      total: number;
+      /**
+       * Format: int64
+       * @example 12
+       */
+      active: number;
+      /**
+       * Format: int64
+       * @example 9
+       */
+      cancelled: number;
+    };
+    /** @description 스터디룸 집계 */
+    AdminSystemRoomStats: {
+      /**
+       * Format: int64
+       * @example 5
+       */
+      total: number;
+      /**
+       * Format: int64
+       * @example 5
+       */
+      idle: number;
+      /**
+       * Format: int64
+       * @example 0
+       */
+      occupied: number;
+      /**
+       * Format: int64
+       * @example 0
+       */
+      maintenance: number;
+    };
+    /** @description 전체 시스템 통계 */
+    AdminSystemStatistics: {
+      users: components['schemas']['AdminSystemUserStats'];
+      reservations: components['schemas']['AdminSystemReservationStats'];
+      rooms: components['schemas']['AdminSystemRoomStats'];
+      /**
+       * Format: date-time
+       * @description 생성 시각
+       */
+      generatedAt: string;
+    };
+    /** @description 전체 시스템 통계 응답 */
+    AdminSystemStatisticsResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminSystemStatistics'];
+    };
+    /** @description 사용자 집계 */
+    AdminSystemUserStats: {
+      /**
+       * Format: int64
+       * @example 12
+       */
+      total: number;
+      /**
+       * Format: int64
+       * @example 8
+       */
+      admins: number;
+      /**
+       * Format: int64
+       * @example 4
+       */
+      users: number;
+      /**
+       * Format: int64
+       * @example 12
+       */
+      active: number;
+      /**
+       * Format: int64
+       * @example 0
+       */
+      blocked: number;
+    };
+    /** @description JVM 메모리 (bytes) */
+    AdminMemoryInfo: {
+      /**
+       * Format: int64
+       * @example 268435456
+       */
+      total: number;
+      /**
+       * Format: int64
+       * @example 134217728
+       */
+      used: number;
+      /**
+       * Format: int64
+       * @example 134217728
+       */
+      free: number;
+      /**
+       * Format: double
+       * @example 50
+       */
+      usagePercentage: number;
+    };
+    /** @description 시스템 상태 */
+    AdminSystemHealth: {
+      /**
+       * @example healthy
+       * @enum {string}
+       */
+      database: 'healthy' | 'error';
+      memory: components['schemas']['AdminMemoryInfo'];
+      /** @example running */
+      server: string;
+      /**
+       * Format: int64
+       * @description 조회 시점의 현재 시각(epoch ms)
+       * @example 1792641791000
+       */
+      uptime: number;
+      /**
+       * Format: date-time
+       * @description 조회 시각
+       */
+      checkTime: string;
+    };
+    /** @description 시스템 상태 응답 */
+    AdminSystemHealthResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminSystemHealth'];
+    };
+    /** @description 대시보드 */
+    AdminDashboard: {
+      /**
+       * Format: int64
+       * @example 12
+       */
+      totalUsers: number;
+      /**
+       * Format: int64
+       * @example 21
+       */
+      totalReservations: number;
+      /**
+       * Format: int64
+       * @example 5
+       */
+      totalRooms: number;
+      /**
+       * Format: int64
+       * @description 오늘 생성된 예약 수
+       * @example 2
+       */
+      todayReservations: number;
+      /**
+       * Format: int64
+       * @description RESERVED 수
+       * @example 12
+       */
+      activeReservations: number;
+      systemStatus: components['schemas']['AdminSystemStatus'];
+    };
+    /** @description 대시보드 응답 */
+    AdminDashboardResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminDashboard'];
+    };
+    /** @description 시스템 상태 */
+    AdminSystemStatus: {
+      /** @example healthy */
+      database: string;
+      /** @example running */
+      server: string;
+      /**
+       * Format: date-time
+       * @description 조회 시각
+       */
+      lastUpdate: string;
+    };
+    /** @description 스터디룸 */
+    AdminRoom: {
+      /**
+       * Format: int64
+       * @description 스터디룸 ID
+       * @example 1
+       */
+      id: number;
+      /**
+       * @description 스터디룸 이름
+       * @example 1
+       */
+      roomName: string;
+      /**
+       * @description 상태
+       * @example IDLE
+       * @enum {string}
+       */
+      roomStatus: 'IDLE' | 'OCCUPIED' | 'MAINTENANCE';
+    };
+    /** @description 전체 스터디룸 목록 */
+    AdminRoomListResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 스터디룸 목록 조회 성공
+       */
+      message: string;
+      rooms: components['schemas']['AdminRoom'][];
+      /**
+       * Format: int32
+       * @description 스터디룸 수
+       * @example 5
+       */
+      totalCount: number;
+    };
+    /** @description 스터디룸 상세 */
+    AdminRoomDetailResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminRoom'];
+    };
+    /** @description 특정 스터디룸의 예약 목록 */
+    AdminRoomReservationsResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 스터디룸 '1'의 예약 현황 조회 성공
+       */
+      message: string;
+      room: components['schemas']['AdminRoom'];
+      reservations: components['schemas']['ReservationDTO'][];
+      /**
+       * Format: int32
+       * @description 예약 수
+       * @example 18
+       */
+      totalCount: number;
+    };
+    /** @description 스터디룸 통계 */
+    AdminRoomStatistics: {
+      /**
+       * Format: int64
+       * @description 전체 스터디룸 수
+       * @example 5
+       */
+      totalRooms: number;
+      /**
+       * Format: int64
+       * @description IDLE 수
+       * @example 5
+       */
+      idleRooms: number;
+      /**
+       * Format: int64
+       * @description OCCUPIED 수
+       * @example 0
+       */
+      occupiedRooms: number;
+      /**
+       * Format: int64
+       * @description MAINTENANCE 수
+       * @example 0
+       */
+      maintenanceRooms: number;
+      /**
+       * @description 스터디룸 이름별 전체 예약 수
+       * @example {
+       *       "1": 18,
+       *       "2": 3
+       *     }
+       */
+      roomReservationCounts: {
+        [key: string]: number;
+      };
+    };
+    /** @description 스터디룸 통계 응답 */
+    AdminRoomStatisticsResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminRoomStatistics'];
+    };
+    /** @description 전체 예약 목록 */
+    AdminReservationListResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 전체 예약 조회 성공
+       */
+      message: string;
+      reservations: components['schemas']['ReservationDTO'][];
+      /**
+       * Format: int32
+       * @description 예약 수
+       * @example 21
+       */
+      totalCount: number;
+    };
+    /** @description 예약 상세 */
+    AdminReservationDetailResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['ReservationDTO'];
+    };
+    /** @description 특정 사용자의 예약 목록 */
+    AdminUserReservationsResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 사용자 'kim'의 예약 조회 성공
+       */
+      message: string;
+      /**
+       * @description 사용자 닉네임
+       * @example kim
+       */
+      user: string;
+      /**
+       * Format: int64
+       * @description 사용자 ID
+       * @example 10
+       */
+      userId: number;
+      reservations: components['schemas']['ReservationDTO'][];
+      /**
+       * Format: int32
+       * @description 예약 수
+       * @example 3
+       */
+      totalCount: number;
+    };
+    /** @description 예약 통계 */
+    AdminReservationStatistics: {
+      /**
+       * Format: int64
+       * @description 전체 예약 수
+       * @example 21
+       */
+      totalReservations: number;
+      /**
+       * Format: int64
+       * @description RESERVED 수
+       * @example 12
+       */
+      activeReservations: number;
+      /**
+       * Format: int64
+       * @description CANCELLED 수
+       * @example 9
+       */
+      cancelledReservations: number;
+      /**
+       * Format: int64
+       * @description 오늘 생성된 예약 수
+       * @example 2
+       */
+      todayReservations: number;
+      /**
+       * Format: int64
+       * @description 최근 7일 생성된 예약 수
+       * @example 5
+       */
+      weeklyReservations: number;
+    };
+    /** @description 예약 통계 응답 */
+    AdminReservationStatisticsResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminReservationStatistics'];
+    };
+    /** @description 일별 예약 통계 (시작 일시 기준) */
+    AdminDailyReservationStatistics: {
+      /**
+       * Format: date
+       * @description 날짜
+       * @example 2026-10-21
+       */
+      date: string;
+      /**
+       * Format: int64
+       * @description 예약 수
+       * @example 4
+       */
+      totalReservations: number;
+      /**
+       * Format: int64
+       * @description RESERVED 수
+       * @example 3
+       */
+      activeReservations: number;
+      /**
+       * Format: int64
+       * @description CANCELLED 수
+       * @example 1
+       */
+      cancelledReservations: number;
+      /**
+       * @description 시작 시각별 예약 수 (키: "09:00" ~ "22:00")
+       * @example {
+       *       "09:00": 0,
+       *       "10:00": 2
+       *     }
+       */
+      hourlyStatistics: {
+        [key: string]: number;
+      };
+    };
+    /** @description 일별 예약 통계 응답 */
+    AdminDailyReservationStatisticsResponse: {
+      /**
+       * @description 처리 결과 메시지
+       * @example 조회 성공
+       */
+      message: string;
+      /**
+       * @description 성공 여부
+       * @example true
+       */
+      success: boolean;
+      data: components['schemas']['AdminDailyReservationStatistics'];
+    };
+    /** @description 날짜별 예약 (시작 일시 기준) */
+    AdminReservationsByDateResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 2026-10-21 날짜의 예약 조회 성공
+       */
+      message: string;
+      /**
+       * Format: date
+       * @description 조회한 날짜
+       * @example 2026-10-21
+       */
+      date: string;
+      reservations: components['schemas']['ReservationDTO'][];
+      /**
+       * Format: int32
+       * @description 예약 수
+       * @example 3
+       */
+      totalCount: number;
+    };
+    /** @description 기간별 예약 (시작 일시 기준) */
+    AdminReservationsByDateRangeResponse: {
+      /**
+       * @description 결과 메시지
+       * @example 2026-10-01 ~ 2026-10-31 기간의 예약 조회 성공
+       */
+      message: string;
+      /**
+       * Format: date
+       * @description 시작 날짜
+       * @example 2026-10-01
+       */
+      startDate: string;
+      /**
+       * Format: date
+       * @description 종료 날짜
+       * @example 2026-10-31
+       */
+      endDate: string;
+      reservations: components['schemas']['ReservationDTO'][];
+      /**
+       * Format: int32
+       * @description 예약 수
+       * @example 10
+       */
+      totalCount: number;
+    };
+    /** @description 인증·권한 실패, 없는 경로, 처리되지 않은 오류에 쓰이는 Spring 기본 오류 본문 */
+    CommonErrorResponse: {
+      /**
+       * Format: int64
+       * @description 오류 발생 시각 (epoch milliseconds)
+       * @example 1792647801123
+       */
+      timestamp: number;
+      /**
+       * Format: int32
+       * @description HTTP 상태 코드
+       * @example 403
+       */
+      status: number;
+      /**
+       * @description 상태 코드 이름
+       * @example Forbidden
+       */
+      error: string;
+      /**
+       * @description 요청 경로
+       * @example /api/reservations/me
+       */
+      path: string;
     };
   };
   responses: never;
@@ -1325,6 +2795,94 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  login: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/x-www-form-urlencoded': {
+          /**
+           * Format: email
+           * @description 가입한 이메일
+           * @example student@mju.ac.kr
+           */
+          email: string;
+          /**
+           * Format: password
+           * @description 비밀번호
+           * @example password123
+           */
+          password: string;
+        };
+        'multipart/form-data': {
+          /**
+           * Format: email
+           * @description 가입한 이메일
+           * @example student@mju.ac.kr
+           */
+          email: string;
+          /**
+           * Format: password
+           * @description 비밀번호
+           * @example password123
+           */
+          password: string;
+        };
+      };
+    };
+    responses: {
+      /** @description 로그인 성공 (본문 없음) */
+      200: {
+        headers: {
+          /** @description 액세스 토큰(JWT). 이후 `Authorization: Bearer {access}`로 전송 */
+          access?: string;
+          /** @description `refresh={리프레시 토큰}; Max-Age=86400; HttpOnly` */
+          'Set-Cookie'?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 이메일 또는 비밀번호 불일치 (본문 없음) */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  logout: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie: {
+        /** @description 로그인·재발급 때 받은 리프레시 토큰 */
+        refresh: string;
+      };
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 로그아웃 성공 (refresh 쿠키 만료) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description refresh 쿠키가 없거나 만료·변조·이미 폐기된 토큰 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   changeUsername: {
     parameters: {
       query?: never;
@@ -1338,25 +2896,104 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 변경 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "사용자명이 성공적으로 변경되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 닉네임 누락 또는 중복 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": "중복된 이름입니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
   };
-  retrieveSuggestPosts: {
+  getSuggestions: {
     parameters: {
       query?: {
+        /**
+         * @description 건의 ID
+         * @example 10
+         */
         suggest_id?: number;
+        /**
+         * @description 작성자 ID
+         * @example 15
+         */
         user_id?: number;
-        category?: string;
-        location?: string;
+        /** @description 카테고리 이름 */
+        category?:
+          | '미예약 사용자 신고'
+          | '분실물'
+          | '기물 파손'
+          | '시설 고장'
+          | '소음 공해'
+          | '기타';
+        /** @description 위치 이름 */
+        location?:
+          | '스터디룸1'
+          | '스터디룸2'
+          | '스터디룸3'
+          | '스터디룸4'
+          | '스터디룸5';
+        /**
+         * @description 답변 완료 여부
+         * @example false
+         */
         is_answered?: boolean;
       };
       header?: never;
@@ -1365,20 +3002,54 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: unknown;
-          };
+          'application/json': components['schemas']['SuggestionListResponse'];
+        };
+      };
+      /** @description 카테고리·위치 이름 오류 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  updateSuggestPost: {
+  updateSuggestion: {
     parameters: {
       query?: never;
       header?: never;
@@ -1391,20 +3062,68 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 수정 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의가 성공적으로 업데이트되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 입력값 검증 실패(필드별 메시지), 건의 없음, 카테고리·위치 이름 오류 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['ValidationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 작성자가 아님 / 토큰 없음은 공통 오류 본문 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "게시물 수정 권한이 없습니다."
+           *     }
+           */
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  createSuggestPost: {
+  createSuggestion: {
     parameters: {
       query?: never;
       header?: never;
@@ -1417,22 +3136,62 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
-      200: {
+      /** @description 작성 성공 */
+      201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 입력값 검증 실패(필드별 메시지) 또는 카테고리·위치 이름 오류 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['ValidationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  retrieveSuggestComments: {
+  getSuggestionAnswers: {
     parameters: {
       query: {
+        /**
+         * @description 건의 ID
+         * @example 10
+         */
         suggest_post_id: number;
       };
       header?: never;
@@ -1441,20 +3200,54 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: unknown;
-          };
+          'application/json': components['schemas']['SuggestionAnswerListResponse'];
+        };
+      };
+      /** @description 건의 없음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  updateSuggestComment: {
+  updateSuggestionAnswer: {
     parameters: {
       query?: never;
       header?: never;
@@ -1467,20 +3260,63 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 수정 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의 댓글이 성공적으로 업데이트되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 입력값 검증 실패(필드별 메시지), 답변 없음, 작성자가 아님 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['ValidationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 관리자가 아님 / 토큰 없음은 공통 오류 본문 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  createSuggestComment: {
+  createSuggestionAnswer: {
     parameters: {
       query?: never;
       header?: never;
@@ -1493,15 +3329,63 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
-      200: {
+      /** @description 작성 성공 */
+      201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의 댓글이 성공적으로 생성되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 입력값 검증 실패(필드별 메시지) 또는 건의 없음·이미 답변 있음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['ValidationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 관리자가 아님 / 토큰 없음은 공통 오류 본문 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "댓글 생성 권한이 없습니다. (관리자 전용 기능)"
+           *     }
+           */
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
@@ -1519,18 +3403,27 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 수정된 공지, 실패 시 error (`관리자 권한이 필요합니다.`, `공지사항을 찾을 수 없습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTONotificationResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
     };
   };
-  getAllCommunityPosts: {
+  getCommunityPosts: {
     parameters: {
       query?: never;
       header?: never;
@@ -1539,13 +3432,31 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 게시글 목록 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1559,17 +3470,43 @@ export interface operations {
     };
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "post_id": 15,
+         *       "title": "수정한 제목",
+         *       "content": "수정한 내용",
+         *       "category": 1
+         *     }
+         */
         'application/json': components['schemas']['CommunityPostRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 수정된 게시글, 실패 시 error (`게시글을 찾을 수 없습니다.`, `작성자만 수정할 수 있습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1583,17 +3520,42 @@ export interface operations {
     };
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "title": "스터디룸 이용 후기",
+         *       "content": "조용하고 좋았어요.",
+         *       "category": 1
+         *     }
+         */
         'application/json': components['schemas']['CommunityPostRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 작성된 게시글, 실패 시 error */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1607,17 +3569,40 @@ export interface operations {
     };
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "post_id": 15
+         *     }
+         */
         'application/json': components['schemas']['CommunityPostRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 message만, 실패 시 error (`삭제하려는 게시글이 존재하지 않습니다.`, `작성자만 삭제할 수 있습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOVoid'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1631,17 +3616,41 @@ export interface operations {
     };
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "comment_id": 8,
+         *       "comment_content": "수정한 댓글"
+         *     }
+         */
         'application/json': components['schemas']['CommunityPostCommentRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 수정된 댓글, 실패 시 error (`댓글을 찾을 수 없습니다.`, `작성자만 수정할 수 있습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOCommunityPostCommentResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1659,13 +3668,31 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 작성된 댓글, 실패 시 error (`존재하지 않는 게시글입니다.`, `부모 댓글을 찾을 수 없습니다.`, `대댓글에는 더 이상 댓글을 달 수 없습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOCommunityPostCommentResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
@@ -1679,102 +3706,272 @@ export interface operations {
     };
     requestBody: {
       content: {
+        /**
+         * @example {
+         *       "comment_id": 8
+         *     }
+         */
         'application/json': components['schemas']['CommunityPostCommentRequestDTO'];
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 message만, 실패 시 error (`삭제하려는 댓글이 존재하지 않습니다.`, `작성자만 삭제할 수 있습니다.`, `대댓글이 있는 댓글은 삭제할 수 없습니다. 먼저 대댓글을 삭제해주세요.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOVoid'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  updateUserStatus: {
+  adminUpdateUserStatus: {
     parameters: {
       query: {
-        /** @description 변경할 상태 (normal/blocked) */
-        status: string;
+        /** @description 변경할 상태 */
+        status: 'normal' | 'blocked';
       };
       header?: never;
       path: {
-        /** @description 사용자 ID */
+        /**
+         * @description 사용자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 변경 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID 또는 상태 값 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  updateUserRole: {
+  adminUpdateUserRole: {
     parameters: {
       query: {
-        /** @description 변경할 권한 (ROLE_USER/ROLE_ADMIN) */
-        role: string;
+        /** @description 변경할 권한 */
+        role: 'ROLE_USER' | 'ROLE_ADMIN';
       };
       header?: never;
       path: {
-        /** @description 사용자 ID */
+        /**
+         * @description 사용자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 변경 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID 또는 권한 값 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getRoomById: {
+  adminGetRoom: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 스터디룸 ID */
+        /**
+         * @description 스터디룸 ID
+         * @example 1
+         */
         roomId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminRoomDetailResponse'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 스터디룸 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  updateRoom: {
+  adminUpdateRoom: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 스터디룸 ID */
+        /**
+         * @description 스터디룸 ID
+         * @example 1
+         */
         roomId: number;
       };
       cookie?: never;
@@ -1785,62 +3982,203 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 수정 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID, 이름 누락·중복 또는 잘못된 상태 값 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 스터디룸 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  deleteRoom: {
+  adminDeleteRoom: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 스터디룸 ID */
+        /**
+         * @description 스터디룸 ID
+         * @example 1
+         */
         roomId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID, 활성 예약 있음, 예약 이력 있음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 스터디룸 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 삭제 실패 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  updateRoomStatus: {
+  adminUpdateRoomStatus: {
     parameters: {
       query: {
-        /** @description 변경할 상태 (IDLE/OCCUPIED/MAINTENANCE) */
-        status: string;
+        /** @description 변경할 상태 */
+        status: 'IDLE' | 'OCCUPIED' | 'MAINTENANCE';
       };
       header?: never;
       path: {
-        /** @description 스터디룸 ID */
+        /**
+         * @description 스터디룸 ID
+         * @example 1
+         */
         roomId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 변경 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID 또는 상태 값 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 스터디룸 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
@@ -1858,14 +4196,59 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 일치 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "사용자 이메일이 일치합니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 불일치 또는 이메일 누락 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": "사용자 이메일이 일치하지 않습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
@@ -1883,14 +4266,36 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 가입 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "회원가입이 성공적으로 완료되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 입력값 오류 또는 이메일·닉네임 중복 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
@@ -1908,44 +4313,41 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 변경 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "비밀번호가 성공적으로 변경되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
-    };
-  };
-  joinProcess: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['JoinDTO'];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 입력값 오류 또는 가입되지 않은 이메일 */
+      400: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
   };
-  codeVerify: {
+  verifyCode: {
     parameters: {
       query?: never;
       header?: never;
@@ -1958,19 +4360,41 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 인증 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "이메일 인증이 성공적으로 완료되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 코드 불일치·만료·미발송 또는 입력값 누락 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
   };
-  codeSend: {
+  sendVerificationCode: {
     parameters: {
       query?: never;
       header?: never;
@@ -1983,41 +4407,91 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 발송 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "인증 코드가 student@mju.ac.kr로 전송되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 이메일 누락 또는 형식 오류 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": "올바른 이메일 형식이 아닙니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 메일 발송 실패 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
   };
-  reissue: {
+  reissueToken: {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
-      cookie?: never;
+      cookie: {
+        /** @description 로그인·재발급 때 받은 리프레시 토큰 */
+        refresh: string;
+      };
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 재발급 성공 (본문 없음) */
       200: {
+        headers: {
+          /** @description 새 액세스 토큰(JWT, 1시간) */
+          access?: string;
+          /** @description `refresh={새 리프레시 토큰}; Max-Age=86400; HttpOnly` */
+          'Set-Cookie'?: string;
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description 쿠키 없음·만료·위조 또는 이미 폐기된 리프레시 토큰 */
+      400: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          /** @example refresh token expired */
+          'text/plain':
+            | 'No cookies found'
+            | 'refresh token null'
+            | 'refresh token expired'
+            | 'invalid refresh token';
         };
       };
     };
   };
-  retrieveSuggestImages: {
+  getSuggestionImages: {
     parameters: {
       query: {
+        /**
+         * @description 건의 ID
+         * @example 10
+         */
         suggest_post_id: number;
       };
       header?: never;
@@ -2026,20 +4500,54 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: unknown;
-          };
+          'application/json': components['schemas']['SuggestionImageListResponse'];
+        };
+      };
+      /** @description 건의 없음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  uploadSuggestImage: {
+  uploadSuggestionImage: {
     parameters: {
       query?: never;
       header?: never;
@@ -2056,15 +4564,56 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
-      200: {
+      /** @description 업로드 성공 */
+      201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: unknown;
-          };
+          'application/json': components['schemas']['SuggestionImageUploadResponse'];
+        };
+      };
+      /** @description 건의 없음, 작성자가 아님, 빈 파일, 입력값 검증 실패(필드별 메시지) */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "게시물 작성자만 이미지를 업로드할 수 있습니다."
+           *     }
+           */
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['ValidationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 업로드 실패 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
@@ -2082,13 +4631,49 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
-      200: {
+      /** @description 예약 성공 (일부 실패도 201, 설명 참고) */
+      201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['ReservationMessageResponse'];
+        };
+      };
+      /** @description 예약 불가 (이미 예약됨, 중복·연속 예약, 사용 불가 방) 또는 요청 형식 오류 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReservationMessageResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReservationMessageResponse'];
         };
       };
     };
@@ -2106,18 +4691,59 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 취소 성공 (일부 실패도 200, 설명 참고) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          /**
+           * @example {
+           *       "message": "예약취소가 잘 되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ReservationMessageResponse'];
+        };
+      };
+      /** @description 남의 예약, 이미 취소됨, 예약 없음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReservationMessageResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReservationMessageResponse'];
         };
       };
     };
   };
-  incrementViewCount: {
+  increaseNotificationViewCount: {
     parameters: {
       query?: never;
       header?: never;
@@ -2130,13 +4756,96 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 message만, 실패 시 error (`공지사항을 찾을 수 없습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOVoid'];
+        };
+      };
+    };
+  };
+  markNotificationAsRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['NotificationReadRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description 읽음 처리 성공 (이미 읽은 공지 포함) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BaseResponseDTONotificationReadResponseDTO'];
+        };
+      };
+      /** @description notificationId 누락 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": null,
+           *       "error": "공지사항 ID는 필수입니다.",
+           *       "data": null
+           *     }
+           */
+          'application/json': components['schemas']['NotificationErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 공지 또는 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": null,
+           *       "error": "공지사항을 찾을 수 없습니다.",
+           *       "data": null
+           *     }
+           */
+          'application/json': components['schemas']['NotificationErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotificationErrorResponse'];
         };
       };
     };
@@ -2154,18 +4863,27 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 성공 시 data에 작성된 공지, 실패 시 error (`관리자 권한이 필요합니다.`, `인증 정보를 확인할 수 없습니다.`, `제목은 필수 입력 항목입니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTONotificationResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
     };
   };
-  getAllRooms: {
+  adminGetRooms: {
     parameters: {
       query?: never;
       header?: never;
@@ -2174,18 +4892,45 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminRoomListResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  createRoom: {
+  adminCreateRoom: {
     parameters: {
       query?: never;
       header?: never;
@@ -2198,41 +4943,125 @@ export interface operations {
       };
     };
     responses: {
-      /** @description OK */
+      /** @description 생성 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 이름 누락·중복 또는 잘못된 상태 값 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  forceCancelReservation: {
+  adminForceCancelReservation: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 예약 ID */
+        /**
+         * @description 예약 ID
+         * @example 26
+         */
         reservationId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 취소 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID 또는 이미 취소된 예약 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 예약 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  test: {
+  getMyReservations: {
     parameters: {
       query?: never;
       header?: never;
@@ -2241,84 +5070,50 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 (조회 중 오류도 200, 빈 목록과 오류 메시지) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          'application/json': components['schemas']['ReservationResponseDTO'];
         };
       };
-    };
-  };
-  getMyPage: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': Record<string, never>;
-          'application/json; charset=utf8': Record<string, never>;
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
-    };
-  };
-  mainP: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': string;
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
-    };
-  };
-  getUserReservations: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 서버 오류 */
+      500: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['ReservationResponseDTO'];
+          /**
+           * @example {
+           *       "message": "서버 오류가 발생했습니다. 나중에 다시 시도해주세요."
+           *     }
+           */
+          'application/json': components['schemas']['ReservationMessageResponse'];
         };
       };
     };
   };
-  getCurrentCrowdingLevel: {
+  getCrowdingLevel: {
     parameters: {
       query?: never;
       header?: never;
@@ -2327,13 +5122,32 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 (오류 시에도 200, 숫자가 아닌 오류 메시지) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          /**
+           * @example {
+           *       "message": "3"
+           *     }
+           */
+          'application/json': components['schemas']['ReservationMessageResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": "서버 오류가 발생했습니다. 나중에 다시 시도해주세요."
+           *     }
+           */
+          'application/json': components['schemas']['ReservationMessageResponse'];
         };
       };
     };
@@ -2347,13 +5161,27 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 (조회 중 오류도 200, 빈 목록과 오류 메시지) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['ReservationResponseDTO'];
+          'application/json': components['schemas']['ReservationResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "message": "서버 오류가 발생했습니다. 나중에 다시 시도해주세요."
+           *     }
+           */
+          'application/json': components['schemas']['ReservationMessageResponse'];
         };
       };
     };
@@ -2363,24 +5191,37 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 공지 ID
+         * @example 3
+         */
         id: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 공지, 없으면 error (`해당 공지사항을 찾을 수 없습니다. ID: {id}`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTONotificationResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
     };
   };
-  getRecentNotificationsCount: {
+  getRecentNotificationCount: {
     parameters: {
       query?: never;
       header?: never;
@@ -2389,18 +5230,18 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 공지 수 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOLong'];
         };
       };
     };
   };
-  getAllNotifications: {
+  getNotifications: {
     parameters: {
       query?: never;
       header?: never;
@@ -2409,13 +5250,22 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 공지 목록 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOListNotificationResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
     };
@@ -2425,97 +5275,106 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 게시글 ID
+         * @example 15
+         */
         id: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 게시글, 없으면 error (`해당 게시글을 찾을 수 없습니다. ID: {id}`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  getPostsByUserId: {
+  getCommunityPostsByUser: {
     parameters: {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 작성자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 게시글 목록 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  getPostsByUserIdWithFilter: {
+  searchCommunityPosts: {
     parameters: {
       query?: {
-        category?: number;
-      };
-      header?: never;
-      path: {
-        userId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
-        };
-      };
-    };
-  };
-  getPostsByUserIdAndCategory: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number;
-        category: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
-        };
-      };
-    };
-  };
-  retrieveCommunityPost: {
-    parameters: {
-      query?: {
+        /**
+         * @description 게시글 ID
+         * @example 15
+         */
         post_id?: number;
+        /**
+         * @description 작성자 ID
+         * @example 10
+         */
         user_id?: number;
+        /**
+         * @description 게시판 분류 번호
+         * @example 1
+         */
         category?: number;
       };
       header?: never;
@@ -2524,347 +5383,668 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: unknown;
-          };
+          'application/json': components['schemas']['CommunityPostSearchResponse'];
         };
       };
-    };
-  };
-  getComment: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        commentId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
-    };
-  };
-  getRepliesByCommentId: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        commentId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  getCommentsByUserId: {
+  getMyCommunityPosts: {
     parameters: {
       query?: {
-        type?: string;
+        /**
+         * @description 게시판 분류 번호 (선택)
+         * @example 1
+         */
+        category?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description data에 게시글 목록 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+    };
+  };
+  getReplies: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description 부모 댓글 ID
+         * @example 8
+         */
+        commentId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description data에 대댓글 목록 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostCommentResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+    };
+  };
+  getCommentsByUser: {
+    parameters: {
+      query?: {
+        /** @description comment: 일반 댓글만, reply: 대댓글만 (생략 시 전체) */
+        type?: 'comment' | 'reply';
+        /**
+         * @description 특정 게시글 ID (선택)
+         * @example 15
+         */
         postId?: number;
       };
       header?: never;
       path: {
+        /**
+         * @description 작성자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 댓글 목록 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostCommentResponseDTO'];
         };
       };
-    };
-  };
-  getOnlyRepliesByUserId: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        userId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  getCommentsByUserIdAndPostId: {
+  getCommentsByPost: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        userId: number;
+        /**
+         * @description 게시글 ID
+         * @example 15
+         */
         postId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description data에 댓글 목록 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOListCommunityPostCommentResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
         };
       };
     };
   };
-  getOnlyCommentsByUserId: {
+  adminGetUsers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 조회 결과 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminUserListResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+    };
+  };
+  adminGetUser: {
     parameters: {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 사용자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['AdminUserDetailResponse'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getCommentsByPostId: {
+  adminDeleteUser: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        postId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
-        };
-      };
-    };
-  };
-  getAllUsers: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': Record<string, never>;
-        };
-      };
-    };
-  };
-  getUserById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description 사용자 ID */
+        /**
+         * @description 사용자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  deleteUser: {
+  adminGetUserStatistics: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 조회 결과 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminUserStatisticsResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+    };
+  };
+  adminGetSystemStatistics: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 조회 결과 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminSystemStatisticsResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+    };
+  };
+  adminGetSystemHealth: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 조회 결과 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminSystemHealthResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+    };
+  };
+  adminGetDashboard: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description 조회 결과 */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminDashboardResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+    };
+  };
+  adminGetRoomReservations: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 사용자 ID */
-        userId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': components['schemas']['AdminResponseDTO'];
-        };
-      };
-    };
-  };
-  getUserStatistics: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': Record<string, never>;
-        };
-      };
-    };
-  };
-  getSystemStatistics: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': Record<string, never>;
-        };
-      };
-    };
-  };
-  getSystemHealth: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': Record<string, never>;
-        };
-      };
-    };
-  };
-  getAdminDashboard: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          '*/*': Record<string, never>;
-        };
-      };
-    };
-  };
-  getRoomReservations: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description 스터디룸 ID */
+        /**
+         * @description 스터디룸 ID
+         * @example 1
+         */
         roomId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminRoomReservationsResponse'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 스터디룸 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getRoomStatistics: {
+  adminGetRoomStatistics: {
     parameters: {
       query?: never;
       header?: never;
@@ -2873,18 +6053,45 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminRoomStatisticsResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getAllReservations_1: {
+  adminGetReservations: {
     parameters: {
       query?: never;
       header?: never;
@@ -2893,64 +6100,187 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminReservationListResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getReservationById: {
+  adminGetReservation: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 예약 ID */
+        /**
+         * @description 예약 ID
+         * @example 26
+         */
         reservationId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminReservationDetailResponse'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 예약 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getReservationsByUserId: {
+  adminGetReservationsByUser: {
     parameters: {
       query?: never;
       header?: never;
       path: {
-        /** @description 사용자 ID */
+        /**
+         * @description 사용자 ID
+         * @example 10
+         */
         userId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminUserReservationsResponse'];
+        };
+      };
+      /** @description 잘못된 ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getReservationStatistics: {
+  adminGetReservationStatistics: {
     parameters: {
       query?: never;
       header?: never;
@@ -2959,21 +6289,51 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminReservationStatisticsResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getDailyReservationStatistics: {
+  adminGetDailyReservationStatistics: {
     parameters: {
       query?: {
-        /** @description 조회할 날짜 (YYYY-MM-DD) */
+        /**
+         * @description 조회할 날짜 (yyyy-MM-dd, 선택)
+         * @example 2026-10-21
+         */
         date?: string;
       };
       header?: never;
@@ -2982,21 +6342,51 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminDailyReservationStatisticsResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getReservationsByDate: {
+  adminGetReservationsByDate: {
     parameters: {
       query: {
-        /** @description 조회할 날짜 (YYYY-MM-DD) */
+        /**
+         * @description 조회할 날짜 (yyyy-MM-dd)
+         * @example 2026-10-21
+         */
         date: string;
       };
       header?: never;
@@ -3005,23 +6395,56 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminReservationsByDateResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  getReservationsByDateRange: {
+  adminGetReservationsByDateRange: {
     parameters: {
       query: {
-        /** @description 시작 날짜 (YYYY-MM-DD) */
+        /**
+         * @description 시작 날짜 (yyyy-MM-dd)
+         * @example 2026-10-01
+         */
         startDate: string;
-        /** @description 종료 날짜 (YYYY-MM-DD) */
+        /**
+         * @description 종료 날짜 (yyyy-MM-dd)
+         * @example 2026-10-31
+         */
         endDate: string;
       };
       header?: never;
@@ -3030,18 +6453,54 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 조회 결과 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': Record<string, never>;
+          'application/json': components['schemas']['AdminReservationsByDateRangeResponse'];
+        };
+      };
+      /** @description 시작 날짜가 종료 날짜보다 늦음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdminResponseDTO'];
         };
       };
     };
   };
-  withdrawUser: {
+  withdraw: {
     parameters: {
       query?: never;
       header?: never;
@@ -3050,109 +6509,264 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 탈퇴 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          /**
+           * @example {
+           *       "message": "회원탈퇴가 성공적으로 완료되었습니다."
+           *     }
+           */
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
-    };
-  };
-  deleteUser_1: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        email: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json;charset=utf8': components['schemas']['ResponseDTO'];
-          'application/json; charset=utf8': components['schemas']['ResponseDTO'];
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 사용자 없음 */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ResponseDTO'];
         };
       };
     };
   };
-  deleteSuggestPost: {
+  deleteSuggestion: {
     parameters: {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 건의 ID
+         * @example 10
+         */
         suggestId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의가 성공적으로 삭제되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 건의 없음 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 작성자가 아님 / 토큰 없음은 공통 오류 본문 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /**
+           * @example {
+           *       "error": "게시물 삭제 권한이 없습니다."
+           *     }
+           */
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  deleteSuggestImage: {
+  deleteSuggestionImage: {
     parameters: {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 이미지 ID
+         * @example 1
+         */
         imageId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의 이미지가 성공적으로 삭제되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 이미지 없음 또는 작성자가 아님 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 토큰이 없거나 권한 부족 (관리자 API는 ROLE_ADMIN 필요) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
   };
-  deleteSuggestComment: {
+  deleteSuggestionAnswer: {
     parameters: {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 답변 ID
+         * @example 1
+         */
         commentId: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 삭제 성공 */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': {
-            [key: string]: string;
-          };
+          /**
+           * @example {
+           *       "message": "건의 댓글이 성공적으로 삭제되었습니다!"
+           *     }
+           */
+          'application/json': components['schemas']['SuggestionMessageResponse'];
+        };
+      };
+      /** @description 답변 없음 또는 작성자가 아님 */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
+        };
+      };
+      /** @description 관리자가 아님 / 토큰 없음은 공통 오류 본문 */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | components['schemas']['SuggestionErrorResponse']
+            | components['schemas']['CommonErrorResponse'];
+        };
+      };
+      /** @description 서버 오류 */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionErrorResponse'];
         };
       };
     };
@@ -3162,19 +6776,32 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
+        /**
+         * @description 공지 ID
+         * @example 3
+         */
         id: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description OK */
+      /** @description 성공 시 message만, 실패 시 error (`관리자 권한이 필요합니다.`, `삭제하려는 공지사항이 존재하지 않습니다.`) */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['BaseResponseDTO'];
+          'application/json': components['schemas']['BaseResponseDTOVoid'];
+        };
+      };
+      /** @description 액세스 토큰 만료 또는 변조. `/reissue`로 재발급 후 재시도 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': 'access token expired' | 'invalid access token';
         };
       };
     };
