@@ -9,23 +9,27 @@ import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import useAppNavigation from '@hooks/use-app-navigation';
 import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts, toDateTimeSortValue } from '@utils/date-time';
 
 const pad = (n) => String(n).padStart(2, '0');
 
-function formatDateArrayExactly(arr) {
-  if (!Array.isArray(arr)) {
+function formatDateTimeExactly(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '없음';
   }
-  const [y, m, d, h, min, s] = arr;
+  const [y, m, d, h, min, s] = parts;
   return `${y}. ${pad(m)}. ${pad(d)}. ${pad(h)}:${pad(min)}:${pad(s)}`;
 }
 
-function formatDateTimeRange(startArray, endArray) {
-  if (!Array.isArray(startArray) || !Array.isArray(endArray)) {
+function formatDateTimeRange(start, end) {
+  const startParts = parseDateTimeParts(start);
+  const endParts = parseDateTimeParts(end);
+  if (!startParts || !endParts) {
     return '';
   }
-  const [y, m, d, h, min] = startArray;
-  const [, , , h2, min2] = endArray;
+  const [y, m, d, h, min] = startParts;
+  const [, , , h2, min2] = endParts;
   return `${y}.${pad(m)}.${pad(d)} ${pad(h)}:${pad(min)} ~ ${pad(h2)}:${pad(min2)}`;
 }
 
@@ -110,7 +114,7 @@ export default function UserDetailPage() {
             <p>
               가입일{' '}
               <span className="ml-2">
-                {formatDateArrayExactly(user.registrationDate)}
+                {formatDateTimeExactly(user.registrationDate)}
               </span>
             </p>
           </div>
@@ -126,7 +130,11 @@ export default function UserDetailPage() {
           <p className="text-sm text-gray-500">예약 내역이 없습니다.</p>
         ) : (
           reservations
-            .sort((a, b) => new Date(...b.createdAt) - new Date(...a.createdAt))
+            .sort(
+              (a, b) =>
+                toDateTimeSortValue(b.createdAt) -
+                toDateTimeSortValue(a.createdAt),
+            )
             .map((item) => (
               <ReservationItem
                 key={item.id}
