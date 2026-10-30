@@ -11,6 +11,7 @@ import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useAppNavigation from '@hooks/use-app-navigation';
 import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts } from '@utils/date-time';
 
 import BasicModal from '../../../components/common/basic-modal';
 
@@ -32,21 +33,23 @@ export default function AdminDashboard() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const formatTimeRange = useCallback((start, end) => {
-    const formatHM = (arr) => {
-      if (!Array.isArray(arr)) {
+    const formatHM = (value) => {
+      const parts = parseDateTimeParts(value);
+      if (!parts) {
         return '';
       }
-      const [, , , h = 0, m = 0] = arr;
+      const [, , , h = 0, m = 0] = parts;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     };
     return `${formatHM(start)} ~ ${formatHM(end)}`;
   }, []);
 
-  const formatTimestamp = useCallback((arr) => {
-    if (!Array.isArray(arr)) {
+  const formatTimestamp = useCallback((value) => {
+    const parts = parseDateTimeParts(value);
+    if (!parts) {
       return '';
     }
-    const [y, mo, d, h = 0, m = 0] = arr;
+    const [y, mo, d, h = 0, m = 0] = parts;
     return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }, []);
 
@@ -92,11 +95,15 @@ export default function AdminDashboard() {
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    const isSameDay = (dateArr, dateObj) =>
-      Array.isArray(dateArr) &&
-      dateArr[0] === dateObj.getFullYear() &&
-      dateArr[1] === dateObj.getMonth() + 1 &&
-      dateArr[2] === dateObj.getDate();
+    const isSameDay = (value, dateObj) => {
+      const parts = parseDateTimeParts(value);
+      return (
+        parts !== null &&
+        parts[0] === dateObj.getFullYear() &&
+        parts[1] === dateObj.getMonth() + 1 &&
+        parts[2] === dateObj.getDate()
+      );
+    };
 
     const getRandomThree = (arr) =>
       arr
@@ -162,14 +169,16 @@ export default function AdminDashboard() {
   const roomData = ROOM_IDS.map((id, index) => {
     const q = roomQueries[index];
     const rawStatus =
-      typeof q.data?.status === 'string' ? q.data.status.toUpperCase() : null;
+      typeof q.data?.roomStatus === 'string'
+        ? q.data.roomStatus.toUpperCase()
+        : null;
     const status = KNOWN_ROOM_STATUS.includes(rawStatus) ? rawStatus : null;
     return {
       id,
       failed: q.isError,
       unknownStatus: !q.isError && status == null,
       status,
-      name: q.data?.name || `스터디룸 ${id}`,
+      name: q.data?.roomName ? `스터디룸 ${q.data.roomName}` : `스터디룸 ${id}`,
     };
   });
 
