@@ -9,6 +9,7 @@ import BasicModal from '@components/common/basic-modal';
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts, toDateTimeSortValue } from '@utils/date-time';
 import { forceCancelReservation } from '@api/admin.api';
 
 export default function ReservationListPage() {
@@ -50,12 +51,13 @@ export default function ReservationListPage() {
 
     Object.keys(grouped).forEach((date) => {
       grouped[date].sort(
-        (a, b) => new Date(...b.createdAt) - new Date(...a.createdAt),
+        (a, b) =>
+          toDateTimeSortValue(b.createdAt) - toDateTimeSortValue(a.createdAt),
       );
     });
 
     const sortedDateKeys = Object.keys(grouped).sort(
-      (a, b) => new Date(b) - new Date(a),
+      (a, b) => toDateTimeSortValue(b) - toDateTimeSortValue(a),
     );
 
     return { groupedReservations: grouped, sortedDates: sortedDateKeys };
@@ -192,28 +194,34 @@ export default function ReservationListPage() {
 }
 
 // 날짜 key용 YYYY-MM-DD
-function formatDateOnly(arr) {
-  const [y, mo, d] = arr;
+function formatDateOnly(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
+    return '';
+  }
+  const [y, mo, d] = parts;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
 // 전체 날짜 & 시간 포맷
-function formatFullDate(arr) {
-  if (!Array.isArray(arr)) {
+function formatFullDate(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [y, mo, d, h = 0, m = 0] = arr;
+  const [y, mo, d, h = 0, m = 0] = parts;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(
     h,
   ).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 // 시간 범위 포맷
-function formatHM(array) {
-  if (!Array.isArray(array)) {
+function formatHM(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [, , , h = 0, m = 0] = array;
+  const [, , , h = 0, m = 0] = parts;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
