@@ -1,36 +1,44 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
+import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts, toDateTimeSortValue } from '@utils/date-time';
 
 export default function ReservationDetailPage() {
-  const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
 
-  const fetchReservations = async () => {
-    try {
-      const response = await axiosInstance.get('/admin/reservations');
+  const {
+    data: reservationList = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    ...admin.admin.reservations.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.reservations;
+      if (!Array.isArray(list)) {
+        throw new Error('예약 목록 응답 형식이 올바르지 않습니다.');
+      }
+      return list;
+    },
+  });
 
-      setReservations(
-        (response.data.reservations || []).sort((a, b) => {
-          const dateA = new Date(...a.createdAt);
-          const dateB = new Date(...b.createdAt);
-          return dateB - dateA;
-        }),
-      );
-    } catch (err) {
-      console.error('예약 불러오기 실패:', err);
-      setError('예약 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = !adminEnabled || isLoading;
+  const error = isError ? '예약 정보를 불러오는 데 실패했습니다.' : null;
 
-  useEffect(() => {
-    fetchReservations();
-  }, []);
+  const reservations = useMemo(
+    () =>
+      [...reservationList].sort(
+        (a, b) =>
+          toDateTimeSortValue(b.createdAt) - toDateTimeSortValue(a.createdAt),
+      ),
+    [reservationList],
+  );
 
   return (
     <div className="bg-surface-admin p-6 min-h-screen">
@@ -76,11 +84,12 @@ export default function ReservationDetailPage() {
   );
 }
 
-function formatHM(array) {
-  if (!Array.isArray(array)) {
+function formatHM(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [, , , h = 0, m = 0] = array;
+  const [, , , h = 0, m = 0] = parts;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
@@ -88,10 +97,11 @@ function formatTimeRange(start, end) {
   return `${formatHM(start)} ~ ${formatHM(end)}`;
 }
 
-function formatDate(arr) {
-  if (!Array.isArray(arr)) {
+function formatDate(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [y, mo, d, h = 0, m = 0] = arr;
+  const [y, mo, d, h = 0, m = 0] = parts;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }

@@ -1,112 +1,112 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import ReservationCard from '@components/admin/ReservationCard';
 import BasicModal from '@components/common/basic-modal';
 
-import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
+import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts, toDateTimeSortValue } from '@utils/date-time';
+import { forceCancelReservation } from '@api/admin.api';
 
 export default function ReservationListPage() {
-  const [groupedReservations, setGroupedReservations] = useState({});
-  const [sortedDates, setSortedDates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [cancelLoadingIds, setCancelLoadingIds] = useState(new Set());
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
+  const queryClient = useQueryClient();
+
   const [forceCancelTargetId, setForceCancelTargetId] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
 
-  const fetchAllReservations = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/admin/reservations');
-      const reservations = response.data.reservations || [];
-
-      // 날짜별 그룹핑
-      const grouped = {};
-      reservations.forEach((r) => {
-        const key = formatDateOnly(r.createdAt);
-        if (!grouped[key]) {
-          grouped[key] = [];
-        }
-        grouped[key].push(r);
-      });
-
-      // 그룹 내 정렬 (생성일 내림차순)
-      Object.keys(grouped).forEach((date) => {
-        grouped[date].sort(
-          (a, b) => new Date(...b.createdAt) - new Date(...a.createdAt),
-        );
-      });
-
-      const sortedDateKeys = Object.keys(grouped).sort(
-        (a, b) => new Date(b) - new Date(a),
-      );
-
-      setGroupedReservations(grouped);
-      setSortedDates(sortedDateKeys);
-    } catch (err) {
-      console.error('전체 예약 불러오기 실패:', err);
-      setError('전체 예약 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchAllReservations();
-  }, [fetchAllReservations]);
-
-  const removeReservationFromState = useCallback((reservationId) => {
-    setGroupedReservations((prev) => {
-      const next = { ...prev };
-      for (const date of Object.keys(next)) {
-        const filtered = next[date].filter((r) => r.id !== reservationId);
-        next[date] = filtered;
+  const {
+    data: reservations = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    ...admin.admin.reservations.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.reservations;
+      if (!Array.isArray(list)) {
+        throw new Error('예약 목록 응답 형식이 올바르지 않습니다.');
       }
-      return next;
-    });
-  }, []);
+      return list;
+    },
+  });
 
-  const handleForceCancel = useCallback((reservationId) => {
+  const loading = !adminEnabled || isLoading;
+  const error = isError ? '전체 예약 정보를 불러오는 데 실패했습니다.' : null;
+
+  const { groupedReservations, sortedDates } = useMemo(() => {
+    const grouped = {};
+    reservations.forEach((r) => {
+      const key = formatDateOnly(r.createdAt);
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(r);
+    });
+
+    Object.keys(grouped).forEach((date) => {
+      grouped[date].sort(
+        (a, b) =>
+          toDateTimeSortValue(b.createdAt) - toDateTimeSortValue(a.createdAt),
+      );
+    });
+
+    const sortedDateKeys = Object.keys(grouped).sort(
+      (a, b) => toDateTimeSortValue(b) - toDateTimeSortValue(a),
+    );
+
+    return { groupedReservations: grouped, sortedDates: sortedDateKeys };
+  }, [reservations]);
+
+  const {
+    mutate: forceCancel,
+    isPending: isCancelPending,
+    variables: cancellingId,
+  } = useMutation({
+    mutationFn: (reservationId) => forceCancelReservation(reservationId),
+    onSuccess: (_data, reservationId) => {
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.reservations.getAll().queryKey,
+      });
+      const target = reservations.find((r) => r.id === reservationId);
+      if (target?.userId != null) {
+        queryClient.invalidateQueries({
+          queryKey: admin.admin.reservations.getByUserId(target.userId)
+            .queryKey,
+        });
+      }
+      setAlertMessage('예약을 강제로 취소했습니다.');
+    },
+    onError: (err) => {
+      console.error('예약 강제 취소 실패:', err);
+      setAlertMessage(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          '예약 강제 취소에 실패했습니다.',
+      );
+    },
+  });
+
+  const handleForceCancel = (reservationId) => {
     if (!reservationId) {
       return;
     }
     setForceCancelTargetId(reservationId);
-  }, []);
+  };
 
-  const confirmForceCancel = useCallback(async () => {
+  const confirmForceCancel = () => {
     const reservationId = forceCancelTargetId;
     setForceCancelTargetId(null);
     if (!reservationId) {
       return;
     }
-
-    setCancelLoadingIds((s) => new Set(s).add(reservationId));
-
-    try {
-      await axiosInstance.post(
-        `/admin/reservations/${reservationId}/force-cancel`,
-      );
-
-      removeReservationFromState(reservationId);
-
-      setAlertMessage('예약을 강제로 취소했습니다.');
-    } catch (err) {
-      console.error('예약 강제 취소 실패:', err);
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        '예약 강제 취소에 실패했습니다.';
-      setAlertMessage(msg);
-    } finally {
-      // 버튼 로딩 off
-      setCancelLoadingIds((s) => {
-        const n = new Set(s);
-        n.delete(reservationId);
-        return n;
-      });
-    }
-  }, [forceCancelTargetId, removeReservationFromState]);
+    forceCancel(reservationId);
+  };
 
   return (
     <div className="bg-surface-admin p-6 min-h-screen">
@@ -126,7 +126,8 @@ export default function ReservationListPage() {
 
               <div className="grid gap-3">
                 {groupedReservations[date].filter(Boolean).map((item) => {
-                  const isCancelling = cancelLoadingIds.has(item.id);
+                  const isCancelling =
+                    isCancelPending && cancellingId === item.id;
                   return (
                     <div
                       key={item.id}
@@ -193,28 +194,34 @@ export default function ReservationListPage() {
 }
 
 // 날짜 key용 YYYY-MM-DD
-function formatDateOnly(arr) {
-  const [y, mo, d] = arr;
+function formatDateOnly(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
+    return '';
+  }
+  const [y, mo, d] = parts;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
 
 // 전체 날짜 & 시간 포맷
-function formatFullDate(arr) {
-  if (!Array.isArray(arr)) {
+function formatFullDate(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [y, mo, d, h = 0, m = 0] = arr;
+  const [y, mo, d, h = 0, m = 0] = parts;
   return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(
     h,
   ).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 // 시간 범위 포맷
-function formatHM(array) {
-  if (!Array.isArray(array)) {
+function formatHM(value) {
+  const parts = parseDateTimeParts(value);
+  if (!parts) {
     return '';
   }
-  const [, , , h = 0, m = 0] = array;
+  const [, , , h = 0, m = 0] = parts;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 

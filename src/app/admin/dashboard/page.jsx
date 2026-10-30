@@ -1,40 +1,55 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQueries, useQuery } from '@tanstack/react-query';
 
 import ReservationCard from '@components/admin/ReservationCard';
 
 import axiosInstance from '@api/instance';
+import { admin } from '@api/keys/admin.key';
+import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+import useAppNavigation from '@hooks/use-app-navigation';
+import useAuthReady from '@hooks/useAuthReady';
+import { parseDateTimeParts } from '@utils/date-time';
 
 import BasicModal from '../../../components/common/basic-modal';
 
+const ROOM_IDS = [1, 2, 3, 4, 5];
+const KNOWN_ROOM_STATUS = ['IDLE', 'OCCUPIED', 'MAINTENANCE'];
+
 export default function AdminDashboard() {
-  const router = useRouter();
-  const [todayReservations, setTodayReservations] = useState([]);
-  const [tomorrowReservations, setTomorrowReservations] = useState([]);
+  const {
+    goHome,
+    goToReservationsByDate,
+    goToAdminCommunity,
+    goToRoomManagement,
+    goToSuggestions,
+  } = useAppNavigation();
+  const { authReady, accessToken, role } = useAuthReady();
+  const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
   const [communityData, setCommunityData] = useState([]);
   const [suggestionsData, setSuggestionsData] = useState([]);
-  const [roomData, setRoomData] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const formatTimeRange = useCallback((start, end) => {
-    const formatHM = (arr) => {
-      if (!Array.isArray(arr)) {
+    const formatHM = (value) => {
+      const parts = parseDateTimeParts(value);
+      if (!parts) {
         return '';
       }
-      const [, , , h = 0, m = 0] = arr;
+      const [, , , h = 0, m = 0] = parts;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     };
     return `${formatHM(start)} ~ ${formatHM(end)}`;
   }, []);
 
-  const formatTimestamp = useCallback((arr) => {
-    if (!Array.isArray(arr)) {
+  const formatTimestamp = useCallback((value) => {
+    const parts = parseDateTimeParts(value);
+    if (!parts) {
       return '';
     }
-    const [y, mo, d, h = 0, m = 0] = arr;
+    const [y, mo, d, h = 0, m = 0] = parts;
     return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }, []);
 
@@ -63,37 +78,48 @@ export default function AdminDashboard() {
     [],
   );
 
-  const fetchReservations = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/admin/reservations');
-      const reservations = response.data.reservations || [];
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
+  const { data: reservationList = [] } = useQuery({
+    ...admin.admin.reservations.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.reservations;
+      if (!Array.isArray(list)) {
+        throw new Error('예약 목록 응답 형식이 올바르지 않습니다.');
+      }
+      return list;
+    },
+  });
 
-      const isSameDay = (dateArr1, dateObj2) =>
-        dateArr1[0] === dateObj2.getFullYear() &&
-        dateArr1[1] === dateObj2.getMonth() + 1 &&
-        dateArr1[2] === dateObj2.getDate();
+  const { todayReservations, tomorrowReservations } = useMemo(() => {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
 
-      const todayFiltered = reservations.filter((r) =>
-        isSameDay(r.startTime, today),
+    const isSameDay = (value, dateObj) => {
+      const parts = parseDateTimeParts(value);
+      return (
+        parts !== null &&
+        parts[0] === dateObj.getFullYear() &&
+        parts[1] === dateObj.getMonth() + 1 &&
+        parts[2] === dateObj.getDate()
       );
-      const tomorrowFiltered = reservations.filter((r) =>
-        isSameDay(r.startTime, tomorrow),
-      );
-      const getRandomThree = (arr) =>
-        arr
-          .slice()
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 3);
+    };
 
-      setTodayReservations(getRandomThree(todayFiltered));
-      setTomorrowReservations(getRandomThree(tomorrowFiltered));
-    } catch (err) {
-      console.error('예약 목록 불러오기 실패:', err);
-    }
-  }, []);
+    const getRandomThree = (arr) =>
+      arr
+        .slice()
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+
+    return {
+      todayReservations: getRandomThree(
+        reservationList.filter((r) => isSameDay(r.startTime, today)),
+      ),
+      tomorrowReservations: getRandomThree(
+        reservationList.filter((r) => isSameDay(r.startTime, tomorrow)),
+      ),
+    };
+  }, [reservationList]);
 
   const fetchCommunityData = useCallback(async () => {
     try {
@@ -124,60 +150,42 @@ export default function AdminDashboard() {
     }
   }, [normalizeSuggestion]);
 
-  const fetchRoomData = useCallback(async () => {
-    try {
-      const roomIds = [1, 2, 3, 4, 5];
-      const rooms = await Promise.all(
-        roomIds.map(async (id) => {
-          try {
-            const response = await axiosInstance.get(`/admin/rooms/${id}`);
-            const data = response?.data?.data || {};
-            return {
-              id,
-              status: data.status || 'IDLE',
-              name: data.name || `스터디룸 ${id}`,
-            };
-          } catch {
-            return { id, status: 'IDLE', name: `스터디룸 ${id}` };
-          }
-        }),
-      );
-      setRoomData(rooms);
-    } catch (err) {
-      console.error('스터디룸 데이터 불러오기 실패:', err);
-    }
-  }, []);
+  const roomQueries = useQueries({
+    queries: ROOM_IDS.map((id) => ({
+      ...admin.admin.rooms.getById(id),
+      enabled: adminEnabled,
+      refetchInterval: 30000,
+      refetchOnWindowFocus: true,
+      select: (res) => {
+        const data = res?.data;
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+          throw new Error('스터디룸 응답 형식이 올바르지 않습니다.');
+        }
+        return data;
+      },
+    })),
+  });
+
+  const roomData = ROOM_IDS.map((id, index) => {
+    const q = roomQueries[index];
+    const rawStatus =
+      typeof q.data?.roomStatus === 'string'
+        ? q.data.roomStatus.toUpperCase()
+        : null;
+    const status = KNOWN_ROOM_STATUS.includes(rawStatus) ? rawStatus : null;
+    return {
+      id,
+      failed: q.isError,
+      unknownStatus: !q.isError && status == null,
+      status,
+      name: q.data?.roomName ? `스터디룸 ${q.data.roomName}` : `스터디룸 ${id}`,
+    };
+  });
 
   useEffect(() => {
-    // 최초 로드
-    fetchReservations();
     fetchCommunityData();
     fetchSuggestionsData();
-    fetchRoomData();
-
-    // 30초 폴링
-    const roomStatusInterval = setInterval(fetchRoomData, 30000);
-
-    // 탭 활성화 시 갱신
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchRoomData();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', fetchRoomData);
-
-    return () => {
-      clearInterval(roomStatusInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', fetchRoomData);
-    };
-  }, [
-    fetchReservations,
-    fetchCommunityData,
-    fetchSuggestionsData,
-    fetchRoomData,
-  ]);
+  }, [fetchCommunityData, fetchSuggestionsData]);
 
   return (
     <div className="w-full min-h-screen bg-gray-50 px-8 py-6">
@@ -185,7 +193,7 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-content">관리자 대시보드</h1>
         <button
           className="bg-brand hover:bg-brand-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
-          onClick={() => router.push('/')}
+          onClick={goHome}
         >
           예약 서비스 화면으로 가기
         </button>
@@ -200,7 +208,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/reservations-by-date')}
+              onClick={goToReservationsByDate}
             >
               더보기 →
             </button>
@@ -248,7 +256,7 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-content">커뮤니티</h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/community')}
+              onClick={goToAdminCommunity}
             >
               더보기 →
             </button>
@@ -286,7 +294,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/room-management')}
+              onClick={goToRoomManagement}
             >
               더보기 →
             </button>
@@ -317,18 +325,24 @@ export default function AdminDashboard() {
                 <div>
                   <span
                     className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
-                      room.status === 'IDLE'
-                        ? 'bg-green-100 text-green-700'
-                        : room.status === 'OCCUPIED'
-                          ? 'bg-amber-100 text-amber-700'
-                          : 'bg-gray-100 text-gray-600'
+                      room.failed || room.unknownStatus
+                        ? 'bg-red-100 text-red-700'
+                        : room.status === 'IDLE'
+                          ? 'bg-green-100 text-green-700'
+                          : room.status === 'OCCUPIED'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    {room.status === 'IDLE'
-                      ? '예약 가능'
-                      : room.status === 'OCCUPIED'
-                        ? '사용 중'
-                        : '예약 불가'}
+                    {room.failed
+                      ? '조회 실패'
+                      : room.unknownStatus
+                        ? '상태 확인 불가'
+                        : room.status === 'IDLE'
+                          ? '예약 가능'
+                          : room.status === 'OCCUPIED'
+                            ? '사용 중'
+                            : '예약 불가'}
                   </span>
                 </div>
               </div>
@@ -344,7 +358,7 @@ export default function AdminDashboard() {
             </h2>
             <button
               className="text-sm text-brand hover:text-brand-hover font-medium transition-colors"
-              onClick={() => router.push('/admin/suggestions')}
+              onClick={goToSuggestions}
             >
               더보기 →
             </button>
