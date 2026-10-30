@@ -32,7 +32,7 @@ const reservationsStore = createQueryKeyStore({
       queryKey: ['all'],
       queryFn: () => getAllReservations(),
     }),
-    // 특정 예약 조회: 담당 범위에 단건 조회 API가 없어 queryFn 미연결
+    // 특정 예약 조회: 명세에 GET /admin/reservations/{reservationId}가 있으나 사용하는 화면이 없어 queryFn 미연결
     getById: (id: number) => ({
       queryKey: [id],
     }),
@@ -47,7 +47,7 @@ const reservationsStore = createQueryKeyStore({
 /** ---------- (관리자) 스터디룸 관리 쿼리 ----------- */
 const roomsStore = createQueryKeyStore({
   'admin/rooms': {
-    // 전체 조회 API는 없고 단건(getRoomById)만 존재하므로 queryFn 미연결
+    // 전체 조회: 명세에 GET /admin/rooms가 있으나 화면은 단건(getRoomById)만 사용하므로 queryFn 미연결
     getAll: () => ({
       queryKey: ['all'],
     }),
