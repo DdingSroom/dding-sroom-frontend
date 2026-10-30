@@ -7,12 +7,9 @@ type ResponseDTO = ApiSchemas['ResponseDTO'];
 type ChangeUsernameDTO = ApiSchemas['ChangeUsernameDTO'];
 type EmailVerificationDTO = ApiSchemas['EmailVerificationDTO'];
 
-export const changeUsername = (
-  userId: number,
-  newUsername: string,
-): Promise<ResponseDTO> =>
+// 인증 토큰으로 사용자 식별 (userId 미전달)
+export const changeUsername = (newUsername: string): Promise<ResponseDTO> =>
   api.put<ResponseDTO, ChangeUsernameDTO>(USER_API_ENDPOINTS.CHANGE_USERNAME, {
-    userId,
     newUsername,
   });
 

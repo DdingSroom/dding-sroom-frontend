@@ -35,7 +35,7 @@ export default function AccountInfo() {
   const [alertMessage, setAlertMessage] = useState('');
   const [nameError, setNameError] = useState('');
 
-  const { clearTokens, accessToken, userId } = useTokenStore();
+  const { clearTokens, accessToken } = useTokenStore();
   const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
   const { redirectToLoginHard } = useAppNavigation();
 
@@ -59,7 +59,7 @@ export default function AccountInfo() {
   }, [authReady, accessToken, getDecodedUserInfo]);
 
   const { mutate: changeName, isPending: submitting } = useMutation({
-    mutationFn: (newUsername) => changeUsername(userId, newUsername),
+    mutationFn: (newUsername) => changeUsername(newUsername),
     onSuccess: (_data, newUsername) => {
       setAlertMessage('이름 변경이 완료되었습니다.');
       setUserInfo((prev) => ({ ...prev, name: newUsername }));
