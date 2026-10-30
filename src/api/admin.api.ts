@@ -1,23 +1,27 @@
 import { ADMIN_API_ENDPOINTS } from '@api/endpoints';
 import { api } from '@shared/api/api';
 
-import type { ApiSchemas } from '../types/api';
+import type { ApiPaths, ApiSchemas } from '../types/api';
 
 type AdminResponseDTO = ApiSchemas['AdminResponseDTO'];
+type AdminUserListResponse = ApiSchemas['AdminUserListResponse'];
+type AdminUserDetailResponse = ApiSchemas['AdminUserDetailResponse'];
+type AdminReservationListResponse = ApiSchemas['AdminReservationListResponse'];
+type AdminUserReservationsResponse =
+  ApiSchemas['AdminUserReservationsResponse'];
+type AdminRoomDetailResponse = ApiSchemas['AdminRoomDetailResponse'];
 
-// 조회(GET) 응답: schema상 `Record<string, never>`로만 정의
-// -> 실제 구조를 알 수 없어 백엔드 응답 DTO가 확인되면 정확한 타입으로 교체 예정
-type UnknownResponse = unknown;
+export type UserStatus =
+  ApiPaths['/admin/users/{userId}/status']['put']['parameters']['query']['status'];
 
-export type UserStatus = 'normal' | 'blocked';
+export type RoomStatus =
+  ApiPaths['/admin/rooms/{roomId}/status']['put']['parameters']['query']['status'];
 
-export type RoomStatus = 'IDLE' | 'OCCUPIED' | 'MAINTENANCE';
+export const getAllUsers = (): Promise<AdminUserListResponse> =>
+  api.get<AdminUserListResponse>(ADMIN_API_ENDPOINTS.USERS);
 
-export const getAllUsers = (): Promise<UnknownResponse> =>
-  api.get<UnknownResponse>(ADMIN_API_ENDPOINTS.USERS);
-
-export const getUserById = (userId: number): Promise<UnknownResponse> =>
-  api.get<UnknownResponse>(ADMIN_API_ENDPOINTS.USER_BY_ID(userId));
+export const getUserById = (userId: number): Promise<AdminUserDetailResponse> =>
+  api.get<AdminUserDetailResponse>(ADMIN_API_ENDPOINTS.USER_BY_ID(userId));
 
 export const updateUserStatus = (
   userId: number,
@@ -31,13 +35,15 @@ export const updateUserStatus = (
     },
   );
 
-export const getAllReservations = (): Promise<UnknownResponse> =>
-  api.get<UnknownResponse>(ADMIN_API_ENDPOINTS.RESERVATIONS);
+export const getAllReservations = (): Promise<AdminReservationListResponse> =>
+  api.get<AdminReservationListResponse>(ADMIN_API_ENDPOINTS.RESERVATIONS);
 
 export const getReservationsByUserId = (
   userId: number,
-): Promise<UnknownResponse> =>
-  api.get<UnknownResponse>(ADMIN_API_ENDPOINTS.RESERVATIONS_BY_USER(userId));
+): Promise<AdminUserReservationsResponse> =>
+  api.get<AdminUserReservationsResponse>(
+    ADMIN_API_ENDPOINTS.RESERVATIONS_BY_USER(userId),
+  );
 
 export const forceCancelReservation = (
   reservationId: number,
@@ -46,8 +52,8 @@ export const forceCancelReservation = (
     ADMIN_API_ENDPOINTS.RESERVATION_FORCE_CANCEL(reservationId),
   );
 
-export const getRoomById = (roomId: number): Promise<UnknownResponse> =>
-  api.get<UnknownResponse>(ADMIN_API_ENDPOINTS.ROOM_BY_ID(roomId));
+export const getRoomById = (roomId: number): Promise<AdminRoomDetailResponse> =>
+  api.get<AdminRoomDetailResponse>(ADMIN_API_ENDPOINTS.ROOM_BY_ID(roomId));
 
 export const updateRoomStatus = (
   roomId: number,
