@@ -53,8 +53,8 @@ export default function RoomsManagePage() {
           throw new Error('스터디룸 응답 형식이 올바르지 않습니다.');
         }
         return {
-          status: normalizeStatus(data.status),
-          name: data.name || `스터디룸 ${id}`,
+          status: normalizeStatus(data.roomStatus),
+          name: data.roomName ? `스터디룸 ${data.roomName}` : `스터디룸 ${id}`,
         };
       },
     })),
