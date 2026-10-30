@@ -13,7 +13,7 @@ export default function UserTableRow({ user }) {
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
-  const currentStatus = user.status || 'normal';
+  const currentStatus = user.state || 'normal';
   const newStatus = currentStatus === 'normal' ? 'blocked' : 'normal';
   const statusText = newStatus === 'blocked' ? '차단' : '정상';
 
