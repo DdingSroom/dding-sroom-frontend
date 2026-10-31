@@ -9,10 +9,14 @@ type AdminUserDetailResponse = ApiSchemas['AdminUserDetailResponse'];
 type AdminReservationListResponse = ApiSchemas['AdminReservationListResponse'];
 type AdminUserReservationsResponse =
   ApiSchemas['AdminUserReservationsResponse'];
+type AdminRoomListResponse = ApiSchemas['AdminRoomListResponse'];
 type AdminRoomDetailResponse = ApiSchemas['AdminRoomDetailResponse'];
 
 export type UserStatus =
   ApiPaths['/admin/users/{userId}/status']['put']['parameters']['query']['status'];
+
+export type UserRole =
+  ApiPaths['/admin/users/{userId}/role']['put']['parameters']['query']['role'];
 
 export type RoomStatus =
   ApiPaths['/admin/rooms/{roomId}/status']['put']['parameters']['query']['status'];
@@ -35,6 +39,14 @@ export const updateUserStatus = (
     },
   );
 
+export const updateUserRole = (
+  userId: number,
+  role: UserRole,
+): Promise<AdminResponseDTO> =>
+  api.put<AdminResponseDTO>(ADMIN_API_ENDPOINTS.USER_ROLE(userId), undefined, {
+    params: { role },
+  });
+
 export const getAllReservations = (): Promise<AdminReservationListResponse> =>
   api.get<AdminReservationListResponse>(ADMIN_API_ENDPOINTS.RESERVATIONS);
 
@@ -51,6 +63,9 @@ export const forceCancelReservation = (
   api.post<AdminResponseDTO>(
     ADMIN_API_ENDPOINTS.RESERVATION_FORCE_CANCEL(reservationId),
   );
+
+export const getAllRooms = (): Promise<AdminRoomListResponse> =>
+  api.get<AdminRoomListResponse>(ADMIN_API_ENDPOINTS.ROOMS);
 
 export const getRoomById = (roomId: number): Promise<AdminRoomDetailResponse> =>
   api.get<AdminRoomDetailResponse>(ADMIN_API_ENDPOINTS.ROOM_BY_ID(roomId));
