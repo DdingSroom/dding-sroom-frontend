@@ -1,17 +1,16 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
-import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+import { ROOMS } from '@constants/rooms';
 import useAuthReady from '@hooks/useAuthReady';
 import { updateRoomStatus } from '@api/admin.api';
-
-const ROOM_IDS = [1, 2, 3, 4, 5];
 
 // 배지(상태표시)
 const BADGE_BY_STATUS = {
@@ -43,36 +42,31 @@ export default function RoomsManagePage() {
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
 
-  const roomQueries = useQueries({
-    queries: ROOM_IDS.map((id) => ({
-      ...admin.admin.rooms.getById(id),
-      enabled: adminEnabled,
-      select: (res) => {
-        const data = res?.data;
-        if (!data || typeof data !== 'object' || Array.isArray(data)) {
-          throw new Error('스터디룸 응답 형식이 올바르지 않습니다.');
-        }
-        return {
-          status: normalizeStatus(data.roomStatus),
-          name: data.roomName ? `스터디룸 ${data.roomName}` : `스터디룸 ${id}`,
-        };
-      },
-    })),
+  const {
+    data: roomList = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    ...admin.admin.rooms.getAll(),
+    enabled: adminEnabled,
+    select: (res) => {
+      const list = res?.rooms;
+      if (!Array.isArray(list)) {
+        throw new Error('스터디룸 목록 응답 형식이 올바르지 않습니다.');
+      }
+      return list.map((room) => ({
+        id: room.id,
+        status: normalizeStatus(room.roomStatus),
+        name:
+          ROOMS.find(({ id }) => id === room.id)?.name ??
+          `스터디룸 ${room.roomName}`,
+      }));
+    },
   });
 
-  const loading = !adminEnabled || roomQueries.some((q) => q.isLoading);
+  const loading = !adminEnabled || isLoading;
 
-  const rooms = ROOM_IDS.reduce((acc, id, index) => {
-    const q = roomQueries[index];
-    acc[id] = q.isError
-      ? { failed: true, imageUrl: STUDYROOM_IMAGE_SRC, name: `스터디룸 ${id}` }
-      : {
-          status: q.data?.status ?? null,
-          imageUrl: STUDYROOM_IMAGE_SRC,
-          name: q.data?.name ?? `스터디룸 ${id}`,
-        };
-    return acc;
-  }, {});
+  const rooms = Object.fromEntries(roomList.map((room) => [room.id, room]));
 
   const {
     mutate: changeRoomStatus,
@@ -82,10 +76,10 @@ export default function RoomsManagePage() {
     mutationFn: ({ roomId, newStatus }) => updateRoomStatus(roomId, newStatus),
     onSuccess: (_data, { roomId, newStatus }) => {
       queryClient.invalidateQueries({
-        queryKey: admin.admin.rooms.getById(roomId).queryKey,
+        queryKey: admin.admin.rooms._def,
       });
       setAlertMessage(
-        `스터디룸 ${roomId}호가 ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
+        `${rooms[roomId]?.name ?? `스터디룸 ${roomId}`}이(가) ${STATUS_LABELS[newStatus]} 상태로 변경되었습니다.`,
       );
     },
     onError: (e) => {
@@ -132,21 +126,25 @@ export default function RoomsManagePage() {
       <div className="bg-white p-4 rounded-lg shadow-sm">
         <h1 className="text-lg font-semibold mb-4">스터디룸 관리</h1>
 
+        {isError && (
+          <p className="text-red-500">스터디룸 정보를 불러오지 못했습니다.</p>
+        )}
+        {!isError && roomList.length === 0 && (
+          <p className="text-gray-500">등록된 스터디룸이 없습니다.</p>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {ROOM_IDS.map((id) => {
-            const info = rooms[id];
-            const failed = info.failed;
-            const unknownStatus = !failed && info.status == null;
-            const disabledRoom = failed || unknownStatus;
+          {roomList.map((info) => {
+            const { id } = info;
+            const unknownStatus = info.status == null;
+            const disabledRoom = unknownStatus;
             const isSaving = isStatusPending && savingVars?.roomId === id;
-            const badge = failed
-              ? { className: 'bg-red-100 text-red-700', label: '조회 실패' }
-              : unknownStatus
-                ? {
-                    className: 'bg-red-100 text-red-700',
-                    label: '상태 확인 불가',
-                  }
-                : BADGE_BY_STATUS[info.status] || BADGE_BY_STATUS.IDLE;
+            const badge = unknownStatus
+              ? {
+                  className: 'bg-red-100 text-red-700',
+                  label: '상태 확인 불가',
+                }
+              : BADGE_BY_STATUS[info.status] || BADGE_BY_STATUS.IDLE;
 
             return (
               <div
@@ -157,15 +155,13 @@ export default function RoomsManagePage() {
                   <div className="w-20 h-20 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
                     <img
                       src={STUDYROOM_IMAGE_SRC}
-                      alt={`스터디룸 ${id}`}
+                      alt={info.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
 
                   <div>
-                    <div className="font-medium">
-                      {info.name || `스터디룸 ${id}`}
-                    </div>
+                    <div className="font-medium">{info.name}</div>
                     <div className="text-xs text-gray-500">방 번호: {id}</div>
                     <div className="mt-1">
                       <span
@@ -238,7 +234,7 @@ export default function RoomsManagePage() {
         title="스터디룸 상태 변경"
         message={
           pendingStatusChange &&
-          `스터디룸 ${pendingStatusChange.roomId}호를 ${STATUS_LABELS[pendingStatusChange.newStatus]} 상태로 전환할까요?`
+          `${rooms[pendingStatusChange.roomId]?.name ?? `스터디룸 ${pendingStatusChange.roomId}`}을(를) ${STATUS_LABELS[pendingStatusChange.newStatus]} 상태로 전환할까요?`
         }
         actions={[
           {
