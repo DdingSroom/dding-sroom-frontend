@@ -10,7 +10,7 @@ import useReservationStore from '@stores/useReservationStore';
 const ReservationSection = () => {
   const [currentTab, setTab] = useState(0);
 
-  const { fetchAllReservedTimes } = useReservationStore();
+  const { fetchAllReservedTimes, isReservedTimesError } = useReservationStore();
 
   useEffect(() => {
     fetchAllReservedTimes();
@@ -44,6 +44,12 @@ const ReservationSection = () => {
 
       <div className="w-full flex justify-center items-center">
         <div className="w-full max-w-content">
+          {isReservedTimesError && (
+            <p role="alert" className="mt-4 text-center text-sm text-red-500">
+              예약 현황을 불러오지 못했습니다. 표시된 시간이 실제와 다를 수
+              있습니다.
+            </p>
+          )}
           <div className={currentTab === 0 ? 'block' : 'hidden'}>
             <TodayReservationList />
           </div>

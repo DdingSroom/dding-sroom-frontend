@@ -1,15 +1,18 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 
 import BasicModal from '@components/common/basic-modal';
+import { Input } from '@components/common/input';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageBlock from '@components/my/MyPageBlock';
 import MyPageHeader from '@components/my/MyPageHeader';
-import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { changeUsername } from '@api/user.api';
+import { ROUTES } from '@constants/routes';
+import useAppNavigation from '@hooks/use-app-navigation';
 import useRequireAuth from '@hooks/use-require-auth';
 import { logout } from '@shared/api/auth';
 
@@ -28,13 +31,13 @@ function BottomSafeSpacer({ height = 64 }) {
 export default function AccountInfo() {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [nameError, setNameError] = useState('');
 
-  const { clearTokens, accessToken, userId } = useTokenStore();
+  const { clearTokens, accessToken } = useTokenStore();
   const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
+  const { redirectToLoginHard } = useAppNavigation();
 
   const getDecodedUserInfo = useCallback(() => {
     try {
@@ -55,36 +58,16 @@ export default function AccountInfo() {
     setUserInfo(getDecodedUserInfo());
   }, [authReady, accessToken, getDecodedUserInfo]);
 
-  const handleUsernameChange = async () => {
-    const trimmed = newName.trim();
-
-    if (!trimmed) {
-      setNameError('이름을 입력해주세요.');
-      return;
-    }
-    if (trimmed === (userInfo.name || '')) {
-      setNameError('기존 이름과 동일합니다.');
-      return;
-    }
-    if (submitting) {
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      const res = await axiosInstance.put('/user/change-username', {
-        userId,
-        newUsername: trimmed,
-      });
-
-      if (res.status === 200) {
-        setAlertMessage('이름 변경이 완료되었습니다.');
-        setUserInfo((prev) => ({ ...prev, name: trimmed }));
-        setOpen(false);
-        setNewName('');
-        setNameError('');
-      }
-    } catch (err) {
+  const { mutate: changeName, isPending: submitting } = useMutation({
+    mutationFn: (newUsername) => changeUsername(newUsername),
+    onSuccess: (_data, newUsername) => {
+      setAlertMessage('이름 변경이 완료되었습니다.');
+      setUserInfo((prev) => ({ ...prev, name: newUsername }));
+      setOpen(false);
+      setNewName('');
+      setNameError('');
+    },
+    onError: (err) => {
       console.error('이름 변경 실패:', err);
 
       const serverMsg =
@@ -101,9 +84,25 @@ export default function AccountInfo() {
           serverMsg || '이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.',
         );
       }
-    } finally {
-      setSubmitting(false);
+    },
+  });
+
+  const handleUsernameChange = () => {
+    const trimmed = newName.trim();
+
+    if (!trimmed) {
+      setNameError('이름을 입력해주세요.');
+      return;
     }
+    if (trimmed === (userInfo.name || '')) {
+      setNameError('기존 이름과 동일합니다.');
+      return;
+    }
+    if (submitting) {
+      return;
+    }
+
+    changeName(trimmed);
   };
 
   const handleLogout = async () => {
@@ -124,7 +123,7 @@ export default function AccountInfo() {
 
   const handleLogoutConfirm = () => {
     setShowLogoutModal(false);
-    window.location.href = '/login';
+    redirectToLoginHard();
   };
 
   return (
@@ -182,7 +181,10 @@ export default function AccountInfo() {
 
               {/* 예약 내역 진입 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                <MyPageBlock name="예약 내역" linkPath="/my/reservation-list" />
+                <MyPageBlock
+                  name="예약 내역"
+                  linkPath={ROUTES.MY_RESERVATION_LIST}
+                />
               </div>
 
               {/* 내 커뮤니티 관리 섹션 */}
@@ -192,8 +194,11 @@ export default function AccountInfo() {
                     내 커뮤니티 관리
                   </h2>
                 </div>
-                <MyPageBlock name="내가 작성한 글" linkPath="/my/posts" />
-                <MyPageBlock name="내가 작성한 댓글" linkPath="/my/comments" />
+                <MyPageBlock name="내가 작성한 글" linkPath={ROUTES.MY_POSTS} />
+                <MyPageBlock
+                  name="내가 작성한 댓글"
+                  linkPath={ROUTES.MY_COMMENTS}
+                />
               </div>
 
               {/* 개인정보 보호 섹션 */}
@@ -206,11 +211,11 @@ export default function AccountInfo() {
 
                 <MyPageBlock
                   name="비밀번호 재설정"
-                  linkPath="/reset-password/step1"
+                  linkPath={ROUTES.RESET_PASSWORD_STEP1}
                 />
                 <MyPageBlock
                   name="회원 탈퇴"
-                  linkPath="/my/cancel-account-step1"
+                  linkPath={ROUTES.MY_CANCEL_ACCOUNT_STEP1}
                 />
                 <button
                   className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors border-t border-gray-100"
