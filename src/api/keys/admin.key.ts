@@ -2,6 +2,7 @@ import { createQueryKeyStore } from '@lukemorales/query-key-factory';
 
 import {
   getAllReservations,
+  getAllRooms,
   getAllUsers,
   getReservationsByUserId,
   getRoomById,
@@ -47,9 +48,9 @@ const reservationsStore = createQueryKeyStore({
 /** ---------- (관리자) 스터디룸 관리 쿼리 ----------- */
 const roomsStore = createQueryKeyStore({
   'admin/rooms': {
-    // 전체 조회: 명세에 GET /admin/rooms가 있으나 화면은 단건(getRoomById)만 사용하므로 queryFn 미연결
     getAll: () => ({
       queryKey: ['all'],
+      queryFn: () => getAllRooms(),
     }),
     getById: (id: number) => ({
       queryKey: [id],
