@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import ReservationItem from '@components/admin/ReservationItem';
+import BasicModal from '@components/common/basic-modal';
 
+import { updateUserRole } from '@api/admin.api';
 import { admin } from '@api/keys/admin.key';
 import { ADMIN_ROLE } from '@constants/auth';
 import useAppNavigation from '@hooks/use-app-navigation';
@@ -37,8 +40,9 @@ export default function UserDetailPage() {
   const { userId } = useParams();
   const { goBack } = useAppNavigation();
 
-  const { authReady, accessToken, role } = useAuthReady();
+  const { authReady, accessToken, userId: myUserId, role } = useAuthReady();
   const adminEnabled = authReady && !!accessToken && role === ADMIN_ROLE;
+  const queryClient = useQueryClient();
 
   const numericUserId = Number(userId);
   const hasValidUserId = userId != null && !Number.isNaN(numericUserId);
@@ -69,6 +73,39 @@ export default function UserDetailPage() {
   });
 
   const loadingReservations = !queryEnabled || isLoading;
+
+  const [showRoleConfirm, setShowRoleConfirm] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const nextRole = user?.role === ADMIN_ROLE ? 'ROLE_USER' : ADMIN_ROLE;
+  const nextRoleLabel = nextRole === ADMIN_ROLE ? '관리자' : '일반 사용자';
+  const isSelf = String(myUserId) === String(userId);
+
+  const { mutate: changeRole, isPending: isRolePending } = useMutation({
+    mutationFn: () => updateUserRole(numericUserId, nextRole),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.users.getAll().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: admin.admin.users.getById(numericUserId).queryKey,
+      });
+      setAlertMessage(`권한이 ${nextRoleLabel}로 변경되었습니다.`);
+    },
+    onError: (error) => {
+      console.error('사용자 권한 변경 실패:', error);
+      setAlertMessage(
+        error?.response?.data?.message || '권한 변경에 실패했습니다.',
+      );
+    },
+  });
+
+  const confirmRoleChange = () => {
+    setShowRoleConfirm(false);
+    if (!isRolePending) {
+      changeRole();
+    }
+  };
 
   /* Loading */
   if (isUserError) {
@@ -102,8 +139,28 @@ export default function UserDetailPage() {
               이메일 <span className="ml-2">{user.email}</span>
             </p>
             <p>
+              상태{' '}
+              <span className="ml-2">
+                {user.state === 'blocked' ? '차단됨' : '정상'}
+              </span>
+            </p>
+            <p>
               역할 <span className="ml-2">{user.role}</span>
             </p>
+          </div>
+          <div className="mt-3">
+            <button
+              onClick={() => setShowRoleConfirm(true)}
+              disabled={isRolePending || isSelf}
+              title={isSelf ? '본인의 권한은 변경할 수 없습니다' : undefined}
+              className={`px-3 py-1 text-xs rounded border-2 border-brand text-brand bg-white transition-colors duration-200 font-medium ${
+                isRolePending || isSelf
+                  ? 'opacity-60 cursor-not-allowed'
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              {isRolePending ? '처리 중...' : `${nextRoleLabel}로 변경`}
+            </button>
           </div>
         </div>
 
@@ -144,6 +201,31 @@ export default function UserDetailPage() {
             ))
         )}
       </div>
+
+      <BasicModal
+        isOpen={showRoleConfirm}
+        onClose={() => setShowRoleConfirm(false)}
+        className="max-w-modal"
+        title="사용자 권한 변경"
+        message={`${user.username}님의 권한을 ${nextRoleLabel}로 변경하시겠습니까? 변경된 권한은 해당 사용자가 다시 로그인한 뒤 반영됩니다.`}
+        actions={[
+          {
+            text: '취소',
+            onClick: () => setShowRoleConfirm(false),
+            variant: 'ghost',
+          },
+          { text: '변경', onClick: confirmRoleChange },
+        ]}
+      />
+
+      <BasicModal
+        isOpen={!!alertMessage}
+        onClose={() => setAlertMessage('')}
+        className="max-w-modal-sm"
+        title="알림"
+        message={alertMessage}
+        actions={[{ text: '확인', onClick: () => setAlertMessage('') }]}
+      />
     </div>
   );
 }
