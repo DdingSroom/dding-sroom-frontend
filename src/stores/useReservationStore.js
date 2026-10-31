@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import axiosInstance from '@api/instance';
+import { getAllReservations } from '@api/reservation.api';
 
 import useTokenStore from './useTokenStore';
 
@@ -12,13 +13,25 @@ const parseToDate = (raw) => {
     const [y, m, d, h = 0, min = 0] = raw;
     return new Date(y, m - 1, d, h, min);
   }
+  if (typeof raw === 'string' && /T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(raw)) {
+    return new Date(`${raw}+09:00`);
+  }
   return new Date(raw);
 };
+
+const ALL_RESERVATIONS_SUCCESS_MESSAGE =
+  '데이터 조회가 성공적으로 진행되었습니다.';
+
+const isAllReservationsFailure = (data) =>
+  !Array.isArray(data?.reservations) ||
+  (data.reservations.length === 0 &&
+    data.message !== ALL_RESERVATIONS_SUCCESS_MESSAGE);
 
 const useReservationStore = create((set) => ({
   latestReservation: null,
   userReservations: [],
   reservedTimeSlotsByRoom: {},
+  isReservedTimesError: false,
 
   setLatestReservation: (reservation) =>
     set({ latestReservation: reservation }),
@@ -71,8 +84,11 @@ const useReservationStore = create((set) => ({
 
   fetchAllReservedTimes: async () => {
     try {
-      const res = await axiosInstance.get('/api/reservations/all-reservation');
-      const all = res.data.reservations;
+      const data = await getAllReservations();
+      if (isAllReservationsFailure(data)) {
+        throw new Error(data?.message || '전체 예약 응답 형식 오류');
+      }
+      const all = data.reservations;
       const reservedMap = {};
 
       all.forEach((r, i) => {
@@ -81,8 +97,8 @@ const useReservationStore = create((set) => ({
         }
 
         const roomId = r.roomId;
-        const start = parseToDate(r.startTime || r.reservationStartTime);
-        const end = parseToDate(r.endTime || r.reservationEndTime);
+        const start = parseToDate(r.startTime);
+        const end = parseToDate(r.endTime);
 
         if (!start || !end || isNaN(start) || isNaN(end)) {
           console.warn(`${i + 1}번째 예약 항목에서 잘못된 날짜 형식`, r);
@@ -100,10 +116,13 @@ const useReservationStore = create((set) => ({
         }
       });
 
-      set({ reservedTimeSlotsByRoom: reservedMap });
+      set({
+        reservedTimeSlotsByRoom: reservedMap,
+        isReservedTimesError: false,
+      });
     } catch (err) {
       console.error('전체 예약 시간대 불러오기 실패:', err);
-      set({ reservedTimeSlotsByRoom: {} });
+      set({ isReservedTimesError: true });
     }
   },
 }));
