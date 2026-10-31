@@ -1,13 +1,16 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-/** ---------- (공통) 예약 쿼리 ----------- */
+import { getCrowdingLevel } from '@api/reservation.api';
+
 export const reservation = createQueryKeys('reservation', {
-  // 모든 예약 조회
   getAll: () => ({
     queryKey: ['all'],
     // queryFn: () => null, (추후 추가 예정)
   }),
-  // 나의 예약 조회
+  getCrowdingLevel: () => ({
+    queryKey: ['crowding-level'],
+    queryFn: () => getCrowdingLevel(),
+  }),
   getMyReservations: () => ({
     queryKey: ['me'],
     // queryFn: () => null,
