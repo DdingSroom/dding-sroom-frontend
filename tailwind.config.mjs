@@ -163,6 +163,7 @@ export default {
         'heading-xl': '32px',
       },
       zIndex: {
+        floating: '5',
         dropdown: '10',
         header: '100',
         modal: '9999',
