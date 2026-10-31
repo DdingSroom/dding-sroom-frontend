@@ -102,7 +102,7 @@ export default function ReservationListPage() {
   const confirmForceCancel = () => {
     const reservationId = forceCancelTargetId;
     setForceCancelTargetId(null);
-    if (!reservationId) {
+    if (!reservationId || isCancelPending) {
       return;
     }
     forceCancel(reservationId);
@@ -128,6 +128,7 @@ export default function ReservationListPage() {
                 {groupedReservations[date].filter(Boolean).map((item) => {
                   const isCancelling =
                     isCancelPending && cancellingId === item.id;
+                  const isCancelled = item.status === 'CANCELLED';
                   return (
                     <div
                       key={item.id}
@@ -144,17 +145,25 @@ export default function ReservationListPage() {
                       <div className="flex-shrink-0">
                         <button
                           onClick={() => handleForceCancel(item.id)}
-                          disabled={isCancelling}
+                          disabled={isCancelPending || isCancelled}
                           className={`px-3 py-2 text-sm rounded-md border bg-white text-red-600 border-red-300
                               hover:bg-red-50 hover:border-red-400 transition ${
-                                isCancelling
+                                isCancelPending || isCancelled
                                   ? 'opacity-60 cursor-not-allowed'
                                   : ''
                               }`}
                           aria-busy={isCancelling ? 'true' : 'false'}
-                          title="관리자 권한으로 예약을 강제 취소합니다"
+                          title={
+                            isCancelled
+                              ? '이미 취소된 예약입니다'
+                              : '관리자 권한으로 예약을 강제 취소합니다'
+                          }
                         >
-                          {isCancelling ? '취소 중…' : '예약 강제 취소'}
+                          {isCancelled
+                            ? '취소된 예약'
+                            : isCancelling
+                              ? '취소 중…'
+                              : '예약 강제 취소'}
                         </button>
                       </div>
                     </div>
