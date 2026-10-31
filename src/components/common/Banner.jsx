@@ -3,50 +3,57 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Maru } from 'public/static/icons';
+import { Maru, MaruSad } from 'public/static/icons';
 
-const Banner = () => (
-  <div className="flex justify-between items-center p-8 bg-white rounded-2xl w-full max-w-content min-h-banner shadow-sm border border-gray-50">
-    <div className="flex flex-col gap-6">
-      <div className="space-y-2">
-        <div className="text-content-secondary text-sm font-medium">
-          오늘의 혼잡도
+import useCrowdingLevel from '@hooks/use-crowding-level';
+
+const Banner = () => {
+  const { text: crowdingText, isUnavailable } = useCrowdingLevel();
+  const CrowdingImage = isUnavailable ? MaruSad : Maru;
+
+  return (
+    <div className="flex justify-between items-center p-8 bg-white rounded-2xl w-full max-w-content min-h-banner shadow-sm border border-gray-50">
+      <div className="flex flex-col gap-6">
+        <div className="space-y-2">
+          <div className="text-content-secondary text-sm font-medium">
+            오늘의 혼잡도
+          </div>
+          <div className="text-4xl md:text-5xl text-brand font-bold">
+            {crowdingText}
+          </div>
         </div>
-        <div className="text-4xl md:text-5xl text-brand font-bold">
-          여유로움
+
+        <div className="space-y-3">
+          <div className="text-content text-sm leading-relaxed">
+            로그인하여 자리를 예약해보세요!
+          </div>
+
+          <Link href="/login" className="inline-block">
+            <button className="flex items-center gap-2 px-4 py-2 bg-login-btn text-white text-sm font-medium rounded-lg hover:bg-login-btn-hover transition-colors shadow-sm">
+              로그인
+              <span aria-hidden="true" className="w-4 h-4">
+                <Image
+                  src="/static/icons/arrow_right_icon.svg"
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="filter brightness-0 invert"
+                />
+              </span>
+            </button>
+          </Link>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="text-content text-sm leading-relaxed">
-          로그인하여 자리를 예약해보세요!
-        </div>
-
-        <Link href="/login" className="inline-block">
-          <button className="flex items-center gap-2 px-4 py-2 bg-login-btn text-white text-sm font-medium rounded-lg hover:bg-login-btn-hover transition-colors shadow-sm">
-            로그인
-            <span aria-hidden="true" className="w-4 h-4">
-              <Image
-                src="/static/icons/arrow_right_icon.svg"
-                alt=""
-                width={16}
-                height={16}
-                className="filter brightness-0 invert"
-              />
-            </span>
-          </button>
-        </Link>
-      </div>
+      <CrowdingImage
+        alt="maru"
+        width={128}
+        height={128}
+        sizes="128px"
+        className="w-32 h-32 object-contain"
+      />
     </div>
-
-    <Maru
-      alt="maru"
-      width={128}
-      height={128}
-      sizes="128px"
-      className="w-32 h-32 object-contain"
-    />
-  </div>
-);
+  );
+};
 
 export default Banner;
