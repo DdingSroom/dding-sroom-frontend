@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Maru } from 'public/static/icons';
+import { Maru, MaruSad } from 'public/static/icons';
 
 import BasicModal from '@components/common/basic-modal';
 
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
+import useCrowdingLevel from '@hooks/use-crowding-level';
 import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -18,6 +19,8 @@ const AfterLoginBanner = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
+  const { text: crowdingText, isUnavailable } = useCrowdingLevel();
+  const CrowdingImage = isUnavailable ? MaruSad : Maru;
 
   const parseDate = (raw) => {
     if (!raw) {
@@ -105,10 +108,10 @@ const AfterLoginBanner = () => {
             오늘의 혼잡도
           </div>
           <div className="text-2xl sm:text-3xl md:text-4xl text-brand font-black whitespace-nowrap overflow-hidden">
-            여유로움
+            {crowdingText}
           </div>
         </div>
-        <Maru
+        <CrowdingImage
           alt="maru"
           className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-16 h-16 sm:w-24 sm:h-24 object-contain opacity-90"
         />
