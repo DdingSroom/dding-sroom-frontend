@@ -9,7 +9,6 @@ import TimeComponent from '@components/reservation/TimeComponent';
 
 import { useCreateReservation } from '@api/hooks/use-reservation-mutations';
 
-import useReservationStore from '../../stores/useReservationStore';
 import useTokenStore from '../../stores/useTokenStore';
 
 //타임존 안전 유틸 (KST = UTC+9, DST 없음)
@@ -56,6 +55,7 @@ const TomorrowReservationComponent = ({
   roomName,
   caption,
   notice,
+  reservedTimeSlotsByRoom,
 }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -67,12 +67,6 @@ const TomorrowReservationComponent = ({
 
   const { accessToken } = useTokenStore();
   const { mutate, isPending } = useCreateReservation();
-  const {
-    fetchLatestReservation,
-    fetchAllUserReservations,
-    fetchAllReservedTimes,
-    reservedTimeSlotsByRoom,
-  } = useReservationStore();
 
   const router = useRouter();
 
@@ -166,14 +160,8 @@ const TomorrowReservationComponent = ({
         reservationEndTime: toKSTISOString(endMs),
       },
       {
-        onSuccess: async (res) => {
+        onSuccess: (res) => {
           setSuccessMessage(res.message || '예약이 완료되었습니다.');
-
-          await Promise.all([
-            fetchLatestReservation(),
-            fetchAllUserReservations(),
-            fetchAllReservedTimes(),
-          ]);
 
           setOpen(false);
           setStartTime(null);

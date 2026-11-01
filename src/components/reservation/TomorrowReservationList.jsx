@@ -2,7 +2,7 @@ import TomorrowReservationComponent from '@components/reservation/TomorrowReserv
 
 import { ROOMS } from '@constants/rooms';
 
-const TomorrowReservationList = () => (
+const TomorrowReservationList = ({ reservedTimeSlotsByRoom }) => (
   <div className="w-full">
     {ROOMS.map((room, index) => (
       <TomorrowReservationComponent
@@ -12,6 +12,7 @@ const TomorrowReservationList = () => (
         roomName={room.name}
         caption={room.caption}
         notice={room.notice}
+        reservedTimeSlotsByRoom={reservedTimeSlotsByRoom}
       />
     ))}
   </div>

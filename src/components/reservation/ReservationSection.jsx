@@ -1,22 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import TodayReservationList from '@components/reservation/TodayReservationList';
 import TomorrowReservationList from '@components/reservation/TomorrowReservationList';
 
-import useReservationStore from '@stores/useReservationStore';
+import { useAllReservations } from '@api/hooks/use-reservation-queries';
+import { toReservedTimeSlotsByRoom } from '@utils/reservation';
 
 const ReservationSection = () => {
   const [currentTab, setTab] = useState(0);
-
-  const { fetchAllReservedTimes } = useReservationStore();
-
-  useEffect(() => {
-    fetchAllReservedTimes();
-    const intervalId = setInterval(fetchAllReservedTimes, 10000);
-    return () => clearInterval(intervalId);
-  }, [fetchAllReservedTimes]);
+  const { data: reservations = [] } = useAllReservations();
+  const reservedTimeSlotsByRoom = useMemo(
+    () => toReservedTimeSlotsByRoom(reservations),
+    [reservations],
+  );
 
   const selectMenuHandler = (index) => {
     setTab(index);
@@ -45,10 +43,14 @@ const ReservationSection = () => {
       <div className="w-full flex justify-center items-center">
         <div className="w-full max-w-content">
           <div className={currentTab === 0 ? 'block' : 'hidden'}>
-            <TodayReservationList />
+            <TodayReservationList
+              reservedTimeSlotsByRoom={reservedTimeSlotsByRoom}
+            />
           </div>
           <div className={currentTab === 1 ? 'block' : 'hidden'}>
-            <TomorrowReservationList />
+            <TomorrowReservationList
+              reservedTimeSlotsByRoom={reservedTimeSlotsByRoom}
+            />
           </div>
         </div>
       </div>

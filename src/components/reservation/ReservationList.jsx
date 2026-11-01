@@ -1,181 +1,102 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import BasicModal from '@components/common/basic-modal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
-import axiosInstance from '@api/instance';
+import { useMyReservations } from '@api/hooks/use-reservation-queries';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
-import useReservationStore from '@stores/useReservationStore';
-import useTokenStore from '@stores/useTokenStore';
+import useAuthReady from '@hooks/useAuthReady';
+import { parseReservationDate } from '@utils/reservation';
 
 import ReservationHistory from './ReservationHistory';
 
-const toDateFromRaw = (raw) => {
-  if (!raw) {
-    return null;
-  }
-  if (Array.isArray(raw)) {
-    const [y, m = 1, d = 1, hh = 0, mm = 0, ss = 0, ms = 0] = raw;
-    return new Date(y, m - 1, d, hh, mm, ss, ms);
-  }
-  const dt = new Date(raw);
-  return isNaN(dt) ? null : dt;
-};
-
-const norm = (v) =>
-  String(v ?? '')
+const isCanceled = (reservation) => {
+  const status = String(reservation.status ?? '')
     .toUpperCase()
     .trim();
 
-const isCanceled = (r) => {
-  const s = norm(r.status);
-  if (r.canceledAt || r.cancelledAt) {
-    return true;
-  }
-  if (s === 'CANCELLED' || s === 'CANCELED') {
-    return true;
-  }
-  return false;
+  return (
+    Boolean(reservation.canceledAt || reservation.cancelledAt) ||
+    status === 'CANCELLED' ||
+    status === 'CANCELED'
+  );
+};
+
+const sortByStartDesc = (a, b) => {
+  const aTime =
+    parseReservationDate(a.startTime ?? a.reservationStartTime)?.getTime() ?? 0;
+  const bTime =
+    parseReservationDate(b.startTime ?? b.reservationStartTime)?.getTime() ?? 0;
+  return bTime - aTime;
 };
 
 const groupByDate = (reservations) => {
   const grouped = {};
-  reservations.forEach((r) => {
-    const start = toDateFromRaw(r.startTime ?? r.reservationStartTime);
+
+  reservations.forEach((reservation) => {
+    const start = parseReservationDate(
+      reservation.startTime ?? reservation.reservationStartTime,
+    );
     if (!start) {
-      (grouped['Invalid Date'] ??= []).push(r);
       return;
     }
+
     const key = start.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
     });
-    (grouped[key] ??= []).push(r);
+    (grouped[key] ??= []).push(reservation);
   });
+
   return grouped;
 };
 
 export default function ReservationList() {
-  // rehydrate 추가로 세션→스토어 동기화
-  const { accessToken, rehydrate } = useTokenStore();
-  const { fetchAllReservedTimes } = useReservationStore();
-  const { mutate, isPending } = useCancelReservation();
+  const { authReady, accessToken } = useAuthReady();
+  const { mutate, isPending: isCancelPending } = useCancelReservation();
+  const {
+    data: reservations = [],
+    isPending: isReservationsPending,
+    error: reservationsError,
+  } = useMyReservations(authReady && Boolean(accessToken));
 
-  const [groupedReservations, setGroupedReservations] = useState({});
-  const [loading, setLoading] = useState(true);
   const [cancelModalData, setCancelModalData] = useState(null);
-  const [authReady, setAuthReady] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 첫 마운트 시 세션 값을 스토어로 강제 동기화
+  const groupedReservations = useMemo(() => {
+    const visibleReservations = reservations
+      .filter((reservation) => !isCanceled(reservation))
+      .toSorted(sortByStartDesc);
+    return groupByDate(visibleReservations);
+  }, [reservations]);
+
   useEffect(() => {
-    if (typeof rehydrate === 'function') {
-      rehydrate();
+    if (reservationsError) {
+      setErrorMessage('예약 내역을 불러오는 중 오류가 발생했습니다.');
     }
-    const t = setTimeout(() => setAuthReady(true), 100);
-    return () => clearTimeout(t);
-  }, [rehydrate]);
-
-  const sortByStartDesc = (a, b) => {
-    const aT =
-      toDateFromRaw(a.startTime ?? a.reservationStartTime)?.getTime() ?? 0;
-    const bT =
-      toDateFromRaw(b.startTime ?? b.reservationStartTime)?.getTime() ?? 0;
-    return bT - aT;
-  };
-
-  const buildGrouped = useCallback((reservations) => {
-    const visible = (reservations ?? [])
-      .filter((r) => !isCanceled(r))
-      .sort(sortByStartDesc);
-    return groupByDate(visible);
-  }, []);
-
-  const fetchReservations = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await axiosInstance.get(
-        `/api/reservations/me?t=${Date.now()}`,
-      );
-      setGroupedReservations(buildGrouped(res.data?.reservations));
-    } catch (err) {
-      console.error('예약 내역 불러오기 실패:', err);
-      setGroupedReservations({});
-    } finally {
-      setLoading(false);
-    }
-  }, [buildGrouped]);
-
-  // authReady 이후에만 판단/요청 실행
-  useEffect(() => {
-    if (!authReady) {
-      return;
-    }
-
-    if (!accessToken) {
-      setGroupedReservations({});
-      setLoading(false);
-      return;
-    }
-
-    const sessionToken =
-      typeof window !== 'undefined'
-        ? sessionStorage.getItem('accessToken')
-        : null;
-    if (!sessionToken) {
-      const retryTimeout = setTimeout(() => {
-        const retryToken =
-          typeof window !== 'undefined'
-            ? sessionStorage.getItem('accessToken')
-            : null;
-        if (retryToken) {
-          fetchReservations();
-        } else {
-          setGroupedReservations({});
-          setLoading(false);
-        }
-      }, 50);
-      return () => clearTimeout(retryTimeout);
-    }
-
-    fetchReservations();
-  }, [authReady, accessToken, fetchReservations]);
-
-  const handleCancelReservation = (reservation) => {
-    setCancelModalData(reservation);
-  };
+  }, [reservationsError]);
 
   const confirmCancelReservation = () => {
-    if (!cancelModalData || isPending) {
+    if (!cancelModalData || isCancelPending) {
       return;
     }
 
     mutate(
+      { reservationId: cancelModalData.id },
       {
-        reservationId: cancelModalData.id,
-      },
-      {
-        onSuccess: async (res) => {
-          setSuccessMessage(res.message || '예약이 취소되었습니다.');
+        onSuccess: (response) => {
+          setSuccessMessage(response.message || '예약이 취소되었습니다.');
           setCancelModalData(null);
-
-          const response = await axiosInstance.get(
-            `/api/reservations/me?t=${Date.now()}`,
-          );
-
-          setGroupedReservations(buildGrouped(response.data?.reservations));
-
-          await fetchAllReservedTimes?.();
         },
-        onError: (err) => {
-          console.error('예약 취소 실패:', err);
+        onError: (error) => {
+          console.error('예약 취소 실패:', error);
           setErrorMessage(
-            err.response?.data?.message || '예약 취소에 실패했습니다.',
+            error.response?.data?.message || '예약 취소에 실패했습니다.',
           );
         },
       },
@@ -183,24 +104,23 @@ export default function ReservationList() {
   };
 
   const formatDate = (input) => {
-    const d = toDateFromRaw(input);
-    return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : '--월 --일';
-  };
-  const formatTime = (input) => {
-    const d = toDateFromRaw(input);
-    if (!d) {
-      return '--:--';
-    }
-    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const date = parseReservationDate(input);
+    return date ? `${date.getMonth() + 1}월 ${date.getDate()}일` : '--월 --일';
   };
 
-  if (!authReady || loading) {
+  const formatTime = (input) => {
+    const date = parseReservationDate(input);
+    if (!date) {
+      return '--:--';
+    }
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  };
+
+  if (!authReady || (Boolean(accessToken) && isReservationsPending)) {
     return <div className="p-6">로딩 중...</div>;
   }
 
-  const entries = Object.entries(groupedReservations).filter(
-    ([date]) => date !== 'Invalid Date',
-  );
+  const entries = Object.entries(groupedReservations);
 
   return (
     <div className="w-full">
@@ -209,14 +129,14 @@ export default function ReservationList() {
           표시할 예약 내역이 없습니다. (취소된 내역은 제외됩니다)
         </div>
       ) : (
-        entries.map(([date, reservations]) => (
+        entries.map(([date, dateReservations]) => (
           <div key={date} className="mb-6">
             <MyPageDate date={date} />
-            {reservations.map((reservation) => (
+            {dateReservations.map((reservation) => (
               <ReservationHistory
                 key={reservation.id}
                 reservation={reservation}
-                onCancel={handleCancelReservation}
+                onCancel={setCancelModalData}
               />
             ))}
           </div>
@@ -237,7 +157,7 @@ export default function ReservationList() {
             {
               text: '예약 취소',
               onClick: confirmCancelReservation,
-              disabled: isPending,
+              disabled: isCancelPending,
             },
           ]}
         >

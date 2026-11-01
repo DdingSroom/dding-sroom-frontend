@@ -2,7 +2,7 @@ import ReservationComponent from '@components/reservation/ReservationComponent';
 
 import { ROOMS } from '@constants/rooms';
 
-const TodayReservationList = () => (
+const TodayReservationList = ({ reservedTimeSlotsByRoom }) => (
   <div className="w-full">
     {ROOMS.map((room, index) => (
       <ReservationComponent
@@ -12,6 +12,7 @@ const TodayReservationList = () => (
         roomName={room.name}
         caption={room.caption}
         notice={room.notice}
+        reservedTimeSlotsByRoom={reservedTimeSlotsByRoom}
       />
     ))}
   </div>
