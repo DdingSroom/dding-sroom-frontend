@@ -4,14 +4,12 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
+import Dropdown from '@components/common/dropdown';
 import TimeComponent from '@components/reservation/TimeComponent';
 
-import axiosInstance from '@api/instance';
+import { useCreateReservation } from '@api/hooks/use-reservation-mutations';
 
-import useReservationStore from '../../stores/useReservationStore';
 import useTokenStore from '../../stores/useTokenStore';
-
-import Dropdown from '@components/common/dropdown';
 
 // 타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
@@ -47,7 +45,14 @@ const addMinutesISO = (iso, minutes) =>
 const toKSTISOString = (utcMs) =>
   new Date(utcMs + KST_MS).toISOString().slice(0, 19);
 
-const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
+const ReservationComponent = ({
+  index,
+  roomId,
+  roomName,
+  caption,
+  notice,
+  reservedTimeSlotsByRoom,
+}) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
@@ -56,13 +61,8 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { userId, accessToken } = useTokenStore();
-  const {
-    fetchLatestReservation,
-    fetchAllUserReservations,
-    fetchAllReservedTimes,
-    reservedTimeSlotsByRoom,
-  } = useReservationStore();
+  const { accessToken } = useTokenStore();
+  const { mutate, isPending } = useCreateReservation();
 
   const router = useRouter();
 
@@ -137,7 +137,11 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
     router.push('/login');
   };
 
-  const handleSubmitReservation = async () => {
+  const handleSubmitReservation = () => {
+    if (isPending) {
+      return;
+    }
+
     if (!startTime || !endTime) {
       setErrorMessage('예약 시간과 퇴실 시간을 모두 선택해주세요.');
       return;
@@ -152,30 +156,29 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
       return;
     }
 
-    try {
-      const res = await axiosInstance.post('/api/reservations', {
-        userId,
+    mutate(
+      {
         roomId,
         reservationStartTime: toKSTISOString(startMs),
         reservationEndTime: toKSTISOString(endMs),
-      });
+      },
+      {
+        onSuccess: (res) => {
+          setSuccessMessage(res.message || '예약이 완료되었습니다.');
 
-      setSuccessMessage(res.data.message || '예약이 완료되었습니다.');
-
-      await Promise.all([
-        fetchLatestReservation(),
-        fetchAllUserReservations(),
-        fetchAllReservedTimes(),
-      ]);
-
-      setOpen(false);
-      setStartTime(null);
-      setEndTime(null);
-      setDurationMinutes(null);
-    } catch (err) {
-      console.error('예약 실패:', err.response?.data || err.message);
-      setErrorMessage(err.response?.data?.message || '예약에 실패했습니다.');
-    }
+          setOpen(false);
+          setStartTime(null);
+          setEndTime(null);
+          setDurationMinutes(null);
+        },
+        onError: (err) => {
+          console.error('예약 실패:', err.response?.data || err.message);
+          setErrorMessage(
+            err.response?.data?.message || '예약에 실패했습니다.',
+          );
+        },
+      },
+    );
   };
 
   // KST 현재 시각을 10분 단위로 올림(예: 14:03 → 14:10)
@@ -209,7 +212,9 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
 
   // 오늘 모달: 종료시간 후보(1h/2h) 중 충돌 없는 것만
   const renderEndTimeOptions = () => {
-    if (!startTime) return [];
+    if (!startTime) {
+      return [];
+    }
     const startMs = new Date(startTime).getTime();
     const startISO = new Date(startMs).toISOString();
 
@@ -315,7 +320,11 @@ const ReservationComponent = ({ index, roomId, roomName, caption, notice }) => {
           className="max-w-modal"
           actions={[
             { text: '취소', onClick: () => setOpen(false), variant: 'ghost' },
-            { text: '예약하기', onClick: handleSubmitReservation },
+            {
+              text: '예약하기',
+              onClick: handleSubmitReservation,
+              disabled: isPending,
+            },
           ]}
         >
           <div className="p-4 flex flex-col h-full">

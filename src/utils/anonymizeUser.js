@@ -1,3 +1,5 @@
+import { parseCommunityDate } from '@utils/post-preview';
+
 export const anonymizeUsers = (comments) => {
   const userMap = new Map();
   let anonymousCounter = 1;
@@ -16,15 +18,11 @@ export const anonymizeUsers = (comments) => {
   const allComments = flattenComments(comments);
 
   allComments
-    .sort((a, b) => {
-      const timeA = new Date(
-        ...a.created_at.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-      );
-      const timeB = new Date(
-        ...b.created_at.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)),
-      );
-      return timeA - timeB;
-    })
+    .sort(
+      (a, b) =>
+        (parseCommunityDate(a.created_at)?.getTime() ?? 0) -
+        (parseCommunityDate(b.created_at)?.getTime() ?? 0),
+    )
     .forEach((comment) => {
       if (!userMap.has(comment.user_id)) {
         userMap.set(comment.user_id, `익명${anonymousCounter}`);

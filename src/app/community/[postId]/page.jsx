@@ -1,16 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
+import { Input } from '@components/common/input';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
-import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { useCreateComment } from '@api/hooks/use-comment-mutations';
+import { useDeleteCommunityPost } from '@api/hooks/use-community-mutations';
+import { comment } from '@api/keys/comment.key';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 import { anonymizeUsers } from '@utils/anonymizeUser';
@@ -25,123 +29,127 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function PostDetailPage() {
-  const [post, setPost] = useState(null);
-  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [userMap, setUserMap] = useState(new Map());
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
+  const { authReady, isAuthenticated, requireLogin, redirectToLogin } =
+    useRequireAuth();
   const { userId } = useTokenStore();
   const { postId } = useParams();
   const router = useRouter();
 
-  const fetchPostDetail = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await axiosInstance.get('/api/community-posts');
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-        return;
-      }
-      const found = (res?.data?.data ?? []).find(
-        (p) => p.id === parseInt(postId, 10),
-      );
-      if (found) {
-        setPost(found);
-      } else {
-        setErrorMessage('존재하지 않는 게시글입니다.');
-        setShowErrorModal(true);
-      }
-    } catch (e) {
-      console.error('게시글 불러오기 실패:', e);
-      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [postId]);
-
-  const fetchComments = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get(
-        `/api/community-posts/comments/post/${postId}`,
-      );
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-        return;
-      }
-      const list = res?.data?.data ?? [];
-      setComments(list);
-      if (list.length > 0) {
-        setUserMap(anonymizeUsers(list));
-      }
-    } catch (e) {
-      console.error('댓글 불러오기 실패:', e);
-    }
-  }, [postId]);
+  const {
+    data: postData,
+    isPending: isLoading,
+    error: postError,
+  } = useQuery({
+    ...community.getById(Number(postId)),
+    enabled: authReady && isAuthenticated && Boolean(postId),
+    retry: false,
+    staleTime: 0,
+  });
+  const post = postData?.data ?? null;
 
   useEffect(() => {
-    if (isAuthenticated && postId) {
-      fetchPostDetail();
-      fetchComments();
+    if (postError) {
+      console.error('게시글 불러오기 실패:', postError);
+      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    } else if (postData?.error) {
+      setErrorMessage(postData.error);
+      setShowErrorModal(true);
+    } else if (postData && !post) {
+      setErrorMessage('존재하지 않는 게시글입니다.');
+      setShowErrorModal(true);
     }
-  }, [isAuthenticated, postId, fetchPostDetail, fetchComments]);
+  }, [post, postData, postError]);
 
-  const handleCommentSubmit = async () => {
-    if (!newComment.trim()) {
+  const { data: commentsData, error: commentsError } = useQuery({
+    ...comment.getComments(Number(postId)),
+    enabled: authReady && isAuthenticated && Boolean(postId),
+    retry: false,
+    staleTime: 0,
+  });
+  const comments = useMemo(
+    () => (Array.isArray(commentsData?.data) ? commentsData.data : []),
+    [commentsData],
+  );
+  const userMap = useMemo(
+    () => (comments.length > 0 ? anonymizeUsers(comments) : new Map()),
+    [comments],
+  );
+
+  useEffect(() => {
+    if (commentsError) {
+      console.error('댓글 불러오기 실패:', commentsError);
+      setErrorMessage('댓글을 불러오는 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    } else if (commentsData?.error) {
+      setErrorMessage(commentsData.error);
+      setShowErrorModal(true);
+    }
+  }, [commentsData, commentsError]);
+
+  const { mutate: createPostComment, isPending: isSubmittingComment } =
+    useCreateComment();
+
+  const handleCommentSubmit = () => {
+    if (!newComment.trim() || isSubmittingComment) {
       return;
     }
-    setIsSubmittingComment(true);
-    try {
-      const res = await axiosInstance.post('/api/community-posts/comments', {
-        post_id: parseInt(postId, 10),
-        user_id: userId,
+
+    createPostComment(
+      {
+        post_id: Number(postId),
         comment_content: newComment.trim(),
-      });
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        setNewComment('');
-        fetchComments();
-      }
-    } catch (e) {
-      console.error('댓글 작성 실패:', e);
-      setErrorMessage('댓글 작성 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmittingComment(false);
-    }
+      },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            setErrorMessage(response.error);
+            setShowErrorModal(true);
+            return;
+          }
+          setNewComment('');
+        },
+        onError: (error) => {
+          console.error('댓글 작성 실패:', error);
+          setErrorMessage('댓글 작성 중 오류가 발생했습니다.');
+          setShowErrorModal(true);
+        },
+      },
+    );
   };
 
   const handleDeletePost = () => {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDeletePost = async () => {
+  const { mutate: deletePost, isPending: isDeleting } =
+    useDeleteCommunityPost();
+
+  const confirmDeletePost = () => {
     setShowDeleteConfirm(false);
-    try {
-      const res = await axiosInstance.delete('/api/community-posts', {
-        data: { post_id: parseInt(postId, 10), user_id: userId },
-      });
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        router.push('/community');
-      }
-    } catch (e) {
-      console.error('게시글 삭제 실패:', e);
-      setErrorMessage('게시글 삭제 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    }
+    deletePost(
+      { post_id: Number(postId) },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            setErrorMessage(response.error);
+            setShowErrorModal(true);
+            return;
+          }
+          router.push('/community');
+        },
+        onError: (error) => {
+          console.error('게시글 삭제 실패:', error);
+          setErrorMessage('게시글 삭제 중 오류가 발생했습니다.');
+          setShowErrorModal(true);
+        },
+      },
+    );
   };
 
   const formatDate = (arr) => {
@@ -192,7 +200,7 @@ export default function PostDetailPage() {
     );
   }
 
-  if (isLoading) {
+  if (!authReady || isLoading) {
     return (
       <div className="min-h-screen bg-surface-muted flex flex-col">
         <CommunityHeader title="커뮤니티" />
@@ -295,7 +303,6 @@ export default function PostDetailPage() {
                     comment={c}
                     postId={parseInt(postId, 10)}
                     postAuthorId={post.user_id}
-                    onCommentUpdate={fetchComments}
                     onError={(m) => {
                       setErrorMessage(m);
                       setShowErrorModal(true);
@@ -352,7 +359,12 @@ export default function PostDetailPage() {
             onClick: () => setShowDeleteConfirm(false),
             variant: 'ghost',
           },
-          { text: '삭제', onClick: confirmDeletePost, variant: 'danger' },
+          {
+            text: '삭제',
+            onClick: confirmDeletePost,
+            variant: 'danger',
+            disabled: isDeleting,
+          },
         ]}
       />
       <PrivacyPolicyFooter />

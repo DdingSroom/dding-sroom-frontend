@@ -38,6 +38,7 @@ export default function MyCommentsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, userId]);
 
+  // TODO(#312): userId를 직접 전달하는 API라 React Query 전환 대상에서 제외
   const fetchMyComments = async () => {
     try {
       const response = await axiosInstance.get(

@@ -4,14 +4,12 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
+import Dropdown from '@components/common/dropdown';
 import TimeComponent from '@components/reservation/TimeComponent';
 
-import axiosInstance from '@api/instance';
+import { useCreateReservation } from '@api/hooks/use-reservation-mutations';
 
-import useReservationStore from '../../stores/useReservationStore';
 import useTokenStore from '../../stores/useTokenStore';
-
-import Dropdown from '@components/common/dropdown';
 
 //타임존 안전 유틸 (KST = UTC+9, DST 없음)
 const KST_MS = 9 * 60 * 60 * 1000;
@@ -57,6 +55,7 @@ const TomorrowReservationComponent = ({
   roomName,
   caption,
   notice,
+  reservedTimeSlotsByRoom,
 }) => {
   const [open, setOpen] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -66,13 +65,8 @@ const TomorrowReservationComponent = ({
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { userId, accessToken } = useTokenStore();
-  const {
-    fetchLatestReservation,
-    fetchAllUserReservations,
-    fetchAllReservedTimes,
-    reservedTimeSlotsByRoom,
-  } = useReservationStore();
+  const { accessToken } = useTokenStore();
+  const { mutate, isPending } = useCreateReservation();
 
   const router = useRouter();
 
@@ -140,7 +134,11 @@ const TomorrowReservationComponent = ({
     router.push('/login');
   };
 
-  const handleSubmitReservation = async () => {
+  const handleSubmitReservation = () => {
+    if (isPending) {
+      return;
+    }
+
     if (!startTime || !endTime) {
       setErrorMessage('예약 시간과 퇴실 시간을 모두 선택해주세요.');
       return;
@@ -155,30 +153,29 @@ const TomorrowReservationComponent = ({
       return;
     }
 
-    try {
-      const res = await axiosInstance.post('/api/reservations', {
-        userId,
+    mutate(
+      {
         roomId,
         reservationStartTime: toKSTISOString(startMs),
         reservationEndTime: toKSTISOString(endMs),
-      });
+      },
+      {
+        onSuccess: (res) => {
+          setSuccessMessage(res.message || '예약이 완료되었습니다.');
 
-      setSuccessMessage(res.data.message || '예약이 완료되었습니다.');
-
-      await Promise.all([
-        fetchLatestReservation(),
-        fetchAllUserReservations(),
-        fetchAllReservedTimes(),
-      ]);
-
-      setOpen(false);
-      setStartTime(null);
-      setEndTime(null);
-      setDurationMinutes(null);
-    } catch (err) {
-      console.error('예약 실패:', err.response?.data || err.message);
-      setErrorMessage(err.response?.data?.message || '예약에 실패했습니다.');
-    }
+          setOpen(false);
+          setStartTime(null);
+          setEndTime(null);
+          setDurationMinutes(null);
+        },
+        onError: (err) => {
+          console.error('예약 실패:', err.response?.data || err.message);
+          setErrorMessage(
+            err.response?.data?.message || '예약에 실패했습니다.',
+          );
+        },
+      },
+    );
   };
 
   const renderLine = (slots) => (
@@ -300,7 +297,11 @@ const TomorrowReservationComponent = ({
           className="max-w-modal"
           actions={[
             { text: '취소', onClick: () => setOpen(false), variant: 'ghost' },
-            { text: '예약하기', onClick: handleSubmitReservation },
+            {
+              text: '예약하기',
+              onClick: handleSubmitReservation,
+              disabled: isPending,
+            },
           ]}
         >
           <div className="p-4 flex flex-col h-full">

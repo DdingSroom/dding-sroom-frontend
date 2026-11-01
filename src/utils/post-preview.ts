@@ -7,9 +7,11 @@ export type CommunityDateArray = [
   second?: number,
 ];
 
+export type CommunityDate = CommunityDateArray | string;
+
 type GetPostPreviewViewModelParams = {
   category: number;
-  createdAt?: CommunityDateArray;
+  createdAt?: CommunityDate;
 };
 
 const MIN_IN_MS = 1000 * 60;
@@ -21,7 +23,13 @@ const CATEGORY_NAME: Record<number, string> = {
   2: '분실물 게시판',
 };
 
-const parseCommunityDate = (dateArray?: CommunityDateArray) => {
+export const parseCommunityDate = (dateValue?: CommunityDate) => {
+  if (typeof dateValue === 'string') {
+    const date = new Date(dateValue);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const dateArray = dateValue;
   if (!Array.isArray(dateArray) || dateArray.length < 3) {
     return null;
   }

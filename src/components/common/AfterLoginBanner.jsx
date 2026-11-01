@@ -1,42 +1,52 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Maru } from 'public/static/icons';
 
 import BasicModal from '@components/common/basic-modal';
 
-import axiosInstance from '@api/instance';
+import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
+import { reservation } from '@api/keys/reservation.key';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
-import useReservationStore from '@stores/useReservationStore';
 import useTokenStore from '@stores/useTokenStore';
+import { parseReservationDate, selectReservations } from '@utils/reservation';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
   const { accessToken } = useTokenStore();
-  const [isCancelling, setIsCancelling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const { userReservations, setUserReservations, fetchAllReservedTimes } =
-    useReservationStore();
+  const { mutate, isPending } = useCancelReservation();
+  const { data: reservations = [] } = useQuery({
+    ...reservation.getMyReservations(),
+    select: selectReservations,
+    enabled: Boolean(accessToken),
+  });
 
-  const parseDate = (raw) => {
-    if (!raw) {
-      return null;
-    }
-    if (Array.isArray(raw)) {
-      const [year, month, day, hour = 0, minute = 0] = raw;
-      return new Date(year, month - 1, day, hour, minute);
-    }
-    return new Date(raw);
-  };
+  const userReservations = useMemo(() => {
+    const now = new Date();
+    return reservations
+      .filter((reservation) => {
+        const endTime = parseReservationDate(reservation.endTime);
+        return (
+          reservation.status === 'RESERVED' && endTime !== null && endTime > now
+        );
+      })
+      .toSorted(
+        (a, b) =>
+          (parseReservationDate(a.startTime)?.getTime() ?? 0) -
+          (parseReservationDate(b.startTime)?.getTime() ?? 0),
+      );
+  }, [reservations]);
 
   const formatDate = (input) => {
-    const d = parseDate(input);
+    const d = parseReservationDate(input);
     return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : '--월 --일';
   };
 
   const formatTime = (input) => {
-    const d = parseDate(input);
+    const d = parseReservationDate(input);
     if (!d) {
       return '--:--';
     }
@@ -45,55 +55,27 @@ const AfterLoginBanner = () => {
     return `${hours}:${minutes}`;
   };
 
-  const fetchAllUserReservations = useCallback(async () => {
-    if (!accessToken) {
-      return;
-    }
-    try {
-      const res = await axiosInstance.get('/api/reservations/me');
-      const nowKST = new Date();
-
-      const upcoming = res.data.reservations.filter((r) => {
-        const endTime = parseDate(r.endTime);
-        return r.status === 'RESERVED' && endTime > nowKST;
-      });
-
-      const sorted = upcoming.sort(
-        (a, b) => parseDate(a.startTime) - parseDate(b.startTime),
-      );
-      setUserReservations(sorted);
-    } catch (err) {
-      console.error('예약 정보 조회 실패:', err);
-    }
-  }, [accessToken, setUserReservations]);
-
-  useEffect(() => {
-    fetchAllUserReservations();
-  }, [accessToken, fetchAllUserReservations]);
-
-  const cancelReservation = async (reservationId) => {
-    if (isCancelling) {
+  const handleCancelReservation = (reservationId) => {
+    if (isPending) {
       return;
     }
 
-    setIsCancelling(true);
-    try {
-      const res = await axiosInstance.post('/api/reservations/cancel', {
-        reservationId,
-      });
-      setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
-      setOpenReservationId(null);
-      await fetchAllUserReservations();
-      await fetchAllReservedTimes();
-    } catch (err) {
-      console.error('예약 취소 실패:', err);
-      setOpenReservationId(null);
-      setErrorMessage(
-        err.response?.data?.message || '예약 취소에 실패했습니다.',
-      );
-    } finally {
-      setIsCancelling(false);
-    }
+    mutate(
+      { reservationId },
+      {
+        onSuccess: (res) => {
+          setSuccessMessage(res.message || '예약이 취소되었습니다.');
+          setOpenReservationId(null);
+        },
+        onError: (err) => {
+          console.error('예약 취소 실패:', err);
+          setOpenReservationId(null);
+          setErrorMessage(
+            err.response?.data?.message || '예약 취소에 실패했습니다.',
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -161,8 +143,8 @@ const AfterLoginBanner = () => {
                     },
                     {
                       text: '예약 취소',
-                      onClick: () => cancelReservation(r.id),
-                      disabled: isCancelling,
+                      onClick: () => handleCancelReservation(r.id),
+                      disabled: isPending,
                     },
                   ]}
                 >
