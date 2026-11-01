@@ -1,17 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
+import { Input } from '@components/common/input';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
-import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { useUpdateCommunityPost } from '@api/hooks/use-community-mutations';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -29,8 +31,6 @@ export default function EditPostPage() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(1);
   const [initialValues, setInitialValues] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
 
@@ -47,47 +47,52 @@ export default function EditPostPage() {
 
   const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  const fetchPost = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get('/api/community-posts');
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        const found = res.data.data.find((p) => p.id === parseInt(postId));
-        if (!found) {
-          setErrorMessage('존재하지 않는 게시글입니다.');
-          setShowErrorModal(true);
-        } else if (found.user_id !== userId) {
-          setErrorMessage('게시글 수정 권한이 없습니다.');
-          setShowErrorModal(true);
-        } else {
-          setTitle(found.title);
-          setContent(found.content);
-          setCategory(found.category);
-          setInitialValues({
-            title: found.title,
-            content: found.content,
-            category: found.category,
-          });
-        }
-      }
-    } catch (e) {
-      console.error('게시글 불러오기 실패:', e);
-      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [postId, userId]);
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
+    ...community.getById(Number(postId)),
+    enabled: isAuthenticated && Boolean(postId),
+    retry: false,
+    staleTime: 0,
+  });
 
   useEffect(() => {
-    if (isAuthenticated && postId) {
-      fetchPost();
+    if (isLoading) {
+      return;
     }
-  }, [isAuthenticated, postId, fetchPost]);
+    if (error) {
+      console.error('게시글 불러오기 실패:', error);
+      setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
+      setShowErrorModal(true);
+    } else if (data?.error) {
+      setErrorMessage(data.error);
+      setShowErrorModal(true);
+    } else if (data) {
+      const post = data.data;
+      if (!post) {
+        setErrorMessage('존재하지 않는 게시글입니다.');
+        setShowErrorModal(true);
+      } else if (post.user_id !== userId) {
+        setErrorMessage('게시글 수정 권한이 없습니다.');
+        setShowErrorModal(true);
+      } else {
+        setTitle(post.title);
+        setContent(post.content);
+        setCategory(post.category);
+        setInitialValues({
+          title: post.title,
+          content: post.content,
+          category: post.category,
+        });
+      }
+    }
+  }, [data, error, isLoading, userId]);
 
-  const handleSubmit = async (e) => {
+  const { mutate: updatePost, isPending } = useUpdateCommunityPost();
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
@@ -100,29 +105,30 @@ export default function EditPostPage() {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const res = await axiosInstance.put('/api/community-posts', {
-        post_id: parseInt(postId),
-        user_id: userId,
+    updatePost(
+      {
+        post_id: Number(postId),
         title: title.trim(),
         content: content.trim(),
         category,
-      });
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        markClean();
-        router.push(`/community/${postId}`);
-      }
-    } catch (e) {
-      console.error('게시글 수정 실패:', e);
-      setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            setErrorMessage(response.error);
+            setShowErrorModal(true);
+            return;
+          }
+          router.push(`/community/${postId}`);
+          markClean();
+        },
+        onError: (mutationError) => {
+          console.error('게시글 수정 실패:', mutationError);
+          setErrorMessage('게시글 수정 중 오류가 발생했습니다.');
+          setShowErrorModal(true);
+        },
+      },
+    );
   };
 
   const handleErrorModalClose = () => {
@@ -215,7 +221,7 @@ export default function EditPostPage() {
                 value={title}
                 onChange={(value) => setTitle(value)}
                 placeholder="제목을 입력하세요"
-                disabled={isSubmitting}
+                disabled={isPending}
                 maxLength={100}
               />
               <div className="mt-1 text-right text-xs-plus text-gray-400">
@@ -238,7 +244,7 @@ export default function EditPostPage() {
 - 서로를 존중하는 언어를 사용해주세요
 - 개인정보나 연락처는 공유하지 마세요`}
                 maxLength={1000}
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="bg-white"
               />
             </div>
@@ -246,10 +252,10 @@ export default function EditPostPage() {
             <div>
               <button
                 type="submit"
-                disabled={isSubmitting || !title.trim() || !content.trim()}
+                disabled={isPending || !title.trim() || !content.trim()}
                 className="w-full py-3.5 rounded-lg text-white bg-brand hover:bg-brand-hover font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? '게시글 수정 중…' : '수정 완료'}
+                {isPending ? '게시글 수정 중…' : '수정 완료'}
               </button>
             </div>
           </form>

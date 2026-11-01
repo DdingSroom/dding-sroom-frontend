@@ -1,3 +1,5 @@
+import type { ApiSchemas } from '../types/api';
+
 interface ReservationLike {
   roomId?: number;
   status?: string;
@@ -6,6 +8,10 @@ interface ReservationLike {
   reservationStartTime?: string | number[];
   reservationEndTime?: string | number[];
 }
+
+export const selectReservations = (
+  response: ApiSchemas['ReservationResponseDTO'],
+) => response.reservations ?? [];
 
 export const parseReservationDate = (raw?: string | number[]) => {
   if (!raw) {

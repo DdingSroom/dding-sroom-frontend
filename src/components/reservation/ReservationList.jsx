@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import MyPageDate from '@components/my/MyPageDate';
 
 import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
-import { useMyReservations } from '@api/hooks/use-reservation-queries';
+import { reservation } from '@api/keys/reservation.key';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useAuthReady from '@hooks/useAuthReady';
-import { parseReservationDate } from '@utils/reservation';
+import { parseReservationDate, selectReservations } from '@utils/reservation';
 
 import ReservationHistory from './ReservationHistory';
 
@@ -62,7 +63,11 @@ export default function ReservationList() {
     data: reservations = [],
     isPending: isReservationsPending,
     error: reservationsError,
-  } = useMyReservations(authReady && Boolean(accessToken));
+  } = useQuery({
+    ...reservation.getMyReservations(),
+    select: selectReservations,
+    enabled: authReady && Boolean(accessToken),
+  });
 
   const [cancelModalData, setCancelModalData] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');

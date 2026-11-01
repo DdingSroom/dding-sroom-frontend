@@ -1,16 +1,23 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import TodayReservationList from '@components/reservation/TodayReservationList';
 import TomorrowReservationList from '@components/reservation/TomorrowReservationList';
 
-import { useAllReservations } from '@api/hooks/use-reservation-queries';
-import { toReservedTimeSlotsByRoom } from '@utils/reservation';
+import { reservation } from '@api/keys/reservation.key';
+import {
+  selectReservations,
+  toReservedTimeSlotsByRoom,
+} from '@utils/reservation';
 
 const ReservationSection = () => {
   const [currentTab, setTab] = useState(0);
-  const { data: reservations = [] } = useAllReservations();
+  const { data: reservations = [] } = useQuery({
+    ...reservation.getAll(),
+    select: selectReservations,
+  });
   const reservedTimeSlotsByRoom = useMemo(
     () => toReservedTimeSlotsByRoom(reservations),
     [reservations],

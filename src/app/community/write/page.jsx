@@ -5,15 +5,14 @@ import { useRouter } from 'next/navigation';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
+import { Input } from '@components/common/input';
 import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
-import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import { useCreateCommunityPost } from '@api/hooks/use-community-mutations';
 import useRequireAuth from '@hooks/use-require-auth';
-import useTokenStore from '@stores/useTokenStore';
 
 function BottomSafeSpacer({ height = 64 }) {
   return (
@@ -28,17 +27,17 @@ export default function WritePostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { requireLogin, redirectToLogin } = useRequireAuth();
-  const { userId } = useTokenStore();
   const router = useRouter();
 
   const isDirty = title !== '' || content !== '';
   const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  const handleSubmit = async (e) => {
+  const { mutate, isPending } = useCreateCommunityPost();
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
       setErrorMessage('제목을 입력해주세요.');
@@ -51,28 +50,29 @@ export default function WritePostPage() {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const res = await axiosInstance.post('/api/community-posts', {
-        user_id: userId,
+    mutate(
+      {
         title: title.trim(),
         content: content.trim(),
         category,
-      });
-      if (res.data.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        markClean();
-        router.push('/community');
-      }
-    } catch (e) {
-      console.error('게시글 작성 실패:', e);
-      setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            setErrorMessage(response.error);
+            setShowErrorModal(true);
+            return;
+          }
+          router.push('/community');
+          markClean();
+        },
+        onError: (error) => {
+          console.error('게시글 작성 실패:', error);
+          setErrorMessage('게시글 작성 중 오류가 발생했습니다.');
+          setShowErrorModal(true);
+        },
+      },
+    );
   };
 
   if (requireLogin) {
@@ -144,7 +144,7 @@ export default function WritePostPage() {
                 value={title}
                 onChange={(value) => setTitle(value)}
                 placeholder="제목을 입력하세요"
-                disabled={isSubmitting}
+                disabled={isPending}
                 maxLength={100}
               />
               <div className="mt-1 text-right text-xs-plus text-gray-400">
@@ -167,7 +167,7 @@ export default function WritePostPage() {
 - 개인정보나 연락처는 공유하지 마세요`}
                 rows={12}
                 maxLength={1000}
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="bg-white"
               />
             </div>
@@ -175,10 +175,10 @@ export default function WritePostPage() {
             <div>
               <button
                 type="submit"
-                disabled={isSubmitting || !title.trim() || !content.trim()}
+                disabled={isPending || !title.trim() || !content.trim()}
                 className="w-full py-3.5 rounded-lg text-white bg-brand hover:bg-brand-hover font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? '게시글 작성 중…' : '게시글 발행하기'}
+                {isPending ? '게시글 작성 중…' : '게시글 발행하기'}
               </button>
             </div>
           </form>

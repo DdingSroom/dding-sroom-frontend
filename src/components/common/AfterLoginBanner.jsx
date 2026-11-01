@@ -1,15 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Maru } from 'public/static/icons';
 
 import BasicModal from '@components/common/basic-modal';
 
 import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
-import { useMyReservations } from '@api/hooks/use-reservation-queries';
+import { reservation } from '@api/keys/reservation.key';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useTokenStore from '@stores/useTokenStore';
-import { parseReservationDate } from '@utils/reservation';
+import { parseReservationDate, selectReservations } from '@utils/reservation';
 
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
@@ -17,7 +18,11 @@ const AfterLoginBanner = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const { mutate, isPending } = useCancelReservation();
-  const { data: reservations = [] } = useMyReservations(Boolean(accessToken));
+  const { data: reservations = [] } = useQuery({
+    ...reservation.getMyReservations(),
+    select: selectReservations,
+    enabled: Boolean(accessToken),
+  });
 
   const userReservations = useMemo(() => {
     const now = new Date();

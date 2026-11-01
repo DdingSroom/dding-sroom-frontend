@@ -9,14 +9,9 @@ export const useCreateReservation = () => {
   return useMutation({
     mutationFn: createReservation,
     onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: reservation.getAll().queryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: reservation.getMyReservations().queryKey,
-        }),
-      ]),
+      queryClient.invalidateQueries({
+        queryKey: reservation._def,
+      }),
   });
 };
 
@@ -26,13 +21,8 @@ export const useCancelReservation = () => {
   return useMutation({
     mutationFn: cancelReservation,
     onSuccess: () =>
-      Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: reservation.getAll().queryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: reservation.getMyReservations().queryKey,
-        }),
-      ]),
+      queryClient.invalidateQueries({
+        queryKey: reservation._def,
+      }),
   });
 };

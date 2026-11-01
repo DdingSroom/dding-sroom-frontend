@@ -2,15 +2,18 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
+import { Input } from '@components/common/input';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import CommentItem from '@components/community/CommentItem';
 import CommunityHeader from '@components/community/CommunityHeader';
-import { Input } from '@components/common/input';
 
+import { useDeleteCommunityPost } from '@api/hooks/use-community-mutations';
 import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 import { anonymizeUsers } from '@utils/anonymizeUser';
@@ -25,11 +28,9 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function PostDetailPage() {
-  const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [userMap, setUserMap] = useState(new Map());
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -40,32 +41,31 @@ export default function PostDetailPage() {
   const { postId } = useParams();
   const router = useRouter();
 
-  const fetchPostDetail = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await axiosInstance.get('/api/community-posts');
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-        return;
-      }
-      const found = (res?.data?.data ?? []).find(
-        (p) => p.id === parseInt(postId, 10),
-      );
-      if (found) {
-        setPost(found);
-      } else {
-        setErrorMessage('존재하지 않는 게시글입니다.');
-        setShowErrorModal(true);
-      }
-    } catch (e) {
-      console.error('게시글 불러오기 실패:', e);
+  const {
+    data: postData,
+    isFetching: isLoading,
+    error: postError,
+  } = useQuery({
+    ...community.getById(Number(postId)),
+    enabled: isAuthenticated && Boolean(postId),
+    retry: false,
+    staleTime: 0,
+  });
+  const post = postData?.data ?? null;
+
+  useEffect(() => {
+    if (postError) {
+      console.error('게시글 불러오기 실패:', postError);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
       setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
+    } else if (postData?.error) {
+      setErrorMessage(postData.error);
+      setShowErrorModal(true);
+    } else if (postData && !post) {
+      setErrorMessage('존재하지 않는 게시글입니다.');
+      setShowErrorModal(true);
     }
-  }, [postId]);
+  }, [post, postData, postError]);
 
   const fetchComments = useCallback(async () => {
     try {
@@ -89,10 +89,9 @@ export default function PostDetailPage() {
 
   useEffect(() => {
     if (isAuthenticated && postId) {
-      fetchPostDetail();
       fetchComments();
     }
-  }, [isAuthenticated, postId, fetchPostDetail, fetchComments]);
+  }, [isAuthenticated, postId, fetchComments]);
 
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
@@ -125,23 +124,29 @@ export default function PostDetailPage() {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDeletePost = async () => {
+  const { mutate: deletePost, isPending: isDeleting } =
+    useDeleteCommunityPost();
+
+  const confirmDeletePost = () => {
     setShowDeleteConfirm(false);
-    try {
-      const res = await axiosInstance.delete('/api/community-posts', {
-        data: { post_id: parseInt(postId, 10), user_id: userId },
-      });
-      if (res?.data?.error) {
-        setErrorMessage(res.data.error);
-        setShowErrorModal(true);
-      } else {
-        router.push('/community');
-      }
-    } catch (e) {
-      console.error('게시글 삭제 실패:', e);
-      setErrorMessage('게시글 삭제 중 오류가 발생했습니다.');
-      setShowErrorModal(true);
-    }
+    deletePost(
+      { post_id: Number(postId) },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            setErrorMessage(response.error);
+            setShowErrorModal(true);
+            return;
+          }
+          router.push('/community');
+        },
+        onError: (error) => {
+          console.error('게시글 삭제 실패:', error);
+          setErrorMessage('게시글 삭제 중 오류가 발생했습니다.');
+          setShowErrorModal(true);
+        },
+      },
+    );
   };
 
   const formatDate = (arr) => {
@@ -352,7 +357,12 @@ export default function PostDetailPage() {
             onClick: () => setShowDeleteConfirm(false),
             variant: 'ghost',
           },
-          { text: '삭제', onClick: confirmDeletePost, variant: 'danger' },
+          {
+            text: '삭제',
+            onClick: confirmDeletePost,
+            variant: 'danger',
+            disabled: isDeleting,
+          },
         ]}
       />
       <PrivacyPolicyFooter />
