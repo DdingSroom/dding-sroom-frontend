@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import BasicModal from '@components/common/basic-modal';
 import MyPageDate from '@components/my/MyPageDate';
 
+import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
@@ -62,6 +63,7 @@ export default function ReservationList() {
   // rehydrate 추가로 세션→스토어 동기화
   const { accessToken, rehydrate } = useTokenStore();
   const { fetchAllReservedTimes } = useReservationStore();
+  const { mutate, isPending } = useCancelReservation();
 
   const [groupedReservations, setGroupedReservations] = useState({});
   const [loading, setLoading] = useState(true);
@@ -148,31 +150,36 @@ export default function ReservationList() {
     setCancelModalData(reservation);
   };
 
-  const confirmCancelReservation = async () => {
-    if (!cancelModalData) {
+  const confirmCancelReservation = () => {
+    if (!cancelModalData || isPending) {
       return;
     }
-    try {
-      const res = await axiosInstance.post('/api/reservations/cancel', {
+
+    mutate(
+      {
         reservationId: cancelModalData.id,
-      });
-      setSuccessMessage(res.data?.message || '예약이 취소되었습니다.');
-      setCancelModalData(null);
+      },
+      {
+        onSuccess: async (res) => {
+          setSuccessMessage(res.message || '예약이 취소되었습니다.');
+          setCancelModalData(null);
 
-      const res2 = await axiosInstance.get(
-        `/api/reservations/me?t=${Date.now()}`,
-      );
-      setGroupedReservations(buildGrouped(res2.data?.reservations));
+          const response = await axiosInstance.get(
+            `/api/reservations/me?t=${Date.now()}`,
+          );
 
-      if (fetchAllReservedTimes) {
-        await fetchAllReservedTimes();
-      }
-    } catch (err) {
-      console.error('예약 취소 실패:', err);
-      setErrorMessage(
-        err.response?.data?.message || '예약 취소에 실패했습니다.',
-      );
-    }
+          setGroupedReservations(buildGrouped(response.data?.reservations));
+
+          await fetchAllReservedTimes?.();
+        },
+        onError: (err) => {
+          console.error('예약 취소 실패:', err);
+          setErrorMessage(
+            err.response?.data?.message || '예약 취소에 실패했습니다.',
+          );
+        },
+      },
+    );
   };
 
   const formatDate = (input) => {
@@ -227,7 +234,11 @@ export default function ReservationList() {
               onClick: () => setCancelModalData(null),
               variant: 'ghost',
             },
-            { text: '예약 취소', onClick: confirmCancelReservation },
+            {
+              text: '예약 취소',
+              onClick: confirmCancelReservation,
+              disabled: isPending,
+            },
           ]}
         >
           <div className="p-6 sm:p-8">

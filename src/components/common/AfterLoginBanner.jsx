@@ -5,6 +5,7 @@ import { Maru } from 'public/static/icons';
 
 import BasicModal from '@components/common/basic-modal';
 
+import { useCancelReservation } from '@api/hooks/use-reservation-mutations';
 import axiosInstance from '@api/instance';
 import { STUDYROOM_IMAGE_SRC } from '@constants/images';
 import useReservationStore from '@stores/useReservationStore';
@@ -13,9 +14,9 @@ import useTokenStore from '@stores/useTokenStore';
 const AfterLoginBanner = () => {
   const [openReservationId, setOpenReservationId] = useState(null);
   const { accessToken } = useTokenStore();
-  const [isCancelling, setIsCancelling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const { mutate, isPending } = useCancelReservation();
   const { userReservations, setUserReservations, fetchAllReservedTimes } =
     useReservationStore();
 
@@ -71,29 +72,30 @@ const AfterLoginBanner = () => {
     fetchAllUserReservations();
   }, [accessToken, fetchAllUserReservations]);
 
-  const cancelReservation = async (reservationId) => {
-    if (isCancelling) {
+  const handleCancelReservation = (reservationId) => {
+    if (isPending) {
       return;
     }
 
-    setIsCancelling(true);
-    try {
-      const res = await axiosInstance.post('/api/reservations/cancel', {
-        reservationId,
-      });
-      setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
-      setOpenReservationId(null);
-      await fetchAllUserReservations();
-      await fetchAllReservedTimes();
-    } catch (err) {
-      console.error('예약 취소 실패:', err);
-      setOpenReservationId(null);
-      setErrorMessage(
-        err.response?.data?.message || '예약 취소에 실패했습니다.',
-      );
-    } finally {
-      setIsCancelling(false);
-    }
+    mutate(
+      { reservationId },
+      {
+        onSuccess: async (res) => {
+          setSuccessMessage(res.message || '예약이 취소되었습니다.');
+          setOpenReservationId(null);
+          //TODO 변경 예정
+          await fetchAllUserReservations();
+          await fetchAllReservedTimes();
+        },
+        onError: (err) => {
+          console.error('예약 취소 실패:', err);
+          setOpenReservationId(null);
+          setErrorMessage(
+            err.response?.data?.message || '예약 취소에 실패했습니다.',
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -161,8 +163,8 @@ const AfterLoginBanner = () => {
                     },
                     {
                       text: '예약 취소',
-                      onClick: () => cancelReservation(r.id),
-                      disabled: isCancelling,
+                      onClick: () => handleCancelReservation(r.id),
+                      disabled: isPending,
                     },
                   ]}
                 >
