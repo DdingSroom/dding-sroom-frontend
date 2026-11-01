@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import { Input } from '@components/common/input';
-import { useUnsavedChangesGuard } from '@components/common/navigation-guard/navigation-guard-provider';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import Textarea from '@components/common/textarea';
 import CommunityHeader from '@components/community/CommunityHeader';
@@ -32,8 +31,9 @@ export default function WritePostPage() {
   const { requireLogin, redirectToLogin } = useRequireAuth();
   const router = useRouter();
 
-  const isDirty = title !== '' || content !== '';
-  const { markClean } = useUnsavedChangesGuard(isDirty);
+  //TODO 로직 점검 필요
+  // const isDirty = title !== '' || content !== '';
+  // const { markClean } = useUnsavedChangesGuard(isDirty);
 
   const { mutate, isPending } = useCreateCommunityPost();
 
@@ -58,13 +58,13 @@ export default function WritePostPage() {
       },
       {
         onSuccess: (response) => {
-          if (response.error) {
-            setErrorMessage(response.error);
-            setShowErrorModal(true);
-            return;
-          }
+          // if (response.error) {
+          //   setErrorMessage(response.error);
+          //   setShowErrorModal(true);
+          //   return;
+          // }
           router.push('/community');
-          markClean();
+          // markClean();
         },
         onError: (error) => {
           console.error('게시글 작성 실패:', error);
