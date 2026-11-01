@@ -5,24 +5,23 @@ import { useState } from 'react';
 import BasicModal from '@components/common/basic-modal';
 import { Input } from '@components/common/input';
 
-import axiosInstance from '@api/instance';
+import {
+  useCreateComment,
+  useDeleteComment,
+} from '@api/hooks/use-comment-mutations';
 import { getAnonymousName } from '@utils/anonymizeUser';
 
 import useTokenStore from '../../stores/useTokenStore';
 
-const CommentItem = ({
-  comment,
-  postId,
-  postAuthorId,
-  onCommentUpdate,
-  onError,
-  userMap,
-}) => {
+const CommentItem = ({ comment, postId, postAuthorId, onError, userMap }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const { userId } = useTokenStore();
+  const { mutate: createReply, isPending: isCreatingReply } =
+    useCreateComment();
+  const { mutate: deleteSelectedComment, isPending: isDeletingComment } =
+    useDeleteComment();
 
   const isPostAuthor = (uid) => uid === postAuthorId;
 
@@ -53,47 +52,50 @@ const CommentItem = ({
     setPendingDeleteId(commentId);
   };
 
-  const confirmDeleteComment = async () => {
+  const confirmDeleteComment = () => {
     const commentId = pendingDeleteId;
-    setPendingDeleteId(null);
-    try {
-      const res = await axiosInstance.delete('/api/community-posts/comments', {
-        data: { comment_id: commentId, user_id: userId },
-      });
-      if (res.data.error) {
-        onError(res.data.error);
-      } else {
-        onCommentUpdate();
-      }
-    } catch {
-      onError('댓글 삭제 중 오류가 발생했습니다.');
-    }
-  };
-
-  const handleReplySubmit = async () => {
-    if (!replyContent.trim()) {
+    if (!commentId || isDeletingComment) {
       return;
     }
-    setIsSubmitting(true);
-    try {
-      const res = await axiosInstance.post('/api/community-posts/comments', {
+
+    deleteSelectedComment(
+      { comment_id: commentId },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            onError(response.error);
+            return;
+          }
+          setPendingDeleteId(null);
+        },
+        onError: () => onError('댓글 삭제 중 오류가 발생했습니다.'),
+      },
+    );
+  };
+
+  const handleReplySubmit = () => {
+    if (!replyContent.trim() || isCreatingReply) {
+      return;
+    }
+
+    createReply(
+      {
         post_id: postId,
-        user_id: userId,
         comment_content: replyContent.trim(),
         parent_comment_id: comment.id,
-      });
-      if (res.data.error) {
-        onError(res.data.error);
-      } else {
-        setReplyContent('');
-        setShowReplyInput(false);
-        onCommentUpdate();
-      }
-    } catch {
-      onError('대댓글 작성 중 오류가 발생했습니다.');
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: (response) => {
+          if (response.error) {
+            onError(response.error);
+            return;
+          }
+          setReplyContent('');
+          setShowReplyInput(false);
+        },
+        onError: () => onError('대댓글 작성 중 오류가 발생했습니다.'),
+      },
+    );
   };
 
   return (
@@ -145,12 +147,12 @@ const CommentItem = ({
               value={replyContent}
               onChange={(value) => setReplyContent(value)}
               placeholder="대댓글을 입력하세요..."
-              disabled={isSubmitting}
+              disabled={isCreatingReply}
               maxLength={300}
             />
             <button
               onClick={handleReplySubmit}
-              disabled={!replyContent.trim() || isSubmitting}
+              disabled={!replyContent.trim() || isCreatingReply}
               className="shrink-0 whitespace-nowrap min-w-[56px] px-3 py-2 rounded-md text-sm text-white bg-brand hover:bg-brand-hover disabled:bg-gray-300"
             >
               등록
@@ -204,7 +206,12 @@ const CommentItem = ({
             onClick: () => setPendingDeleteId(null),
             variant: 'ghost',
           },
-          { text: '삭제', onClick: confirmDeleteComment, variant: 'danger' },
+          {
+            text: '삭제',
+            onClick: confirmDeleteComment,
+            variant: 'danger',
+            disabled: isDeletingComment,
+          },
         ]}
       />
     </div>

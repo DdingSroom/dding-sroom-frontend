@@ -57,7 +57,7 @@ export default function WritePostPage() {
         category,
       },
       {
-        onSuccess: (response) => {
+        onSuccess: () => {
           // if (response.error) {
           //   setErrorMessage(response.error);
           //   setShowErrorModal(true);
