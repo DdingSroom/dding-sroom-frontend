@@ -81,7 +81,7 @@ const AfterLoginBanner = () => {
       const res = await axiosInstance.post('/api/reservations/cancel', {
         reservationId,
       });
-      setSuccessMessage(res.data.message || '예약이 취소되었습니다.');
+      setSuccessMessage('예약이 취소되었습니다.');
       setOpenReservationId(null);
       await fetchAllUserReservations();
       await fetchAllReservedTimes();
@@ -108,10 +108,9 @@ const AfterLoginBanner = () => {
             여유로움
           </div>
         </div>
-        <Maru
-          alt="maru"
-          className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-16 h-16 sm:w-24 sm:h-24 object-contain opacity-90"
-        />
+        <div className="flex justify-end items-end">
+          <Maru alt="maru" className="opacity-90" />
+        </div>
       </div>
 
       {/* 예약 내역 박스 */}
