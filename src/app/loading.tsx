@@ -14,7 +14,6 @@ export default function Loading() {
           페이지를 불러오는 중이에요
         </span>
       </div>
-      <span className="sr-only">로딩 중</span>
     </div>
   );
 }

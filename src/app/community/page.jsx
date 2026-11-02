@@ -211,11 +211,11 @@ export default function CommunityPage() {
           bottom: 'calc(92px + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        <div className="pointer-events-auto max-w-4xl mx-auto px-4 flex justify-end">
+        <div className="max-w-4xl mx-auto px-4 flex justify-end">
           <button
             onClick={handleWritePost}
             aria-label="새 글 작성"
-            className="w-14 h-14 rounded-full bg-brand text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+            className="pointer-events-auto w-14 h-14 rounded-full bg-brand text-white shadow-lg hover:shadow-xl transition-transform active:scale-95 flex items-center justify-center"
           >
             <svg
               className="w-6 h-6"
