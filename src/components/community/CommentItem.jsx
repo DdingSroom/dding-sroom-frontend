@@ -58,7 +58,7 @@ const CommentItem = ({
     setPendingDeleteId(null);
     try {
       const res = await axiosInstance.delete('/api/community-posts/comments', {
-        data: { comment_id: commentId, user_id: userId },
+        data: { comment_id: commentId },
       });
       if (res.data.error) {
         onError(res.data.error);
@@ -78,7 +78,6 @@ const CommentItem = ({
     try {
       const res = await axiosInstance.post('/api/community-posts/comments', {
         post_id: postId,
-        user_id: userId,
         comment_content: replyContent.trim(),
         parent_comment_id: comment.id,
       });

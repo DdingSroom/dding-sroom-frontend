@@ -52,9 +52,7 @@ export default function CommunityPage() {
   const posts = useMemo(() => {
     const postsData = activeCategory === 'all' ? data?.data : data?.posts;
     return (Array.isArray(postsData) ? postsData : []).slice().sort((a, b) => {
-      const toDate = (arr) =>
-        new Date(...arr.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v)));
-      return toDate(b.created_at) - toDate(a.created_at);
+      return new Date(b.created_at) - new Date(a.created_at);
     });
   }, [data, activeCategory]);
 

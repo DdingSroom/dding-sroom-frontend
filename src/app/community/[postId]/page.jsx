@@ -106,7 +106,6 @@ export default function PostDetailPage() {
     try {
       const res = await axiosInstance.post('/api/community-posts/comments', {
         post_id: parseInt(postId, 10),
-        user_id: userId,
         comment_content: newComment.trim(),
       });
       if (res?.data?.error) {
@@ -154,15 +153,20 @@ export default function PostDetailPage() {
 
   const confirmDeletePost = () => {
     setShowDeleteConfirm(false);
-    deletePost({ post_id: parseInt(postId, 10), user_id: userId });
+    deletePost({ post_id: parseInt(postId, 10) });
   };
 
-  const formatDate = (arr) => {
-    if (!Array.isArray(arr)) {
+  const parseDate = (value) => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const formatDate = (value) => {
+    const date = parseDate(value);
+    if (!date) {
       return '';
     }
-    const [y, m, d, h, min] = arr;
-    const date = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
+
     const now = new Date();
     const diff = now - date;
     const hrs = diff / (1000 * 60 * 60);
@@ -175,17 +179,20 @@ export default function PostDetailPage() {
     if (days < 30) {
       return `${Math.floor(days)}일 전`;
     }
-    return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}`;
+
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
   };
 
   const getCategoryName = (c) => (c === 1 ? '일반 게시판' : '분실물 게시판');
   const isUpdated = (createdAt, updatedAt) => {
-    if (!Array.isArray(createdAt) || !Array.isArray(updatedAt)) {
+    const createdDate = parseDate(createdAt);
+    const updatedDate = parseDate(updatedAt);
+
+    if (!createdDate || !updatedDate) {
       return false;
     }
-    const ts = (a) =>
-      new Date(...a.slice(0, 6).map((v, i) => (i === 1 ? v - 1 : v))).getTime();
-    return Math.abs(ts(updatedAt) - ts(createdAt)) > 1000;
+
+    return Math.abs(updatedDate.getTime() - createdDate.getTime()) > 1000;
   };
 
   if (requireLogin) {
@@ -249,6 +256,7 @@ export default function PostDetailPage() {
                 {getCategoryName(post.category)}
               </span>
               <span className="text-xs-plus text-gray-400">
+                {/** TO-DO: 업데이트되어도 보통 수정일자로 나타내지는 않는 경우가 대부분 */}
                 {formatDate(
                   isUpdated(post.created_at, post.updated_at)
                     ? post.updated_at

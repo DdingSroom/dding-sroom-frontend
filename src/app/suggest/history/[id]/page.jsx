@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import Dropdown from '@components/common/dropdown';
@@ -85,77 +85,13 @@ function parseError(err) {
   );
 }
 
-function toDate(arr) {
-  if (!Array.isArray(arr)) {
-    return new Date(0);
-  }
-  const [y, mo, d, h = 0, m = 0, s = 0] = arr;
-  return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
-}
-
-function safeNormalizeSuggestion(raw) {
-  if (!raw) {
-    return null;
-  }
-  const createdAt =
-    raw?.createdAt ||
-    raw?.created_at ||
-    raw?.created_date ||
-    raw?.created ||
-    [];
-  return {
-    id: raw?.id ?? raw?.suggest_id ?? raw?.suggestId,
-    title: raw?.title ?? raw?.suggest_title ?? raw?.subject ?? '',
-    content: raw?.content ?? raw?.suggest_content ?? '',
-    category: raw?.category ?? '',
-    location: raw?.location ?? '',
-    isAnswered: raw?.is_answered ?? raw?.answered ?? raw?.isAnswered ?? false,
-    userId: raw?.userId ?? raw?.user_id ?? raw?.uid ?? null,
-    createdAt,
-  };
-}
-
-function formatMeta(cat, loc) {
-  if (!cat && !loc) {
-    return '';
-  }
-  if (!cat) {
-    return loc;
-  }
-  if (!loc) {
-    return cat;
-  }
-  return `${cat} | ${loc}`;
-}
-
-function pickLatestAnswerText(list) {
-  if (!Array.isArray(list)) {
-    return '';
-  }
-  const candidates = list
-    .map((c) => ({
-      txt:
-        c?.answer_content ??
-        c?.answerContent ??
-        c?.admin_answer ??
-        c?.adminAnswer ??
-        '',
-      at:
-        c?.answered_at || c?.answeredAt || c?.createdAt || c?.created_at || [],
-    }))
-    .filter((x) => !!String(x.txt || '').trim());
-  if (candidates.length === 0) {
-    return '';
-  }
-  candidates.sort((a, b) => +toDate(b.at) - +toDate(a.at));
-  return candidates[0].txt;
-}
-
-export default function SuggestHistoryDetailPage({ params }) {
+export default function SuggestHistoryDetailPage() {
   const router = useRouter();
+  const params = useParams();
+
+  const suggestId = Number(params.id);
   const { requireLogin, redirectToLogin } = useRequireAuth();
   const { userId: myUserId } = useTokenStore();
-  const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
@@ -166,6 +102,8 @@ export default function SuggestHistoryDetailPage({ params }) {
 
   const queryClient = useQueryClient();
   const enabled = Number.isFinite(suggestId) && !requireLogin;
+
+  // 건의 상세 조회
   const {
     data: detailData,
     isFetching: detailFetching,
@@ -176,6 +114,8 @@ export default function SuggestHistoryDetailPage({ params }) {
     enabled,
     retry: false,
   });
+
+  // 건의 코멘트 조회
   const {
     data: commentsData,
     isFetching: commentsFetching,
@@ -186,6 +126,8 @@ export default function SuggestHistoryDetailPage({ params }) {
     enabled,
     retry: false,
   });
+
+  // 건의 내용 업데이트
   const { mutate: updateSuggestionMutation } = useMutation({
     mutationFn: updateSuggestion,
     retry: false,
@@ -204,6 +146,8 @@ export default function SuggestHistoryDetailPage({ params }) {
     onError: (e) => setOpMsg(parseError(e)),
     onSettled: () => setSaving(false),
   });
+
+  // 건의 삭제하기
   const { mutate: deleteSuggestionMutation } = useMutation({
     mutationFn: deleteSuggestion,
     retry: false,
@@ -222,20 +166,23 @@ export default function SuggestHistoryDetailPage({ params }) {
   const loading = detailFetching || commentsFetching;
   const queryError = detailError || commentsError;
   const error = queryError ? parseError(queryError) : '';
+
   const detail = useMemo(() => {
-    const payload =
-      detailData?.suggestions ??
-      detailData?.data ??
-      detailData?.suggestion ??
-      detailData;
-    const raw = Array.isArray(payload) ? payload[0] : payload;
-    return safeNormalizeSuggestion(raw);
+    return detailData?.suggestions?.[0] ?? {};
   }, [detailData]);
+
   const answerText = useMemo(() => {
-    const comments = Array.isArray(commentsData?.comments)
-      ? commentsData.comments
-      : (commentsData ?? []);
-    return pickLatestAnswerText(comments);
+    if (commentsData?.comments?.length === 0) {
+      return '';
+    }
+
+    commentsData?.comments?.sort((a, b) => {
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      return bTime - aTime;
+    });
+
+    return commentsData?.comments[0].answer_content ?? '';
   }, [commentsData]);
 
   const [editing, setEditing] = useState(false);
@@ -265,8 +212,8 @@ export default function SuggestHistoryDetailPage({ params }) {
     if (!detail) {
       return;
     }
-    setETitle(detail.title || '');
-    setEContent(detail.content || '');
+    setETitle(detail.suggest_title || '');
+    setEContent(detail.suggest_content || '');
     setECategory(detail.category || categories[0].value);
     setELocation(detail.location || places[0].value);
     setAckAnswerDone(false);
@@ -278,7 +225,7 @@ export default function SuggestHistoryDetailPage({ params }) {
     setOpMsg('');
   };
 
-  const isDone = Boolean(detail?.isAnswered) || !!answerText;
+  const isDone = Boolean(detail?.is_answered) || !!answerText;
 
   const saveEdit = () => {
     if (!detail) {
@@ -320,11 +267,6 @@ export default function SuggestHistoryDetailPage({ params }) {
     deleteSuggestionMutation(detail.id);
   };
 
-  const meta = useMemo(
-    () => formatMeta(detail?.category, detail?.location),
-    [detail?.category, detail?.location],
-  );
-
   return (
     <div className="min-h-screen bg-surface-suggest flex flex-col">
       <SuggestDetailHeader />
@@ -332,7 +274,7 @@ export default function SuggestHistoryDetailPage({ params }) {
       <main className="flex-1 px-4 py-5">
         <section className="rounded-2xl bg-white shadow-sm border border-line">
           {/* 로딩/에러 */}
-          {loading && (
+          {(detailFetching || commentsFetching) && (
             <div className="px-5 py-5 text-sm text-content-muted">
               로딩 중...
             </div>
@@ -348,13 +290,12 @@ export default function SuggestHistoryDetailPage({ params }) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-lg-minus leading-6 font-medium text-content break-words">
-                      {detail.title || '제목 없음'}
+                      {detail.suggest_title || '제목 없음'}
                     </h2>
-                    {meta && (
-                      <p className="mt-1 text-xs text-content-secondary">
-                        {meta}
-                      </p>
-                    )}
+                    <p className="mt-1 text-xs text-content-secondary">
+                      {detail.category || '분류없음'} |{' '}
+                      {detail.location || '위치미상'}
+                    </p>
                   </div>
 
                   <div className="shrink-0 flex items-center gap-2">
@@ -384,7 +325,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                 <>
                   <div className="px-5 pt-4">
                     <div className="whitespace-pre-wrap text-md leading-6 text-content break-words">
-                      {detail.content || '내용이 없습니다.'}
+                      {detail.suggest_content || '내용이 없습니다.'}
                     </div>
                   </div>
 

@@ -130,7 +130,6 @@ export default function EditPostPage() {
     setIsSubmitting(true);
     updatePost({
       post_id: parseInt(postId),
-      user_id: userId,
       title: title.trim(),
       content: content.trim(),
       category,

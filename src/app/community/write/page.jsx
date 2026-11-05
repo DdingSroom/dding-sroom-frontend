@@ -80,7 +80,6 @@ export default function WritePostPage() {
 
     setIsSubmitting(true);
     createPost({
-      user_id: userId,
       title: title.trim(),
       content: content.trim(),
       category,

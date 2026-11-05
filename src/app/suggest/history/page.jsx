@@ -22,21 +22,8 @@ function BottomSafeSpacer({ height = 64 }) {
   );
 }
 
-const toArray = (data) => {
-  if (Array.isArray(data?.suggestions)) {
-    return data.suggestions;
-  }
-  if (Array.isArray(data?.data)) {
-    return data.data;
-  }
-  if (Array.isArray(data)) {
-    return data;
-  }
-  return [];
-};
-
 export default function SuggestHistoryPage() {
-  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
   const { userId } = useTokenStore();
 
   const {
@@ -46,10 +33,9 @@ export default function SuggestHistoryPage() {
     error: queryError,
   } = useQuery({
     ...suggestion.getList({ userId }),
-    enabled: !!userId && !requireLogin,
+    enabled: authReady && !!userId && !requireLogin,
     retry: false,
   });
-
   const status = queryError?.response?.status;
   const error =
     userId && !requireLogin && queryError && status !== 403 && status !== 404
@@ -70,7 +56,11 @@ export default function SuggestHistoryPage() {
     if (!userId || requireLogin || queryError) {
       return [];
     }
-    return toArray(data)
+    const suggestions = Array.isArray(data?.suggestions)
+      ? data.suggestions
+      : [];
+
+    return suggestions
       .map(normalizeSuggest)
       .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
   }, [data, userId, requireLogin, queryError]);
@@ -122,14 +112,15 @@ export default function SuggestHistoryPage() {
       </header>
 
       <main className="flex-1 pb-8">
-        {isPending && loading && (
+        {!authReady || (isPending && loading) ? (
           <div className="px-6 py-8 text-content-muted">로딩중…</div>
-        )}
+        ) : null}
 
         {/* 에러는 진짜 실패 때만 표시. 403/404는 빈 상태로 처리 */}
         {error && <div className="px-6 py-8 text-red-500">{error}</div>}
 
-        {!loading &&
+        {authReady &&
+          !loading &&
           !error &&
           dateKeys.map((d) => (
             <section key={d} className="mb-2">
@@ -142,7 +133,7 @@ export default function SuggestHistoryPage() {
             </section>
           ))}
 
-        {!loading && !error && dateKeys.length === 0 && (
+        {authReady && !loading && !error && dateKeys.length === 0 && (
           <div className="px-6 py-16 text-center text-content-muted">
             등록된 건의/신고 내역이 없습니다.
           </div>
@@ -235,34 +226,27 @@ function normalizeSuggest(raw) {
 }
 
 function formatKR(yyyyMMDD) {
-  if (!yyyyMMDD) {
-    return '';
-  }
-  const [y, m, d] = yyyyMMDD.split('-');
-  return `${y}. ${m}. ${d}.`;
+  return yyyyMMDD.replaceAll('-', '. ') + '.';
 }
 
-function formatDateOnly(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) {
-    return '';
-  }
-  const [y, mo, d] = arr;
-  return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+function parseDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
-function toDate(arr) {
-  if (!Array.isArray(arr)) {
-    return new Date(0);
-  }
-  const [y, mo, d, h = 0, m = 0, s = 0] = arr;
-  return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
+
+function formatDateOnly(value) {
+  return parseDate(value)?.toLocaleDateString('sv-SE') ?? '';
 }
+
 function tsDesc(a, b) {
-  return toDate(b) - toDate(a);
+  return (parseDate(b)?.getTime() ?? 0) - (parseDate(a)?.getTime() ?? 0);
 }
-function formatFullDate(arr) {
-  if (!Array.isArray(arr)) {
-    return '';
-  }
-  const [y, mo, d, h = 0, m = 0] = arr;
-  return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+function formatFullDate(value) {
+  return (
+    parseDate(value)?.toLocaleString('sv-SE', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }) ?? ''
+  );
 }
