@@ -5,12 +5,27 @@ import type { ApiSchemas } from '../types/api';
 
 export type NotificationUpdateRequest =
   ApiSchemas['NotificationUpdateRequestDTO'];
+
 export type NotificationViewCountRequest =
   ApiSchemas['NotificationViewCountRequestDTO'];
+
+export type NotificationReadRequest = ApiSchemas['NotificationReadRequestDTO'];
+
 export type NotificationCreateRequest =
   ApiSchemas['NotificationCreateRequestDTO'];
 
-type NotificationResponse = ApiSchemas['BaseResponseDTO'];
+type NotificationResponse =
+  ApiSchemas['BaseResponseDTONotificationResponseDTO'];
+
+type NotificationListResponse =
+  ApiSchemas['BaseResponseDTOListNotificationResponseDTO'];
+
+type NotificationCountResponse = ApiSchemas['BaseResponseDTOLong'];
+
+type NotificationReadResponse =
+  ApiSchemas['BaseResponseDTONotificationReadResponseDTO'];
+
+type NotificationMutationResponse = ApiSchemas['BaseResponseDTOVoid'];
 
 // 공지사항 수정
 export const updateNotification = (data: NotificationUpdateRequest) =>
@@ -23,8 +38,15 @@ export const updateNotification = (data: NotificationUpdateRequest) =>
 export const incrementNotificationViewCount = (
   data: NotificationViewCountRequest,
 ) =>
-  api.post<NotificationResponse, NotificationViewCountRequest>(
+  api.post<NotificationMutationResponse, NotificationViewCountRequest>(
     NOTIFICATION_API_ENDPOINTS.VIEW,
+    data,
+  );
+
+// 공지 읽음 처리
+export const markNotificationAsRead = (data: NotificationReadRequest) =>
+  api.post<NotificationReadResponse, NotificationReadRequest>(
+    NOTIFICATION_API_ENDPOINTS.READ,
     data,
   );
 
@@ -41,12 +63,14 @@ export const getNotification = (id: number) =>
 
 // 최근 공지사항 개수 조회
 export const getRecentNotificationsCount = () =>
-  api.get<NotificationResponse>(NOTIFICATION_API_ENDPOINTS.RECENT_COUNT);
+  api.get<NotificationCountResponse>(NOTIFICATION_API_ENDPOINTS.RECENT_COUNT);
 
 // 전체 공지사항 조회
 export const getNotifications = () =>
-  api.get<NotificationResponse>(NOTIFICATION_API_ENDPOINTS.LIST);
+  api.get<NotificationListResponse>(NOTIFICATION_API_ENDPOINTS.LIST);
 
 // 공지사항 삭제
 export const deleteNotification = (id: number) =>
-  api.delete<NotificationResponse>(NOTIFICATION_API_ENDPOINTS.DELETE(id));
+  api.delete<NotificationMutationResponse>(
+    NOTIFICATION_API_ENDPOINTS.DELETE(id),
+  );

@@ -23,7 +23,7 @@ export const community = createQueryKeys('community', {
   // 전체 커뮤니티 게시글 조회
   getList: (params: CommunityListParams = {}) => ({
     queryKey: ['all', params],
-    queryFn: () => getCommunityPosts(params),
+    queryFn: () => getCommunityPosts(),
   }),
   // 특정 커뮤니티 게시글 조회
   getSearchList: (params: CommunityParams) => ({

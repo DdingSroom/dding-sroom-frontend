@@ -1,18 +1,11 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
+import type { SuggestionParams } from '../suggestion.api';
 import {
   getSuggestionComments,
   getSuggestionImages,
   getSuggestions,
 } from '../suggestion.api';
-
-export interface SuggestionParams {
-  suggestId?: string;
-  userId?: number;
-  category?: string;
-  location?: string;
-  isAnswered?: boolean;
-}
 
 /** ---------- (공통) 건의사항 쿼리 ----------- */
 export const suggestion = createQueryKeys('suggestion', {
