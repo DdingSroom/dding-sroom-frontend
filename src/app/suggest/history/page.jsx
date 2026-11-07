@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 
 import FooterNav from '@components/common/FooterNav';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
 
@@ -22,12 +23,27 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function SuggestHistoryPage() {
-  const { requireLogin, redirectToLogin } = useRequireAuth();
+  const { authReady, requireLogin, redirectToLogin } = useRequireAuth();
   const { userId } = useTokenStore();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [items, setItems] = useState([]);
+  const {
+    data,
+    isPending,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    ...suggestion.getList({ userId }),
+    enabled: authReady && !!userId && !requireLogin,
+    retry: false,
+  });
+  const status = queryError?.response?.status;
+  const error =
+    userId && !requireLogin && queryError && status !== 403 && status !== 404
+      ? queryError.response?.data?.message ||
+        queryError.response?.data?.error ||
+        queryError.message ||
+        '내역을 불러오지 못했습니다.'
+      : '';
 
   // 로그인 체크
   useEffect(() => {
@@ -36,60 +52,20 @@ export default function SuggestHistoryPage() {
     }
   }, [requireLogin, redirectToLogin]);
 
-  const toArray = (data) => {
-    if (Array.isArray(data?.suggestions)) {
-      return data.suggestions;
+  const items = useMemo(() => {
+    if (!userId || requireLogin || queryError) {
+      return [];
     }
-    if (Array.isArray(data?.data)) {
-      return data.data;
-    }
-    if (Array.isArray(data)) {
-      return data;
-    }
-    return [];
-  };
+    const suggestions = Array.isArray(data?.suggestions)
+      ? data.suggestions
+      : [];
 
-  const fetchMine = useCallback(async () => {
-    if (!userId) {
-      setItems([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const url = `/api/suggestions?user_id=${encodeURIComponent(userId)}`;
-      const res = await axiosInstance.get(url);
+    return suggestions
+      .map(normalizeSuggest)
+      .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
+  }, [data, userId, requireLogin, queryError]);
 
-      const raw = toArray(res?.data);
-      const list = raw
-        .map(normalizeSuggest)
-        .sort((a, b) => tsDesc(a.createdAt, b.createdAt));
-
-      setItems(list);
-    } catch (e) {
-      const status = e?.response?.status;
-
-      if (status === 403 || status === 404) {
-        setItems([]);
-        setError('');
-      } else {
-        setError(
-          e?.response?.data?.message ||
-            e?.response?.data?.error ||
-            e?.message ||
-            '내역을 불러오지 못했습니다.',
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    fetchMine();
-  }, [fetchMine]);
-
+  // (클라 수정 필요) 날짜 그룹 포매팅
   // 날짜별 그룹
   const grouped = useMemo(() => {
     const b = {};
@@ -136,12 +112,15 @@ export default function SuggestHistoryPage() {
       </header>
 
       <main className="flex-1 pb-8">
-        {loading && <div className="px-6 py-8 text-content-muted">로딩중…</div>}
+        {!authReady || (isPending && loading) ? (
+          <div className="px-6 py-8 text-content-muted">로딩중…</div>
+        ) : null}
 
         {/* 에러는 진짜 실패 때만 표시. 403/404는 빈 상태로 처리 */}
         {error && <div className="px-6 py-8 text-red-500">{error}</div>}
 
-        {!loading &&
+        {authReady &&
+          !loading &&
           !error &&
           dateKeys.map((d) => (
             <section key={d} className="mb-2">
@@ -154,7 +133,7 @@ export default function SuggestHistoryPage() {
             </section>
           ))}
 
-        {!loading && !error && dateKeys.length === 0 && (
+        {authReady && !loading && !error && dateKeys.length === 0 && (
           <div className="px-6 py-16 text-center text-content-muted">
             등록된 건의/신고 내역이 없습니다.
           </div>
@@ -247,34 +226,27 @@ function normalizeSuggest(raw) {
 }
 
 function formatKR(yyyyMMDD) {
-  if (!yyyyMMDD) {
-    return '';
-  }
-  const [y, m, d] = yyyyMMDD.split('-');
-  return `${y}. ${m}. ${d}.`;
+  return yyyyMMDD.replaceAll('-', '. ') + '.';
 }
 
-function formatDateOnly(arr) {
-  if (!Array.isArray(arr) || arr.length < 3) {
-    return '';
-  }
-  const [y, mo, d] = arr;
-  return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+function parseDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
-function toDate(arr) {
-  if (!Array.isArray(arr)) {
-    return new Date(0);
-  }
-  const [y, mo, d, h = 0, m = 0, s = 0] = arr;
-  return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
+
+function formatDateOnly(value) {
+  return parseDate(value)?.toLocaleDateString('sv-SE') ?? '';
 }
+
 function tsDesc(a, b) {
-  return toDate(b) - toDate(a);
+  return (parseDate(b)?.getTime() ?? 0) - (parseDate(a)?.getTime() ?? 0);
 }
-function formatFullDate(arr) {
-  if (!Array.isArray(arr)) {
-    return '';
-  }
-  const [y, mo, d, h = 0, m = 0] = arr;
-  return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+function formatFullDate(value) {
+  return (
+    parseDate(value)?.toLocaleString('sv-SE', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }) ?? ''
+  );
 }

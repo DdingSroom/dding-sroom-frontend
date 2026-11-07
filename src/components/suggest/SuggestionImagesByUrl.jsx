@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
+import { useQuery } from '@tanstack/react-query';
 
 export default function SuggestionImagesByUrl({
   suggestPostId,
@@ -12,66 +11,53 @@ export default function SuggestionImagesByUrl({
     <div className="text-sm text-gray-500 py-2">첨부 이미지가 없습니다.</div>
   ),
 }) {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
+  const enabled = !!suggestPostId;
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      setErr(null);
-      try {
-        const res = await axiosInstance.get('/api/suggestions/images', {
-          params: { suggest_post_id: suggestPostId },
-          headers: { Accept: 'application/json' },
-        });
-        const arr = Array.isArray(res?.data?.images)
-          ? res.data.images
-          : Array.isArray(res?.data)
-            ? res.data
-            : [];
-        const normalized = arr
-          .map((x) => ({
-            id: x?.id ?? x?.image_id ?? x?.file_id ?? `${x?.file_url || ''}`,
-            url: x?.file_url ?? x?.url ?? '',
-            type: x?.file_type ?? '',
-            name: x?.file_name ?? '',
-          }))
-          .filter((x) => !!x.url);
-        if (mounted) {
-          setImages(normalized);
-        }
-      } catch (e) {
-        if (mounted) {
-          setErr(e);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-    if (suggestPostId) {
-      load();
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [suggestPostId]);
+  const {
+    data: images = [],
+    isPending,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    ...suggestion.getImages(Number(suggestPostId)),
+    enabled,
+    retry: false,
+    select: (data) => {
+      // 응답 데이터 규격에 맞춰 배열 추출
+      const arr = Array.isArray(data?.images)
+        ? data.images
+        : Array.isArray(data)
+          ? data
+          : [];
 
-  if (loading) {
+      return arr
+        .map((x) => ({
+          id: x?.id ?? x?.image_id ?? x?.file_id ?? `${x?.file_url || ''}`,
+          url: x?.file_url ?? x?.url ?? '',
+          type: x?.file_type ?? '',
+          name: x?.file_name ?? '',
+        }))
+        .filter((x) => !!x.url);
+    },
+  });
+
+  if (!enabled || isPending || isLoading) {
     return (
       <div className={`text-sm text-gray-400 ${className}`}>로딩중...</div>
     );
   }
-  if (err) {
+
+  // 에러 발생 시
+  if (isError) {
     console.warn(
       '[SuggestionImagesByUrl] 목록 조회 실패:',
-      err?.response?.data || err?.message,
+      error?.response?.data || error?.message,
     );
     return fallback;
   }
+
+  // 이미지가 없을 때
   if (images.length === 0) {
     return fallback;
   }

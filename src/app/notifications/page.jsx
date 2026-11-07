@@ -1,67 +1,93 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import FooterNav from '@components/common/FooterNav';
 import Header from '@components/common/Header';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 
-import axiosInstance from '@api/instance';
+import { notification } from '@api/keys/notification.key';
+import {
+  incrementNotificationViewCount,
+  markNotificationAsRead,
+} from '@api/notification.api';
 
 export default function NotificationList() {
-  const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // 전체 공지사항 조회
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
+    ...notification.getList(),
+    retry: false,
+  });
+  const notifications = data?.error ? [] : (data?.data ?? []);
+
+  // 공지사항 조회수 증가
+  const { mutate: incrementViewCount } = useMutation({
+    mutationFn: incrementNotificationViewCount,
+    retry: false,
+  });
+
+  // 특정 공지사항 읽음 처리
+  const { mutate: markAsRead } = useMutation({
+    mutationFn: markNotificationAsRead,
+    retry: false,
+  });
+
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  // const router = useRouter();
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.get('/api/notification/list');
-      if (response.data.error) {
-        setAlertMessage(response.data.error);
-        return;
-      }
-      setNotifications(response.data.data || []);
-    } catch (error) {
+    if (error) {
       console.error('공지사항 조회 실패:', error);
       setAlertMessage('공지사항을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
+    } else if (data?.error) {
+      setAlertMessage(data.error);
     }
+  }, [data, error]);
+
+  // 특정 공지사항 상세조회 (모달 오픈)
+  const handleViewNotification = (notification) => {
+    incrementViewCount(
+      { notificationId: notification.id },
+      {
+        onSuccess: () => {
+          setSelectedNotification({
+            ...notification,
+            viewCount: notification.viewCount + 1,
+          });
+          setShowDetailModal(true);
+        },
+        onError: (error) => {
+          console.error('조회수 증가 실패:', error);
+          setSelectedNotification(notification);
+          setShowDetailModal(true);
+        },
+      },
+    );
+
+    markAsRead(
+      { notificationId: notification.id },
+      {
+        onError: (error) => {
+          console.error('읽음 처리 실패:', error);
+        },
+      },
+    );
   };
 
-  const handleViewNotification = async (notification) => {
-    try {
-      await axiosInstance.post('/api/notification/view', {
-        notificationId: notification.id,
-      });
-
-      setSelectedNotification({
-        ...notification,
-        viewCount: notification.viewCount + 1,
-      });
-      setShowDetailModal(true);
-    } catch (error) {
-      console.error('조회수 증가 실패:', error);
-      setSelectedNotification(notification);
-      setShowDetailModal(true);
-    }
-  };
-
-  const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 6) {
+  const formatDate = (dateValue) => {
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
       return '';
     }
-    const [year, month, day, hour, minute] = dateArray;
-    return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
   const truncateContent = (content, maxLength = 50) => {
@@ -263,7 +289,7 @@ export default function NotificationList() {
                         d="M8 7V3a4 4 0 118 0v4m-4 9v2m0-6h.01M12 21a9 9 0 100-18 9 9 0 000 18z"
                       />
                     </svg>
-                    <span>{formatDate(selectedNotification.createdAt)}</span>
+                    <span>{selectedNotification.createdAt || '날짜'}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-gray-500">
@@ -322,8 +348,6 @@ function UserNotificationCard({
   truncateContent,
   index,
 }) {
-  const isNew = index < 3;
-
   return (
     <article
       className="group relative rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg overflow-hidden cursor-pointer"
@@ -351,7 +375,9 @@ function UserNotificationCard({
                 </svg>
                 공지사항
               </span>
-              {isNew && (
+              {/** (AS-IS: 단순 최신 3개 공지, TO-BE: 읽지 않은 공지만 표시) TO-BE 적용 */}
+              {/** TO-DO: 읽지 않은 공지만 표시 (NEW 라벨 x) */}
+              {notification.isRead === false && (
                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full bg-red-400 text-white">
                   NEW
                 </span>

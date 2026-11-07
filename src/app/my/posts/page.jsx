@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import BasicModal from '@components/common/basic-modal';
 import PostPreview from '@components/common/post-preview';
 import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import MyPageHeader from '@components/my/MyPageHeader';
 
-import axiosInstance from '@api/instance';
+import { community } from '@api/keys/community.key';
 import useRequireAuth from '@hooks/use-require-auth';
-import useTokenStore from '@stores/useTokenStore';
 
 import FooterNav from '../../../components/common/FooterNav';
 
@@ -24,41 +24,33 @@ function BottomSafeSpacer({ height = 64 }) {
 }
 
 export default function MyPostsPage() {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { isAuthenticated, requireLogin, redirectToLogin } = useRequireAuth();
-  const { userId } = useTokenStore();
   const router = useRouter();
 
+  const {
+    data,
+    isPending: isLoading,
+    error,
+  } = useQuery({
+    ...community.getMyList(),
+    enabled: isAuthenticated,
+    retry: false,
+    staleTime: 0,
+  });
+  const posts = data?.error ? [] : (data?.data ?? []);
+
   useEffect(() => {
-    if (isAuthenticated && userId) {
-      fetchMyPosts();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, userId]);
-
-  const fetchMyPosts = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/community-posts/user/${userId}`,
-      );
-
-      if (response.data.error) {
-        setErrorMessage(response.data.error);
-        setShowErrorModal(true);
-      } else {
-        setPosts(response.data.data || []);
-      }
-    } catch (error) {
+    if (error) {
       console.error('내 게시글 불러오기 실패:', error);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
       setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
+    } else if (data?.error) {
+      setErrorMessage(data.error);
+      setShowErrorModal(true);
     }
-  };
+  }, [data, error]);
 
   const handlePostClick = (postId) => {
     router.push(`/community/${postId}`);

@@ -188,9 +188,9 @@ const StyledCheckbox = ({ onChange, children, ...props }) => (
           className="group-hover:opacity-80 transition-opacity"
         />
       </div>
-      <span className="ml-2 text-xs text-content-secondary select-none">
-        {children}
-      </span>
     </div>
+    <span className="ml-2 text-xs text-content-secondary select-none">
+      {children}
+    </span>
   </label>
 );

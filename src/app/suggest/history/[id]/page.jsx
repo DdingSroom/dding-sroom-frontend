@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useParams } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import Dropdown from '@components/common/dropdown';
 import BasicModal from '@components/common/basic-modal';
@@ -10,7 +11,8 @@ import PrivacyPolicyFooter from '@components/common/PrivacyPolicyFooter';
 import { Input } from '@components/common/input';
 import Textarea from '@components/common/textarea';
 
-import axiosInstance from '@api/instance';
+import { suggestion } from '@api/keys/suggestion.key';
+import { deleteSuggestion, updateSuggestion } from '@api/suggestion.api';
 import { categories, places } from '@constants/select-options';
 import useRequireAuth from '@hooks/use-require-auth';
 import useTokenStore from '@stores/useTokenStore';
@@ -83,77 +85,13 @@ function parseError(err) {
   );
 }
 
-function toDate(arr) {
-  if (!Array.isArray(arr)) {
-    return new Date(0);
-  }
-  const [y, mo, d, h = 0, m = 0, s = 0] = arr;
-  return new Date(y, (mo || 1) - 1, d || 1, h, m, s);
-}
-
-function safeNormalizeSuggestion(raw) {
-  if (!raw) {
-    return null;
-  }
-  const createdAt =
-    raw?.createdAt ||
-    raw?.created_at ||
-    raw?.created_date ||
-    raw?.created ||
-    [];
-  return {
-    id: raw?.id ?? raw?.suggest_id ?? raw?.suggestId,
-    title: raw?.title ?? raw?.suggest_title ?? raw?.subject ?? '',
-    content: raw?.content ?? raw?.suggest_content ?? '',
-    category: raw?.category ?? '',
-    location: raw?.location ?? '',
-    isAnswered: raw?.is_answered ?? raw?.answered ?? raw?.isAnswered ?? false,
-    userId: raw?.userId ?? raw?.user_id ?? raw?.uid ?? null,
-    createdAt,
-  };
-}
-
-function formatMeta(cat, loc) {
-  if (!cat && !loc) {
-    return '';
-  }
-  if (!cat) {
-    return loc;
-  }
-  if (!loc) {
-    return cat;
-  }
-  return `${cat} | ${loc}`;
-}
-
-function pickLatestAnswerText(list) {
-  if (!Array.isArray(list)) {
-    return '';
-  }
-  const candidates = list
-    .map((c) => ({
-      txt:
-        c?.answer_content ??
-        c?.answerContent ??
-        c?.admin_answer ??
-        c?.adminAnswer ??
-        '',
-      at:
-        c?.answered_at || c?.answeredAt || c?.createdAt || c?.created_at || [],
-    }))
-    .filter((x) => !!String(x.txt || '').trim());
-  if (candidates.length === 0) {
-    return '';
-  }
-  candidates.sort((a, b) => +toDate(b.at) - +toDate(a.at));
-  return candidates[0].txt;
-}
-
-export default function SuggestHistoryDetailPage({ params }) {
+export default function SuggestHistoryDetailPage() {
   const router = useRouter();
+  const params = useParams();
+
+  const suggestId = Number(params.id);
   const { requireLogin, redirectToLogin } = useRequireAuth();
   const { userId: myUserId } = useTokenStore();
-  const suggestId = useMemo(() => Number(params?.id), [params?.id]);
 
   // 로그인 체크
   useEffect(() => {
@@ -162,11 +100,90 @@ export default function SuggestHistoryDetailPage({ params }) {
     }
   }, [requireLogin, redirectToLogin]);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [detail, setDetail] = useState(null);
-  const [, setComments] = useState([]);
-  const [answerText, setAnswerText] = useState('');
+  const queryClient = useQueryClient();
+  const enabled = Number.isFinite(suggestId) && !requireLogin;
+
+  // 건의 상세 조회
+  const {
+    data: detailData,
+    isFetching: detailFetching,
+    error: detailError,
+    refetch: refetchDetail,
+  } = useQuery({
+    ...suggestion.getList({ suggestId: String(suggestId) }),
+    enabled,
+    retry: false,
+  });
+
+  // 건의 코멘트 조회
+  const {
+    data: commentsData,
+    isFetching: commentsFetching,
+    error: commentsError,
+    refetch: refetchComments,
+  } = useQuery({
+    ...suggestion.getComments(suggestId),
+    enabled,
+    retry: false,
+  });
+
+  // 건의 내용 업데이트
+  const { mutate: updateSuggestionMutation } = useMutation({
+    mutationFn: updateSuggestion,
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: suggestion.getList._def,
+        refetchType: 'none',
+      });
+      await Promise.all([
+        refetchDetail({ throwOnError: true }),
+        refetchComments({ throwOnError: true }),
+      ]);
+      setEditing(false);
+      setOpMsg('수정이 완료되었습니다.');
+    },
+    onError: (e) => setOpMsg(parseError(e)),
+    onSettled: () => setSaving(false),
+  });
+
+  // 건의 삭제하기
+  const { mutate: deleteSuggestionMutation } = useMutation({
+    mutationFn: deleteSuggestion,
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: suggestion.getList._def,
+        refetchType: 'none',
+      });
+      setOpMsg('삭제되었습니다.');
+      router.push('/suggest/history');
+    },
+    onError: (e) => setOpMsg(parseError(e)),
+    onSettled: () => setSaving(false),
+  });
+
+  const loading = detailFetching || commentsFetching;
+  const queryError = detailError || commentsError;
+  const error = queryError ? parseError(queryError) : '';
+
+  const detail = useMemo(() => {
+    return detailData?.suggestions?.[0] ?? {};
+  }, [detailData]);
+
+  const answerText = useMemo(() => {
+    if (commentsData?.comments?.length === 0) {
+      return '';
+    }
+
+    commentsData?.comments?.sort((a, b) => {
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      return bTime - aTime;
+    });
+
+    return commentsData?.comments[0].answer_content ?? '';
+  }, [commentsData]);
 
   const [editing, setEditing] = useState(false);
   const [eTitle, setETitle] = useState('');
@@ -178,64 +195,25 @@ export default function SuggestHistoryDetailPage({ params }) {
   const [opMsg, setOpMsg] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const fetchDetail = useCallback(async () => {
-    const res = await axiosInstance.get('/api/suggestions', {
-      params: { suggest_id: suggestId },
-    });
-
-    const payload =
-      res?.data?.suggestions ??
-      res?.data?.data ??
-      res?.data?.suggestion ??
-      res?.data;
-
-    const raw = Array.isArray(payload) ? payload[0] : payload;
-    return safeNormalizeSuggestion(raw);
-  }, [suggestId]);
-
-  const fetchComments = useCallback(async () => {
-    const res = await axiosInstance.get('/api/suggestions/comments', {
-      params: { suggest_post_id: suggestId },
-    });
-    return Array.isArray(res?.data?.comments)
-      ? res.data.comments
-      : (res?.data ?? []);
-  }, [suggestId]);
-
-  const reload = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const [d, cmts] = await Promise.all([fetchDetail(), fetchComments()]);
-
-      // 본인 건의가 아니면 접근 차단
-      if (d && myUserId && d.userId && String(d.userId) !== String(myUserId)) {
-        router.replace('/suggest/history');
-        return;
-      }
-
-      setDetail(d);
-      setComments(cmts);
-      setAnswerText(pickLatestAnswerText(cmts));
-    } catch (e) {
-      setError(parseError(e));
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchDetail, fetchComments, myUserId, router]);
-
+  // 본인 건의가 아니면 접근 차단
+  const isOtherUser = Boolean(
+    detail &&
+    myUserId &&
+    detail.userId &&
+    String(detail.userId) !== String(myUserId),
+  );
   useEffect(() => {
-    if (Number.isFinite(suggestId)) {
-      reload();
+    if (isOtherUser) {
+      router.replace('/suggest/history');
     }
-  }, [suggestId, reload]);
+  }, [isOtherUser, router]);
 
   const beginEdit = () => {
     if (!detail) {
       return;
     }
-    setETitle(detail.title || '');
-    setEContent(detail.content || '');
+    setETitle(detail.suggest_title || '');
+    setEContent(detail.suggest_content || '');
     setECategory(detail.category || categories[0].value);
     setELocation(detail.location || places[0].value);
     setAckAnswerDone(false);
@@ -247,9 +225,9 @@ export default function SuggestHistoryDetailPage({ params }) {
     setOpMsg('');
   };
 
-  const isDone = Boolean(detail?.isAnswered) || !!answerText;
+  const isDone = Boolean(detail?.is_answered) || !!answerText;
 
-  const saveEdit = async () => {
+  const saveEdit = () => {
     if (!detail) {
       return;
     }
@@ -263,25 +241,16 @@ export default function SuggestHistoryDetailPage({ params }) {
       return setOpMsg('답변 완료 건의는 체크 확인 후에만 수정할 수 있습니다.');
     }
 
-    try {
-      setSaving(true);
-      setOpMsg('');
-      await axiosInstance.put('/api/suggestions', {
-        suggest_id: detail.id,
-        suggest_title: eTitle.trim(),
-        suggest_content: eContent.trim(),
-        category: eCategory,
-        location: eLocation,
-        is_answered: isDone,
-      });
-      await reload();
-      setEditing(false);
-      setOpMsg('수정이 완료되었습니다.');
-    } catch (e) {
-      setOpMsg(parseError(e));
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    setOpMsg('');
+    updateSuggestionMutation({
+      suggest_id: detail.id,
+      suggest_title: eTitle.trim(),
+      suggest_content: eContent.trim(),
+      category: eCategory,
+      location: eLocation,
+      is_answered: isDone,
+    });
   };
 
   const deleteItem = () => {
@@ -291,25 +260,12 @@ export default function SuggestHistoryDetailPage({ params }) {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDeleteItem = async () => {
+  const confirmDeleteItem = () => {
     setShowDeleteConfirm(false);
-    try {
-      setSaving(true);
-      setOpMsg('');
-      await axiosInstance.delete(`/api/suggestions/${detail.id}`);
-      setOpMsg('삭제되었습니다.');
-      router.push('/suggest/history'); // 목록으로 이동
-    } catch (e) {
-      setOpMsg(parseError(e));
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    setOpMsg('');
+    deleteSuggestionMutation(detail.id);
   };
-
-  const meta = useMemo(
-    () => formatMeta(detail?.category, detail?.location),
-    [detail?.category, detail?.location],
-  );
 
   return (
     <div className="min-h-screen bg-surface-suggest flex flex-col">
@@ -318,7 +274,7 @@ export default function SuggestHistoryDetailPage({ params }) {
       <main className="flex-1 px-4 py-5">
         <section className="rounded-2xl bg-white shadow-sm border border-line">
           {/* 로딩/에러 */}
-          {loading && (
+          {(detailFetching || commentsFetching) && (
             <div className="px-5 py-5 text-sm text-content-muted">
               로딩 중...
             </div>
@@ -327,20 +283,19 @@ export default function SuggestHistoryDetailPage({ params }) {
             <div className="px-5 py-5 text-sm text-red-500">{error}</div>
           )}
 
-          {!loading && !error && detail && (
+          {!loading && !error && !isOtherUser && detail && (
             <>
               {/* 상단 타이틀 / 상태 / 액션버튼 */}
               <div className="px-5 pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-lg-minus leading-6 font-medium text-content break-words">
-                      {detail.title || '제목 없음'}
+                      {detail.suggest_title || '제목 없음'}
                     </h2>
-                    {meta && (
-                      <p className="mt-1 text-xs text-content-secondary">
-                        {meta}
-                      </p>
-                    )}
+                    <p className="mt-1 text-xs text-content-secondary">
+                      {detail.category || '분류없음'} |{' '}
+                      {detail.location || '위치미상'}
+                    </p>
                   </div>
 
                   <div className="shrink-0 flex items-center gap-2">
@@ -370,7 +325,7 @@ export default function SuggestHistoryDetailPage({ params }) {
                 <>
                   <div className="px-5 pt-4">
                     <div className="whitespace-pre-wrap text-md leading-6 text-content break-words">
-                      {detail.content || '내용이 없습니다.'}
+                      {detail.suggest_content || '내용이 없습니다.'}
                     </div>
                   </div>
 
