@@ -7,11 +7,6 @@ import {
   searchCommunityPosts,
 } from '../community.api';
 
-export interface CommunityListParams {
-  page?: number;
-  size?: number;
-}
-
 export interface CommunityParams {
   postId?: number;
   userId?: number;
@@ -21,8 +16,8 @@ export interface CommunityParams {
 /** ---------- (공통) 커뮤니티 쿼리 ----------- */
 export const community = createQueryKeys('community', {
   // 전체 커뮤니티 게시글 조회
-  getList: (params: CommunityListParams = {}) => ({
-    queryKey: ['all', params],
+  getList: () => ({
+    queryKey: ['all'],
     queryFn: () => getCommunityPosts(),
   }),
   // 특정 커뮤니티 게시글 조회

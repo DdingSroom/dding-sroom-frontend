@@ -82,7 +82,7 @@ export default function AdminLayout({ children }) {
           </nav>
         </aside>
 
-        <main className="flex-1 p-10 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
       {/*  */}
       <BasicModal

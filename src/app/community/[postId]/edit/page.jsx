@@ -48,19 +48,20 @@ export default function EditPostPage() {
 
   const { markClean } = useUnsavedChangesGuard(isDirty);
 
-  const {
-    data,
-    isFetching: isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     ...community.getById(Number(postId)),
     enabled: isAuthenticated && !!postId,
     retry: false,
     staleTime: 0,
   });
 
+  const loadedPostId = String(postId);
+
   useEffect(() => {
-    if (isLoading) return;
+    if (initialValues?.postId === loadedPostId) {
+      return;
+    }
+
     if (error) {
       console.error('게시글 불러오기 실패:', error);
       setErrorMessage('게시글을 불러오는 중 오류가 발생했습니다.');
@@ -81,13 +82,14 @@ export default function EditPostPage() {
         setContent(found.content);
         setCategory(found.category);
         setInitialValues({
+          postId: loadedPostId,
           title: found.title,
           content: found.content,
           category: found.category,
         });
       }
     }
-  }, [data, error, isLoading, userId]);
+  }, [data, error, userId, loadedPostId, initialValues?.postId]);
 
   const queryClient = useQueryClient();
   const { mutate: updatePost } = useMutation({

@@ -35,7 +35,7 @@ export default function AdminSuggestionsPage() {
 
   const {
     data,
-    isFetching: loading,
+    isLoading: loading,
     error: queryError,
     refetch,
   } = useQuery({

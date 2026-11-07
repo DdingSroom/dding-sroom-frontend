@@ -44,7 +44,7 @@ export default function PostDetailPage() {
 
   const {
     data: postData,
-    isFetching: isLoading,
+    isLoading: isLoading,
     error: postError,
   } = useQuery({
     ...community.getById(Number(postId)),
